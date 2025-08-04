@@ -1,0 +1,21 @@
+{
+  "auth": {
+    "login": {
+      "url": "https://api.your-production-domain.com/auth/login",
+      "method": "POST",
+      "description": "Endpoint di login per l'ambiente di produzione."
+    },
+    "register": {
+      "url": "https://api.your-production-domain.com/auth/register",
+      "method": "POST",
+      "description": "Endpoint di registrazione per l'ambiente di produzione."
+    }
+  },
+  "products": {
+    "getAll": {
+      "url": "https://api.your-production-domain.com/products",
+      "method": "GET",
+      "description": "Recupera tutti i prodotti."
+    }
+  }
+}

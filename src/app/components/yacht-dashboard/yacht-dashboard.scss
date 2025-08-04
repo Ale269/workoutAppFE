@@ -1,0 +1,165 @@
+/* src/app/features/yacht-selection/yacht-selection.component.scss */
+
+:host {
+  display: block;
+  flex-grow: 1; /* Essenziale per riempire lo spazio nel main-content-wrapper */
+  padding: 20px;
+  background: transparent; /* TRASPARENTE! */
+  flex-direction: column;
+  align-items: center;
+}
+
+.yacht-selection-container {
+  width: 100%;
+  max-width: 1200px; /* Larghezza massima per il contenitore principale */
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.welcome-message {
+  font-size: 3.2em; /* Font più grande del normale */
+  font-weight: 700;
+  color: var(--text-color-inverted, #ffffff); /* Colore del testo invertito per il gradiente */
+  text-align: center;
+  margin-bottom: 40px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* Griglia divisa in due: 1 parte a sinistra, 2 a destra */
+  gap: 20px; /* Spazio tra le colonne della griglia */
+  background-color: transparent; /* Il background del container è il gradiente */
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr; /* Su schermi piccoli, passa a una colonna singola */
+  }
+}
+
+.yacht-list-panel,
+.yacht-details-panel {
+  background: var(--surface-color); /* Sfondo del pannello */
+  border-radius: 12px; /* Stile curvy, leggermente più pronunciato per i pannelli */
+  box-shadow: var(--shadow-2); /* Ombra per profondità */
+  padding: 25px;
+  color: var(--text-color); /* Colore del testo */
+  display: flex;
+  flex-direction: column;
+}
+
+.yacht-list-panel {
+  min-height: 400px; /* Altezza minima per il pannello lista */
+
+  h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+  }
+
+  .yacht-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Permette alla lista di occupare lo spazio disponibile */
+  }
+
+  .yacht-list-item {
+    background-color: var(--background-color); /* Sfondo dell'elemento della lista */
+    border-radius: 8px; /* Stile curvy per gli elementi della lista */
+    margin-bottom: 8px; /* Gap tra le celle, 4-8px */
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid var(--border-color);
+
+    &:hover {
+      background-color: rgba(var(--primary-color-rgb), 0.1);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-1);
+    }
+
+    &.selected {
+      border-left: 5px solid var(--primary-color); /* Bordo per l'elemento selezionato */
+      background-color: rgba(var(--primary-color-rgb), 0.08);
+      font-weight: 600;
+    }
+
+    .yacht-id {
+      font-size: 0.85em;
+      color: var(--text-color-light);
+    }
+  }
+
+  .no-yachts-message {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-color-light);
+    font-style: italic;
+  }
+
+  .add-yacht-button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 8px; /* Curvy button */
+    background-color: var(--newyacht-button-color);
+    color: var(--primary-text-color-inverted);
+    transition: all 0.3s;
+    &:hover {
+      background-color: var(--button-hover-color);
+    }
+  }
+}
+
+.yacht-details-panel {
+  min-height: 400px; /* Altezza minima per il pannello dettagli */
+
+  h2 {
+    color: var(--accent-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+  }
+
+  .yacht-info p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  .yacht-actions {
+    margin-top: auto; /* Spinge i pulsanti in fondo al pannello */
+    display: flex;
+    gap: 10px; /* Spazio tra i pulsanti */
+    justify-content: flex-end; /* Allinea i pulsanti a destra */
+
+    button {
+      border-radius: 8px; /* Curvy buttons */
+    }
+  }
+
+  .placeholder-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1; /* Centra il messaggio nel pannello */
+    text-align: center;
+    color: var(--text-color-light);
+    font-size: 1.1em;
+    padding: 20px;
+
+    mat-icon {
+      font-size: 4em;
+      width: 1em; /* Per mantenere le proporzioni */
+      height: 1em; /* Per mantenere le proporzioni */
+      margin-bottom: 15px;
+      color: var(--text-color-light);
+    }
+  }
+}
+

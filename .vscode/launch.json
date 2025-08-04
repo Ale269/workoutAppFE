@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug Angular su Chrome",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "Serve Angular App",
+      "sourceMaps": true,
+      "userDataDir": "${tmpdir}/chrome-debug",
+      "runtimeArgs": [
+        "--disable-web-security",
+        "--disable-features=VizDisplayCompositor"
+      ]
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to Chrome",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}",
+      "url": "http://localhost:4200"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+<div class="modal-overlay" [class.visible]="isVisible" (click)="onClose()"></div>
+
+<div class="modal-container" [class.visible]="isVisible">
+    <div class="modal-header">
+        <h2>{{ 'addYachtModal.title' | translate }}</h2> <button class="close-button" (click)="onClose()">
+        <span aria-hidden="true">&times;</span> </button>
+    </div>
+
+    <div class="modal-body">
+        <form [formGroup]="addYachtForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+                <label for="yachtName">{{ 'addYachtModal.nameLabel' | translate }}</label>
+                <input type="text" id="yachtName" formControlName="name" placeholder="{{ 'addYachtModal.namePlaceholder' | translate }}">
+                @if (addYachtForm.get('name')?.invalid && addYachtForm.get('name')?.touched) {
+                    <div class="error-message">
+                        {{ 'addYachtModal.nameRequired' | translate }}
+                    </div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="yachtDescription">{{ 'addYachtModal.descriptionLabel' | translate }}</label>
+                <textarea id="yachtDescription" formControlName="description" rows="4" placeholder="{{ 'addYachtModal.descriptionPlaceholder' | translate }}"></textarea>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button class="cancel-button" (click)="onClose()">{{ 'addYachtModal.cancelButton' | translate }}</button>
+        <button class="submit-button" (click)="onSubmit()" [disabled]="!addYachtForm.valid">{{ 'addYachtModal.addButton' | translate }}</button>
+    </div>
+</div>

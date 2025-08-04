@@ -1,0 +1,98 @@
+
+.header {
+  top: 0;
+  z-index: 1000;
+  // Usa le variabili del gradiente dal tuo styles.scss
+  background: transparent; /* Renderlo trasparente per mostrare il gradiente del genitore */
+  color: var(--text-color); // Per assicurare che il testo sia visibile sul gradiente scuro
+  height: var(--header-height); // Prende l'altezza definita in styles.scss
+}
+
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin-left: 10px;
+  color: var(--text-color);
+}
+
+.menu-button{
+  color: white;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-info {
+  padding: 10px 16px;
+
+  p {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  small {
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.login-button-header{
+  min-width: 120px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  width: 100%;
+  height: 26px;
+  font-size: 16px;
+}
+
+.login-button-header:hover{
+  background: rgba(255, 255, 255, 0.44);
+}
+
+
+.user-avatar-button {
+  width: 40px; // Dimensioni tipiche per un'icona
+  height: 40px;
+  border-radius: 50%; // Per renderlo un cerchio
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--button-color); // Un colore che lo faccia risaltare
+  color: var(--primary-color); // Colore del testo
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); // Leggera ombra per profondità
+  transition: all 0.3s ease;
+
+}
+
+.user-avatar-button:hover{
+  background-color: var(--button-hover-color); // Un colore che lo faccia risaltare
+
+}
+
+.user-initials {
+  // Se necessario, puoi aggiungere ulteriori stili specifici per il testo
+  line-height: 1; // Per centrare verticalmente il testo
+}
+
+// Opzionale: per le icone standard di Material Design all'interno del menu
+.mat-icon {
+  vertical-align: middle;
+}
+
+:root {
+  --header-height: 64px; // Desktop default
+}
+@media (max-width: 599px) { // Tipico breakpoint mobile per Angular Material
+  :root {
+    --header-height: 56px; // Altezza MatToolbar su mobile
+  }
+}

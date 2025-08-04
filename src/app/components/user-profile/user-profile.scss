@@ -1,0 +1,467 @@
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  background-color: var(--background-color); /* Usa il colore di sfondo del tuo tema */
+  min-height: calc(100vh - 60px); /* Adatta all'altezza della finestra */
+  font-family: 'Arial', sans-serif; /* Esempio, usa il tuo font principale */
+}
+
+/* --- Blocco Info Utente Superiore --- */
+.user-info-block {
+  background: var(--surface-color);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  display: flex;
+  flex-wrap: wrap; /* Permette il wrap su schermi più piccoli */
+  gap: 30px;
+  width: 100%;
+  max-width: 900px; /* Larghezza massima per il blocco info */
+  margin-bottom: 40px;
+  align-items: center; /* Allinea verticalmente */
+}
+
+.profile-picture {
+  flex: 0 0 160px; /* Circa 1/5 del max-width (900px / 5 = 180px, arrotondato) */
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid var(--primary-color);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+  display: flex; /* Centra l'immagine all'interno del cerchio */
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.user-details {
+  flex: 1; /* Prende lo spazio rimanente */
+  min-width: 300px; /* Larghezza minima per le info */
+  color: var(--text-color);
+}
+
+.username {
+  font-size: 2.5em;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.location, .last-online {
+  font-size: 1.1em;
+  color: var(--text-color);
+  opacity: 0.8;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.location mat-icon {
+  font-size: 1.2em;
+  color: var(--accent-color);
+}
+
+.reviews-summary {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  gap: 8px;
+}
+
+.average-rating {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+.stars .star-icon {
+  color: gold; /* Colore stelle piene */
+  font-size: 1.4em;
+  vertical-align: middle;
+}
+
+.stars .star-icon.empty {
+  color: #ccc; /* Colore stelle vuote */
+}
+
+.total-reviews {
+  font-size: 0.95em;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.user-description {
+  font-size: 1.1em;
+  line-height: 1.6;
+  color: var(--text-color);
+  opacity: 0.9;
+  margin-top: 15px;
+}
+
+/* --- Sezione Contenuto Principale (Annunci/Recensioni) --- */
+.content-tabs {
+  background: var(--surface-color);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 100%;
+  max-width: 900px;
+  color: var(--text-color);
+}
+
+.tabs-header {
+  display: flex;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 25px;
+  justify-content: center; /* Centra i bottoni delle tab */
+}
+
+.tabs-header button {
+  background: none;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  cursor: pointer;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  font-weight: 500;
+  margin: 0 10px;
+}
+
+.tabs-header button:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.tabs-header button.active {
+  color: var(--primary-color);
+  border-bottom: 3px solid var(--primary-color);
+  font-weight: 600;
+}
+
+.tab-content {
+  padding-top: 10px;
+}
+
+/* --- Sezione Annunci --- */
+.announcements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 4 per riga su schermi grandi, si adatta */
+  gap: 25px;
+  justify-content: center; /* Centra gli elementi nella griglia */
+}
+
+.announcement-card {
+  background-color: var(--card-background-color); /* Colore di sfondo per le card */
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Assicura che le card abbiano altezza uguale */
+}
+
+.announcement-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.announcement-image {
+  width: 100%;
+  height: 150px; /* Altezza fissa per le immagini */
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.announcement-info {
+  padding: 15px;
+  flex-grow: 1; /* Permette all'info di occupare lo spazio rimanente */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.announcement-title {
+  font-size: 1.2em;
+  color: var(--primary-color);
+  margin-bottom: 5px;
+  font-weight: 600;
+  white-space: nowrap; /* Evita che il titolo vada a capo */
+  overflow: hidden; /* Nasconde il testo in eccesso */
+  text-overflow: ellipsis; /* Aggiunge i puntini di sospensione */
+}
+
+.announcement-desc {
+  font-size: 0.9em;
+  color: var(--text-color);
+  opacity: 0.7;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  height: 3.6em; /* Circa 3 righe (1.4 * 3 = 4.2em) */
+  overflow: hidden;
+}
+
+.announcement-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: var(--text-color);
+}
+
+.announcement-price {
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+.announcement-location {
+  opacity: 0.8;
+}
+
+/* --- Paginazione --- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  gap: 10px;
+}
+
+.pagination button {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  border: 1px solid var(--border-color);
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled),
+.pagination button.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.pagination button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.no-items-message {
+  width: 100%;
+  text-align: center;
+  padding: 30px 0;
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: 1.1em;
+}
+
+/* --- Sezione Recensioni --- */
+.reviews-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.average-rating-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  background-color: var(--input-background-color);
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.rating-number {
+  font-size: 3em;
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+.stars-large .star-icon {
+  font-size: 2.5em;
+  color: gold;
+  vertical-align: middle;
+}
+
+.stars-large .star-icon.empty {
+  color: #ccc;
+}
+
+.total-reviews-count {
+  font-size: 1.1em;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.review-item {
+  background-color: var(--card-background-color);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  flex-wrap: wrap; /* Per schermi piccoli */
+}
+
+.reviewer-name {
+  font-weight: bold;
+  color: var(--primary-color);
+  font-size: 1.1em;
+}
+
+.review-stars .star-icon {
+  color: gold;
+  font-size: 1.1em;
+  vertical-align: middle;
+}
+
+.review-stars .star-icon.empty {
+  color: #ccc;
+}
+
+.review-date {
+  font-size: 0.9em;
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+.review-comment {
+  font-size: 1em;
+  line-height: 1.5;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  .user-info-block {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .profile-picture {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    border-width: 3px;
+  }
+
+  .user-details {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .username {
+    font-size: 2em;
+  }
+
+  .reviews-summary {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .average-rating {
+    font-size: 1.5em;
+  }
+
+  .stars .star-icon {
+    font-size: 1.1em;
+  }
+
+  .content-tabs {
+    padding: 20px;
+  }
+
+  .tabs-header {
+    flex-direction: column;
+    align-items: center;
+    border-bottom: none;
+    gap: 10px;
+  }
+
+  .tabs-header button {
+    width: 100%;
+    max-width: 250px;
+    padding: 12px 20px;
+    border-bottom: none; /* Rimuovi il bordo inferiore qui */
+    border: 1px solid var(--border-color); /* Aggiungi un bordo completo */
+    border-radius: 8px; /* Arrotonda i bordi */
+  }
+
+  .tabs-header button.active {
+    border-color: var(--primary-color); /* Rendi il bordo attivo più evidente */
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  .announcements-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Riduci la dimensione delle card */
+    gap: 15px;
+  }
+
+  .announcement-title {
+    font-size: 1em;
+  }
+
+  .announcement-desc {
+    font-size: 0.8em;
+  }
+
+  .average-rating-display {
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .rating-number {
+    font-size: 2.5em;
+  }
+
+  .stars-large .star-icon {
+    font-size: 2em;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+}

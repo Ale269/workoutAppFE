@@ -1,0 +1,127 @@
+{
+    "esito": "OK",
+    "payload": {
+        "products": [
+            {
+                "id": 1,
+                "titolo": "Collezione Monete Antiche",
+                "descrizione": "Varie monete romane e greche in buono stato.",
+                "prezzo": 120,
+                "immagine": "assets/recollect/images/item1.png",
+                "localita": "Roma",
+                "categoria": "Collezionismo",
+                "distanzaKm": 5
+            },
+            {
+                "id": 2,
+                "titolo": "Fumetti Marvel anni '80",
+                "descrizione": "Set completo X-Men primi numeri.",
+                "prezzo": "Scambio",
+                "immagine": "assets/recollect/images/item2.png",
+                "localita": "Milano",
+                "categoria": "Collezionismo",
+                "distanzaKm": 20
+            },
+            {
+                "id": 3,
+                "titolo": "Set carte Magic the Gathering raro",
+                "descrizione": "Set Unlimited in ottime condizioni.",
+                "prezzo": 800,
+                "immagine": "/recollect/images/item2.png",
+                "localita": "Firenze",
+                "categoria": "Collezionismo",
+                "distanzaKm": 10
+            },
+            {
+                "id": 4,
+                "titolo": "Francobolli da collezione Italia",
+                "descrizione": "Serie storica del Regno d'Italia.",
+                "prezzo": "Scambio",
+                "immagine": "https://via.placeholder.com/300x200?text=Francobolli",
+                "localita": "Napoli",
+                "categoria": "Collezionismo",
+                "distanzaKm": 3
+            },
+            {
+                "id": 5,
+                "titolo": "Action Figure vintage Star Wars",
+                "descrizione": "Figure originali anni '70, alcune con scatola.",
+                "prezzo": 350,
+                "immagine": "https://via.placeholder.com/300x200?text=StarWars",
+                "localita": "Torino",
+                "categoria": "Collezionismo",
+                "distanzaKm": 50
+            },
+            {
+                "id": 6,
+                "titolo": "Modellismo navale antico",
+                "descrizione": "Modello della nave \"Amerigo Vespucci\".",
+                "prezzo": "Scambio",
+                "immagine": "https://via.placeholder.com/300x200?text=Modellismo",
+                "localita": "Venezia",
+                "categoria": "Hobby",
+                "distanzaKm": 15
+            },
+            {
+                "id": 7,
+                "titolo": "Vinili Rari Rock Anni '70",
+                "descrizione": "Dischi in vinile di band leggendarie, prime stampe.",
+                "prezzo": 220,
+                "immagine": "https://via.placeholder.com/300x200?text=Vinili",
+                "localita": "Bologna",
+                "categoria": "Musica",
+                "distanzaKm": 8
+            },
+            {
+                "id": 8,
+                "titolo": "Macchina Fotografica Vintage",
+                "descrizione": "Modello analogico degli anni '60, perfettamente funzionante.",
+                "prezzo": 180,
+                "immagine": "https://via.placeholder.com/300x200?text=Fotocamera",
+                "localita": "Genova",
+                "categoria": "Elettronica",
+                "distanzaKm": 2
+            },
+            {
+                "id": 9,
+                "titolo": "Monopattino Elettrico Usato",
+                "descrizione": "Perfetto per la città, autonomia 30km.",
+                "prezzo": 250,
+                "immagine": "https://via.placeholder.com/300x200?text=Monopattino",
+                "localita": "Firenze",
+                "categoria": "Veicoli",
+                "distanzaKm": 7
+            },
+            {
+                "id": 10,
+                "titolo": "Libri Gialli Collezione",
+                "descrizione": "Autori vari, in ottime condizioni.",
+                "prezzo": 45,
+                "immagine": "https://via.placeholder.com/300x200?text=Libri",
+                "localita": "Bologna",
+                "categoria": "Libri",
+                "distanzaKm": 12
+            },
+            {
+                "id": 11,
+                "titolo": "Consolle da gioco retro SNES",
+                "descrizione": "Funzionante con 5 giochi inclusi.",
+                "prezzo": 150,
+                "immagine": "https://via.placeholder.com/300x200?text=SNES",
+                "localita": "Roma",
+                "categoria": "Elettronica",
+                "distanzaKm": 6
+            },
+            {
+                "id": 12,
+                "titolo": "Orologio da Tasca Antico",
+                "descrizione": "Meccanismo a vista, funzionante.",
+                "prezzo": 600,
+                "immagine": "https://via.placeholder.com/300x200?text=Orologio",
+                "localita": "Milano",
+                "categoria": "Collezionismo",
+                "distanzaKm": 25
+            }
+        ]
+    }
+}

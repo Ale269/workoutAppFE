@@ -1,0 +1,43 @@
+{
+  "defaults": {
+    "protocol": "http",
+    "host": "localhost:8090",
+    "baseUrl": "/re-collect",
+    "security": "none",
+    "mocked": true
+  },
+  "apis": {
+
+    "auth": [
+      {
+        "name": "login",
+        "endpoint": "/login",
+        "method": "post",
+        "isMocked": true
+      },
+      {
+        "name": "register",
+        "endpoint": "/register",
+        "method": "post",
+        "isMocked": true
+      }
+    ],
+    "products": [
+      {
+        "name": "getAll",
+        "endpoint": "/getAll",
+        "method": "get",
+        "description": "Recupera i prodotti.",
+        "isMocked": true
+      },
+      {
+        "name": "annuncio",
+        "endpoint": "/annuncio/",
+        "method": "get",
+        "description": "Recupera il singoloprodotti.",
+        "isMocked": true
+      }
+    ]
+  }
+
+}

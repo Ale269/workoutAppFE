@@ -1,0 +1,54 @@
+<div class="details-container">
+    @if (announce) {
+        <div class="announcement-card-detail">
+            <button class="back-button" (click)="goBack()">← Torna Indietro</button>
+
+            <div class="main-content-detail">
+                <div class="image-section">
+                    <img [src]="announce.immagine" [alt]="announce.titolo">
+                </div>
+
+                <div class="info-section">
+                    <h1 class="announce-title">{{ announce.titolo }}</h1>
+                    <p class="announce-location"><mat-icon>location_on</mat-icon> {{ announce.localita }}</p>
+                    <p class="announce-price">
+                        @if (announce.prezzo === 'Scambio') {
+                            Scambio
+                        } @else {
+                            Prezzo: {{ announce.prezzo | currency:'EUR':'symbol':'1.0-0' }}
+                        }
+                    </p>
+                    <p class="announce-category">Categoria: <span>{{ announce.categoria }}</span></p>
+                    <p class="announce-user">Pubblicato da: <strong>{{ announce.utente }}</strong> </p>
+                    <p class="announce-date">Data pubblicazione: {{ announce.dataCaricamento }}</p>
+
+                    <button class="contact-button">Contatta Venditore</button>
+                </div>
+            </div>
+
+            <div class="description-section">
+                <h2>Descrizione</h2>
+                <p>{{ announce.descrizione }}</p>
+            </div>
+
+            <div class="chat-section">
+                <h2>Chat con {{ announce.utente }}</h2>
+                <div class="chat-box">
+                    <div class="chat-messages">
+                        <p>Benvenuto nella chat! Invia un messaggio all'utente.</p>
+                    </div>
+                    <textarea
+                            [(ngModel)]="chatMessage"
+                            placeholder="Scrivi il tuo messaggio qui..."
+                            rows="4"
+                    ></textarea>
+                    <button class="send-message-button" (click)="sendMessage()">Invia Messaggio</button>
+                </div>
+            </div>
+        </div>
+    } @else {
+        <div class="loading-state">
+            <p>Caricamento dettagli annuncio...</p>
+            <mat-spinner diameter="50"></mat-spinner> </div>
+    }
+</div>

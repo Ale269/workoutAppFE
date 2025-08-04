@@ -1,0 +1,35 @@
+
+
+.app-container { /* Questo è il mat-sidenav-content */
+  display: flex;
+  flex-direction: column;
+  min-height: 100%; /* Deve espandersi al 100% dell'altezza del suo genitore (mat-sidenav-container) */
+  background: transparent; /* TRASPARENTE! Il gradiente è ora sul body */
+}
+
+.main-content-wrapper {
+  flex-grow: 1; /* Permette al contenuto principale di espandersi e riempire lo spazio rimanente */
+}
+
+.modal-backdrop {
+  position: fixed; /* Fisso rispetto alla viewport */
+  top: 0;
+  left: 0;
+  width: 100vw; /* Copre l'intera larghezza della viewport */
+  height: 100vh; /* Copre l'intera altezza della viewport */
+  background-color: rgba(0, 0, 0, 0.7); /* Sfondo semi-trasparente e più scuro */
+  display: flex; /* Per centrare il contenuto del modale */
+  align-items: center; /* Centra verticalmente */
+  justify-content: center; /* Centra orizzontalmente */
+  z-index: 9999; /* Assicura che sia sopra tutto il resto */
+  backdrop-filter: blur(5px); /* Effetto sfocatura opzionale */
+}
+
+
+.modal-content {
+  position: relative; /* Necessario per posizionare il pulsante di chiusura */
+  /* Non definire qui background, box-shadow, border-radius se li hai già su .login-card. */
+  /* Assicurati che .login-card al suo interno sia il vero "pannello" del modale. */
+  width: auto; /* Lascia che la .login-card definisca la sua larghezza massima */
+  /* La tua .login-card ha già max-width: 400px; e altri stili che vanno bene. */
+}

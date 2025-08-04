@@ -1,0 +1,18 @@
+{
+  "esito": "OK",
+  "payload": {
+    "products": {
+      "id": 1,
+      "titolo": "Console Retrò Anni '80",
+      "descrizione": "Perfettamente funzionante, include 5 giochi originali e 2 controller. Un vero pezzo da collezione per gli amanti del vintage. Alcuni segni di usura dovuti al tempo, ma esteticamente ottima.",
+      "immagine": "assets/recollect/images/item1.png",
+      "prezzo": "250.00",
+      "localita": "Milano",
+      "categoria": "Collezionismo",
+      "utente": "Mario Rossi",
+      "dataCaricamento": "15/07/2025",
+      "contattoUtente": "@mario.r"
+    }
+  }
+}
+

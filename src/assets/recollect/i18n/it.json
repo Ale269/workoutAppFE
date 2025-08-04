@@ -1,0 +1,44 @@
+{
+  "auth": {
+    "login": "Accedi",
+    "logout": "Esci",
+    "email": "Email",
+    "password": "Password",
+    "signin": "Accedi",
+    "signup": "Registrati",
+    "forgotPassword": "Password dimenticata",
+    "switchtheme": "Cambia Tema",
+    "welcome": "Benvenuto in Re-Collect",
+    "subtitle": "",
+    "emailRequired": "L'email è richiesta",
+    "emailInvalid": "Inserisci un'email valida",
+    "passwordRequired": "La password è richiesta",
+    "passwordMinLength": "La password deve essere di almeno 6 caratteri",
+    "loginError": "Accesso fallito. Controlla le tue credenziali."
+  },
+  "common": {
+    "darkTheme": "Tema Scuro",
+    "lightTheme": "Tema Chiaro",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo",
+    "logout": "Esci",
+    "settings": "Impostazioni",
+    "profile": "Profilo",
+    "favorites": "Articoli preferiti",
+    "favoriteSearch": "Ricerche salvate"
+  },
+  "navigation": {
+    "yachtSelection": "Selezione Yacht",
+    "dashboard": "Dashboard",
+    "departments": "Dipartimenti",
+    "library": "Biblioteca",
+    "calendar": "Calendario",
+    "procedures": "Procedure"
+  },
+
+}

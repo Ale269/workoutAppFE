@@ -1,0 +1,43 @@
+{
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "signin": "Log In",
+    "signup": "Sign Up",
+    "forgotPassword": "Forgot Password",
+    "switchtheme": "Switch Theme",
+    "welcome": "Welcome to Re-Collect",
+    "subtitle": "Yacht Management Platform",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "loginError": "Login failed. Please check your credentials."
+  },
+  "common": {
+    "darkTheme": "Dark Theme",
+    "lightTheme": "Light Theme",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "logout": "Logout",
+    "settings": "Settings",
+    "profile": "Profile",
+    "favorites": "Favorites Items",
+    "favoriteSearch": "Saved Searches"
+  },
+  "navigation": {
+    "yachtSelection": "Yacht Selection",
+    "dashboard": "Dashboard",
+    "departments": "Departments",
+    "library": "Library",
+    "calendar": "Calendar",
+    "procedures": "Procedures"
+  }
+}

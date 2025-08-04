@@ -1,0 +1,620 @@
+
+.modal-backdrop {
+  position: fixed; /* Fisso rispetto alla viewport */
+  top: 0;
+  left: 0;
+  width: 100vw; /* Copre l'intera larghezza della viewport */
+  height: 100vh; /* Copre l'intera altezza della viewport */
+  background-color: rgba(0, 0, 0, 0.7); /* Sfondo semi-trasparente e più scuro */
+  display: flex; /* Per centrare il contenuto del modale */
+  align-items: center; /* Centra verticalmente */
+  justify-content: center; /* Centra orizzontalmente */
+  z-index: 9999; /* Assicura che sia sopra tutto il resto */
+  backdrop-filter: blur(5px); /* Effetto sfocatura opzionale */
+}
+
+
+.modal-content {
+  position: relative; /* Necessario per posizionare il pulsante di chiusura */
+  /* Non definire qui background, box-shadow, border-radius se li hai già su .login-card. */
+  /* Assicurati che .login-card al suo interno sia il vero "pannello" del modale. */
+  width: auto; /* Lascia che la .login-card definisca la sua larghezza massima */
+  /* La tua .login-card ha già max-width: 400px; e altri stili che vanno bene. */
+}
+
+
+/* Se hai bisogno di un pulsante di chiusura per il modale */
+.modal-close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2em;
+  cursor: pointer;
+  z-index: 1001; /* Sopra il modale */
+}
+
+
+/* Wrapper principale per la larghezza dell'80% e centraggio */
+.home-wrapper {
+  max-width: 70%; /* Larghezza totale del 80% */
+  margin: 0 auto; /* Centra orizzontalmente */
+  padding: 20px 0; /* Padding verticale */
+}
+
+/* Contenuto principale, ora senza sidebar a fianco */
+.main-content {
+  /* Non più flexbox per le colonne qui */
+}
+
+.main-content h1 {
+  font-size: 2.2em;
+  color: var(--text-color);
+  margin-bottom: 10px;
+  text-align: center; /* Centra il titolo */
+}
+
+.main-content p {
+  color: #666;
+  margin-bottom: 25px;
+  text-align: left; /* Centra la descrizione */
+}
+
+/* Stili per il pannello dei filtri a scomparsa */
+
+/* Nuovo contenitore per la barra di ricerca e i filtri */
+.search-and-filters-container {
+  margin-bottom: 30px;
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  /* Usa Flexbox per posizionare la barra e il toggle side-by-side */
+  display: flex;
+  flex-wrap: wrap; /* Permette agli elementi di andare a capo su schermi piccoli */
+  gap: 15px; /* Spazio tra gli elementi */
+  align-items: flex-start; /* Allinea in alto */
+}
+
+
+.search-bar-section {
+  flex: 5; /* 5 unità di spazio per la barra di ricerca */
+  display: flex; /* Per allineare input e button */
+  gap: 10px; /* Spazio tra input e button */
+  min-width: 250px; /* Larghezza minima per la barra su schermi stretti */
+}
+
+.generic-search-input {
+  flex-grow: 1; /* Permette all'input di occupare lo spazio disponibile */
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1.1em;
+}
+
+.search-button {
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease-in-out;
+  white-space: nowrap; /* Evita che il testo vada a capo */
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+.advanced-filters-toggle {
+  flex: 2; /* 2 unità di spazio per il toggle dei filtri */
+  text-align: right; /* Allinea il bottone a destra */
+  min-width: 150px; /* Larghezza minima per il toggle */
+}
+
+.advanced-filters-toggle .toggle-filters-button {
+  width: auto; /* Adatta la larghezza al contenuto */
+  padding: 12px 20px;
+  /* Rimuovi il margin-bottom se presente, non più necessario con flexbox */
+  margin-bottom: 0;
+  /* Assicurati che sia allineato a destra */
+  float: right; /* Per float sul desktop */
+}
+
+.filter-toggle-container {
+  margin-bottom: 30px; /* Spazio tra filtri e griglia annunci */
+  text-align: center; /* Centra il bottone */
+}
+
+.toggle-filters-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease-in-out;
+  margin-bottom: 15px; /* Spazio sotto il bottone */
+}
+
+.toggle-filters-button:hover {
+  background-color: #0056b3;
+}
+
+.filter-panel {
+  width: 100%; /* Occupa tutta la larghezza sotto la barra di ricerca e toggle */
+  margin-top: 15px; /* Spazio dal toggle/barra di ricerca */
+  /* Le seguenti proprietà gestiscono l'animazione di espansione */
+  max-height: 800px; /* Valore grande per contenere tutti i filtri, come discusso */
+  opacity: 1;
+  overflow: hidden; /* Nasconde il contenuto che eccede la max-height */
+  transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.filter-panel.hidden {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  visibility: hidden; /* Nasconde completamente per accessibilità */
+  transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, padding 0.4s ease-in-out, margin 0.4s ease-in-out;
+}
+
+/* Stili per i singoli gruppi filtro all'interno del pannello */
+.filter-group {
+  margin-bottom: 35px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+.filter-group {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.filter-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.filter-group h3 {
+  font-size: 1.1em;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  transition: color 0.2s ease-in-out;
+}
+
+.filter-group h3:hover {
+  color: #007bff;
+}
+
+.filter-group h3.expanded .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.toggle-icon {
+  font-size: 0.8em;
+  transition: transform 0.2s ease-in-out;
+}
+
+.filter-content {
+  max-height: 300px; /* Altezza massima per il contenuto del singolo filtro */
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 1;
+  padding-top: 5px;
+}
+
+.filter-content.hidden { /* Questa classe non è più usata con @if, ma la lascio per riferimento */
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  visibility: hidden;
+}
+
+/* Puoi aggiungere stili specifici per le checkbox se lo desideri */
+.filter-content.category-dropdown div {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.filter-content.category-dropdown input[type="checkbox"] {
+  margin-right: 8px;
+  /* Personalizza l'aspetto della checkbox se necessario */
+  transform: scale(1.1); /* Rende le checkbox leggermente più grandi */
+  cursor: pointer;
+}
+
+.filter-content.category-dropdown label {
+  cursor: pointer;
+  font-size: 1em;
+  color: #555;
+}
+
+.filter-group input[type="text"] {
+  width: calc(100% - 20px);
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Stili per gli slider (input type="range") */
+input[type="range"] {
+  width: 100%;
+  margin-top: 10px;
+  -webkit-appearance: none;
+  height: 8px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  border-radius: 5px;
+}
+
+input[type="range"]:hover {
+  opacity: 1;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.price-range {
+  margin-top: 15px;
+}
+
+.price-range label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.apply-filters-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease-in-out;
+  margin-top: 20px;
+}
+
+.apply-filters-button:hover {
+  background-color: #218838;
+}
+
+/* Griglia degli annunci: 3 per riga */
+.annunci-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Stili per le card degli annunci */
+.annuncio-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.annuncio-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.annuncio-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.card-body {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.annuncio-titolo {
+  font-size: 1.2em;
+  color: #333;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.annuncio-descrizione {
+  font-size: 0.9em;
+  color: #777;
+  line-height: 1.4;
+  margin-bottom: 10px;
+  flex-grow: 1;
+}
+
+.annuncio-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.annuncio-prezzo {
+  font-weight: bold;
+  color: #007bff;
+  font-size: 1.1em;
+}
+
+.annuncio-localita {
+  font-size: 0.9em;
+  color: #999;
+}
+
+.annuncio-categoria {
+  display: inline-block;
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  margin-top: 10px;
+  align-self: flex-start;
+}
+
+.no-annunci-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px 0;
+  color: #777;
+  font-size: 1.1em;
+}
+
+.publish-button {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  margin-top: 20px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.publish-button:hover {
+  background-color: #0056b3;
+}
+
+/* Stili per il pulsante "Torna su" */
+.scroll-to-top-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.8em;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  opacity: 0;
+  transition: all 0.9s ease;
+  visibility: hidden;
+  transform: translateY(20px);
+}
+
+
+.scroll-to-top-button.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0px);
+}
+
+.scroll-to-top-button:hover {
+  background: #0056b3;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.scroll-to-top-button:active {
+  transform: translateY(0px);
+}
+
+/* Animazione per il simbolo freccia */
+.scroll-to-top-button::before {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+/* --- Media Queries per la responsività --- */
+@media (max-width: 1200px) {
+  .annunci-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+
+  .modal-backdrop {
+    padding: 10px; /* Riduci il padding del backdrop su mobile */
+  }
+
+  .login-card {
+    width: 95%; /* Leggermente più larga su schermi piccoli */
+    margin: 0; /* Rimuovi eventuali margini fissi */
+  }
+
+  .home-wrapper {
+    max-width: 85%;
+    padding: 15px 0;
+  }
+
+  .main-content h1, .main-content p {
+    text-align: left;
+  }
+
+  .main-content {
+    width: fit-content;
+  }
+
+  .search-and-filters-container {
+    flex-direction: column; /* Le sezioni vanno a capo */
+    gap: 10px;
+    padding: 15px;
+    background-color: #f8f8f8;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .search-bar-section {
+    width: 100%;
+    flex: none; /* Rimuove la flessibilità */
+  }
+
+  .advanced-filters-toggle {
+    width: 100%;
+    flex: none; /* Rimuove la flessibilità */
+    text-align: center; /* Centra il bottone su mobile */
+  }
+
+  .advanced-filters-toggle .toggle-filters-button {
+    width: 100%; /* Bottone a tutta larghezza */
+    float: none; /* Rimuove float su mobile */
+  }
+
+  .filter-panel {
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+
+  .annunci-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+
+  .annuncio-card {
+    border-radius: 6px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-bottom: 1px solid #eee;
+  }
+
+  .annuncio-card img {
+    height: 180px;
+  }
+
+  .scroll-to-top-button {
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    font-size: 1.6em;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-wrapper {
+    max-width: 90%;
+    padding: 10px 0;
+  }
+
+  .main-content {
+    width: fit-content;
+  }
+
+  .main-content p {
+    color: #666;
+    text-align: left; /* Centra la descrizione */
+  }
+
+  .search-and-filters-container {
+    flex-direction: column; /* Le sezioni vanno a capo */
+    gap: 10px;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-bottom: 1px solid #eee; /* Aggiungi un bordo per separare visivamente */
+
+  }
+
+  .filter-panel {
+    padding: 10px;
+    border-radius: 0;
+  }
+  .annunci-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .annuncio-card {
+    border-radius: 4px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-bottom: 1px solid #eee;
+  }
+  .annuncio-card:last-child {
+    border-bottom: none;
+  }
+  .annuncio-card img {
+    height: 150px;
+  }
+  .card-body {
+    padding: 10px;
+  }
+  .annuncio-titolo {
+    font-size: 1.1em;
+  }
+  .annuncio-descrizione, .annuncio-info {
+    font-size: 0.85em;
+  }
+}

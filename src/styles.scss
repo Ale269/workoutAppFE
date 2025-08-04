@@ -1,0 +1,172 @@
+@use "@angular/material" as mat;
+
+@include mat.core(
+
+); // Assicurati di includere il core theme se non l'hai già fatto
+
+// Mantieni le tue definizioni di tema .dark-theme e .light-theme con le variabili di colore e altezza.
+// Verranno applicate come classi al body tramite ThemeService.
+.dark-theme {
+  // Variabili tema scuro (Dark Theme)
+  --primary-color: #ffffff;
+  --primary-color-dark: #64b5f6;
+  --primary-text-color-inverted: #000000;
+  --accent-color: #f48fb1;
+  --surface-color: #54446152;
+  --background-color: #424242;
+  --text-color: #e0e0e0;
+  --text-color-light: #bdbdbd;
+  --text-color-inverted: #ffffff;
+  --button-text-color-inverted: #000000;
+  --border-color: #616161;
+  --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-2: 0 10px 20px rgba(0, 0, 0, 0.4);
+  --newyacht-button-color: #ffffff;
+
+  // Colori per il gradiente in modalità scura (adattati)
+  --gradient-start-color: #17278f; // Blu scuro
+  --gradient-end-color: #9c1628; // Blu molto scuro
+
+  // --- NUOVE VARIABILI PER ALTEZZA HEADER E FOOTER ---
+  --header-height: 64px;
+  --footer-height: 60px;
+
+  // --- NUOVE VARIABILI PER BOTTONI SWITCH THEME E LOGIN ---
+  --button-color: #3f55dc;
+  --button-hover-color: #7b8aff;
+  --login-button-color: #3f51b5;
+}
+
+.light-theme {
+  // Variabili tema luce (Light Theme)
+  --primary-color: #ffffff;
+  --primary-color-dark: #303f9f;
+  --primary-text-color-inverted: #ffffff;
+  --accent-color: #ff4081;
+  --surface-color: #fbfeff82;
+  --background-color: #f5f5f5;
+  --text-color: #333333;
+  --text-color-light: #666666;
+  --text-color-inverted: #ffffff;
+  --button-text-color-inverted: #ffffff;
+  --border-color: #e0e0e0;
+  --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-2: 0 10px 20px rgba(0, 0, 0, 0.15);
+  --newyacht-button-color: #000000;
+
+  // Colori per il gradiente dello sfondo della pagina yacht
+  --gradient-start-color: #fdfdfd; // Viola
+  --gradient-end-color: #b7c7e3; // Blu
+
+  // --- NUOVE VARIABILI PER ALTEZZA HEADER E FOOTER ---
+  --header-height: 64px;
+  --footer-height: 60px;
+
+  // --- NUOVE VARIABILI PER BOTTONI SWITCH THEME E LOGIN ---
+  --button-color: #3575e8;
+  --button-hover-color: #738dfd;
+  --login-button-color: #3f51b5;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%; /* HTML e BODY devono occupare il 100% dell'altezza della viewport */
+  width: 100%; /* E il 100% della larghezza */
+  font-family: Roboto, "Helvetica Neue", sans-serif; // Spostato qui per applicarlo globalmente
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  // Applica il gradiente GLOBALE e FISSO qui. Questo sarà lo sfondo della TUA INTERA APP.
+  background: linear-gradient(
+      135deg,
+      var(--gradient-start-color) 0%,
+      var(--gradient-end-color) 100%
+    )
+    fixed;
+  background-size: 100% 100%; /* Assicura che il gradiente copra tutta l'area */
+  overflow-x: hidden; /* Evita scroll orizzontale non desiderato */
+  overflow-y: auto; /* Permetti lo scorrimento verticale SOLO a livello di documento */
+  transition: background 0.3s ease; /* Transizione per il cambio tema */
+  color: var(
+    --text-color
+  ); /* Colore del testo di default, può essere sovrascritto */
+  /* Previeni scroll orizzontale in altro modo */
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+/* Regola per bloccare lo scroll del body quando il modale è aperto */
+body.no-scroll {
+  overflow: hidden;
+  padding-right: 15px; /* Adatta al tuo sistema operativo */
+}
+
+h2 {
+  font-weight: 300;
+  font-size: 32px;
+  line-height: 32px;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+
+p {
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 14px;
+  margin-bottom: 24px;
+}
+
+::ng-deep .mat-form-field.mat-focused .mat-form-field-underline {
+  background-color: #ff884d; // Desired color when input is focused
+}
+
+// Media Query per l'altezza dell'header su schermi piccoli
+@media (max-width: 599px) {
+  // Tipico breakpoint mobile per Angular Material
+  :root {
+    --header-height: 56px; // Altezza MatToolbar su mobile
+  }
+}
+
+// Responsive helpers
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .show-mobile {
+    display: none !important;
+  }
+}
+
+// Se volessi usare il mixin form-field-overrides per i suoi scopi specifici
+// (es. cambiare colori di disabilitato, ma non font-size/weight generali)
+:root {
+  @include mat.form-field-overrides(
+    (
+      // Esempio: cambia il colore del placeholder quando il campo è disabilitato
+      container-text-size: 14px,
+      container-text-weight: 300,
+      container-text-font: "Roboto",
+      subscript-text-size: 14px,
+      subscript-text-weight: 300,
+      subscript-text-font: "Roboto",
+      filled-label-text-size: 14px,
+      filled-label-text-weight: 300,
+      filled-label-text-font: "Roboto",
+      outlined-label-text-size: 14px,
+      outlined-label-text-weight: 300,
+      outlined-label-text-font: "Roboto",
+      outlined-label-text-populated-size : 14px,
+    )
+  );
+}

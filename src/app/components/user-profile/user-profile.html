@@ -1,0 +1,131 @@
+<div class="profile-container">
+    <div class="user-info-block">
+        <div class="profile-picture">
+            <img [src]="user.profilePic" alt="Immagine Profilo">
+        </div>
+        <div class="user-details">
+            <h1 class="username">{{ user.username }}</h1>
+            <p class="location"><mat-icon>location_on</mat-icon> {{ user.location }}</p>
+            <p class="last-online">Ultimo online: {{ user.lastOnline }}</p>
+            <div class="reviews-summary">
+                <span class="average-rating">{{ user.averageRating | number:'1.1-1' }}</span>
+                <div class="stars">
+                    @for (star of getStarRating(user.averageRating); track $index) {
+                        <mat-icon class="star-icon filled">star</mat-icon>
+                    }
+
+                </div>
+                <span class="total-reviews">({{ user.totalReviews }} recensioni)</span>
+            </div>
+            <p class="user-description">{{ user.description }}</p>
+        </div>
+    </div>
+
+    <div class="content-tabs">
+        <div class="tabs-header">
+            <button
+                    [class.active]="selectedTab === 'annunci'"
+                    (click)="selectTab('annunci')">
+                Annunci ({{ userAnnouncements.length }})
+            </button>
+            <button
+                    [class.active]="selectedTab === 'recensioni'"
+                    (click)="selectTab('recensioni')">
+                Recensioni ({{ userReviews.length }})
+            </button>
+        </div>
+
+        <div class="tab-content">
+            @if (selectedTab === 'annunci') {
+                <div class="announcements-grid">
+                    @for (annuncio of paginatedAnnunci; track annuncio.id) {
+                        <div class="announcement-card" (click)="false"> <img [src]="annuncio.immagine" [alt]="annuncio.titolo" class="announcement-image">
+                            <div class="announcement-info">
+                                <h3 class="announcement-title">{{ annuncio.titolo }}</h3>
+                                <p class="announcement-desc">{{ annuncio.descrizione | slice:0:70 }}...</p>
+                                <div class="announcement-footer">
+                  <span class="announcement-price">
+                    @if (annuncio.prezzo === 'Scambio') {
+                        Scambio
+                    } @else {
+                        {{ annuncio.prezzo | currency:'EUR':'symbol':'1.0-0' }}
+                    }
+                  </span>
+                                    <span class="announcement-location">{{ annuncio.localita }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    } @empty {
+                        <p class="no-items-message">Nessun annuncio trovato.</p>
+                    }
+                </div>
+
+                <div class="pagination">
+                    @if (totalAnnunciPages > 1){
+                        <button (click)="goToAnnunciPage(currentAnnunciPage - 1)" [disabled]="currentAnnunciPage === 1">Precedente</button>
+                        @for (pageNumber of [].constructor(totalAnnunciPages); track $index) {
+                            <button
+                                    [class.active]="currentAnnunciPage === ($index + 1)"
+                                    (click)="goToAnnunciPage($index + 1)">
+                                {{ $index + 1 }}
+                            </button>
+                        }
+                        <button (click)="goToAnnunciPage(currentAnnunciPage + 1)" [disabled]="currentAnnunciPage === totalAnnunciPages">Successiva</button>
+
+                    }
+                </div>
+            }
+
+            @if (selectedTab === 'recensioni') {
+                <div class="reviews-section">
+                    <div class="average-rating-display">
+                        <span class="rating-number">{{ user.averageRating | number:'1.1-1' }}</span>
+                        <div class="stars-large">
+                            @for (star of getStarRating(user.averageRating); track $index) {
+                                <mat-icon class="star-icon filled large">star</mat-icon>
+                            }
+                            @for (star of getEmptyStars(user.averageRating); track $index) {
+                                <mat-icon class="star-icon empty large">star</mat-icon>
+                            }
+                        </div>
+                        <span class="total-reviews-count">({{ user.totalReviews }} recensioni totali)</span>
+                    </div>
+
+                    <div class="reviews-list">
+                        @for (review of paginatedReviews; track review.id) {
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <span class="reviewer-name">{{ review.reviewer }}</span>
+                                    <div class="review-stars">
+                                        @for (star of getStarRating(review.rating); track $index) {
+                                            <mat-icon class="star-icon filled">star</mat-icon>
+                                        }
+                                        @for (star of getEmptyStars(review.rating); track $index) {
+                                            <mat-icon class="star-icon empty">star</mat-icon>
+                                        }
+                                    </div>
+                                    <span class="review-date">{{ review.date }}</span>
+                                </div>
+                                <p class="review-comment">{{ review.comment }}</p>
+                            </div>
+                        } @empty {
+                            <p class="no-items-message">Nessuna recensione trovata.</p>
+                        }
+                    </div>
+
+                    <div class="pagination" @if (totalReviewsPages > 1)>
+                        <button (click)="goToReviewsPage(currentReviewsPage - 1)" [disabled]="currentReviewsPage === 1">Precedente</button>
+                        @for (pageNumber of [].constructor(totalReviewsPages); track $index) {
+                            <button
+                                    [class.active]="currentReviewsPage === ($index + 1)"
+                                    (click)="goToReviewsPage($index + 1)">
+                                {{ $index + 1 }}
+                            </button>
+                        }
+                        <button (click)="goToReviewsPage(currentReviewsPage + 1)" [disabled]="currentReviewsPage === totalReviewsPages">Successiva</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

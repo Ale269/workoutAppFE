@@ -1,0 +1,19 @@
+{
+  "esito": "OK",
+  "payload": {
+    "user": {
+      "id": "usr_hod_001",
+      "email": "hod@gmail.com",
+      "firstName": "Alessandro",
+      "lastName": "Rossi",
+      "role": "HOD",
+      "accountId": "acc_dolphyn_alpha",
+      "departmentId": "dept_bridge_alpha",
+      "isActive": true,
+      "createdAt": "2023-01-15T10:00:00Z",
+      "updatedAt": "2024-06-20T14:30:00Z"
+    },
+    "token": "oinfeoifr09j03r8hf9nw",
+    "expiresIn": 100000000
+  }
+}
