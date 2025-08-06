@@ -1,5 +1,7 @@
 <div class="login-page-container">
-  <div class="login-image-container">placeholder</div>
+  <div class="login-image-container">
+    <img class="logo-image" src="assets/recollect/images/logo-icon.png" />
+  </div>
   <div class="login-form-container">
     <div class="login-header">
       <!-- <h2>{{ "auth.welcome" | translate }}</h2> -->
@@ -11,8 +13,17 @@
       (ngSubmit)="onSubmit()"
       class="login-form"
     >
-      <div class="form-input-row" >
-        <mat-form-field appearance="outline" class="full-width" [style.padding-bottom]="this.loginForm.form.controls['email'].touched && !this.loginForm.form.controls['email'].valid ? '16px' : '0'">
+      <div class="form-input-row">
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+          [style.padding-bottom]="
+            this.loginForm.form.controls['email'].touched &&
+            !this.loginForm.form.controls['email'].valid
+              ? '16px'
+              : '0'
+          "
+        >
           <mat-label>{{ "auth.email" | translate }}</mat-label>
           <input
             matInput
@@ -23,12 +34,23 @@
           />
           @if (loginForm.form.controls["email"]?.hasError('required')) {
           <mat-error>Campo obbligatorio</mat-error>
+          } @else if (loginForm.form.controls["email"]?.hasError('email')) {
+          <mat-error>Formato sbagliato</mat-error>
           } @else if (loginForm.form.controls["email"] === null) {
           <mat-error>Campo obbligatorio</mat-error>
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width" [style.padding-bottom]="this.loginForm.form.controls['password'].touched && !this.loginForm.form.controls['password'].valid ? '16px' : '0'">
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+          [style.padding-bottom]="
+            this.loginForm.form.controls['password'].touched &&
+            !this.loginForm.form.controls['password'].valid
+              ? '16px'
+              : '0'
+          "
+        >
           <mat-label>{{ "auth.password" | translate }}</mat-label>
           <input
             matInput
@@ -75,7 +97,8 @@
       </div>
 
       <div class="floating-static-button-container">
-        <button class="floating-static-button"
+        <button
+          class="floating-static-button"
           (click)="onLogin()"
           [disabled]="!loginForm.form.valid || isLoading"
         >
@@ -88,7 +111,7 @@
           <span>Accedi</span>
         </button>
       </div>
-<!-- 
+      <!-- 
       <div class="Auth-button">
         <button
           class="register"
