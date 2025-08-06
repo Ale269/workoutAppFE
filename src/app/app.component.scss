@@ -1,10 +1,11 @@
-
-
-.app-container { /* Questo è il mat-sidenav-content */
+.app-container {
+  /* Questo è il mat-sidenav-content */
   display: flex;
   flex-direction: column;
   min-height: 100%; /* Deve espandersi al 100% dell'altezza del suo genitore (mat-sidenav-container) */
   background: transparent; /* TRASPARENTE! Il gradiente è ora sul body */
+  background-color: #000;
+  padding-top: 48px;
 }
 
 .main-content-wrapper {
@@ -17,14 +18,18 @@
   left: 0;
   width: 100vw; /* Copre l'intera larghezza della viewport */
   height: 100vh; /* Copre l'intera altezza della viewport */
-  background-color: rgba(0, 0, 0, 0.7); /* Sfondo semi-trasparente e più scuro */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.7
+  ); /* Sfondo semi-trasparente e più scuro */
   display: flex; /* Per centrare il contenuto del modale */
   align-items: center; /* Centra verticalmente */
   justify-content: center; /* Centra orizzontalmente */
   z-index: 9999; /* Assicura che sia sopra tutto il resto */
   backdrop-filter: blur(5px); /* Effetto sfocatura opzionale */
 }
-
 
 .modal-content {
   position: relative; /* Necessario per posizionare il pulsante di chiusura */

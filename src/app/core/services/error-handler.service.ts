@@ -33,6 +33,6 @@ export class ErrorHandlerService {
 
   private notifyUser(error: any, context?: string): void {
     // Mostra notifica
-    alert(error.message + "->" + context);
+    console.log(error.message + "->" + context);
   }
 }

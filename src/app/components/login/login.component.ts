@@ -1,8 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
-import {
-  ReactiveFormsModule,
-} from "@angular/forms";
-import {  Router } from "@angular/router";
+import { ReactiveFormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
 import { AuthService } from "../../core/services/auth.service";
 import { LoginRequest } from "../../core/models/auth.model";
 import { TranslatePipe } from "@ngx-translate/core";
@@ -14,7 +12,7 @@ import {
 } from "@angular/material/input";
 import { MatIcon } from "@angular/material/icon";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
-import {  MatIconButton } from "@angular/material/button";
+import { MatIconButton } from "@angular/material/button";
 import { MatHint } from "@angular/material/form-field";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { LoginForm } from "./login-form";
@@ -53,18 +51,19 @@ export class LoginComponent implements OnInit {
     try {
       this.loginForm = new LoginForm();
       console.log(this.loginForm);
-    } catch (error) {}
+    } catch (error) {
+      this.errorHandlerService.handleError(error, "LoginComponent.constructor");
+    }
   }
 
   ngOnInit(): void {
     // Redirect se già autenticato
     if (this.authService.isAuthenticated()) {
-      // this.router.navigate(["/home"]);
+      this.router.navigate(["/home"]);
     }
   }
 
   onSubmit(): void {}
-
 
   togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;
@@ -109,8 +108,8 @@ export class LoginComponent implements OnInit {
       this.errorMessage = "";
 
       const credentials: LoginRequest = {
-          email: this.loginForm.form.controls["email"].value,
-          password: this.loginForm.form.controls["password"].value,
+        email: this.loginForm.form.controls["email"].value,
+        password: this.loginForm.form.controls["password"].value,
       };
 
       this.authService.login(credentials).subscribe({

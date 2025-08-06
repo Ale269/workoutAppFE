@@ -4,19 +4,16 @@ import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {SearchForm} from "../../core/models/searchform.model";
 import {CATEGORIE_DISPONIBILI} from "../../common/constants";
-import {LoginComponent} from "../login/login.component";
 import {ApiCatalogService} from "../../core/services/api-catalog.service";
 import {ProductsService} from "../../core/services/products.service";
-import {tap} from "rxjs/operators"; // Importa FormsModule per ngModel
-import { AccordionGroupComponent } from '../shared/accordion/accordion-group/accordion-group.component';
-import { AccordionComponent } from "../shared/accordion/accordion-element/accordion.component";
-import { AccordionBodyComponent } from "../shared/accordion/accordion-element/accordion-body/accordion-body.component";
-import { AccordionHeaderComponent } from "../shared/accordion/accordion-element/accordion-header/accordion-header.component";
+import { CreateOrEditTemplatePlanComponent } from '../create-or-edit-template-plan-component/create-or-edit-template-plan-component';
+import { MenuComponent } from '../shared/menu-component/menu-component';
+
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, SlicePipe, AccordionGroupComponent, AccordionComponent, AccordionBodyComponent, AccordionHeaderComponent], // Assicurati di includere FormsModule e i Pipes
+  imports: [CommonModule, RouterModule, FormsModule, SlicePipe, CreateOrEditTemplatePlanComponent], // Assicurati di includere FormsModule e i Pipes
   templateUrl: './home-component.html',
   styleUrls: ['./home-component.scss']
 })

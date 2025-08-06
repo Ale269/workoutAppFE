@@ -1,0 +1,17 @@
+.app-menu-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.app-menu-container div h3 {
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: "poppins";
+}

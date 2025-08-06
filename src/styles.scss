@@ -83,22 +83,9 @@ html {
 }
 
 body {
-  // Applica il gradiente GLOBALE e FISSO qui. Questo sarà lo sfondo della TUA INTERA APP.
-  background: linear-gradient(
-      135deg,
-      var(--gradient-start-color) 0%,
-      var(--gradient-end-color) 100%
-    )
-    fixed;
-  background-size: 100% 100%; /* Assicura che il gradiente copra tutta l'area */
-  overflow-x: hidden; /* Evita scroll orizzontale non desiderato */
-  overflow-y: auto; /* Permetti lo scorrimento verticale SOLO a livello di documento */
-  transition: background 0.3s ease; /* Transizione per il cambio tema */
-  color: var(
-    --text-color
-  ); /* Colore del testo di default, può essere sovrascritto */
-  /* Previeni scroll orizzontale in altro modo */
-  max-width: 100vw;
+  min-height: 100%;
+  background-color: #000000;
+  padding: 16px;
   box-sizing: border-box;
 }
 
@@ -140,8 +127,8 @@ body.no-scroll {
 }
 
 .text-shape-button-icon-container img {
-  filter: invert(94%) sepia(45%) saturate(3320%) hue-rotate(89deg)
-    brightness(104%) contrast(102%);
+  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
+    hue-rotate(89deg) brightness(104%) contrast(102%);
   width: 16px;
   height: 16px;
 }
@@ -175,6 +162,36 @@ body.no-scroll {
   font-weight: 700;
   font-family: "poppins";
   font-size: 14px;
+}
+
+.section-container {
+  padding-bottom: 16px;
+}
+
+.close-icon-title-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.close-icon-section-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.close-icon-trigger {
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.close-icon-section-container img {
+  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
+    hue-rotate(89deg) brightness(104%) contrast(102%);
 }
 
 ::ng-deep .mat-form-field.mat-focused .mat-form-field-underline {
