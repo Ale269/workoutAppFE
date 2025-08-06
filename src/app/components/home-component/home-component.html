@@ -1,143 +1,22 @@
-<div class="home-wrapper">
-    <div class="main-content">
-        <h1>Annunci in Evidenza</h1>
-        <p>Scopri gli ultimi oggetti disponibili per lo scambio o la vendita.</p>
-
-        <div class="search-and-filters-container">
-            <div class="search-bar-section">
-                <input type="text" [(ngModel)]="searchForm.titolo" placeholder="Cerca annunci per titolo o descrizione..." class="generic-search-input" (keyup.enter)="onSearch()">
-                <button class="search-button" (click)="onSearch()">Cerca</button>
-            </div>
-
-            <div class="advanced-filters-toggle">
-                <button class="toggle-filters-button" (click)="toggleFilterPanel()">
-                    @if (isFilterPanelOpen) {
-                        Nascondi Filtri ▲
-                    } @else {
-                        Filtri Avanzati ▼
-                    }
-                </button>
-            </div>
-
-            @if (isFilterPanelOpen) {
-                <div class="filter-panel">
-                    <div class="filter-group">
-                        <h3 (click)="togglePanel('categoria')" [class.expanded]="isCategoriaOpen">
-                            Categoria
-                            <span class="toggle-icon">@if (isCategoriaOpen) { ▲ } @else { ▼ }</span>
-                        </h3>
-                        @if (isCategoriaOpen) {
-                            <div class="filter-content category-dropdown">
-                                @for (categoria of categorieDisponibili; track categoria) {
-                                    <div>
-                                        <input
-                                                type="checkbox"
-                                                [id]="'cat-' + categoria"
-                                                [value]="categoria"
-                                                [checked]="selectedCategorie.includes(categoria)"
-                                                (change)="onCategoryChange($event)"
-                                        >
-                                        <label [for]="'cat-' + categoria">{{ categoria }}</label>
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </div>
-
-                    <div class="filter-group">
-                        <h3 (click)="togglePanel('localita')" [class.expanded]="isLocalitaOpen">
-                            Località
-                            <span class="toggle-icon">@if (isLocalitaOpen) { ▲ } @else { ▼ }</span>
-                        </h3>
-                        @if (isLocalitaOpen) {
-                            <div class="filter-content">
-                                <input [(ngModel)]="searchForm.localita"
-                                       type="text"
-                                       placeholder="Es. Roma">
-                            </div>
-                        }
-                    </div>
-
-                    <div class="filter-group">
-                        <h3 (click)="togglePanel('distanza')" [class.expanded]="isDistanzaOpen">
-                            Distanza
-                            <span class="toggle-icon">@if (isDistanzaOpen) { ▲ } @else { ▼ }</span>
-                        </h3>
-                        @if (isDistanzaOpen) {
-                            <div class="filter-content">
-                                <label for="distanza-slider">Max {{ selectedDistanza }} Km</label>
-                                <input [(ngModel)]="searchForm.distanzaKm"
-                                       type="range" id="distanza-slider"
-                                       [min]="0" [max]="distanzaMax" [step]="1"
-                                       (input)="onDistanzaChange($event)">
-                            </div>
-                        }
-                    </div>
-
-                    <div class="filter-group">
-                        <h3 (click)="togglePanel('prezzo')" [class.expanded]="isPrezzoOpen">
-                            Prezzo / Scambio
-                            <span class="toggle-icon">@if (isPrezzoOpen) { ▲ } @else { ▼ }</span>
-                        </h3>
-                        @if (isPrezzoOpen) {
-                            <div class="filter-content">
-                                <input [(ngModel)]="searchForm.soloScambio" type="checkbox" id="soloScambio"> <label for="soloScambio">Solo Scambio</label><br>
-                                <input [(ngModel)]="searchForm.soloVendita" type="checkbox" id="conPrezzo"> <label for="conPrezzo">Con Prezzo</label>
-
-                                <div class="price-range">
-                                    <label>Min: {{ selectedMinPrice | currency:'EUR':'symbol':'1.0-0' }}</label>
-                                    <input type="range"
-                                           [min]="minPrice"
-                                           [max]="maxPrice" [step]="10"
-                                           [(ngModel)]="searchForm.prezzoMinimo"
-                                           (input)="onMinPriceChange($event)">
-                                    <label>Max: {{ selectedMaxPrice | currency:'EUR':'symbol':'1.0-0' }}</label>
-                                    <input type="range"
-                                           [min]="minPrice"
-                                           [max]="maxPrice"
-                                           [step]="10"
-                                           [(ngModel)]="searchForm.prezzoMassimo" (input)="onMaxPriceChange($event)">
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-                    <button (click)="applyFilter()" class="apply-filters-button">Applica filtri</button>
-                </div>
-            }
+<div class="home-content" style="width: 100%; height: 100vh">
+  <accordion-group [Keys]="[]">
+    <accordion>
+      <accordion-header>
+        <h3 class="accordion-header-text">Test header</h3>
+      </accordion-header>
+      <accordion-body>
+        <div class="accordion-body-container">
+          <p>Testo di prova</p>
+          <p>Testo di prova</p>
+          <p>Testo di prova</p>
+          <p>Testo di prova</p>
+          <p>Testo di prova</p>
+          <p>Testo di prova</p>
+          <p>Testo di prova</p>
+          <p>Testo di prova</p>
+          <p>Testo di prova</p>
         </div>
-
-        <div class="annunci-grid">
-            @for (annuncio of annunci; track annuncio.id) {
-                <div class="annuncio-card" (click)="vediDettaglio(annuncio.id)">
-                    <img [src]="annuncio.immagine" [alt]="annuncio.titolo">
-                    <div class="card-body">
-                        <h3 class="annuncio-titolo">{{ annuncio.titolo }}</h3>
-                        <p class="annuncio-descrizione">{{ annuncio.descrizione | slice:0:70 }}...</p>
-                        <div class="annuncio-info">
-                <span class="annuncio-prezzo">
-                  {{ annuncio.prezzo === 'Scambio' ? 'Scambio' : (annuncio.prezzo | currency:'EUR':'symbol':'1.0-0') }}
-                </span>
-                            <span class="annuncio-localita">{{ annuncio.localita }} ({{ annuncio.distanzaKm }} km)</span>
-                        </div>
-                        <span class="annuncio-categoria">{{ annuncio.categoria }}</span>
-                    </div>
-                </div>
-            } @empty {
-                <div class="no-annunci-message">
-                    <p>Nessun annuncio trovato. Sii il primo a pubblicare!</p>
-                    <button class="publish-button">Pubblica il tuo annuncio</button>
-                </div>
-            }
-        </div>
-    </div>
-
-    <button
-            class="scroll-to-top-button"
-            [class.show]="showScrollToTopButton"
-            (click)="scrollToTop()">
-        ↑
-    </button>
-
-
+      </accordion-body>
+    </accordion>
+  </accordion-group>
 </div>

@@ -93,26 +93,7 @@ export class AppComponent implements OnInit {
             });
         }
     }
-
-    closeLogin(): void {
-        this.showLoginModal = false;
-        // Opzionale: ripristina lo scroll del body quando il modale è chiuso
-        if (isPlatformBrowser(this.platformId)) {
-            console.log('Closing login modal');
-            document.body.classList.remove('no-scroll');
-        }
-    }
-
-    // **METODI PER APRIRE E CHIUDERE IL MODALE DI LOGIN**
-    openLogin(): void {
-        this.showLoginModal = true;
-        // Opzionale: blocca lo scroll del body quando il modale è aperto
-        if (isPlatformBrowser(this.platformId)) {
-            console.log('Opening login modal');
-            document.body.classList.add('no-scroll');
-        }
-    }
-
+    
     onLogin() {
         this.showLoginModal = true;
         if (isPlatformBrowser(this.platformId)) {

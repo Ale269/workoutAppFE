@@ -108,19 +108,73 @@ body.no-scroll {
   padding-right: 15px; /* Adatta al tuo sistema operativo */
 }
 
-h2 {
-  font-weight: 300;
-  font-size: 32px;
-  line-height: 32px;
-  margin-bottom: 24px;
-  text-transform: uppercase;
+.text-title {
+  color: #fff;
+  font-weight: 700;
+  font-family: "poppins";
+  font-size: 20px;
 }
 
-p {
-  font-weight: 300;
+.text-shape-button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background-color: transparent;
+  outline: none;
+  border: none;
   font-size: 14px;
-  line-height: 14px;
-  margin-bottom: 24px;
+  font-family: "poppins";
+  font-weight: 700;
+  color: #00ffe1;
+  cursor: pointer;
+}
+
+.text-shape-button-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #00ffe1;
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+}
+
+.text-shape-button-icon-container img {
+  filter: invert(94%) sepia(45%) saturate(3320%) hue-rotate(89deg)
+    brightness(104%) contrast(102%);
+  width: 16px;
+  height: 16px;
+}
+
+.floating-static-button {
+  outline: none;
+  background-color: transparent;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-family: "poppins";
+  font-weight: 700;
+  color: #00ffe1;
+  background: #002b28;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 43, 40, 1) 0%,
+    rgba(0, 20, 19, 1) 50%,
+    rgba(0, 43, 40, 1) 100%
+  );
+  border: 1px solid #00564c;
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  border-radius: 32px;
+  cursor: pointer;
+}
+
+.accordion-header-text {
+  color: #fff;
+  font-weight: 700;
+  font-family: "poppins";
+  font-size: 14px;
 }
 
 ::ng-deep .mat-form-field.mat-focused .mat-form-field-underline {
@@ -155,18 +209,27 @@ p {
     (
       // Esempio: cambia il colore del placeholder quando il campo è disabilitato
       container-text-size: 14px,
-      container-text-weight: 300,
-      container-text-font: "Roboto",
+      container-text-weight: 700,
+      container-text-font: "poppins",
       subscript-text-size: 14px,
-      subscript-text-weight: 300,
-      subscript-text-font: "Roboto",
+      subscript-text-weight: 700,
+      subscript-text-font: "poppins",
       filled-label-text-size: 14px,
-      filled-label-text-weight: 300,
-      filled-label-text-font: "Roboto",
+      filled-label-text-weight: 700,
+      filled-label-text-font: "poppins",
       outlined-label-text-size: 14px,
-      outlined-label-text-weight: 300,
-      outlined-label-text-font: "Roboto",
-      outlined-label-text-populated-size : 14px,
+      outlined-label-text-weight: 700,
+      outlined-label-text-font: "poppins",
+      outlined-label-text-populated-size: 14px,
+      enabled-select-arrow-color: "#808080",
+      outlined-caret-color: "#808080",
+      outlined-label-text-color: "#808080",
+      outlined-outline-color: "#808080",
+      outlined-input-text-color: "#fff",
+      outlined-hover-outline-color: "#fff",
+      outlined-focus-outline-color: "fff",
+      outlined-focus-label-text-color: "#808080",
+      outlined-hover-label-text-color: "#808080"
     )
   );
 }

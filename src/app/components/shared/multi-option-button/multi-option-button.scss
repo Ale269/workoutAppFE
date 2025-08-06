@@ -1,0 +1,76 @@
+.transformation-button {
+  background: linear-gradient(#000000 0 0) padding-box,
+    linear-gradient(
+        to right,
+        rgba(0, 255, 225, 1) 0%,
+        rgba(0, 23, 19, 1) 50%,
+        rgba(0, 255, 225, 1) 100%
+      )
+      border-box;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 32px;
+  cursor: pointer;
+  overflow: hidden;
+  width: auto;
+  /* Larghezza iniziale automatica */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+}
+
+.transformation-button.transformed {
+  background: linear-gradient(#000000 0 0) padding-box,
+    linear-gradient(
+        to bottom,
+        rgba(0, 255, 225, 1) 0%,
+        rgba(0, 23, 19, 1) 50%,
+        rgba(0, 255, 225, 1) 100%
+      )
+      border-box;
+}
+
+.transformation-button button {
+  font-family: "poppins";
+  font-weight: 700;
+  background-color: transparent;
+  border: none;
+  color: rgba(0, 255, 225, 1);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+}
+
+.basic-setting {
+  opacity: 1;
+}
+
+.transformed-setting {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  width: 100%;
+}
+
+.transformed-setting .transformed-setting-option-container {
+  width: 100%;
+  border-bottom: 1px solid #212121;
+  padding: 16px 0;
+}
+
+.transformed-setting .transformed-setting-close-button-container {
+  width: 100%;
+  padding: 16px 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.transformed-setting .transformed-setting-close-button-container button {
+  color: #858585;
+}
+
+.transformed-setting .transformed-setting-option-container:last-of-type {
+  border-bottom: none;
+}

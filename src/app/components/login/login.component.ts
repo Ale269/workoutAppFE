@@ -38,8 +38,6 @@ import { LoginForm } from "./login-form";
   styleUrls: ["./login.component.scss"],
 })
 export class LoginComponent implements OnInit {
-  @Output() closeLogin = new EventEmitter<unknown>();
-
   public panel: string = "loginPanel";
   public loginForm!: LoginForm;
   public isLoading = false;
@@ -67,17 +65,13 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {}
 
+
   togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;
   }
 
   onForgotPassword() {
     console.log("ON CLICK FORGOT PASSWORD");
-  }
-
-  // **NUOVO: Metodo per chiudere il modale dall'interno (es. con un pulsante X)**
-  onCloseModal(): void {
-    this.closeLogin.emit();
   }
 
   onRegister() {
@@ -131,13 +125,11 @@ export class LoginComponent implements OnInit {
             console.log("ERRORE LOGIN");
           }
           this.isLoading = false;
-          this.closeLogin.emit();
           this.router.navigate(["/home"]);
         },
         error: (error) => {
           this.isLoading = false;
           this.errorMessage = error.error?.message || "Errore durante il login";
-          this.closeLogin.emit();
           this.router.navigate(["/home"]);
         },
       });

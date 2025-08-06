@@ -2,28 +2,28 @@
 
 <div class="app-container" [class]="currentTheme">
 
-    <app-header
+    <!-- <app-header
             [user]="currentUser"
             (logout)="onLogout()"
             (login)="onLogin()"
             panel="headerPanel">
-    </app-header>
+    </app-header> -->
 
 
     <div class="main-content-wrapper">
         <router-outlet></router-outlet>
     </div>
 
-    <app-footer></app-footer>
+    <!-- <app-footer></app-footer> -->
 
-    @if (showLoginModal) {
+    <!-- @if (showLoginModal) {
         <div class="modal-backdrop" (click)="closeLogin()">
             <div class="modal-content"
                  (click)="$event.stopPropagation()">
                 <app-login (closeLogin)="closeLogin()"></app-login>
             </div>
         </div>
-    }
+    } -->
 
 </div>
 

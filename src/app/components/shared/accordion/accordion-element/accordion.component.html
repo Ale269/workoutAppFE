@@ -1,0 +1,17 @@
+<div class="accordion-container">
+  <div
+    tappable
+    (click)="toggleApriChiudi()"
+    class="accordion-header-container"
+  >
+    <ng-content select="accordion-header"></ng-content>
+    <div class="accordion-arrow" #arrow>
+      <img src="assets/recollect/svg/google-arrow.svg" />
+    </div>
+  </div>
+  <div class="accordion-body-container" #accordionBody>
+    <div class="accordion-content" #accordionContent>
+      <ng-content select="accordion-body"></ng-content>
+    </div>
+  </div>
+</div>
