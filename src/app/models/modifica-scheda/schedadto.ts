@@ -1,7 +1,7 @@
-import { EsercizioDTO } from "./eserciziodto";
+import { AllenamentoDTO } from "./allenamentodto";
 
 export interface SchedaDTO {
   id: number;
   nomeScheda: string;
-  listaEsercizi: EsercizioDTO[];
+  listaAllenamenti: AllenamentoDTO[];
 }

@@ -1,60 +1,62 @@
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
-import { EsercizioForm, EsercizioFormModel } from "./exercise-form";
+import { AllenamentoForm, AllenamentoFormModel } from "./workout-form";
 import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
-import { EsercizioDTO } from "src/app/models/modifica-scheda/eserciziodto";
+import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
 
 interface SchedaFormModel {
   nomeScheda: FormControl<string | null>;
-  listaEsercizi: FormArray<FormGroup<EsercizioFormModel>>;
+  listaAllenamenti: FormArray<FormGroup<AllenamentoFormModel>>;
 }
 
 export class SchedaForm {
-  public listaEserciziForm: EsercizioForm[] = [];
+  public listaAllenamentiForm: AllenamentoForm[] = [];
   public identifier: number = 0;
   public form: FormGroup;
 
   constructor(schedaDTO?: SchedaDTO) {
     this.form = new FormGroup<SchedaFormModel>({
       nomeScheda: new FormControl<string | null>(schedaDTO?.nomeScheda || null),
-      listaEsercizi: new FormArray<FormGroup<EsercizioFormModel>>([]),
+      listaAllenamenti: new FormArray<FormGroup<AllenamentoFormModel>>([]),
     });
 
-    // Se ci sono dati DTO, popola gli esercizi
-    if (schedaDTO?.listaEsercizi) {
-      schedaDTO.listaEsercizi.forEach(esercizioDTO => {
-        this.addEsercizioForm(esercizioDTO);
+    // Se ci sono dati DTO, popola gli allenamenti
+    if (schedaDTO?.listaAllenamenti) {
+      schedaDTO.listaAllenamenti.forEach((allenamentoDTO) => {
+        this.addAllenamentoForm(allenamentoDTO);
       });
     }
   }
 
-  addEsercizioForm(esercizioDTO?: EsercizioDTO) {
+  addAllenamentoForm(allenamentoDTO?: AllenamentoDTO) {
     try {
       this.identifier++;
 
-      const newEsercizioForm: EsercizioForm = new EsercizioForm(
+      const newAllenamentoForm: AllenamentoForm = new AllenamentoForm(
         this.identifier,
-        esercizioDTO
+        allenamentoDTO
       );
 
-      this.listaEserciziForm.push(newEsercizioForm);
+      this.listaAllenamentiForm.push(newAllenamentoForm);
 
-      const listaEserciziFormArray = this.form.controls[
-        "listaEsercizi"
+      const listaAllenamentiFormArray = this.form.controls[
+        "listaAllenamenti"
       ] as FormArray;
-      listaEserciziFormArray.push(newEsercizioForm.form);
+      listaAllenamentiFormArray.push(newAllenamentoForm.form);
     } catch (error) {
-      throw new Error("SchedaForm.addEsercizioForm: " + error);
+      throw new Error("SchedaForm.addAllenamentoForm: " + error);
     }
   }
 
   public resetForm(): void {
     this.form.reset();
-    this.listaEserciziForm = [];
+    this.listaAllenamentiForm = [];
     this.identifier = 0;
   }
 
   // Helper per ottenere il FormArray tipizzato
-  get listaEserciziFormArray(): FormArray<FormGroup<EsercizioFormModel>> {
-    return this.form.controls['listaEsercizi'] as FormArray<FormGroup<EsercizioFormModel>>;
+  get listaAllenamentiFormArray(): FormArray<FormGroup<AllenamentoFormModel>> {
+    return this.form.controls["listaAllenamenti"] as FormArray<
+      FormGroup<AllenamentoFormModel>
+    >;
   }
 }

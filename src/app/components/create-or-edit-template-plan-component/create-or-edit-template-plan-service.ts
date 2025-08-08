@@ -6,6 +6,8 @@ import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
 import { EsercizioDTO } from "src/app/models/modifica-scheda/eserciziodto";
 import { SerieDTO } from "src/app/models/modifica-scheda/seriedto";
 import { FormArray } from "@angular/forms";
+import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
+import { AllenamentoForm } from "./workout-form";
 
 @Injectable({
   providedIn: "root",
@@ -32,7 +34,7 @@ export class CreateOrEditTemplatePlanService {
     }
   }
 
-  AddEsercizio(esercizioData?: Partial<EsercizioDTO>): void {
+  AddAllenamento(allenamentoData?: Partial<AllenamentoDTO>): void {
     try {
       if (!this.formScheda) {
         throw new Error(
@@ -41,7 +43,69 @@ export class CreateOrEditTemplatePlanService {
       }
 
       // Calcola il prossimo ordinamento
-      const nextOrdinamento = this.formScheda?.listaEserciziForm?.length || 0;
+      const nextOrdinamento =
+        this.formScheda?.listaAllenamentiForm?.length || 0;
+
+      // Se sono forniti dati parziali, crea un DTO completo con valori di default
+      const allenamentoDTO: AllenamentoDTO | undefined = allenamentoData
+        ? {
+            id: allenamentoData.id || 0,
+            idAllenamento: allenamentoData.idAllenamento || 0,
+            nomeAllenamento: allenamentoData.nomeAllenamento || "",
+            ordinamento: allenamentoData.ordinamento || nextOrdinamento,
+            listaEsercizi: allenamentoData.listaEsercizi || [],
+          }
+        : undefined;
+
+      // Se non sono forniti dati, crea comunque un DTO con l'ordinamento corretto
+      if (!allenamentoDTO) {
+        const emptyAllenamentoDTO: AllenamentoDTO = {
+          id: 0,
+          idAllenamento: 0,
+          nomeAllenamento: "",
+          ordinamento: nextOrdinamento,
+          listaEsercizi: [],
+        };
+
+        this.formScheda.addAllenamentoForm(emptyAllenamentoDTO);
+      } else {
+        this.formScheda.addAllenamentoForm(allenamentoDTO);
+      }
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanService.AddAllenamento"
+      );
+      throw new Error(
+        "CreateOrEditTemplatePlanService.AddAllenamento: " + error
+      );
+    }
+  }
+
+  AddEsercizio(
+    allenamentoIdentifier: number,
+    esercizioData?: Partial<EsercizioDTO>
+  ): void {
+    try {
+      if (!this.formScheda) {
+        throw new Error(
+          "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
+        );
+      }
+
+      // Trova l'allenamento tramite identifier
+      const allenamentoForm = this.findAllenamentoByIdentifier(
+        allenamentoIdentifier
+      );
+
+      if (!allenamentoForm) {
+        throw new Error(
+          `Allenamento con identifier ${allenamentoIdentifier} non trovato`
+        );
+      }
+
+      // Calcola il prossimo ordinamento per l'esercizio
+      const nextOrdinamento = allenamentoForm.listaEserciziForm.length + 1;
 
       // Se sono forniti dati parziali, crea un DTO completo con valori di default
       const esercizioDTO: EsercizioDTO | undefined = esercizioData
@@ -52,7 +116,7 @@ export class CreateOrEditTemplatePlanService {
             nomeIcona: esercizioData.nomeIcona || "",
             idTipoEsercizio: esercizioData.idTipoEsercizio || 0,
             idIconaEsercizio: esercizioData.idIconaEsercizio || 0,
-            ordinamento: esercizioData.ordinamento || nextOrdinamento, // Usa l'ordinamento fornito o il prossimo disponibile
+            ordinamento: esercizioData.ordinamento || nextOrdinamento,
             listaSerie: esercizioData.listaSerie || [],
           }
         : undefined;
@@ -70,11 +134,9 @@ export class CreateOrEditTemplatePlanService {
           listaSerie: [],
         };
 
-        // Chiama il metodo del form per aggiungere l'esercizio
-        this.formScheda.addEsercizioForm(emptyEsercizioDTO);
+        allenamentoForm.addEsercizioForm(emptyEsercizioDTO);
       } else {
-        // Chiama il metodo del form per aggiungere l'esercizio
-        this.formScheda.addEsercizioForm(esercizioDTO);
+        allenamentoForm.addEsercizioForm(esercizioDTO);
       }
     } catch (error) {
       this.errorHandlerService.handleError(
@@ -85,34 +147,37 @@ export class CreateOrEditTemplatePlanService {
     }
   }
 
-  AddSerie(esercizioIdentifier: number, serieData?: Partial<SerieDTO>): void {
+  AddSerie(
+    allenamentoIdentifier: number,
+    esercizioIdentifier: number,
+    serieData?: Partial<SerieDTO>
+  ): void {
     try {
       if (!this.formScheda) {
-        this.errorHandlerService.handleError(
+        throw new Error(
           "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
         );
-        return;
       }
 
-      if (esercizioIdentifier == null || esercizioIdentifier == 0) {
-        this.errorHandlerService.handleError(
-          `Identifier non valido: ${esercizioIdentifier}`,
-          "CreateOrEditTemplatePlanService.AddEsercizio"
-        );
-        return;
-      }
-
-      // Ottieni il form dell'esercizio specifico
-      const esercizioForm = this.formScheda.listaEserciziForm.find(
-        (es) => es.form.controls["identifier"]?.value == esercizioIdentifier
+      // Trova l'allenamento tramite identifier
+      const allenamentoForm = this.findAllenamentoByIdentifier(
+        allenamentoIdentifier
       );
 
-      if (esercizioForm == null || esercizioForm == undefined) {
-        this.errorHandlerService.handleError(
-          `Esercizio con identifier ${esercizioIdentifier} non trovato`,
-          "CreateOrEditTemplatePlanService.AddSerie"
+      if (!allenamentoForm) {
+        throw new Error(
+          `Allenamento con identifier ${allenamentoIdentifier} non trovato`
         );
-        return;
+      }
+
+      // Trova l'esercizio tramite identifier
+      const esercizioForm =
+        allenamentoForm.findEsercizioByIdentifier(esercizioIdentifier);
+
+      if (!esercizioForm) {
+        throw new Error(
+          `Esercizio con identifier ${esercizioIdentifier} non trovato nell'allenamento ${allenamentoIdentifier}`
+        );
       }
 
       // Se sono forniti dati parziali, crea un DTO completo con valori di default
@@ -132,39 +197,107 @@ export class CreateOrEditTemplatePlanService {
         error,
         "CreateOrEditTemplatePlanService.AddSerie"
       );
+      throw new Error("CreateOrEditTemplatePlanService.AddSerie: " + error);
     }
   }
 
-  DeleteEsercizio(esercizioIdentifier: number): void {
+  private findAllenamentoByIdentifier(
+    identifier: number
+  ): AllenamentoForm | null {
+    if (!this.formScheda?.listaAllenamentiForm) {
+      return null;
+    }
+
+    return (
+      this.formScheda.listaAllenamentiForm.find(
+        (allenamento) =>
+          allenamento.form.get("identifier")?.value === identifier
+      ) || null
+    );
+  }
+
+  DeleteAllenamento(allenamentoIdentifier: number): void {
     try {
       if (!this.formScheda) {
-        this.errorHandlerService.handleError(
+        throw new Error(
           "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
         );
-        return;
+      }
+
+      // Trova l'indice dell'allenamento da eliminare
+      const indexToDelete = this.formScheda.listaAllenamentiForm.findIndex(
+        (allenamento) =>
+          allenamento.form.controls["identifier"]?.value ===
+          allenamentoIdentifier
+      );
+
+      if (indexToDelete === -1) {
+        throw new Error(
+          `Allenamento con identifier ${allenamentoIdentifier} non trovato`
+        );
+      }
+
+      // Rimuovi l'allenamento dalla lista
+      this.formScheda.listaAllenamentiForm.splice(indexToDelete, 1);
+
+      // Rimuovi il controllo dal FormArray
+      this.formScheda.listaAllenamentiFormArray.removeAt(indexToDelete);
+
+      // Riassegna gli ordinamenti corretti
+      this.reassignOrdinamentiAllenamenti();
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanService.DeleteAllenamento"
+      );
+      throw new Error(
+        "CreateOrEditTemplatePlanService.DeleteAllenamento: " + error
+      );
+    }
+  }
+
+  DeleteEsercizio(
+    allenamentoIdentifier: number,
+    esercizioIdentifier: number
+  ): void {
+    try {
+      if (!this.formScheda) {
+        throw new Error(
+          "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
+        );
+      }
+
+      // Trova l'allenamento tramite identifier
+      const allenamentoForm = this.findAllenamentoByIdentifier(
+        allenamentoIdentifier
+      );
+
+      if (!allenamentoForm) {
+        throw new Error(
+          `Allenamento con identifier ${allenamentoIdentifier} non trovato`
+        );
       }
 
       // Trova l'indice dell'esercizio da eliminare
-      const indexToDelete = this.formScheda.listaEserciziForm.findIndex(
+      const indexToDelete = allenamentoForm.listaEserciziForm.findIndex(
         (esercizio) =>
           esercizio.form.controls["identifier"]?.value === esercizioIdentifier
       );
 
       if (indexToDelete === -1) {
-        this.errorHandlerService.handleError(
-          `Esercizio con identifier ${esercizioIdentifier} non trovato`
+        throw new Error(
+          `Esercizio con identifier ${esercizioIdentifier} non trovato nell'allenamento ${allenamentoIdentifier}`
         );
-        return;
       }
 
       // Rimuovi l'esercizio dalla lista
-      this.formScheda.listaEserciziForm.splice(indexToDelete, 1);
+      allenamentoForm.listaEserciziForm.splice(indexToDelete, 1);
 
       // Rimuovi il controllo dal FormArray
-      this.formScheda.listaEserciziFormArray.removeAt(indexToDelete);
+      allenamentoForm.listaEserciziFormArray.removeAt(indexToDelete);
 
-      // Riassegna gli ordinamenti corretti
-      this.reassignOrdinamenti();
+      // Riassegna gli ordinamenti corretti per gli esercizi di questo allenamento
+      allenamentoForm.reassignOrdinamentiEsercizi();
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
@@ -176,30 +309,37 @@ export class CreateOrEditTemplatePlanService {
     }
   }
 
-  /**
-   * Elimina una serie da un esercizio specifico
-   * @param esercizioIdentifier - Identifier dell'esercizio
-   * @param serieIdentifier - Identifier della serie da eliminare
-   */
-  DeleteSerie(esercizioIdentifier: number, serieIdentifier: number): void {
+  DeleteSerie(
+    allenamentoIdentifier: number,
+    esercizioIdentifier: number,
+    serieIdentifier: number
+  ): void {
     try {
       if (!this.formScheda) {
-        this.errorHandlerService.handleError(
+        throw new Error(
           "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
         );
-        return;
+      }
+
+      // Trova l'allenamento tramite identifier
+      const allenamentoForm = this.findAllenamentoByIdentifier(
+        allenamentoIdentifier
+      );
+
+      if (!allenamentoForm) {
+        throw new Error(
+          `Allenamento con identifier ${allenamentoIdentifier} non trovato`
+        );
       }
 
       // Trova l'esercizio tramite identifier
-      const esercizioForm = this.formScheda.listaEserciziForm.find(
-        (es) => es.form.controls["identifier"]?.value == esercizioIdentifier
-      );
+      const esercizioForm =
+        allenamentoForm.findEsercizioByIdentifier(esercizioIdentifier);
 
       if (!esercizioForm) {
-        this.errorHandlerService.handleError(
-          `Esercizio con identifier ${esercizioIdentifier} non trovato`
+        throw new Error(
+          `Esercizio con identifier ${esercizioIdentifier} non trovato nell'allenamento ${allenamentoIdentifier}`
         );
-        return;
       }
 
       // Trova l'indice della serie da eliminare
@@ -208,10 +348,9 @@ export class CreateOrEditTemplatePlanService {
       );
 
       if (serieIndexToDelete === -1) {
-        this.errorHandlerService.handleError(
+        throw new Error(
           `Serie con identifier ${serieIdentifier} non trovata nell'esercizio ${esercizioIdentifier}`
         );
-        return;
       }
 
       // Rimuovi la serie dalla lista
@@ -231,29 +370,28 @@ export class CreateOrEditTemplatePlanService {
     }
   }
 
-  private reassignOrdinamenti(): void {
-    if (!this.formScheda.listaEserciziForm) {
-      this.errorHandlerService.handleError("Nessun esercizio trovato");
+  private reassignOrdinamentiAllenamenti(): void {
+    if (!this.formScheda?.listaAllenamentiForm) {
       return;
     }
 
-    // Ordina gli esercizi per ordinamento corrente per mantenere l'ordine logico
-    const eserciziOrdinati = [...this.formScheda.listaEserciziForm].sort(
+    // Ordina gli allenamenti per ordinamento corrente
+    const allenamentiOrdinati = [...this.formScheda.listaAllenamentiForm].sort(
       (a, b) => {
-        const ordinamentoA = a.form.get("Ordinamento")?.value || 0;
-        const ordinamentoB = b.form.get("Ordinamento")?.value || 0;
+        const ordinamentoA = a.form.controls["ordinamento"]?.value || 0;
+        const ordinamentoB = b.form.controls["ordinamento"]?.value || 0;
         return ordinamentoA - ordinamentoB;
       }
     );
 
     // Riassegna gli ordinamenti da 1 a N
-    eserciziOrdinati.forEach((esercizio, index) => {
+    allenamentiOrdinati.forEach((allenamento, index) => {
       const newOrdinamento = index + 1;
-      esercizio.form.get("Ordinamento")?.setValue(newOrdinamento);
+      allenamento.form.controls["ordinamento"]?.setValue(newOrdinamento);
     });
 
-    // Riordina anche l'array principale per mantenere la coerenza
-    this.formScheda.listaEserciziForm = eserciziOrdinati;
+    // Riordina anche l'array principale
+    this.formScheda.listaAllenamentiForm = allenamentiOrdinati;
   }
 
   // Simulazione chiamata API con dati mock
@@ -262,33 +400,61 @@ export class CreateOrEditTemplatePlanService {
     const mockSchedaDTO: SchedaDTO = {
       id: id,
       nomeScheda: "Scheda Push/Pull/Legs",
-      listaEsercizi: [
+      listaAllenamenti: [
         {
           id: 1,
-          idEsercizio: 101,
-          nomeEsercizio: "Panca Piana",
-          nomeIcona: "bench-press-icon",
-          idTipoEsercizio: 1, // es: 1=Pettorali, 2=Spalle, ecc.
-          idIconaEsercizio: 10,
-          ordinamento: 1, // NUOVO CAMPO
-          listaSerie: [
-            { id: 1, idSerie: 1001, ripetizioni: 8, carico: 80 },
-            { id: 2, idSerie: 1002, ripetizioni: 8, carico: 80 },
-            { id: 3, idSerie: 1003, ripetizioni: 6, carico: 85 },
+          idAllenamento: 201,
+          nomeAllenamento: "Push Day",
+          ordinamento: 1,
+          listaEsercizi: [
+            {
+              id: 1,
+              idEsercizio: 101,
+              nomeEsercizio: "Panca Piana",
+              nomeIcona: "bench-press-icon",
+              idTipoEsercizio: 1,
+              idIconaEsercizio: 10,
+              ordinamento: 1,
+              listaSerie: [
+                { id: 1, idSerie: 1001, ripetizioni: 8, carico: 80 },
+                { id: 2, idSerie: 1002, ripetizioni: 8, carico: 80 },
+                { id: 3, idSerie: 1003, ripetizioni: 6, carico: 85 },
+              ],
+            },
+            {
+              id: 2,
+              idEsercizio: 102,
+              nomeEsercizio: "Military Press",
+              nomeIcona: "military-press-icon",
+              idTipoEsercizio: 2,
+              idIconaEsercizio: 20,
+              ordinamento: 2,
+              listaSerie: [
+                { id: 4, idSerie: 2001, ripetizioni: 10, carico: 50 },
+                { id: 5, idSerie: 2002, ripetizioni: 8, carico: 55 },
+              ],
+            },
           ],
         },
         {
           id: 2,
-          idEsercizio: 102,
-          nomeEsercizio: "Squat",
-          nomeIcona: "squat-icon",
-          idTipoEsercizio: 3, // Gambe
-          idIconaEsercizio: 20,
-          ordinamento: 2, // NUOVO CAMPO
-          listaSerie: [
-            { id: 4, idSerie: 2001, ripetizioni: 10, carico: 100 },
-            { id: 5, idSerie: 2002, ripetizioni: 8, carico: 110 },
-            { id: 6, idSerie: 2003, ripetizioni: 6, carico: 120 },
+          idAllenamento: 202,
+          nomeAllenamento: "Pull Day",
+          ordinamento: 2,
+          listaEsercizi: [
+            {
+              id: 3,
+              idEsercizio: 103,
+              nomeEsercizio: "Stacchi da Terra",
+              nomeIcona: "deadlift-icon",
+              idTipoEsercizio: 3,
+              idIconaEsercizio: 30,
+              ordinamento: 1,
+              listaSerie: [
+                { id: 6, idSerie: 3001, ripetizioni: 5, carico: 120 },
+                { id: 7, idSerie: 3002, ripetizioni: 5, carico: 125 },
+              ],
+            },
           ],
         },
       ],
