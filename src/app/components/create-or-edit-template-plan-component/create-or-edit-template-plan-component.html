@@ -26,9 +26,9 @@
     >
       @for (allenamentoForm of
       createOrEditTemplatePlanService.formScheda.listaAllenamentiForm; track
-      allenamentoForm.identifier) {
+      allenamentoForm.form.controls['identifier'].value) {
       <custom-tab
-        [id]="allenamentoForm.identifier.toString()"
+        [id]="allenamentoForm.form.controls['identifier'].value.toString()"
         [label]="allenamentoForm.form.controls['nomeAllenamento'].value"
       >
         <!-- <div class="tab-content-example">
@@ -40,9 +40,11 @@
             <div class="card">Card 3</div>
           </div>
         </div> -->
+
+        <app-workout-component [formAllenamento]="allenamentoForm"></app-workout-component>
       </custom-tab>
-      } @empty { } 
-      
+      } @empty { }
+
       <!-- Codice prova -->
       <!-- @for (item of [1,2,3,4]; track $index; let idx = $index) {
       <custom-tab [id]="item.toString()" [label]="item.toString()">
@@ -106,6 +108,5 @@
       </div>
     </div> -->
 
-    <accordion-group [Keys]="[]"> </accordion-group>
   </div>
 </div>

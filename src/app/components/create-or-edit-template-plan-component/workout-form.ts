@@ -19,15 +19,21 @@ export class AllenamentoForm {
   constructor(identifier: number, allenamentoDTO?: AllenamentoDTO) {
     this.form = new FormGroup<AllenamentoFormModel>({
       identifier: new FormControl<number | null>(identifier),
-      idAllenamento: new FormControl<number | null>(allenamentoDTO?.idAllenamento || null),
-      nomeAllenamento: new FormControl<string | null>(allenamentoDTO?.nomeAllenamento || null),
-      ordinamento: new FormControl<number | null>(allenamentoDTO?.ordinamento || null),
+      idAllenamento: new FormControl<number | null>(
+        allenamentoDTO?.idAllenamento || null
+      ),
+      nomeAllenamento: new FormControl<string | null>(
+        allenamentoDTO?.nomeAllenamento || null
+      ),
+      ordinamento: new FormControl<number | null>(
+        allenamentoDTO?.ordinamento || null
+      ),
       listaEsercizi: new FormArray<FormGroup<EsercizioFormModel>>([]),
     });
 
     // Se ci sono dati DTO, popola gli esercizi
     if (allenamentoDTO?.listaEsercizi) {
-      allenamentoDTO.listaEsercizi.forEach(esercizioDTO => {
+      allenamentoDTO.listaEsercizi.forEach((esercizioDTO) => {
         this.addEsercizioForm(esercizioDTO);
       });
     }
@@ -35,7 +41,7 @@ export class AllenamentoForm {
 
   addEsercizioForm(esercizioDTO?: EsercizioDTO) {
     try {
-      this.identifier++;
+      this.identifier = this.identifier++;
 
       const newEsercizioForm: EsercizioForm = new EsercizioForm(
         this.identifier,
@@ -53,14 +59,14 @@ export class AllenamentoForm {
     }
   }
 
-
   findEsercizioByIdentifier(identifier: number): EsercizioForm | null {
-    return this.listaEserciziForm.find(esercizio => 
-      esercizio.form.get('identifier')?.value === identifier
-    ) || null;
+    return (
+      this.listaEserciziForm.find(
+        (esercizio) => esercizio.form.get("identifier")?.value === identifier
+      ) || null
+    );
   }
 
-  
   reassignOrdinamentiEsercizi(): void {
     if (!this.listaEserciziForm) {
       return;
@@ -68,15 +74,15 @@ export class AllenamentoForm {
 
     // Ordina gli esercizi per ordinamento corrente
     const eserciziOrdinati = [...this.listaEserciziForm].sort((a, b) => {
-      const ordinamentoA = a.form.get('Ordinamento')?.value || 0;
-      const ordinamentoB = b.form.get('Ordinamento')?.value || 0;
+      const ordinamentoA = a.form.get("Ordinamento")?.value || 0;
+      const ordinamentoB = b.form.get("Ordinamento")?.value || 0;
       return ordinamentoA - ordinamentoB;
     });
 
     // Riassegna gli ordinamenti da 1 a N
     eserciziOrdinati.forEach((esercizio, index) => {
       const newOrdinamento = index + 1;
-      esercizio.form.get('Ordinamento')?.setValue(newOrdinamento);
+      esercizio.form.get("Ordinamento")?.setValue(newOrdinamento);
     });
 
     // Riordina anche l'array principale
@@ -90,6 +96,8 @@ export class AllenamentoForm {
   }
 
   get listaEserciziFormArray(): FormArray<FormGroup<EsercizioFormModel>> {
-    return this.form.controls['listaEsercizi'] as FormArray<FormGroup<EsercizioFormModel>>;
+    return this.form.controls["listaEsercizi"] as FormArray<
+      FormGroup<EsercizioFormModel>
+    >;
   }
 }

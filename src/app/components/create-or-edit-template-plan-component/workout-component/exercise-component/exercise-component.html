@@ -1,18 +1,55 @@
-  <accordion>
-      <accordion-header>
-        <h3 class="accordion-header-text">Test header</h3>
-      </accordion-header>
-      <accordion-body>
-        <div class="accordion-body-container">
-          <p>Testo di prova</p>
-          <p>Testo di prova</p>
-          <p>Testo di prova</p>
-          <p>Testo di prova</p>
-          <p>Testo di prova</p>
-          <p>Testo di prova</p>
-          <p>Testo di prova</p>
-          <p>Testo di prova</p>
-          <p>Testo di prova</p>
-        </div>
-      </accordion-body>
-    </accordion>
+<div class="exercise-container">
+  <form [formGroup]="formEsercizio.form">
+    <div class="input-row">
+      <mat-form-field
+        appearance="outline"
+        class="full-width"
+        [style.padding-bottom]="
+            this.formEsercizio.form.controls['nomeEsercizio'].touched &&
+            !this.formEsercizio.form.controls['nomeEsercizio'].valid
+              ? '16px'
+              : '0'
+          "
+      >
+        <mat-label>Nome esercizio </mat-label>
+        <input
+          matInput
+          [type]="'text'"
+          formControlName="nomeEsercizio"
+          placeholder="Nome esercizio"
+        />
+        @if
+        (this.formEsercizio.form.controls['nomeEsercizio']?.hasError('required'))
+        {
+        <mat-error>Nome esercizio obbligatorio</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    @for (serieForm of this.formEsercizio.listaSerieForm; track
+    serieForm.form.controls['identifier'].value) {
+    <form [formGroup]="serieForm.form">
+      <div class="input-row">
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+          [style.padding-bottom]="
+            serieForm.form.controls['ripetizioni'].touched &&
+            !serieForm.form.controls['ripetizioni'].valid
+              ? '16px'
+              : '0'
+          "
+        >
+          <mat-label>N° ripetizioni</mat-label>
+          <input
+            matInput
+            [type]="'text'"
+            formControlName="ripetizioni"
+            placeholder="ripetizioni"
+          />
+        </mat-form-field>
+      </div>
+    </form>
+    } @empty { }
+  </form>
+</div>

@@ -25,7 +25,10 @@ export class CustomTabContainerComponent implements AfterContentInit, OnDestroy 
     
     // Ascolta i cambiamenti nella lista dei tab
     this.tabs.changes.subscribe(() => {
-      this.handleTabsChange();
+      // Piccolo delay per permettere al DOM di aggiornarsi
+      setTimeout(() => {
+        this.handleTabsChange();
+      }, 0);
     });
   }
 
@@ -41,34 +44,95 @@ export class CustomTabContainerComponent implements AfterContentInit, OnDestroy 
   private initializeTabs() {
     const tabArray = this.tabs.toArray();
     
-    // Se non c'è un activeTabId impostato, usa il primo tab disponibile
-    if (!this.activeTabId && tabArray.length > 0) {
-      this.activeTabId = tabArray[0].id;
-      this.activeTabIdChange.emit(this.activeTabId);
+    // Se non c'è un activeTabId impostato o è vuoto, usa il primo tab disponibile e non disabilitato
+    if ((!this.activeTabId || this.activeTabId.trim() === '') && tabArray.length > 0) {
+      const firstAvailableTab = tabArray.find(tab => !tab.disabled);
+      if (firstAvailableTab) {
+        this.activeTabId = firstAvailableTab.id;
+        this.activeTabIdChange.emit(this.activeTabId);
+        
+        // Forza l'attivazione del contenuto
+        this.activateTabContent(firstAvailableTab.id);
+      }
+    } else {
+      // Verifica che l'activeTabId corrisponda a un tab esistente e non disabilitato
+      const activeTab = tabArray.find(tab => tab.id === this.activeTabId);
+      if (!activeTab || activeTab.disabled) {
+        const firstAvailableTab = tabArray.find(tab => !tab.disabled);
+        if (firstAvailableTab) {
+          this.activeTabId = firstAvailableTab.id;
+          this.activeTabIdChange.emit(this.activeTabId);
+          this.activateTabContent(firstAvailableTab.id);
+        }
+      } else {
+        // Il tab attivo esiste, attivalo
+        this.activateTabContent(this.activeTabId);
+      }
     }
+  }
 
-    // Imposta lo stato attivo dei tab
+  private activateTabContent(tabId: string) {
+    const tabArray = this.tabs.toArray();
+    
+    // Imposta lo stato attivo dei tab e forza la visualizzazione
     tabArray.forEach(tab => {
-      tab.isActive = tab.id === this.activeTabId;
+      const isActive = tab.id === tabId;
+      tab.isActive = isActive;
+      
+      // Forza l'aggiornamento del DOM
+      if (isActive) {
+        tab.elementRef.nativeElement.style.display = 'block';
+        // Trigger dell'evento di cambio tab
+        const tabIndex = tabArray.findIndex(t => t.id === tabId);
+        setTimeout(() => {
+          this.tabChange.emit({ id: tabId, tab: tab, index: tabIndex });
+        }, 0);
+      } else {
+        tab.elementRef.nativeElement.style.display = 'none';
+      }
     });
+    
+    this.cdr.detectChanges();
   }
 
   private handleTabsChange() {
     const tabArray = this.tabs.toArray();
     
-    // Se il tab attivo è stato rimosso, seleziona il primo disponibile
-    const activeTabExists = tabArray.find(tab => tab.id === this.activeTabId);
-    if (!activeTabExists && tabArray.length > 0) {
-      this.selectTab(tabArray[0].id, false); // Senza animazione
-    }
-    
-    // Se non ci sono più tab, resetta
+    // Se non ci sono tab, resetta
     if (tabArray.length === 0) {
       this.activeTabId = '';
       this.activeTabIdChange.emit(this.activeTabId);
+      return;
     }
-
-    this.cdr.detectChanges();
+    
+    // Se non c'è un activeTabId o è vuoto, seleziona il primo disponibile
+    if (!this.activeTabId || this.activeTabId.trim() === '') {
+      const firstAvailableTab = tabArray.find(tab => !tab.disabled);
+      if (firstAvailableTab) {
+        this.activeTabId = firstAvailableTab.id;
+        this.activeTabIdChange.emit(this.activeTabId);
+        this.activateTabContent(firstAvailableTab.id);
+        return;
+      }
+    }
+    
+    // Se il tab attivo è stato rimosso o è disabilitato, seleziona il primo disponibile
+    const activeTabExists = tabArray.find(tab => tab.id === this.activeTabId && !tab.disabled);
+    if (!activeTabExists) {
+      const firstAvailableTab = tabArray.find(tab => !tab.disabled);
+      if (firstAvailableTab) {
+        this.activeTabId = firstAvailableTab.id;
+        this.activeTabIdChange.emit(this.activeTabId);
+        this.activateTabContent(firstAvailableTab.id);
+      } else {
+        // Tutti i tab sono disabilitati
+        this.activeTabId = '';
+        this.activeTabIdChange.emit(this.activeTabId);
+      }
+    } else {
+      // Il tab attivo esiste ancora, riattivalo per sicurezza
+      this.activateTabContent(this.activeTabId);
+    }
   }
 
   selectTab(tabId: string, animate: boolean = true) {

@@ -14,6 +14,7 @@ import { CreateOrEditTemplatePlanService } from "./create-or-edit-template-plan-
 import { MatTabGroup, MatTabsModule } from "@angular/material/tabs";
 import { CustomTabContainerComponent } from "../shared/tabs/custom-tab-container/custom-tab-container";
 import { CustomTabComponent } from "../shared/tabs/custom-tab-components/custom-tab-components";
+import { WorkoutComponent } from "./workout-component/workout-component";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -21,6 +22,7 @@ import { CustomTabComponent } from "../shared/tabs/custom-tab-components/custom-
     AccordionGroupComponent,
     CustomTabComponent,
     CustomTabContainerComponent,
+    WorkoutComponent
   ],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",

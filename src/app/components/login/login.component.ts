@@ -28,10 +28,8 @@ import { LoginForm } from "./login-form";
     MatError,
     MatIcon,
     MatFormField,
-    MatProgressSpinner,
     MatInput,
     MatIconButton,
-    MatHint,
   ],
   styleUrls: ["./login.component.scss"],
 })

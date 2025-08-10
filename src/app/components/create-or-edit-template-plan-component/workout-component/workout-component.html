@@ -1,1 +1,57 @@
-<p>workout-component works!</p>
+<div class="workout-content">
+  <div class="workout-data">
+    <div class="nome-allenamento-container">
+      <form [formGroup]="formAllenamento.form">
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+          [style.padding-bottom]="
+            this.formAllenamento.form.controls['nomeAllenamento'].touched &&
+            !this.formAllenamento.form.controls['nomeAllenamento'].valid
+              ? '16px'
+              : '0'
+          "
+        >
+          <mat-label>Alias allenamento </mat-label>
+          <input
+            (change)="ifEmptySetPlaceholder($event)"
+            matInput
+            [type]="'text'"
+            formControlName="nomeAllenamento"
+            placeholder="Nome allenamento"
+          />
+
+          @if
+          (this.formAllenamento.form.controls['nomeAllenamento']?.hasError('required'))
+          {
+          <mat-error>Nome allenamento obbligatorio</mat-error>
+          }
+        </mat-form-field>
+      </form>
+    </div>
+    <div class="add-allenamento-button-row">
+      <button class="text-shape-button">
+        <span>Aggiungi allenamento</span>
+        <div class="text-shape-button-icon-container">
+          <img src="assets/recollect/svg/google-add.svg" />
+        </div>
+      </button>
+    </div>
+    <div class="delete-allenamento-button-row">
+      <button class="text-shape-button-danger">
+        <span>Elimina allenamento</span>
+        <div class="text-shape-button-icon-container-danger">
+          <img src="assets/recollect/svg/google-delete.svg" />
+        </div>
+      </button>
+    </div>
+  </div>
+  <div class="exercise-data">
+    @for (esercizioForm of this.formAllenamento.listaEserciziForm; track
+    esercizioForm.form.controls['identifier'].value) {
+    <app-exercise-component
+      [formEsercizio]="esercizioForm"
+    ></app-exercise-component>
+    } @empty { }
+  </div>
+</div>

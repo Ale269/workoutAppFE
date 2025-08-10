@@ -133,6 +133,36 @@ body.no-scroll {
   height: 16px;
 }
 
+.text-shape-button-danger {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  font-size: 14px;
+  font-family: "poppins";
+  font-weight: 700;
+  color: #FF0000;
+  cursor: pointer;
+}
+
+.text-shape-button-icon-container-danger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #FF0000;
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+}
+
+.text-shape-button-icon-container-danger img {
+  filter: brightness(0) saturate(100%) invert(15%) sepia(83%) saturate(6873%) hue-rotate(360deg) brightness(106%) contrast(118%);
+  width: 16px;
+  height: 16px;
+}
+
 .floating-static-button {
   outline: none;
   background-color: transparent;
@@ -249,7 +279,7 @@ body.no-scroll {
       outlined-outline-color: "#808080",
       outlined-input-text-color: "#fff",
       outlined-hover-outline-color: "#fff",
-      outlined-focus-outline-color: "fff",
+      outlined-focus-outline-color: "#fff",
       outlined-focus-label-text-color: "#808080",
       outlined-hover-label-text-color: "#808080"
     )

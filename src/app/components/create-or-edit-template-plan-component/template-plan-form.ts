@@ -29,7 +29,7 @@ export class SchedaForm {
 
   addAllenamentoForm(allenamentoDTO?: AllenamentoDTO) {
     try {
-      this.identifier++;
+      this.identifier = this.identifier + 1;
 
       const newAllenamentoForm: AllenamentoForm = new AllenamentoForm(
         this.identifier,

@@ -1,0 +1,32 @@
+.workout-content {
+  padding-top: 16px;
+}
+
+.workout-data {
+  padding-bottom: 32px;
+  border-bottom: 1px solid #212121;
+}
+
+.nome-allenamento-container {
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.add-allenamento-button-row {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 16px;
+}
+
+.delete-allenamento-button-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.exercise-data {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 32px;
+}

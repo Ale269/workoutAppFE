@@ -1,19 +1,16 @@
-import { Component } from '@angular/core';
-import { AccordionBodyComponent } from 'src/app/components/shared/accordion/accordion-element/accordion-body/accordion-body.component';
-import { AccordionHeaderComponent } from 'src/app/components/shared/accordion/accordion-element/accordion-header/accordion-header.component';
-import { AccordionComponent } from 'src/app/components/shared/accordion/accordion-element/accordion.component';
-
+import { Component, Input } from "@angular/core";
+import { EsercizioForm } from "../../exercise-form";
+import { ReactiveFormsModule } from "@angular/forms";
+import { MatLabel, MatError, MatFormField, MatInput } from "@angular/material/input";
 
 @Component({
-  selector: 'app-exercise-component',
-  imports: [
-    AccordionComponent,
-    AccordionBodyComponent,
-    AccordionHeaderComponent,
-  ],
-  templateUrl: './exercise-component.html',
-  styleUrl: './exercise-component.scss'
+  selector: "app-exercise-component",
+  imports: [ReactiveFormsModule, MatLabel, MatError, MatFormField, MatInput],
+  templateUrl: "./exercise-component.html",
+  styleUrl: "./exercise-component.scss",
 })
 export class ExerciseComponent {
+  @Input() formEsercizio!: EsercizioForm;
 
+  constructor() {}
 }
