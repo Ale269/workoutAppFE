@@ -99,8 +99,8 @@
       <div class="floating-static-button-container">
         <button
           class="floating-static-button"
+          [class.button-disabled]="!loginForm.form.valid || isLoading"
           (click)="onLogin()"
-          [disabled]="!loginForm.form.valid || isLoading"
         >
           <!-- @if (isLoading) {
           {{ "auth.signin" | translate }}

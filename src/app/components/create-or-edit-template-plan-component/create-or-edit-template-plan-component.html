@@ -1,14 +1,111 @@
 <div class="content">
   <div class="section-container close-icon-title-container">
     <div class="close-icon-section-container">
-      <div class="close-icon-trigger">
-      </div>
+      <div class="close-icon-trigger"></div>
       <img src="assets/recollect/svg/google-close-icon.svg" />
     </div>
     <h1 class="text-title">Nuova scheda</h1>
   </div>
 
-  <accordion-group [Keys]="[]">
-  
-  </accordion-group>
+  <!-- <mat-tab-group
+    mat-stretch-tabs="false"
+    mat-align-tabs="start"
+    [disablePagination]="true"
+  >
+    <mat-tab label="First">Content 1</mat-tab>
+    <mat-tab label="Second">Content 2</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+    <mat-tab label="Third">Content 3</mat-tab>
+  </mat-tab-group> -->
+
+  <div class="tab-container">
+    <custom-tab-container
+      [(activeTabId)]="activeTabId"
+      (tabChange)="onTabChange($event)"
+    >
+      @for (allenamentoForm of
+      createOrEditTemplatePlanService.formScheda.listaAllenamentiForm; track
+      allenamentoForm.identifier) {
+      <custom-tab
+        [id]="allenamentoForm.identifier.toString()"
+        [label]="allenamentoForm.form.controls['nomeAllenamento'].value"
+      >
+        <!-- <div class="tab-content-example">
+          <h2>Dashboard</h2>
+          <p>Questo è il contenuto del dashboard con molti dati importanti.</p>
+          <div class="demo-content">
+            <div class="card">Card 1</div>
+            <div class="card">Card 2</div>
+            <div class="card">Card 3</div>
+          </div>
+        </div> -->
+      </custom-tab>
+      } @empty { } 
+      
+      <!-- Codice prova -->
+      <!-- @for (item of [1,2,3,4]; track $index; let idx = $index) {
+      <custom-tab [id]="item.toString()" [label]="item.toString()">
+      </custom-tab>
+      } @empty { } -->
+
+      <custom-tab id="dashboard" label="Dashboard">
+        <div class="tab-content-example">
+          <h2>Dashboard</h2>
+          <p>Questo è il contenuto del dashboard con molti dati importanti.</p>
+          <div class="demo-content">
+            <div class="card">Card 1</div>
+            <div class="card">Card 2</div>
+            <div class="card">Card 3</div>
+          </div>
+        </div>
+      </custom-tab>
+
+      <custom-tab id="analytics" label="Analytics" [disabled]="false">
+        <div class="tab-content-example">
+          <h2>Analytics</h2>
+          <p>Qui ci sono tutte le analytics e i grafici.</p>
+          <div class="chart-placeholder">📊 Grafico placeholder</div>
+        </div>
+      </custom-tab>
+
+      <custom-tab id="settings" label="Settings">
+        <div class="tab-content-example">
+          <h2>Settings</h2>
+          <p>Impostazioni dell'applicazione.</p>
+          <form class="settings-form">
+            <label>
+              Nome utente:
+              <input type="text" value="Mario Rossi" />
+            </label>
+            <label>
+              Email:
+              <input type="email" value="mario@example.com" />
+            </label>
+            <button type="button">Salva</button>
+          </form>
+        </div>
+      </custom-tab>
+    </custom-tab-container>
+
+    <!-- <div class="dynamic-controls">
+        <h3>Gestione Tab Dinamiche</h3>
+        <div class="control-buttons">
+          <button (click)="addDynamicTab()">➕ Aggiungi Tab</button>
+          <button (click)="toggleAnalytics()">
+            {{ analyticsDisabled ? '✓ Abilita' : '✗ Disabilita' }} Analytics
+          </button>
+          <button (click)="goToSpecificTab('settings')">⚙️ Vai a Settings</button>
+        </div>
+      </div>
+      
+      <div class="tab-controls">
+        <button (click)="previousTab()">◀ Precedente</button>
+        <span>Tab attivo: {{ activeTabId }}</span>
+        <button (click)="nextTab()">Successivo ▶</button>
+      </div>
+    </div> -->
+
+    <accordion-group [Keys]="[]"> </accordion-group>
+  </div>
 </div>

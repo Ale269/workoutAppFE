@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { AccordionBodyComponent } from "../../shared/accordion/accordion-element/accordion-body/accordion-body.component";
-import { AccordionComponent } from '../../shared/accordion/accordion-element/accordion.component';
-import { AccordionHeaderComponent } from '../../shared/accordion/accordion-element/accordion-header/accordion-header.component';
+import { AccordionBodyComponent } from 'src/app/components/shared/accordion/accordion-element/accordion-body/accordion-body.component';
+import { AccordionHeaderComponent } from 'src/app/components/shared/accordion/accordion-element/accordion-header/accordion-header.component';
+import { AccordionComponent } from 'src/app/components/shared/accordion/accordion-element/accordion.component';
+
 
 @Component({
   selector: 'app-exercise-component',

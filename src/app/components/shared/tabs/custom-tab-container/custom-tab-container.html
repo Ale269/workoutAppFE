@@ -1,0 +1,26 @@
+<div class="tab-container">
+  <!-- Tab Headers -->
+
+  <div class="tab-header" #tabHeader>
+    <div class="tab-labels">
+      @for (tab of tabs; track tab.id) {
+      <button
+        class="tab-label"
+        [class.active]="activeTabId === tab.id"
+        [class.disabled]="tab.disabled"
+        (click)="selectTab(tab.id)"
+        [disabled]="tab.disabled"
+      >
+        {{ tab.label }}
+      </button>
+      } @empty { }
+    </div>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content-container" #contentContainer>
+    <div class="tab-content-wrapper" #contentWrapper>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

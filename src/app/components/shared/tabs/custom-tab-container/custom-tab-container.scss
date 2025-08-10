@@ -1,0 +1,111 @@
+.tab-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.tab-header {
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-labels {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  //   scrollbar-width: thin;
+  //   scrollbar-color: #ccc transparent;
+
+  //   // Nascondi scrollbar su webkit browsers
+  //   &::-webkit-scrollbar {
+  //     height: 2px;
+  //   }
+
+  //   &::-webkit-scrollbar-track {
+  //     background: transparent;
+  //   }
+
+  //   &::-webkit-scrollbar-thumb {
+  //     background: #ccc;
+  //     border-radius: 1px;
+  //   }
+}
+
+.tab-label {
+  background: none;
+  border: none;
+  padding: 0 20px 16px 0;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: auto;
+  position: relative;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #fff;
+  }
+
+  &.active {
+    color: #00ffe1;
+    position: relative;
+
+    // Indicatore personalizzato
+    // &::after {
+    //   content: '';
+    //   position: absolute;
+    //   bottom: 0;
+    //   left: 0;
+    //   right: 0;
+    //   height: 3px;
+    //   background: #00ffe1;
+    //   border-radius: 2px 2px 0 0;
+    //   animation: tabIndicator 0.3s ease-out;
+    // }
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+          opacity: 0.5;
+    }
+  }
+}
+
+@keyframes tabIndicator {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.tab-content-container {
+  flex: 1;
+  position: relative;
+}
+
+.tab-content-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+// Smooth focus transitions
+.tab-label {
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}

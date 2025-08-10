@@ -194,6 +194,11 @@ body.no-scroll {
     hue-rotate(89deg) brightness(104%) contrast(102%);
 }
 
+.button-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 ::ng-deep .mat-form-field.mat-focused .mat-form-field-underline {
   background-color: #ff884d; // Desired color when input is focused
 }
@@ -250,3 +255,96 @@ body.no-scroll {
     )
   );
 }
+
+// // Sovrascrittura comportamento defaul mat tab
+// mat-tab-header {
+//   .mat-mdc-tab-label-container {
+//     overflow-x: auto !important; // scroll orizzontale abilitato
+//     -webkit-overflow-scrolling: touch; // scroll più fluido su iOS
+//     scrollbar-width: thin; // firefox, opzionale
+
+//     /* rimuovi le trasformazioni che bloccano lo scroll */
+//     transform: none !important;
+//   }
+
+//   .mat-mdc-tab-labels span {
+//     font-family: "poppins";
+//     font-weight: 700;
+//     color: #858585 !important;
+//   }
+
+//   .mat-mdc-tab {
+//     padding-left: 0;
+//     display: flex;
+//     justify-content: flex-start;
+//     min-width: 0;
+//   }
+
+//   .mdc-tab-indicator {
+//     opacity: 0;
+//   }
+
+//   .mdc-tab--active span {
+//     color: #00ffe1 !important;
+//   }
+
+//   .mat-mdc-tab-header {
+//     scroll-behavior: auto !important;
+//     scroll-snap-type: none !important;
+//   }
+
+//   .mat-mdc-tab-label-container {
+//     scroll-behavior: auto !important;
+//   }
+
+//   .mat-mdc-tab-labels {
+//     transform: translateX(0) !important;
+//   }
+// }
+
+// mat-tab-header {
+//   .mat-mdc-tab-label-container {
+//     overflow-x: auto !important;
+//     -webkit-overflow-scrolling: touch;
+//     scrollbar-width: thin;
+//     transform: none !important;
+    
+//     // Blocca tutte le trasformazioni possibili
+//     * {
+//       transform: none !important;
+//       transition: none !important;
+//     }
+//   }
+
+//   .mat-mdc-tab-labels {
+//     transform: translateX(0px) !important;
+//     transition: none !important;
+//   }
+
+//   .mat-mdc-tab-header {
+//     scroll-behavior: auto !important;
+//     scroll-snap-type: none !important;
+//   }
+
+//   // Il resto delle tue regole...
+//   .mat-mdc-tab-labels span {
+//     font-family: "poppins";
+//     font-weight: 700;
+//     color: #858585 !important;
+//   }
+
+//   .mat-mdc-tab {
+//     padding-left: 0;
+//     display: flex;
+//     justify-content: flex-start;
+//     min-width: 0;
+//   }
+
+//   .mdc-tab-indicator {
+//     opacity: 0;
+//   }
+
+//   .mdc-tab--active span {
+//     color: #00ffe1 !important;
+//   }
+// }
