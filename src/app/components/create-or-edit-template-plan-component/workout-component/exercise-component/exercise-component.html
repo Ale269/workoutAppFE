@@ -54,3 +54,12 @@
     } @empty { }
   </form>
 </div>
+
+<app-generic-modal
+  [isVisible]="deleteExerciseModalVisible"
+  [title]="'Informazione'"
+  [showConfirmButton]="false"
+  (closed)="deleteExerciseModalVisible = false"
+>
+  
+</app-generic-modal>

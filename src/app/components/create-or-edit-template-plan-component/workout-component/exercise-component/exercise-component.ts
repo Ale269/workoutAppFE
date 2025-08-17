@@ -1,20 +1,15 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { EsercizioForm } from "../../exercise-form";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
-import {
-  MatLabel,
-  MatError,
-  MatFormField,
-  MatInput,
-} from "@angular/material/input";
 import { GymExerciseSelectorComponent } from "src/app/components/shared/app-gym-exercise-selector/app-gym-exercise-selector";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SetComponent } from "./set-component/set-component";
 import { getExerciseIconPath } from "src/app/components/enums/exercise-icons";
+import { GenericModal } from "src/app/components/shared/generic-modal/generic-modal";
 
 @Component({
   selector: "app-exercise-component",
-  imports: [ReactiveFormsModule, GymExerciseSelectorComponent, SetComponent],
+  imports: [ReactiveFormsModule, GymExerciseSelectorComponent, SetComponent, GenericModal],
   templateUrl: "./exercise-component.html",
   styleUrl: "./exercise-component.scss",
 })
@@ -23,6 +18,7 @@ export class ExerciseComponent implements OnInit {
 
   public idTipoEsercizioControl!: FormControl<number | null>;
   public exerciseIconPath!: string;
+  public deleteExerciseModalVisible: boolean = true;
 
   constructor(private errorHandlerService: ErrorHandlerService) {}
 
