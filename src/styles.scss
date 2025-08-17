@@ -102,6 +102,19 @@ body.no-scroll {
   font-size: 20px;
 }
 
+.text-white {
+  color: #fff;
+  font-weight: 700;
+  font-family: "poppins";
+  font-size: 14px;
+}
+.text-grey {
+  color: #808080;
+  font-weight: 700;
+  font-family: "poppins";
+  font-size: 14px;
+}
+
 .text-shape-button {
   display: flex;
   gap: 8px;
@@ -143,7 +156,7 @@ body.no-scroll {
   font-size: 14px;
   font-family: "poppins";
   font-weight: 700;
-  color: #FF0000;
+  color: #ff0000;
   cursor: pointer;
 }
 
@@ -151,14 +164,15 @@ body.no-scroll {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #FF0000;
+  border: 1px solid #ff0000;
   border-radius: 50%;
   height: 20px;
   width: 20px;
 }
 
 .text-shape-button-icon-container-danger img {
-  filter: brightness(0) saturate(100%) invert(15%) sepia(83%) saturate(6873%) hue-rotate(360deg) brightness(106%) contrast(118%);
+  filter: brightness(0) saturate(100%) invert(15%) sepia(83%) saturate(6873%)
+    hue-rotate(360deg) brightness(106%) contrast(118%);
   width: 16px;
   height: 16px;
 }
@@ -208,6 +222,17 @@ body.no-scroll {
   display: flex;
   align-items: center;
   position: relative;
+}
+
+.delete-icon-element-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.delete-icon-element-container img {
+  filter: brightness(0) saturate(100%) invert(54%) sepia(0%) saturate(59%)
+    hue-rotate(162deg) brightness(92%) contrast(96%);
 }
 
 .close-icon-trigger {
@@ -286,6 +311,21 @@ body.no-scroll {
   );
 }
 
+:root {
+  @include mat.select-overrides(
+    (
+      placeholder-text-color: "#808080",
+      enabled-arrow-color: "#808080",
+      focused-arrow-color: "#fff",
+      trigger-text-font: "poppins",
+      trigger-text-size: 14px,
+      trigger-text-weight: 700,
+      panel-background-color: "#000",
+      enabled-trigger-text-color: "#fff",
+    )
+  );
+}
+
 // // Sovrascrittura comportamento defaul mat tab
 // mat-tab-header {
 //   .mat-mdc-tab-label-container {
@@ -338,7 +378,7 @@ body.no-scroll {
 //     -webkit-overflow-scrolling: touch;
 //     scrollbar-width: thin;
 //     transform: none !important;
-    
+
 //     // Blocca tutte le trasformazioni possibili
 //     * {
 //       transform: none !important;

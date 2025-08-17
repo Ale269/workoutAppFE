@@ -1,0 +1,60 @@
+@if (isVisible) {
+<div
+  class="modal-overlay"
+  [@fadeInOut]="isVisible ? 'in' : 'out'"
+  (click)="onOverlayClick($event)"
+>
+  <div
+    class="modal-container"
+    [@slideInOut]="isVisible ? 'in' : 'out'"
+    (click)="$event.stopPropagation()"
+  >
+    @if (title && !hasCustomHeader) {
+    <!-- Header del modale -->
+    <div class="modal-header">
+      <ng-content select="[slot=header]"></ng-content>
+      <div class="default-header">
+        <h3 class="modal-title">{{ title }}</h3>
+        <button
+          type="button"
+          class="close-button"
+          (click)="close()"
+          aria-label="Chiudi modale"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+    } @else{ }
+
+    <!-- Contenuto principale -->
+    <div class="modal-body">
+      <ng-content></ng-content>
+    </div>
+
+    @if (showFooter || hasCustomFooter) {
+    <!-- Footer del modale -->
+    <div class="modal-footer">
+      <ng-content select="[slot=footer]"></ng-content>
+
+      @if (showFooter || hasCustomFooter) {
+      <!-- Footer di default se non c'è footer personalizzato -->
+      <div *ngIf="!hasCustomFooter" class="default-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          {{ cancelText }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          *ngIf="showConfirmButton"
+          (click)="confirm()"
+        >
+          {{ confirmText }}
+        </button>
+      </div>
+      } @else { }
+    </div>
+    } @else{ }
+  </div>
+</div>
+} @else { }

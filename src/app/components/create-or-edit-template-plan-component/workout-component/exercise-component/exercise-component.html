@@ -1,7 +1,23 @@
 <div class="exercise-container">
+  <div class="titolo-esercizio-container">
+    <div class="icona-numero-esercizio-container">
+      <img
+        [src]="exerciseIconPath"
+        [alt]="'Icona esercizio ' + this.formEsercizio.form.controls['idIconaEsercizio'].value"
+        class="exercise-icon"
+      />
+      <h3 class="text-white">
+        Esercizio {{this.formEsercizio.form.controls['identifier'].value}}
+      </h3>
+    </div>
+    <div class="delete-icon-element-container">
+      <div class="close-icon-trigger"></div>
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </div>
   <form [formGroup]="formEsercizio.form">
     <div class="input-row">
-      <mat-form-field
+      <!-- <mat-form-field
         appearance="outline"
         class="full-width"
         [style.padding-bottom]="
@@ -23,33 +39,18 @@
         {
         <mat-error>Nome esercizio obbligatorio</mat-error>
         }
-      </mat-form-field>
+      </mat-form-field> -->
+      <app-gym-exercise-selector
+        [control]="this.idTipoEsercizioControl"
+        label="Esercizio"
+      >
+      </app-gym-exercise-selector>
     </div>
 
     @for (serieForm of this.formEsercizio.listaSerieForm; track
     serieForm.form.controls['identifier'].value) {
-    <form [formGroup]="serieForm.form">
-      <div class="input-row">
-        <mat-form-field
-          appearance="outline"
-          class="full-width"
-          [style.padding-bottom]="
-            serieForm.form.controls['ripetizioni'].touched &&
-            !serieForm.form.controls['ripetizioni'].valid
-              ? '16px'
-              : '0'
-          "
-        >
-          <mat-label>N° ripetizioni</mat-label>
-          <input
-            matInput
-            [type]="'text'"
-            formControlName="ripetizioni"
-            placeholder="ripetizioni"
-          />
-        </mat-form-field>
-      </div>
-    </form>
+    <app-set-component [formSerie]="serieForm"></app-set-component>
+
     } @empty { }
   </form>
 </div>

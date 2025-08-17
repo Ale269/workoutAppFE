@@ -6,8 +6,6 @@ import { SerieDTO } from "src/app/models/modifica-scheda/seriedto";
 export interface EsercizioFormModel {
   identifier: FormControl<number | null>;
   idEsercizio: FormControl<number | null>;
-  nomeEsercizio: FormControl<string | null>;
-  nomeIcona: FormControl<string | null>;
   idTipoEsercizio: FormControl<number | null>; // NUOVO CAMPO
   idIconaEsercizio: FormControl<number | null>; // NUOVO CAMPO
   listaSerie: FormArray<FormGroup<SerieFormModel>>;
@@ -29,8 +27,6 @@ export class EsercizioForm {
     this.form = new FormGroup<EsercizioFormModel>({
       identifier: new FormControl<number | null>(identifier),
       idEsercizio: new FormControl<number | null>(esercizioDTO?.idEsercizio || null),
-      nomeEsercizio: new FormControl<string | null>(esercizioDTO?.nomeEsercizio || null),
-      nomeIcona: new FormControl<string | null>(esercizioDTO?.nomeIcona || null),
       idTipoEsercizio: new FormControl<number | null>(esercizioDTO?.idTipoEsercizio || null), // NUOVO
       idIconaEsercizio: new FormControl<number | null>(esercizioDTO?.idIconaEsercizio || null), // NUOVO
       Ordinamento: new FormControl<number | null>(esercizioDTO?.ordinamento || null), // NUOVO CAMPO

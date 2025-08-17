@@ -12,3 +12,46 @@
     width: 100%;
   }
 }
+
+app-gym-exercise-selector {
+  width: 100%;
+}
+
+.titolo-esercizio-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.icona-numero-esercizio-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+app-set-component {
+  display: block;
+  border-bottom: 1px solid #212121;
+  padding: 16px 0 0 0;
+}
+
+app-set-component:first-of-type {
+  border-top: 1px solid #212121;
+}
+
+app-set-component:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.icona-numero-esercizio-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icona-numero-esercizio-container img {
+  width: 40px;
+}

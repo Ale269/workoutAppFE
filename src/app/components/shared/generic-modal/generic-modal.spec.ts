@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Modal } from './modal';
+import { GenericModal } from './generic-modal';
 
-describe('Modal', () => {
-  let component: Modal;
-  let fixture: ComponentFixture<Modal>;
+describe('GenericModal', () => {
+  let component: GenericModal;
+  let fixture: ComponentFixture<GenericModal>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Modal]
+      imports: [GenericModal]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Modal);
+    fixture = TestBed.createComponent(GenericModal);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

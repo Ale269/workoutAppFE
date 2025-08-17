@@ -112,8 +112,6 @@ export class CreateOrEditTemplatePlanService {
         ? {
             id: esercizioData.id || 0,
             idEsercizio: esercizioData.idEsercizio || 0,
-            nomeEsercizio: esercizioData.nomeEsercizio || "",
-            nomeIcona: esercizioData.nomeIcona || "",
             idTipoEsercizio: esercizioData.idTipoEsercizio || 0,
             idIconaEsercizio: esercizioData.idIconaEsercizio || 0,
             ordinamento: esercizioData.ordinamento || nextOrdinamento,
@@ -126,8 +124,6 @@ export class CreateOrEditTemplatePlanService {
         const emptyEsercizioDTO: EsercizioDTO = {
           id: 0,
           idEsercizio: 0,
-          nomeEsercizio: "",
-          nomeIcona: "",
           idTipoEsercizio: 0,
           idIconaEsercizio: 0,
           ordinamento: nextOrdinamento,
@@ -410,10 +406,8 @@ export class CreateOrEditTemplatePlanService {
             {
               id: 1,
               idEsercizio: 101,
-              nomeEsercizio: "Panca Piana",
-              nomeIcona: "bench-press-icon",
               idTipoEsercizio: 1,
-              idIconaEsercizio: 10,
+              idIconaEsercizio: 0,
               ordinamento: 1,
               listaSerie: [
                 { id: 1, idSerie: 1001, ripetizioni: 8, carico: 80 },
@@ -424,10 +418,8 @@ export class CreateOrEditTemplatePlanService {
             {
               id: 2,
               idEsercizio: 102,
-              nomeEsercizio: "Military Press",
-              nomeIcona: "military-press-icon",
               idTipoEsercizio: 2,
-              idIconaEsercizio: 20,
+              idIconaEsercizio: 2,
               ordinamento: 2,
               listaSerie: [
                 { id: 4, idSerie: 2001, ripetizioni: 10, carico: 50 },
@@ -445,10 +437,8 @@ export class CreateOrEditTemplatePlanService {
             {
               id: 3,
               idEsercizio: 103,
-              nomeEsercizio: "Stacchi da Terra",
-              nomeIcona: "deadlift-icon",
               idTipoEsercizio: 3,
-              idIconaEsercizio: 30,
+              idIconaEsercizio: 1,
               ordinamento: 1,
               listaSerie: [
                 { id: 6, idSerie: 3001, ripetizioni: 5, carico: 120 },

@@ -1,1 +1,33 @@
-<p>set-component works!</p>
+<form [formGroup]="formSerie.form">
+  <div class="titolo-serie-container">
+    <div class="numero-serie-container">
+      <h3 class="text-grey">
+        Serie {{this.formSerie.form.controls['identifier'].value}}
+      </h3>
+    </div>
+    <div class="delete-icon-element-container">
+      <div class="close-icon-trigger"></div>
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </div>
+  <div class="input-row">
+    <mat-form-field
+      appearance="outline"
+      class="full-width"
+      [style.padding-bottom]="
+            formSerie.form.controls['ripetizioni'].touched &&
+            !formSerie.form.controls['ripetizioni'].valid
+              ? '16px'
+              : '0'
+          "
+    >
+      <mat-label>N° ripetizioni</mat-label>
+      <input
+        matInput
+        [type]="'text'"
+        formControlName="ripetizioni"
+        placeholder="ripetizioni"
+      />
+    </mat-form-field>
+  </div>
+</form>

@@ -41,7 +41,7 @@ export class AllenamentoForm {
 
   addEsercizioForm(esercizioDTO?: EsercizioDTO) {
     try {
-      this.identifier = this.identifier++;
+      this.identifier = this.identifier + 1;
 
       const newEsercizioForm: EsercizioForm = new EsercizioForm(
         this.identifier,
