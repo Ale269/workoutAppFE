@@ -1,0 +1,204 @@
+{
+  "esito": "OK",
+  "payload": {
+    "workout": [
+      {
+        "id": 1,
+        "nomeScheda": "Scheda Push/Pull/Legs",
+        "listaAllenamenti": [
+          {
+            "id": 1,
+            "idAllenamento": 201,
+            "nomeAllenamento": "Push Day",
+            "ordinamento": 1,
+            "listaEsercizi": [
+              {
+                "id": 1,
+                "idEsercizio": 101,
+                "nomeEsercizio": "Panca Piana",
+                "nomeIcona": "bench-press-icon",
+                "idTipoEsercizio": 1,
+                "idIconaEsercizio": 10,
+                "ordinamento": 1,
+                "listaSerie": [
+                  {
+                    "id": 1,
+                    "idSerie": 1001,
+                    "ripetizioni": 8,
+                    "carico": 80
+                  },
+                  {
+                    "id": 2,
+                    "idSerie": 1002,
+                    "ripetizioni": 8,
+                    "carico": 80
+                  },
+                  {
+                    "id": 3,
+                    "idSerie": 1003,
+                    "ripetizioni": 6,
+                    "carico": 85
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "idEsercizio": 102,
+                "nomeEsercizio": "Military Press",
+                "nomeIcona": "military-press-icon",
+                "idTipoEsercizio": 2,
+                "idIconaEsercizio": 20,
+                "ordinamento": 2,
+                "listaSerie": [
+                  {
+                    "id": 4,
+                    "idSerie": 2001,
+                    "ripetizioni": 10,
+                    "carico": 50
+                  },
+                  {
+                    "id": 5,
+                    "idSerie": 2002,
+                    "ripetizioni": 8,
+                    "carico": 55
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "idAllenamento": 202,
+            "nomeAllenamento": "Pull Day",
+            "ordinamento": 2,
+            "listaEsercizi": [
+              {
+                "id": 3,
+                "idEsercizio": 103,
+                "nomeEsercizio": "Stacchi da Terra",
+                "nomeIcona": "deadlift-icon",
+                "idTipoEsercizio": 3,
+                "idIconaEsercizio": 30,
+                "ordinamento": 1,
+                "listaSerie": [
+                  {
+                    "id": 6,
+                    "idSerie": 3001,
+                    "ripetizioni": 5,
+                    "carico": 120
+                  },
+                  {
+                    "id": 7,
+                    "idSerie": 3002,
+                    "ripetizioni": 5,
+                    "carico": 125
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+
+
+      {
+        "id": 2,
+        "nomeScheda": "Scheda 2",
+        "listaAllenamenti": [
+          {
+            "id": 1,
+            "idAllenamento": 201,
+            "nomeAllenamento": "Push Day",
+            "ordinamento": 1,
+            "listaEsercizi": [
+              {
+                "id": 1,
+                "idEsercizio": 101,
+                "nomeEsercizio": "Panca Piana",
+                "nomeIcona": "bench-press-icon",
+                "idTipoEsercizio": 1,
+                "idIconaEsercizio": 10,
+                "ordinamento": 1,
+                "listaSerie": [
+                  {
+                    "id": 1,
+                    "idSerie": 1001,
+                    "ripetizioni": 8,
+                    "carico": 80
+                  },
+                  {
+                    "id": 2,
+                    "idSerie": 1002,
+                    "ripetizioni": 8,
+                    "carico": 80
+                  },
+                  {
+                    "id": 3,
+                    "idSerie": 1003,
+                    "ripetizioni": 6,
+                    "carico": 85
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "idEsercizio": 102,
+                "nomeEsercizio": "Military Press",
+                "nomeIcona": "military-press-icon",
+                "idTipoEsercizio": 2,
+                "idIconaEsercizio": 20,
+                "ordinamento": 2,
+                "listaSerie": [
+                  {
+                    "id": 4,
+                    "idSerie": 2001,
+                    "ripetizioni": 10,
+                    "carico": 50
+                  },
+                  {
+                    "id": 5,
+                    "idSerie": 2002,
+                    "ripetizioni": 8,
+                    "carico": 55
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "idAllenamento": 202,
+            "nomeAllenamento": "Pull Day",
+            "ordinamento": 2,
+            "listaEsercizi": [
+              {
+                "id": 3,
+                "idEsercizio": 103,
+                "nomeEsercizio": "Stacchi da Terra",
+                "nomeIcona": "deadlift-icon",
+                "idTipoEsercizio": 3,
+                "idIconaEsercizio": 30,
+                "ordinamento": 1,
+                "listaSerie": [
+                  {
+                    "id": 6,
+                    "idSerie": 3001,
+                    "ripetizioni": 5,
+                    "carico": 120
+                  },
+                  {
+                    "id": 7,
+                    "idSerie": 3002,
+                    "ripetizioni": 5,
+                    "carico": 125
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+

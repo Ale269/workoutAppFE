@@ -8,6 +8,7 @@ import { SerieDTO } from "src/app/models/modifica-scheda/seriedto";
 import { FormArray } from "@angular/forms";
 import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
 import { AllenamentoForm } from "./workout-form";
+import {WorkoutService} from "../../core/services/workout.service";
 
 @Injectable({
   providedIn: "root",
@@ -15,21 +16,43 @@ import { AllenamentoForm } from "./workout-form";
 export class CreateOrEditTemplatePlanService {
   public formScheda!: SchedaForm;
 
-  constructor(private errorHandlerService: ErrorHandlerService) {}
+  constructor(
+      private errorHandlerService: ErrorHandlerService,
+      private workoutService: WorkoutService) {}
 
   InitializeScheda(idScheda: number) {
     try {
       if (idScheda && idScheda > 0) {
-        // Simulazione chiamata API con dati mock
+        //dati mockati dalla componente
+
         const schedaDTO: SchedaDTO = this.getSchedaById(idScheda);
         this.formScheda = new SchedaForm(schedaDTO);
+
+        /*
+        //dati mockati reali dal api service (if mocked==true va su assets senno BE)
+        this.workoutService.getSingleWorkout(idScheda).subscribe({
+          next: (response) => {
+            console.log("RESPONSE WORKOUT: ", response);
+            if(response.esito === "OK"){
+              if (response.payload.workout){
+                const workout = response.payload.workout;
+                this.formScheda = new SchedaForm(workout);
+              }
+            }else{
+              //apri modale con errore stampato
+            }
+          }
+        })
+
+         */
+
       } else {
         // Crea form vuoto per nuova scheda
         this.formScheda = new SchedaForm();
       }
     } catch (error) {
       throw new Error(
-        "CreateOrEditTemplatePlanService.InitializeScheda: " + error
+          "CreateOrEditTemplatePlanService.InitializeScheda: " + error
       );
     }
   }
@@ -400,7 +423,7 @@ export class CreateOrEditTemplatePlanService {
         {
           id: 1,
           idAllenamento: 201,
-          nomeAllenamento: "Push Day",
+          nomeAllenamento: "Push Day componente",
           ordinamento: 1,
           listaEsercizi: [
             {

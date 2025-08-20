@@ -64,7 +64,8 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isLoading = true; // Imposta lo stato di caricamento
+    //this.isLoading = true; // Imposta lo stato di caricamento
+    /*
     this.productService.getAllProducts().subscribe({
       next: (response) => {
         //console.log("RESPONSE ALL PRODUCTS: ", response)
@@ -85,6 +86,7 @@ export class HomeComponent implements OnInit {
         //this.router.navigate(['/home']);
       }
     });
+    */
   }
 
   vediDettaglio(annuncioId: number): void {
