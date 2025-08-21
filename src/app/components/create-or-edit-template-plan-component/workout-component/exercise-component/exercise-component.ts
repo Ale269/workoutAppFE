@@ -18,7 +18,7 @@ export class ExerciseComponent implements OnInit {
 
   public idTipoEsercizioControl!: FormControl<number | null>;
   public exerciseIconPath!: string;
-  public deleteExerciseModalVisible: boolean = true;
+  public deleteExerciseModalVisible: boolean = false;
 
   constructor(private errorHandlerService: ErrorHandlerService) {}
 
