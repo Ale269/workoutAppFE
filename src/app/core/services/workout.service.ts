@@ -20,13 +20,13 @@ export class WorkoutService {
     getSingleWorkout(workoutId: number): Observable<any> {
         // In un'app reale, dovresti inviare una richiesta al server per registrare l'utente
         console.log('workout request:', workoutId);
-        return this.apiCatalogService.executeApiCall('workout','singleWorkout', {id: workoutId}, undefined);
+        return this.apiCatalogService.executeApiCall('workout','singleUserWorkout', undefined, {workoutId: workoutId});
     }
 
     getAllUserWorkout(userId: string): Observable<any> {
         // In un'app reale, dovresti inviare una richiesta al server per registrare l'utente
         console.log('all user workout:', userId);
-        return this.apiCatalogService.executeApiCall('workout','getAll');
+        return this.apiCatalogService.executeApiCall('workout','allUserWorkout', {userId: userId}, undefined);
 
     }
 

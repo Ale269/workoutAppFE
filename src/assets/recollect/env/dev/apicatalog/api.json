@@ -1,8 +1,8 @@
 {
   "defaults": {
     "protocol": "http",
-    "host": "localhost:8090",
-    "baseUrl": "/re-collect",
+    "host": "localhost:8443",
+    "baseUrl": "/api",
     "security": "none",
     "mocked": true
   },
@@ -34,7 +34,23 @@
         "name": "annuncio",
         "endpoint": "/annuncio/",
         "method": "get",
-        "description": "Recupera il singoloprodotti.",
+        "description": "Recupera il singolo prodotto.",
+        "isMocked": true
+      }
+    ],
+    "workout": [
+      {
+        "name": "singleUserWorkout",
+        "endpoint": "/workout/user",
+        "method": "post",
+        "description": "Recupera la singola scheda di un utente.",
+        "isMocked": true
+      },
+      {
+        "name": "allUserWorkout",
+        "endpoint": "/workout/user",
+        "method": "get",
+        "description": "Recupera tutte le schede di un utente.",
         "isMocked": true
       }
     ]

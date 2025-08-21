@@ -9,7 +9,7 @@
           {
             "id": 1,
             "idAllenamento": 201,
-            "nomeAllenamento": "Push Day 1",
+            "nomeAllenamento": "Mocked1",
             "ordinamento": 1,
             "listaEsercizi": [
               {
@@ -92,6 +92,66 @@
                     "idSerie": 3002,
                     "ripetizioni": 5,
                     "carico": 125
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "idAllenamento": 203,
+            "nomeAllenamento": "LEG",
+            "ordinamento": 1,
+            "listaEsercizi": [
+              {
+                "id": 1,
+                "idEsercizio": 106,
+                "nomeEsercizio": "LEG-EXTENSION",
+                "nomeIcona": "bench-press-icon",
+                "idTipoEsercizio": 1,
+                "idIconaEsercizio": 10,
+                "ordinamento": 1,
+                "listaSerie": [
+                  {
+                    "id": 1,
+                    "idSerie": 1001,
+                    "ripetizioni": 8,
+                    "carico": 80
+                  },
+                  {
+                    "id": 2,
+                    "idSerie": 1002,
+                    "ripetizioni": 8,
+                    "carico": 80
+                  },
+                  {
+                    "id": 3,
+                    "idSerie": 1003,
+                    "ripetizioni": 6,
+                    "carico": 85
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "idEsercizio": 102,
+                "nomeEsercizio": "LEG CURL",
+                "nomeIcona": "military-press-icon",
+                "idTipoEsercizio": 2,
+                "idIconaEsercizio": 20,
+                "ordinamento": 2,
+                "listaSerie": [
+                  {
+                    "id": 4,
+                    "idSerie": 2001,
+                    "ripetizioni": 10,
+                    "carico": 50
+                  },
+                  {
+                    "id": 5,
+                    "idSerie": 2002,
+                    "ripetizioni": 8,
+                    "carico": 55
                   }
                 ]
               }

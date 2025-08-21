@@ -55,15 +55,14 @@ export class ApiCatalogService {
   }
 
   // Metodo per ottenere un endpoint specifico (opzionale, ma utile)
-  getEndpoint(apiName: string, nameKey: string): ApiName | undefined {
-    const catalog: any = this.apiCatalogSubject.getValue();
+  getEndpoint(catalog: any, apiName: string, nameKey: string): any {
+    //const catalog: any = this.apiCatalogSubject.getValue();
 
-    //console.log("GETENDPOINT - CATALOG ENDPOINT: ",catalog);
-    if (!catalog) {
-      //console.warn('GETENDPOINT - API Catalog non ancora caricato.');
+
+    const apiCall = catalog.apis[apiName];
+    if (!apiCall) {
       return undefined;
     }
-    const apiCall = catalog.apis[apiName];
     for (const apiObject of apiCall) {
       if (apiObject.name === nameKey) {
         return apiObject;
@@ -94,7 +93,7 @@ export class ApiCatalogService {
 
   /**
    * Esegue una chiamata API, gestendo automaticamente i mock se configurati.
-   * @param endpointKey La chiave dell'endpoint nel catalogo (es. 'products.getAll').
+   * @param endpointKey La chiave dell'endpoint nel catalogo (es. 'products.allUserWorkout').
    * @param pathParams Parametri dinamici per l'URL (es. { id: 123 } per products.getById).
    * @param body Il corpo della richiesta per POST/PUT.
    * @returns Un Observable con la risposta dell'API o del mock.
@@ -105,89 +104,75 @@ export class ApiCatalogService {
     pathParams?: { [key: string]: any },
     body?: any
   ): Observable<any> {
-    const endpointObject: ApiName | undefined = this.getEndpoint(
-      apiName,
-      nameKey
-    );
-    console.log("OGGETTO PER CHIAMATA: ", endpointObject);
 
-    if (!endpointObject) {
-      return throwError(
-        () => new Error(`OGGETTO CHIAMATA NON TROVATO PER '${nameKey}'.`)
-      );
-    }
-    let baseUrl = this.baseUrl + endpointObject?.endpoint;
-    console.log("BASEURL ENDPOINT: ", baseUrl);
+    return this.apiCatalog$.pipe(
+        filter(catalog => !!catalog),
+        take(1),
 
-    // Se l'endpoint è mockato e siamo in un ambiente di sviluppo/test
-    if (endpointObject.isMocked && !environment.production) {
-      // Assicurati di mockare solo fuori dalla produzione
+        switchMap(catalog => {
 
-      // Ricorda che 'assets' è la radice quando Angular serve i file
-      var fullMockPath = `/assets/recollect/mock/${apiName}/`; // '/assets/recollect' + '/api-mock/products/get-all.json'
+          //const endpointObject = this.getEndpointFromCatalog(catalog, apiName, nameKey);
+          const endpointObject = this.getEndpoint(catalog, apiName, nameKey);
 
-      // Gestione dei parametri dinamici per URL mockati (es. products/get-by-id/:id)
-      if (pathParams && Object.keys(pathParams).length > 0) {
-        for (const key in pathParams) {
-          if (pathParams.hasOwnProperty(key)) {
-            // Esempio semplice: aggiungi l'ID alla fine del percorso base
-            fullMockPath = `${fullMockPath}${nameKey}/${pathParams[key]}/${endpointObject.method}.json`;
+          //console.log("PARAMS: ", apiName,nameKey,pathParams,body)
+          //console.log("ENDPOINT ", endpointObject);
+
+          if (!endpointObject) {
+            return throwError(() => new Error(`Endpoint non trovato per '${nameKey}'`));
           }
-        }
-      } else if (!pathParams) {
-        //non contengo parametri opzionali, vado di url diretta
-        fullMockPath = `${fullMockPath}${nameKey}/${endpointObject.method}.json`;
-      } else if (nameKey.includes("/id") && !pathParams) {
-        // Fallback per getById se non viene fornito un ID, potremmo usare un mock di default
-        //mockUrl = `${mockUrl}default.json`;
-        console.warn("NON HAI PASSATO I PARAMETRI");
-      } else {
-        console.warn("ERRORE SCONOSCIUTO");
-      }
 
-      console.log(`MOCKED URL FINAL: ${fullMockPath}`);
-      return this.http.get(fullMockPath).pipe(
-        tap((response) => {
-          console.log("RESPONSE MOCKED DATA: ", response);
-          return response;
-        }),
-        catchError((error) => {
-          if (
-            error.status === 404 &&
-            fullMockPath === "products.getById" &&
-            !fullMockPath.endsWith("default.json")
-          ) {
-            //console.warn(`Mock per ID specifico non trovato, provando il mock di default: ${fullMockPath}default.json`);
-            const defaultMockPath = `/assets/recollect${fullMockPath}default.json`;
-            return this.http.get(defaultMockPath).pipe(
-              catchError((defaultError) => {
-                //console.error(`Errore anche con il mock di default per ${fullMockPath}:`, defaultError);
-                return throwError(
-                  () => new Error(`Mock non disponibile per ${fullMockPath}.`)
-                );
-              })
-            );
+          let baseUrl = this.baseUrl + endpointObject?.endpoint;
+          let baseUrl2 = "http://localhost:8443/api" + endpointObject?.endpoint;
+
+          console.log("BASEURL ENDPOINT: ", baseUrl2);
+
+          // Se l'endpoint è mockato e siamo in un ambiente di sviluppo/test
+          if (endpointObject.isMocked && !environment.production) {
+            // Assicurati di mockare solo fuori dalla produzione
+
+            // Ricorda che 'assets' è la radice quando Angular serve i file
+            var fullMockPath = `/assets/recollect/mock/${apiName}/`; // '/assets/recollect' + '/api-mock/products/get-all.json'
+
+            // Gestione dei parametri dinamici per URL mockati (es. products/get-by-id/:id)
+            if (pathParams && Object.keys(pathParams).length > 0) {
+              for (const key in pathParams) {
+                if (pathParams.hasOwnProperty(key)) {
+                  // Esempio semplice: aggiungi l'ID alla fine del percorso base
+                  fullMockPath = `${fullMockPath}${nameKey}/${pathParams[key]}/${endpointObject.method}.json`;
+                }
+              }
+            } else if (!pathParams) {
+              //non contengo parametri opzionali, vado di url diretta
+              fullMockPath = `${fullMockPath}${nameKey}/${endpointObject.method}.json`;
+            } else if (nameKey.includes("/id") && !pathParams) {
+              // Fallback per getById se non viene fornito un ID, potremmo usare un mock di default
+              //mockUrl = `${mockUrl}default.json`;
+              console.warn("NON HAI PASSATO I PARAMETRI");
+            } else {
+              console.warn("ERRORE SCONOSCIUTO");
+            }
+            console.log(`MOCKED URL FINAL: ${fullMockPath}`);
+            return this.http.get(fullMockPath);
+          } else {
+            // Altrimenti, esegui la vera chiamata API
+
+            // Sostituzione dei parametri nell'URL reale (es. /products/:id)
+            if (pathParams) {
+              for (const key in pathParams) {
+                if (pathParams.hasOwnProperty(key)) {
+                  //url = url.replace(`:${key}`, pathParams[key]);
+                }
+              }
+            }
+            console.log("ENDPOINT FINALE: ",endpointObject)
+            console.log("BODY FINALE: ",body)
+            console.log(`FACCIO CHIAMATA VERA per ${baseUrl2}`);
+            var request = this.http.request(endpointObject.method, baseUrl2, {body: body});
+            //var request = this.http.post(baseUrl2, body);
+            console.log("REQUEST: ", request);
+            return request;
           }
-          return throwError(
-            () => new Error(`Mock non disponibile per ${fullMockPath}.`)
-          );
         })
-      );
-    } else {
-      // Altrimenti, esegui la vera chiamata API
-      //let url = endpoint.url;
-
-      // Sostituzione dei parametri nell'URL reale (es. /products/:id)
-      if (pathParams) {
-        for (const key in pathParams) {
-          if (pathParams.hasOwnProperty(key)) {
-            //url = url.replace(`:${key}`, pathParams[key]);
-          }
-        }
-      }
-
-      console.log(`Eseguendo chiamata reale per ${baseUrl}`);
-      return this.http.request(endpointObject.method, baseUrl, { body: body });
-    }
+    );
   }
 }

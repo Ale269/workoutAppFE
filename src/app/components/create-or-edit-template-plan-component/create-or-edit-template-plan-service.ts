@@ -18,32 +18,36 @@ export class CreateOrEditTemplatePlanService {
 
   constructor(
       private errorHandlerService: ErrorHandlerService,
-      private workoutService: WorkoutService) {}
+      private workoutService: WorkoutService
+  ) {}
 
   InitializeScheda(idScheda: number) {
     try {
       if (idScheda && idScheda > 0) {
         //dati mockati dalla componente
 
+
         const schedaDTO: SchedaDTO = this.getSchedaById(idScheda);
         this.formScheda = new SchedaForm(schedaDTO);
+/*
+         */
 
-        /*
+/*
         //dati mockati reali dal api service (if mocked==true va su assets senno BE)
         this.workoutService.getSingleWorkout(idScheda).subscribe({
           next: (response) => {
             console.log("RESPONSE WORKOUT: ", response);
             if(response.esito === "OK"){
               if (response.payload.workout){
-                const workout = response.payload.workout;
-                this.formScheda = new SchedaForm(workout);
+                const workout: SchedaDTO[] = response.payload.workout;
+                this.formScheda = new SchedaForm(workout[0]);
               }
             }else{
               //apri modale con errore stampato
             }
           }
         })
-
+/*
          */
 
       } else {
