@@ -9,7 +9,9 @@
     <div class="modal-header">
       <div></div>
       <div>
+        <!-- Supporta sia slot che template -->
         <ng-content select="[slot=header]"></ng-content>
+        <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
       </div>
       <div class="delete-icon-element-container">
         <div class="close-icon-trigger" (click)="close()"></div>
@@ -19,20 +21,22 @@
 
     <!-- Contenuto principale -->
     <div class="modal-body">
-      <ng-content></ng-content>
+      <!-- Supporta sia slot che template -->
+      <ng-content select="[slot=body]"></ng-content>
+      <ng-container *ngTemplateOutlet="bodyTemplate"></ng-container>
     </div>
 
     <!-- Footer del modale -->
     <div class="modal-footer">
-      <div>
-        <div class="btn btn-secondary" (click)="close()">
-          <ng-content select="[slot=footer-btn-close]"></ng-content>
-        </div>
+      <div class="btn btn-secondary" (click)="close()">
+        <!-- Supporta sia slot che template -->
+        <ng-content select="[slot=footer-btn-close]"></ng-content>
+        <ng-container *ngTemplateOutlet="footerCloseTemplate"></ng-container>
       </div>
-      <div>
-        <div class="btn btn-primary" (click)="confirm()">
-          <ng-content select="[slot=footer-btn-confirm]"></ng-content>
-        </div>
+      <div class="btn btn-primary" (click)="confirm()">
+        <!-- Supporta sia slot che template -->
+        <ng-content select="[slot=footer-btn-confirm]"></ng-content>
+        <ng-container *ngTemplateOutlet="footerConfirmTemplate"></ng-container>
       </div>
     </div>
   </div>

@@ -14,17 +14,19 @@ import { AuthService } from "./core/services/auth.service";
 import { User } from "./core/models/user.model";
 
 import { LoginComponent } from "./components/login/login.component";
-import { isPlatformBrowser } from "@angular/common";
+import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { ApiCatalogService } from "./core/services/api-catalog.service";
 import { filter, Subject, take, takeUntil } from "rxjs";
 import { MenuComponent } from "./components/shared/menu-component/menu-component";
+import { GenericModal } from "./components/shared/generic-modal/generic-modal";
+import { ModalService } from "./core/services/modal.service";
 
 @Component({
   selector: "app-root",
   standalone: true,
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
-  imports: [RouterOutlet, MenuComponent, LoginComponent],
+  imports: [RouterOutlet, MenuComponent, LoginComponent, GenericModal, CommonModule],
 })
 export class AppComponent implements OnInit {
   currentTheme = "light-theme";
@@ -40,13 +42,13 @@ export class AppComponent implements OnInit {
     private router: Router,
 
     @Inject(PLATFORM_ID) private platformId: Object,
-    private apiCatalogService: ApiCatalogService
+    private apiCatalogService: ApiCatalogService,
+    public modalService: ModalService
   ) {
       // Configura lingue supportate
       this.translate.addLangs(["en", "it", "es"]);
       this.translate.setDefaultLang("en");
       
-    
     
     // Rileva lingua del browser
     const browserLang = this.translate.getBrowserLang();

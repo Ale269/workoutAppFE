@@ -59,6 +59,35 @@ export class AllenamentoForm {
     }
   }
 
+  deleteEsercizio(identifier: number): boolean {
+    try {
+      // Trova l'indice dell'esercizio da eliminare
+      const esercizioIndex = this.listaEserciziForm.findIndex(
+        (esercizio) => esercizio.form.get("identifier")?.value === identifier
+      );
+
+      if (esercizioIndex === -1) {
+        throw new Error("Esercizio con identifier ${identifier} non trovato)");
+      }
+
+      // Rimuovi dall'array di EsercizioForm
+      this.listaEserciziForm.splice(esercizioIndex, 1);
+
+      // Rimuovi dal FormArray
+      const listaEserciziFormArray = this.form.controls[
+        "listaEsercizi"
+      ] as FormArray;
+      listaEserciziFormArray.removeAt(esercizioIndex);
+
+      // Riassegna gli ordinamenti dopo l'eliminazione
+      this.reassignOrdinamentiEsercizi();
+
+      return true;
+    } catch (error) {
+      throw new Error("AllenamentoForm.deleteEsercizio: " + error);
+    }
+  }
+
   findEsercizioByIdentifier(identifier: number): EsercizioForm | null {
     return (
       this.listaEserciziForm.find(

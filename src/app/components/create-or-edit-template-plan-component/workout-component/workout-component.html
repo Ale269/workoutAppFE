@@ -38,7 +38,7 @@
       </button>
     </div>
     <div class="delete-allenamento-button-row">
-      <button class="text-shape-button-danger">
+      <button class="text-shape-button-danger" (click)="openDeleteWorkout()">
         <span>Elimina allenamento</span>
         <div class="text-shape-button-icon-container-danger">
           <img src="assets/recollect/svg/google-delete.svg" />
@@ -50,8 +50,50 @@
     @for (esercizioForm of this.formAllenamento.listaEserciziForm; track
     esercizioForm.form.controls['identifier'].value) {
     <app-exercise-component
+      (onDeleteExercise)="deleteEexercise($event)"
       [formEsercizio]="esercizioForm"
     ></app-exercise-component>
     } @empty { }
   </div>
 </div>
+
+
+
+
+
+<!-- Template per il modale -->
+
+<ng-template #headerDeleteWorkout>
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
+</ng-template>
+
+<!-- Template per il body -->
+<ng-template #bodyDeleteWorkout>
+  <h3 class="text-white">Sei sicuro di voler eliminare questo allenamento?</h3>
+  <h3 class="text-white">Questa azione non può essere annullata.</h3>
+</ng-template>
+
+<!-- Template per il bottone di chiusura -->
+<ng-template #footerCloseDeleteWorkout>
+  <button class="text-shape-button-cancel" slot="footer-btn-close">
+    <span>Annulla</span>
+    <div class="text-shape-button-icon-container-cancel">
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<!-- Template per il bottone di conferma -->
+<ng-template #footerConfirmDeleteWorkout>
+  <button class="text-shape-button-danger">
+    <span>Elimina</span>
+    <div class="text-shape-button-icon-container-danger">
+      <img src="assets/recollect/svg/google-delete.svg" />
+    </div>
+  </button>
+</ng-template>
+

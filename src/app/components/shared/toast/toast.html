@@ -1,0 +1,11 @@
+<div #toastElement class="toast" [class]="'toast-' + type" *ngIf="isVisible">
+  <div class="toast-icon">
+    <span [innerHTML]="getIcon()"></span>
+  </div>
+  <div class="toast-content">
+    <p class="toast-message">{{ message }}</p>
+  </div>
+  <button class="toast-close" (click)="close()" *ngIf="showCloseButton">
+    <span>&times;</span>
+  </button>
+</div>

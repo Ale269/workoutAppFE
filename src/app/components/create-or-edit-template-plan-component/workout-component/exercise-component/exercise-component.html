@@ -11,7 +11,7 @@
       </h3>
     </div>
     <div class="delete-icon-element-container">
-      <div class="close-icon-trigger"></div>
+      <div class="close-icon-trigger" (click)="openDeleteModal()"></div>
       <img src="assets/recollect/svg/google-close-icon.svg" />
     </div>
   </div>
@@ -55,14 +55,40 @@
   </form>
 </div>
 
-<!-- fixare, da errore nell edit
+<!-- Template per il modale -->
 
-<app-generic-modal
-  [isVisible]="deleteExerciseModalVisible"
-  [title]="'Informazione'"
-  [showConfirmButton]="false"
-  (closed)="deleteExerciseModalVisible = true"
->
+<ng-template #headerDeleteWorkout>
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
+</ng-template>
 
-</app-generic-modal>
--->
+<!-- Template per il body -->
+<ng-template #bodyDeleteWorkout>
+  <h3 class="text-white">Sei sicuro di voler eliminare questo esercizio?</h3>
+  <h3 class="text-white">Questa azione non può essere annullata.</h3>
+</ng-template>
+
+<!-- Template per il bottone di chiusura -->
+<ng-template #footerCloseDeleteWorkout>
+  <button class="text-shape-button-cancel" slot="footer-btn-close">
+    <span>Annulla</span>
+    <div class="text-shape-button-icon-container-cancel">
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<!-- Template per il bottone di conferma -->
+<ng-template #footerConfirmDeleteWorkout>
+  <button class="text-shape-button-danger">
+    <span>Elimina</span>
+    <div class="text-shape-button-icon-container-danger">
+      <img src="assets/recollect/svg/google-delete.svg" />
+    </div>
+  </button>
+</ng-template>
+
+

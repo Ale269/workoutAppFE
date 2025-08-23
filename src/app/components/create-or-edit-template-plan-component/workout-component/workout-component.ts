@@ -1,4 +1,13 @@
-import { Component, Input, input } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  input,
+  Output,
+  TemplateRef,
+  ViewChild,
+} from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
@@ -17,6 +26,8 @@ import { ExerciseComponent } from "./exercise-component/exercise-component";
 import { AccordionComponent } from "../../shared/accordion/accordion-element/accordion.component";
 import { AccordionHeaderComponent } from "../../shared/accordion/accordion-element/accordion-header/accordion-header.component";
 import { AccordionBodyComponent } from "../../shared/accordion/accordion-element/accordion-body/accordion-body.component";
+import { GenericModal } from "../../shared/generic-modal/generic-modal";
+import { ModalService } from "src/app/core/services/modal.service";
 
 @Component({
   selector: "app-workout-component",
@@ -27,15 +38,27 @@ import { AccordionBodyComponent } from "../../shared/accordion/accordion-element
     MatFormField,
     MatInput,
     ExerciseComponent,
+    GenericModal,
   ],
   templateUrl: "./workout-component.html",
   styleUrl: "./workout-component.scss",
 })
 export class WorkoutComponent {
+  @ViewChild("headerDeleteWorkout") headerDeleteWorkout!: TemplateRef<any>;
+  @ViewChild("bodyDeleteWorkout") bodyDeleteWorkout!: TemplateRef<any>;
+  @ViewChild("footerCloseDeleteWorkout")
+  footerCloseDeleteWorkout!: TemplateRef<any>;
+  @ViewChild("footerConfirmDeleteWorkout")
+  footerConfirmDeleteWorkout!: TemplateRef<any>;
+
   @Input() formAllenamento!: AllenamentoForm;
 
-  constructor(private errorHandlerService: ErrorHandlerService) {
-  }
+  @Output() onDeleteWorkout = new EventEmitter<number>();
+
+  constructor(
+    private errorHandlerService: ErrorHandlerService,
+    private modalService: ModalService
+  ) {}
 
   ifEmptySetPlaceholder(event: any) {
     try {
@@ -49,6 +72,59 @@ export class WorkoutComponent {
       this.errorHandlerService.handleError(
         error,
         "WorkoutComponent.ifEmptySetPlaceholder"
+      );
+    }
+  }
+
+  deleteEexercise(identifier: number) {
+    try {
+      this.formAllenamento.deleteEsercizio(identifier);
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.deleteEexercise"
+      );
+    }
+  }
+  // openDeleteWorkout() {
+  //   this.modalService.open({
+  //     title: "Attenzione",
+  //     warning: true,
+  //     content: this.templateDeleteWorkout,
+  //     showConfirmButton: true,
+  //     onConfirm: () => this.deleteWorkout(),
+  //   });
+  // }
+
+  openDeleteWorkout() {
+    try {
+      this.modalService.open({
+        warning: true,
+        headerTemplate: this.headerDeleteWorkout,
+        bodyTemplate: this.bodyDeleteWorkout,
+        footerCloseTemplate: this.footerCloseDeleteWorkout,
+        footerConfirmTemplate: this.footerConfirmDeleteWorkout,
+        onConfirm: () => this.deleteWorkout(),
+        onClose: () => console.log("Modal closed"),
+      });
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.DeleteExercise"
+      );
+    }
+  }
+
+
+  deleteWorkout() {
+    try {
+      this.onDeleteWorkout.emit(
+        this.formAllenamento.form.controls["identifier"].value
+      );
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.DeleteExercise"
       );
     }
   }

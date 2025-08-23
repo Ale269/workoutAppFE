@@ -1,3 +1,4 @@
+<!-- app.component.html -->
 <div class="app-container" [class]="currentTheme">
   @if(this.MenuIsVisible){
   <app-menu-component></app-menu-component>
@@ -7,14 +8,21 @@
     <router-outlet></router-outlet>
   </div>
 
-  <!-- <app-footer></app-footer> -->
-
-  <!-- @if (showLoginModal) {
-        <div class="modal-backdrop" (click)="closeLogin()">
-            <div class="modal-content"
-                 (click)="$event.stopPropagation()">
-                <app-login (closeLogin)="closeLogin()"></app-login>
-            </div>
-        </div>
-    } -->
+  @for (modal of modalService.modals(); track modal) {
+  <app-generic-modal
+    [isVisible]="true"
+    [title]="modal.title"
+    [warning]="modal.warning ?? false"
+    [showConfirmButton]="modal.showConfirmButton ?? false"
+    [confirmText]="modal.confirmText ?? 'Conferma'"
+    [cancelText]="modal.cancelText ?? 'Annulla'"
+    [headerTemplate]="modal.headerTemplate"
+    [bodyTemplate]="modal.bodyTemplate"
+    [footerCloseTemplate]="modal.footerCloseTemplate"
+    [footerConfirmTemplate]="modal.footerConfirmTemplate"
+    (closed)="modalService.close(modal)"
+    (confirmed)="modalService.confirm(modal)"
+  >
+  </app-generic-modal>
+  }
 </div>

@@ -22,7 +22,7 @@ import { WorkoutComponent } from "./workout-component/workout-component";
     AccordionGroupComponent,
     CustomTabComponent,
     CustomTabContainerComponent,
-    WorkoutComponent
+    WorkoutComponent,
   ],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",
@@ -46,6 +46,17 @@ export class CreateOrEditTemplatePlanComponent implements OnInit {
       this.errorHandlerService.handleError(
         error,
         "CreateOrEditTemplatePlanComponent.ngOnInit"
+      );
+    }
+  }
+
+  deleteWorkout(identifier: number) {
+    try {
+      this.createOrEditTemplatePlanService.DeleteWorkout(identifier);
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.deleteEexercise"
       );
     }
   }

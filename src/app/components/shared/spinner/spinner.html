@@ -1,0 +1,16 @@
+ <div class="spinner-overlay" *ngIf="isActive" #spinnerOverlay>
+      <div class="spinner-container">
+        <!-- Spinner rotante -->
+        <div class="spinner" #spinnerElement *ngIf="!showResult"></div>
+        
+        <!-- Risultato finale -->
+        <div class="result-icon" #resultElement *ngIf="showResult" [class]="'result-' + finalResult">
+          <span [innerHTML]="getResultIcon()"></span>
+        </div>
+        
+        <!-- Messaggio -->
+        <p class="spinner-text" *ngIf="getCurrentMessage()" #messageElement>
+          {{ getCurrentMessage() }}
+        </p>
+      </div>
+    </div>

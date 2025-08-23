@@ -18,7 +18,7 @@
         [id]="allenamentoForm.form.controls['identifier'].value.toString()"
         [label]="allenamentoForm.form.controls['nomeAllenamento'].value"
       >
-        <app-workout-component [formAllenamento]="allenamentoForm"></app-workout-component>
+        <app-workout-component (onDeleteWorkout)="deleteWorkout($event)" [formAllenamento]="allenamentoForm"></app-workout-component>
       </custom-tab>
       } @empty { }
     </custom-tab-container>

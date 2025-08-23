@@ -1,3 +1,4 @@
+// generic-modal.component.ts
 import {
   Component,
   Input,
@@ -11,6 +12,7 @@ import {
   ElementRef,
   OnChanges,
   SimpleChanges,
+  TemplateRef
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { gsap } from "gsap";
@@ -19,12 +21,24 @@ import { gsap } from "gsap";
   selector: "app-generic-modal",
   imports: [CommonModule],
   templateUrl: "./generic-modal.html",
-  styleUrl: "./generic-modal.scss",
+  styleUrls: ["./generic-modal.scss"],
+  host: {
+    '[class.modal-active]': 'isVisible',
+    '[class.modal-warning]': 'warning',
+    '[style.position]': 'isVisible ? "fixed" : "static"',
+    '[style.top]': 'isVisible ? "0" : "auto"',
+    '[style.left]': 'isVisible ? "0" : "auto"',
+    '[style.width]': 'isVisible ? "100%" : "auto"',
+    '[style.height]': 'isVisible ? "100%" : "auto"',
+    '[style.z-index]': 'isVisible ? "9997" : "auto"',
+    '[style.pointer-events]': 'isVisible ? "auto" : "none"'
+  }
 })
 export class GenericModal implements OnInit, OnDestroy, AfterViewInit, OnChanges {
   @ViewChild('modalOverlay', { static: false }) modalOverlay!: ElementRef;
   @ViewChild('modalContainer', { static: false }) modalContainer!: ElementRef;
 
+  @Input() warning: boolean = false;
   @Input() isVisible: boolean = false;
   @Input() title?: string;
   @Input() showFooter: boolean = true;
@@ -34,35 +48,38 @@ export class GenericModal implements OnInit, OnDestroy, AfterViewInit, OnChanges
   @Input() cancelText: string = "Annulla";
   @Input() hasCustomHeader: boolean = false;
   @Input() hasCustomFooter: boolean = false;
+  
+  // Nuove input per i template
+  @Input() headerTemplate?: TemplateRef<any>;
+  @Input() bodyTemplate?: TemplateRef<any>;
+  @Input() footerCloseTemplate?: TemplateRef<any>;
+  @Input() footerConfirmTemplate?: TemplateRef<any>;
 
   @Output() closed = new EventEmitter<void>();
   @Output() confirmed = new EventEmitter<void>();
 
   public isAnimating: boolean = false;
   private isInitialized: boolean = false;
+  private pendingClose: boolean = false; // Flag per gestire la chiusura
 
   constructor() {}
 
-  ngOnInit(): void {
-    // Non gestiamo più overflow qui, lo faremo nelle animazioni
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.initializeModal();
     this.isInitialized = true;
     
-    // Se il modal dovrebbe essere visibile all'inizializzazione
     if (this.isVisible) {
       this.openModal();
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Reagisce ai cambiamenti di isVisible dopo l'inizializzazione
     if (changes['isVisible'] && this.isInitialized) {
-      if (this.isVisible) {
+      if (this.isVisible && !this.pendingClose) {
         this.openModal();
-      } else {
+      } else if (!this.isVisible && !this.pendingClose) {
         this.closeModal();
       }
     }
@@ -73,7 +90,6 @@ export class GenericModal implements OnInit, OnDestroy, AfterViewInit, OnChanges
   }
 
   private initializeModal(): void {
-    // Imposta lo stato iniziale degli elementi
     gsap.set(this.modalOverlay.nativeElement, {
       opacity: 0,
       visibility: "hidden"
@@ -90,64 +106,59 @@ export class GenericModal implements OnInit, OnDestroy, AfterViewInit, OnChanges
     if (this.isAnimating) return;
     
     this.isAnimating = true;
+    this.pendingClose = false;
     document.body.style.overflow = "hidden";
 
-    // Timeline per l'animazione di apertura
     const tl = gsap.timeline({
       onComplete: () => {
         this.isAnimating = false;
       }
     });
 
-    // Prima mostra l'overlay
     tl.set(this.modalOverlay.nativeElement, { visibility: "visible" })
-      
-      // Anima l'overlay fade-in
       .to(this.modalOverlay.nativeElement, {
         opacity: 1,
         duration: 0.3,
         ease: "power2.out"
       })
-      
-      // Simultaneamente anima il modal container con bounce
       .to(this.modalContainer.nativeElement, {
         scale: 1,
         y: 0,
         opacity: 1,
         duration: 0.6,
-        ease: "back.out(1.7)" // Effetto bounce come nel tuo pulsante
-      }, "-=0.2"); // Inizia leggermente prima che l'overlay finisca
+        ease: "back.out(1.7)"
+      }, "-=0.2");
   }
 
   private closeModal(): void {
     if (this.isAnimating) return;
     
     this.isAnimating = true;
+    this.pendingClose = true;
 
-    // Timeline per l'animazione di chiusura
     const tl = gsap.timeline({
       onComplete: () => {
         this.isAnimating = false;
+        this.pendingClose = false;
         document.body.style.overflow = "auto";
         gsap.set(this.modalOverlay.nativeElement, { visibility: "hidden" });
+        // Emetti l'evento closed solo dopo che l'animazione è completata
+        this.closed.emit();
       }
     });
 
-    // Anima il modal container con bounce inverso
     tl.to(this.modalContainer.nativeElement, {
       scale: 0.7,
-      y: -30,
+      y: -50,
       opacity: 0,
       duration: 0.4,
-      ease: "back.in(1.4)" // Bounce più leggero per la chiusura
+      ease: "back.in(1.4)"
     })
-    
-    // Poi l'overlay fade-out
     .to(this.modalOverlay.nativeElement, {
       opacity: 0,
       duration: 0.2,
       ease: "power2.in"
-    }, "-=0.1"); // Inizia leggermente prima che il container finisca
+    }, "-=0.1");
   }
 
   onOverlayClick(event: Event): void {
@@ -157,16 +168,14 @@ export class GenericModal implements OnInit, OnDestroy, AfterViewInit, OnChanges
   }
 
   close(): void {
-    if (this.isAnimating) return;
+    if (this.isAnimating || this.pendingClose) return;
     
-    this.isVisible = false;
+    // NON settare isVisible qui - lascia che sia il parent a gestirlo
     this.closeModal();
-    this.closed.emit();
   }
 
   confirm(): void {
     if (this.isAnimating) return;
-    
     this.confirmed.emit();
   }
 
