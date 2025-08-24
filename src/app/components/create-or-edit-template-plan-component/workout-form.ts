@@ -5,7 +5,6 @@ import { EsercizioDTO } from "src/app/models/modifica-scheda/eserciziodto";
 
 export interface AllenamentoFormModel {
   identifier: FormControl<number | null>;
-  idAllenamento: FormControl<number | null>;
   nomeAllenamento: FormControl<string | null>;
   ordinamento: FormControl<number | null>;
   listaEsercizi: FormArray<FormGroup<EsercizioFormModel>>;
@@ -16,12 +15,12 @@ export class AllenamentoForm {
   public identifier: number = 0;
   public form: FormGroup;
 
+  public availableExercisePositions: number[] = [];
+
   constructor(identifier: number, allenamentoDTO?: AllenamentoDTO) {
     this.form = new FormGroup<AllenamentoFormModel>({
       identifier: new FormControl<number | null>(identifier),
-      idAllenamento: new FormControl<number | null>(
-        allenamentoDTO?.idAllenamento || null
-      ),
+      
       nomeAllenamento: new FormControl<string | null>(
         allenamentoDTO?.nomeAllenamento || null
       ),
@@ -30,6 +29,10 @@ export class AllenamentoForm {
       ),
       listaEsercizi: new FormArray<FormGroup<EsercizioFormModel>>([]),
     });
+
+    // this.form.controls["listaEsercizi"].valueChanges.subscribe(() => {
+    //   this.sanitizeExerciseOrdering();
+    // });
 
     // Se ci sono dati DTO, popola gli esercizi
     if (allenamentoDTO?.listaEsercizi) {
@@ -43,10 +46,20 @@ export class AllenamentoForm {
     try {
       this.identifier = this.identifier + 1;
 
+      // Determina l'ordinamento per il nuovo esercizio (ultima posizione)
+      const nextOrdinamento = this.listaEserciziForm.length + 1;
+
       const newEsercizioForm: EsercizioForm = new EsercizioForm(
         this.identifier,
         esercizioDTO
       );
+
+      // Se non ha già un ordinamento (nuovo esercizio), assegna l'ultima posizione
+      if (!esercizioDTO?.ordinamento) {
+        newEsercizioForm.form
+          .get("ordinamento")
+          ?.setValue(nextOrdinamento, { emitEvent: false });
+      }
 
       this.listaEserciziForm.push(newEsercizioForm);
 
@@ -54,9 +67,20 @@ export class AllenamentoForm {
         "listaEsercizi"
       ] as FormArray;
       listaEserciziFormArray.push(newEsercizioForm.form);
+
+      // Aggiorna le posizioni disponibili senza riordinare
+      this.updateAvailablePositions();
     } catch (error) {
       throw new Error("AllenamentoForm.addEsercizioForm: " + error);
     }
+  }
+
+  private updateAvailablePositions(): void {
+    const totalExercises = this.listaEserciziForm.length;
+    this.availableExercisePositions = Array.from(
+      { length: totalExercises },
+      (_, i) => i + 1
+    );
   }
 
   deleteEsercizio(identifier: number): boolean {
@@ -80,7 +104,7 @@ export class AllenamentoForm {
       listaEserciziFormArray.removeAt(esercizioIndex);
 
       // Riassegna gli ordinamenti dopo l'eliminazione
-      this.reassignOrdinamentiEsercizi();
+      this.sanitizeExerciseOrdering();
 
       return true;
     } catch (error) {
@@ -96,27 +120,106 @@ export class AllenamentoForm {
     );
   }
 
-  reassignOrdinamentiEsercizi(): void {
-    if (!this.listaEserciziForm) {
+  private sanitizeExerciseOrdering(): void {
+    if (!this.listaEserciziForm || this.listaEserciziForm.length === 0) {
+      this.availableExercisePositions = [];
       return;
     }
 
-    // Ordina gli esercizi per ordinamento corrente
-    const eserciziOrdinati = [...this.listaEserciziForm].sort((a, b) => {
-      const ordinamentoA = a.form.get("Ordinamento")?.value || 0;
-      const ordinamentoB = b.form.get("Ordinamento")?.value || 0;
+    // 1. Ordina gli esercizi per ordinamento corrente
+    this.listaEserciziForm.sort((a, b) => {
+      const ordinamentoA = a.form.get("ordinamento")?.value || 0;
+      const ordinamentoB = b.form.get("ordinamento")?.value || 0;
       return ordinamentoA - ordinamentoB;
     });
 
-    // Riassegna gli ordinamenti da 1 a N
-    eserciziOrdinati.forEach((esercizio, index) => {
+    // 2. Riassegna gli ordinamenti da 1 a N per colmare i gap
+    this.listaEserciziForm.forEach((esercizio, index) => {
       const newOrdinamento = index + 1;
-      esercizio.form.get("Ordinamento")?.setValue(newOrdinamento);
+      esercizio.form
+        .get("ordinamento")
+        ?.setValue(newOrdinamento, { emitEvent: false });
     });
 
-    // Riordina anche l'array principale
-    this.listaEserciziForm = eserciziOrdinati;
+    // 3. Aggiorna le posizioni disponibili
+    const totalExercises = this.listaEserciziForm.length;
+    this.availableExercisePositions = Array.from(
+      { length: totalExercises },
+      (_, i) => i + 1
+    );
+
+    // 4. Ricostruisci il FormArray nell'ordine corretto
+    this.rebuildFormArray();
   }
+
+  private rebuildFormArray(): void {
+    const listaEserciziFormArray = this.form.controls[
+      "listaEsercizi"
+    ] as FormArray;
+
+    // Pulisce il FormArray senza emettere eventi per evitare loop infiniti
+    while (listaEserciziFormArray.length !== 0) {
+      listaEserciziFormArray.removeAt(0, { emitEvent: false });
+    }
+
+    // Riaggiunge al FormArray nell'ordine corretto
+    this.listaEserciziForm.forEach((esercizio) => {
+      listaEserciziFormArray.push(esercizio.form, { emitEvent: false });
+    });
+  }
+
+  moveEsercizio(exerciseIdentifier: number, newPosition: number): boolean {
+    try {
+      const currentIndex = this.listaEserciziForm.findIndex(
+        (e) => e.form.get("identifier")?.value === exerciseIdentifier
+      );
+
+      if (currentIndex === -1) {
+        console.error("Esercizio da spostare non trovato");
+        return false;
+      }
+
+      // L'indice dell'array è basato su 0, la posizione su 1
+      const newIndex = newPosition - 1;
+
+      // 1. Rimuovi l'esercizio dalla sua posizione attuale nel nostro array di supporto
+      const [exerciseToMove] = this.listaEserciziForm.splice(currentIndex, 1);
+
+      // 2. Inseriscilo nella nuova posizione
+      this.listaEserciziForm.splice(newIndex, 0, exerciseToMove);
+
+      // 3. Ora che l'ordine è stato modificato, chiama la sanificazione
+      // per aggiornare i valori 'ordinamento' e ricostruire il FormArray.
+      this.sanitizeExerciseOrdering();
+
+      return true;
+    } catch (error) {
+      console.error("Errore durante lo spostamento dell'esercizio:", error);
+      return false;
+    }
+  }
+
+  // reassignOrdinamentiEsercizi(): void {
+  //   if (!this.listaEserciziForm) {
+  //     return;
+  //   }
+
+  //   // Ordina gli esercizi per ordinamento corrente
+  //   const eserciziOrdinati = [...this.listaEserciziForm].sort((a, b) => {
+  //     const ordinamentoA = a.form.get("Ordinamento")?.value || 0;
+  //     const ordinamentoB = b.form.get("Ordinamento")?.value || 0;
+  //     return ordinamentoA - ordinamentoB;
+  //   });
+
+  //   // Riassegna gli ordinamenti da 1 a N
+  //   eserciziOrdinati.forEach((esercizio, index) => {
+  //     const newOrdinamento = index + 1;
+  //     esercizio.form.get("Ordinamento")?.setValue(newOrdinamento);
+  //   });
+
+  //   // Riordina anche l'array principale
+  //   this.listaEserciziForm = eserciziOrdinati;
+  // }
 
   public resetForm(): void {
     this.form.reset();

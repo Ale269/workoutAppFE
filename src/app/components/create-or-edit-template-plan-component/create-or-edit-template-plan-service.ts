@@ -237,6 +237,32 @@ export class CreateOrEditTemplatePlanService {
   //   );
   // }
 
+  AddWorkout(nomeAllenamento?: string): void {
+    try {
+      if (!this.formScheda) {
+        throw new Error(
+          "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
+        );
+      }
+
+      // Calcola l'ordinamento per il nuovo allenamento (ultima posizione)
+      const nextOrdinamento = this.formScheda.listaAllenamentiForm.length + 1;
+
+      // Crea un AllenamentoDTO con il nome e l'ordinamento
+      const nuovoAllenamentoDTO: AllenamentoDTO = {
+        id: 0,
+        nomeAllenamento: nomeAllenamento || `Giorno ${nextOrdinamento}`,
+        ordinamento: nextOrdinamento,
+        listaEsercizi: [], // Lista vuota per un nuovo allenamento
+      };
+
+      // Usa il metodo esistente per aggiungere l'allenamento
+      this.formScheda.addAllenamentoForm(nuovoAllenamentoDTO);
+    } catch (error) {
+      throw new Error("CreateOrEditTemplatePlanService.AddWorkout: " + error);
+    }
+  }
+
   DeleteWorkout(allenamentoIdentifier: number): void {
     try {
       this.formScheda.DeleteAllenamento(allenamentoIdentifier);
@@ -395,7 +421,6 @@ export class CreateOrEditTemplatePlanService {
       listaAllenamenti: [
         {
           id: 1,
-          idAllenamento: 201,
           nomeAllenamento: "Push Day componente",
           ordinamento: 1,
           listaEsercizi: [
@@ -406,9 +431,27 @@ export class CreateOrEditTemplatePlanService {
               idIconaEsercizio: 0,
               ordinamento: 1,
               listaSerie: [
-                { id: 1, idSerie: 1001, ripetizioni: 8, carico: 80 },
-                { id: 2, idSerie: 1002, ripetizioni: 8, carico: 80 },
-                { id: 3, idSerie: 1003, ripetizioni: 6, carico: 85 },
+                {
+                  id: 1,
+                  idSerie: 1001,
+                  ripetizioni: 8,
+                  carico: 80,
+                  ordinamento: 1,
+                },
+                {
+                  id: 2,
+                  idSerie: 1002,
+                  ripetizioni: 8,
+                  carico: 80,
+                  ordinamento: 2,
+                },
+                {
+                  id: 3,
+                  idSerie: 1003,
+                  ripetizioni: 6,
+                  carico: 85,
+                  ordinamento: 3,
+                },
               ],
             },
             {
@@ -418,15 +461,26 @@ export class CreateOrEditTemplatePlanService {
               idIconaEsercizio: 2,
               ordinamento: 2,
               listaSerie: [
-                { id: 4, idSerie: 2001, ripetizioni: 10, carico: 50 },
-                { id: 5, idSerie: 2002, ripetizioni: 8, carico: 55 },
+                {
+                  id: 4,
+                  idSerie: 2001,
+                  ripetizioni: 10,
+                  carico: 50,
+                  ordinamento: 1,
+                },
+                {
+                  id: 5,
+                  idSerie: 2002,
+                  ripetizioni: 8,
+                  carico: 55,
+                  ordinamento: 2,
+                },
               ],
             },
           ],
         },
         {
           id: 2,
-          idAllenamento: 202,
           nomeAllenamento: "Pull Day",
           ordinamento: 2,
           listaEsercizi: [
@@ -437,8 +491,20 @@ export class CreateOrEditTemplatePlanService {
               idIconaEsercizio: 1,
               ordinamento: 1,
               listaSerie: [
-                { id: 6, idSerie: 3001, ripetizioni: 5, carico: 120 },
-                { id: 7, idSerie: 3002, ripetizioni: 5, carico: 125 },
+                {
+                  id: 6,
+                  idSerie: 3001,
+                  ripetizioni: 5,
+                  carico: 120,
+                  ordinamento: 1,
+                },
+                {
+                  id: 7,
+                  idSerie: 3002,
+                  ripetizioni: 5,
+                  carico: 125,
+                  ordinamento: 2,
+                },
               ],
             },
           ],

@@ -7,8 +7,10 @@ import {
   Output,
   TemplateRef,
   ViewChild,
+  OnInit,
+  OnDestroy,
 } from "@angular/core";
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import {
@@ -18,16 +20,15 @@ import {
   MatInput,
   MatHint,
 } from "@angular/material/input";
-import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AllenamentoForm } from "../workout-form";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
-import { AccordionGroupComponent } from "../../shared/accordion/accordion-group/accordion-group.component";
 import { ExerciseComponent } from "./exercise-component/exercise-component";
-import { AccordionComponent } from "../../shared/accordion/accordion-element/accordion.component";
-import { AccordionHeaderComponent } from "../../shared/accordion/accordion-element/accordion-header/accordion-header.component";
-import { AccordionBodyComponent } from "../../shared/accordion/accordion-element/accordion-body/accordion-body.component";
 import { GenericModal } from "../../shared/generic-modal/generic-modal";
 import { ModalService } from "src/app/core/services/modal.service";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatSelectModule } from "@angular/material/select";
+import { Subject, takeUntil } from "rxjs";
+import { SchedaForm } from "../template-plan-form";
 
 @Component({
   selector: "app-workout-component",
@@ -38,12 +39,13 @@ import { ModalService } from "src/app/core/services/modal.service";
     MatFormField,
     MatInput,
     ExerciseComponent,
-    GenericModal,
+    MatFormFieldModule,
+    MatSelectModule,
   ],
   templateUrl: "./workout-component.html",
   styleUrl: "./workout-component.scss",
 })
-export class WorkoutComponent {
+export class WorkoutComponent implements OnInit, OnDestroy {
   @ViewChild("headerDeleteWorkout") headerDeleteWorkout!: TemplateRef<any>;
   @ViewChild("bodyDeleteWorkout") bodyDeleteWorkout!: TemplateRef<any>;
   @ViewChild("footerCloseDeleteWorkout")
@@ -51,14 +53,53 @@ export class WorkoutComponent {
   @ViewChild("footerConfirmDeleteWorkout")
   footerConfirmDeleteWorkout!: TemplateRef<any>;
 
+  @ViewChild("headerAddWorkout") headerAddWorkout!: TemplateRef<any>;
+  @ViewChild("bodyAddWorkout") bodyAddWorkout!: TemplateRef<any>;
+  @ViewChild("footerCloseAddWorkout")
+  footerCloseAddWorkout!: TemplateRef<any>;
+  @ViewChild("footerConfirmAddWorkout")
+  footerConfirmAddWorkout!: TemplateRef<any>;
+
   @Input() formAllenamento!: AllenamentoForm;
+  @Input() formScheda!: SchedaForm;
 
   @Output() onDeleteWorkout = new EventEmitter<number>();
+  @Output() onAddWorkout = new EventEmitter<string>();
+
+  public newWorkoutNameControl!: FormControl<string>;
+
+  public ordinamentoControl!: FormControl<number | null>;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
     private modalService: ModalService
   ) {}
+
+  ngOnInit(): void {
+    try {
+      this.ordinamentoControl = this.formAllenamento.form.controls[
+        "ordinamento"
+      ] as FormControl<number | null>;
+
+      // Sottoscrizione al cambio di valore dell'ordinamento
+      this.ordinamentoControl.valueChanges
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((newPosition) => {
+          if (newPosition !== null && newPosition !== undefined) {
+            this.changePosition(newPosition);
+          }
+        });
+    } catch (error) {
+      this.errorHandlerService.handleError(error, "WorkoutComponent.ngOnInit");
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   ifEmptySetPlaceholder(event: any) {
     try {
@@ -76,6 +117,36 @@ export class WorkoutComponent {
     }
   }
 
+  private changePosition(newPosition: number): void {
+    try {
+      const currentWorkoutId =
+        this.formAllenamento.form.controls["identifier"].value;
+
+      if (!currentWorkoutId) {
+        console.warn("Identifier dell'allenamento non trovato");
+        return;
+      }
+
+      // Usa il metodo moveAllenamento di SchedaForm per gestire lo spostamento
+      // e il riallineamento automatico di tutti gli ordinamenti
+      const success = this.formScheda.moveAllenamento(
+        currentWorkoutId,
+        newPosition
+      );
+
+      if (!success) {
+        console.error("Errore durante lo spostamento dell'allenamento");
+        // Opzionalmente, potresti ripristinare il valore precedente
+        // o mostrare un messaggio di errore all'utente
+      }
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.changePosition"
+      );
+    }
+  }
+
   deleteEexercise(identifier: number) {
     try {
       this.formAllenamento.deleteEsercizio(identifier);
@@ -86,15 +157,16 @@ export class WorkoutComponent {
       );
     }
   }
-  // openDeleteWorkout() {
-  //   this.modalService.open({
-  //     title: "Attenzione",
-  //     warning: true,
-  //     content: this.templateDeleteWorkout,
-  //     showConfirmButton: true,
-  //     onConfirm: () => this.deleteWorkout(),
-  //   });
-  // }
+  addNuovoEsercizio() {
+    try {
+      this.formAllenamento.addEsercizioForm(undefined);
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.addNuovoEsercizio"
+      );
+    }
+  }
 
   openDeleteWorkout() {
     try {
@@ -105,16 +177,71 @@ export class WorkoutComponent {
         footerCloseTemplate: this.footerCloseDeleteWorkout,
         footerConfirmTemplate: this.footerConfirmDeleteWorkout,
         onConfirm: () => this.deleteWorkout(),
-        onClose: () => console.log("Modal closed"),
       });
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
-        "WorkoutComponent.DeleteExercise"
+        "WorkoutComponent.openDeleteWorkout"
       );
     }
   }
 
+  openAddWorkoutMdal() {
+    try {
+      // Devo creare un form da bindare all'html dell'add e passarlo al modal
+      this.initializeNewWorkoutControl();
+
+      this.modalService.open({
+        warning: false, // Non è un warning, è un'aggiunta
+        headerTemplate: this.headerAddWorkout,
+        bodyTemplate: this.bodyAddWorkout,
+        footerCloseTemplate: this.footerCloseAddWorkout,
+        footerConfirmTemplate: this.footerConfirmAddWorkout,
+        onConfirm: () => this.addWorkout(),
+      });
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "ExerciseComponent.openDeleteModal"
+      );
+    }
+  }
+
+  private initializeNewWorkoutControl(): void {
+    // Calcola il placeholder basato sulla posizione successiva
+    const nextPosition =
+      (this.formScheda?.listaAllenamentiForm?.length || 0) + 1;
+    const placeholder = `Giorno ${nextPosition}`;
+
+    // Crea il FormControl con il placeholder come valore iniziale
+    this.newWorkoutNameControl = new FormControl<string>(placeholder, {
+      nonNullable: true,
+    });
+  }
+
+  addWorkout() {
+    try {
+      // Ottieni il valore dal FormControl
+      let workoutName = this.newWorkoutNameControl.value?.trim();
+      
+      // Se è vuoto o uguale al placeholder, usa il placeholder
+      const nextPosition = (this.formScheda?.listaAllenamentiForm?.length || 0) + 1;
+      const placeholder = `Giorno ${nextPosition}`;
+      
+      if (!workoutName || workoutName === placeholder) {
+        workoutName = placeholder;
+      }
+
+      // Emetti il nome dell'allenamento al componente padre
+      this.onAddWorkout.emit(workoutName);
+      
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.confirmAddWorkout"
+      );
+    }
+  }
 
   deleteWorkout() {
     try {
@@ -124,7 +251,7 @@ export class WorkoutComponent {
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
-        "WorkoutComponent.DeleteExercise"
+        "WorkoutComponent.deleteWorkout"
       );
     }
   }

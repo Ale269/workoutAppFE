@@ -2,11 +2,11 @@
   <div class="titolo-serie-container">
     <div class="numero-serie-container">
       <h3 class="text-grey">
-        Serie {{this.formSerie.form.controls['identifier'].value}}
+        Serie {{this.formSerie.form.controls['ordinamentoSerie'].value}}
       </h3>
     </div>
     <div class="delete-icon-element-container">
-      <div class="close-icon-trigger"></div>
+      <div class="close-icon-trigger" (click)="deleteSerie()"></div>
       <img src="assets/recollect/svg/google-close-icon.svg" />
     </div>
   </div>
@@ -15,18 +15,20 @@
       appearance="outline"
       class="full-width"
       [style.padding-bottom]="
-            formSerie.form.controls['ripetizioni'].touched &&
-            !formSerie.form.controls['ripetizioni'].valid
-              ? '16px'
-              : '0'
-          "
+        formSerie.form.controls['ripetizioni'].touched &&
+        !formSerie.form.controls['ripetizioni'].valid
+          ? '16px'
+          : '0'
+      "
     >
       <mat-label>N° ripetizioni</mat-label>
       <input
         matInput
-        [type]="'text'"
+        type="number"
         formControlName="ripetizioni"
         placeholder="ripetizioni"
+        min="1"
+        max="999"
       />
     </mat-form-field>
   </div>

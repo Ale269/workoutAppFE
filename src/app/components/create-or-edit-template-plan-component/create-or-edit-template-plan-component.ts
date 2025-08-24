@@ -6,23 +6,33 @@ import {
   ViewChild,
 } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
-import { AccordionBodyComponent } from "../shared/accordion/accordion-element/accordion-body/accordion-body.component";
 import { AccordionGroupComponent } from "../shared/accordion/accordion-group/accordion-group.component";
-import { AccordionComponent } from "../shared/accordion/accordion-element/accordion.component";
-import { AccordionHeaderComponent } from "../shared/accordion/accordion-element/accordion-header/accordion-header.component";
 import { CreateOrEditTemplatePlanService } from "./create-or-edit-template-plan-service";
-import { MatTabGroup, MatTabsModule } from "@angular/material/tabs";
+import { MatTabGroup } from "@angular/material/tabs";
 import { CustomTabContainerComponent } from "../shared/tabs/custom-tab-container/custom-tab-container";
 import { CustomTabComponent } from "../shared/tabs/custom-tab-components/custom-tab-components";
 import { WorkoutComponent } from "./workout-component/workout-component";
+import { ReactiveFormsModule } from "@angular/forms";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import {
+  MatLabel,
+  MatError,
+  MatFormField,
+  MatInput,
+} from "@angular/material/input";
+import { ExerciseComponent } from "./workout-component/exercise-component/exercise-component";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
   imports: [
-    AccordionGroupComponent,
     CustomTabComponent,
     CustomTabContainerComponent,
     WorkoutComponent,
+    ReactiveFormsModule,
+    MatLabel,
+    MatFormField,
+    MatInput,
+    MatFormFieldModule,
   ],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",
@@ -57,6 +67,17 @@ export class CreateOrEditTemplatePlanComponent implements OnInit {
       this.errorHandlerService.handleError(
         error,
         "WorkoutComponent.deleteEexercise"
+      );
+    }
+  }
+
+  addWorkout(nomeWorkout: string) {
+    try {
+      this.createOrEditTemplatePlanService.AddWorkout(nomeWorkout);
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.addWorkout"
       );
     }
   }

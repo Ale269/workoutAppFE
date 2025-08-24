@@ -59,3 +59,34 @@ app-set-component:last-of-type {
 .warning-icon {
   width: 40px;
 }
+
+.custom-option {
+  display: flex;
+  align-items: center;
+  color: #808080;
+  font-weight: 700;
+  font-family: "poppins";
+  font-size: 14px;
+}
+
+::ng-deep .mat-mdc-option-active span {
+  color: #fff !important;
+}
+::ng-deep .mat-mdc-option {
+  border-bottom: 1px solid #212121;
+}
+::ng-deep .mat-mdc-option .mat-pseudo-checkbox {
+  --mat-pseudo-checkbox-minimal-selected-checkmark-color: #fff !important;
+}
+::ng-deep .mat-mdc-select-panel {
+  border: 1px solid #00ffe1;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.add-serie-button-row{
+  display: flex;
+  justify-content: flex-end;
+}
