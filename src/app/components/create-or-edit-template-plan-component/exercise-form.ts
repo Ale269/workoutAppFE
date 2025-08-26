@@ -8,6 +8,7 @@ export interface EsercizioFormModel {
   idEsercizio: FormControl<number | null>;
   idTipoEsercizio: FormControl<number | null>;
   idIconaEsercizio: FormControl<number | null>;
+  idMetodologia: FormControl<number | null>;
   listaSerie: FormArray<FormGroup<SerieFormModel>>;
   ListaSpecifiche: FormArray<FormGroup<SpecificaFormModel>>;
   ordinamento: FormControl<number | null>;
@@ -34,6 +35,9 @@ export class EsercizioForm {
       ),
       idIconaEsercizio: new FormControl<number | null>(
         esercizioDTO?.idIconaEsercizio || null
+      ), 
+      idMetodologia: new FormControl<number | null>(
+        esercizioDTO?.idMetodologia || null
       ),
       ordinamento: new FormControl<number | null>(
         esercizioDTO?.ordinamento || null

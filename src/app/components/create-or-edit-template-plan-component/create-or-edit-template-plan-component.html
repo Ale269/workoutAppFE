@@ -6,22 +6,30 @@
     </div>
     <h1 class="text-title">Nuova scheda</h1>
   </div>
+
   <div class="tab-container">
-    <custom-tab-container
-      [(activeTabId)]="activeTabId"
-      (tabChange)="onTabChange($event)"
+    <mat-tab-group
+      #tabGroup
+      [(selectedIndex)]="selectedTabIndex"
+      (selectedTabChange)="onTabChange($event)"
+      animationDuration="300ms"
+      class="custom-tab-group"
     >
       @for (allenamentoForm of
       createOrEditTemplatePlanService.formScheda.listaAllenamentiForm; track
-      allenamentoForm.form.controls['identifier'].value) {
-      <custom-tab
-        [id]="allenamentoForm.form.controls['identifier'].value.toString()"
-        [label]="allenamentoForm.form.controls['nomeAllenamento'].value"
-      >
-        <app-workout-component (onAddWorkout)="addWorkout($event)"  [formScheda]="this.createOrEditTemplatePlanService.formScheda" (onDeleteWorkout)="deleteWorkout($event)" [formAllenamento]="allenamentoForm"></app-workout-component>
-      </custom-tab>
+      allenamentoForm.form.controls['identifier'].value; let i = $index) {
+      <mat-tab [label]="allenamentoForm.form.controls['nomeAllenamento'].value">
+        <ng-template matTabContent>
+          <app-workout-component
+            (onAddWorkout)="addWorkout($event)"
+            [formScheda]="this.createOrEditTemplatePlanService.formScheda"
+            (onDeleteWorkout)="deleteWorkout($event)"
+            [formAllenamento]="allenamentoForm"
+          >
+          </app-workout-component>
+        </ng-template>
+      </mat-tab>
       } @empty { }
-    </custom-tab-container>
+    </mat-tab-group>
   </div>
 </div>
-

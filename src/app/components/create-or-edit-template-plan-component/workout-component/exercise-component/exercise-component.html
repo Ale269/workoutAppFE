@@ -47,11 +47,12 @@
     </div>
 
     <div class="input-row">
-      <app-gym-exercise-selector
-        [control]="this.idTipoEsercizioControl"
-        label="Esercizio"
+      <app-training-methodology-selector
+        [control]="this.idMetodologiaControl"
+        label="Metodologia di Allenamento"
+        hint="Seleziona il tipo di metodologia per questo allenamento"
       >
-      </app-gym-exercise-selector>
+      </app-training-methodology-selector>
     </div>
 
     @for (serieForm of this.formEsercizio.listaSerieForm; track

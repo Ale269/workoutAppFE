@@ -160,67 +160,86 @@ export class CustomTabContainerComponent implements AfterContentInit, OnDestroy 
     }
   }
 
-  private animateTabChange(newTabId: string) {
-    this.isAnimating = true;
+ private animateTabChange(newTabId: string) {
+  this.isAnimating = true;
 
-    const tabArray = this.tabs.toArray();
-    const currentTab = tabArray.find(tab => tab.id === this.previousTabId);
-    const newTab = tabArray.find(tab => tab.id === newTabId);
+  const tabArray = this.tabs.toArray();
+  const currentTab = tabArray.find(tab => tab.id === this.previousTabId);
+  const newTab = tabArray.find(tab => tab.id === newTabId);
 
-    if (!currentTab || !newTab) {
-      this.isAnimating = false;
-      return;
-    }
-
-    // Determina la direzione dell'animazione basata sulla posizione nella lista
-    const currentIndex = tabArray.findIndex(tab => tab.id === this.previousTabId);
-    const newIndex = tabArray.findIndex(tab => tab.id === newTabId);
-    const isMovingForward = newIndex > currentIndex;
-    const slideDirection = isMovingForward ? -100 : 100;
-    const newTabStartDirection = isMovingForward ? 100 : -100;
-
-    // Timeline GSAP per coordinare le animazioni
-    const tl = gsap.timeline({
-      onComplete: () => {
-        this.isAnimating = false;
-        // Aggiorna lo stato dei tab
-        tabArray.forEach(tab => {
-          tab.isActive = tab.id === newTabId;
-        });
-        // Emit dell'evento di cambio tab
-        this.tabChange.emit({ id: newTabId, tab: newTab, index: newIndex });
-      }
-    });
-
-    // Imposta il nuovo tab come visibile ma fuori schermo
-    gsap.set(newTab.elementRef.nativeElement, {
-      display: 'block',
-      opacity: 0,
-      x: newTabStartDirection + '%'
-    });
-
-    // Animazione del tab corrente che esce
-    tl.to(currentTab.elementRef.nativeElement, {
-      duration: 0.3,
-      opacity: 0,
-      x: slideDirection + '%',
-      ease: 'power2.inOut'
-    });
-
-    // Animazione del nuovo tab che entra
-    tl.to(newTab.elementRef.nativeElement, {
-      duration: 0.3,
-      opacity: 1,
-      x: '0%',
-      ease: 'power2.inOut'
-    }, '-=0.1'); // Sovrappone leggermente le animazioni
-
-    // Nascondi il tab precedente alla fine
-    tl.set(currentTab.elementRef.nativeElement, {
-      display: 'none'
-    });
+  if (!currentTab || !newTab) {
+    this.isAnimating = false;
+    return;
   }
 
+  // Determina la direzione dell'animazione basata sulla posizione nella lista
+  const currentIndex = tabArray.findIndex(tab => tab.id === this.previousTabId);
+  const newIndex = tabArray.findIndex(tab => tab.id === newTabId);
+  const isMovingForward = newIndex > currentIndex;
+  
+  // Direzioni per l'animazione (in percentuale per essere responsive)
+  const exitDirection = isMovingForward ? -100 : 100; // Il tab corrente esce verso sinistra o destra
+  const enterStartDirection = isMovingForward ? 100 : -100; // Il nuovo tab inizia da destra o sinistra
+
+  // Timeline GSAP per coordinare le animazioni
+  const tl = gsap.timeline({
+    onComplete: () => {
+      this.isAnimating = false;
+      // Aggiorna lo stato dei tab
+      tabArray.forEach(tab => {
+        tab.isActive = tab.id === newTabId;
+      });
+      
+      // Reset delle proprietà CSS per evitare problemi futuri
+      gsap.set([currentTab.elementRef.nativeElement, newTab.elementRef.nativeElement], {
+        clearProps: "transform"
+      });
+      
+      // Nascondi definitivamente il tab precedente
+      currentTab.elementRef.nativeElement.style.display = 'none';
+      
+      // Emit dell'evento di cambio tab
+      this.tabChange.emit({ id: newTabId, tab: newTab, index: newIndex });
+    }
+  });
+
+  // FASE 1: Prepara il nuovo tab
+  // Rendi visibile il nuovo tab ma posizionalo fuori schermo nella direzione corretta
+  gsap.set(newTab.elementRef.nativeElement, {
+    display: 'block',
+    opacity: 1, // Già opaco, ma fuori schermo
+    x: enterStartDirection + '%', // Posizionato completamente fuori dalla vista
+    scale: 0.9 // Leggermente più piccolo per l'effetto bounce
+  });
+
+  // FASE 2: Animazione di uscita del tab corrente
+  tl.to(currentTab.elementRef.nativeElement, {
+    duration: 0.35,
+    opacity: 0.3,
+    x: exitDirection + '%',
+    scale: 0.95,
+    ease: "power2.in" // Accelera verso l'uscita
+  });
+
+  // FASE 3: Animazione di entrata del nuovo tab (inizia leggermente prima che finisca l'uscita)
+  tl.to(newTab.elementRef.nativeElement, {
+    duration: 0.5,
+    x: '0%',
+    scale: 1,
+    ease: "back.out(1.4)", // Bounce effect simile al tuo esempio
+    onStart: () => {
+      // Assicurati che il nuovo tab sia completamente visibile
+      newTab.elementRef.nativeElement.style.opacity = '1';
+    }
+  }, '-=0.15'); // Inizia 0.15s prima che finisca l'animazione precedente
+
+  // FASE 4: Fade in finale per una transizione più smooth
+  tl.to(newTab.elementRef.nativeElement, {
+    duration: 0.2,
+    opacity: 1,
+    ease: "power1.out"
+  }, '-=0.3'); // Sovrappone con l'animazione precedente
+}
   // Metodi pubblici per controllo esterno
   nextTab() {
     const tabArray = this.tabs.toArray();

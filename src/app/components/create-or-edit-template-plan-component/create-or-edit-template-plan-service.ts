@@ -427,6 +427,7 @@ export class CreateOrEditTemplatePlanService {
             {
               id: 1,
               idEsercizio: 101,
+              idMetodologia: 1,
               idTipoEsercizio: 1,
               idIconaEsercizio: 0,
               ordinamento: 1,
@@ -457,6 +458,7 @@ export class CreateOrEditTemplatePlanService {
             {
               id: 2,
               idEsercizio: 102,
+              idMetodologia: 1,
               idTipoEsercizio: 2,
               idIconaEsercizio: 2,
               ordinamento: 2,
@@ -487,6 +489,7 @@ export class CreateOrEditTemplatePlanService {
             {
               id: 3,
               idEsercizio: 103,
+              idMetodologia: 1,
               idTipoEsercizio: 3,
               idIconaEsercizio: 1,
               ordinamento: 1,

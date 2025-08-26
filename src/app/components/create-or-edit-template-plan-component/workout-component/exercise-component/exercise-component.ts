@@ -19,12 +19,14 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { AllenamentoForm } from "../../workout-form";
 import { Subject, takeUntil } from "rxjs";
+import { TrainingMethodologySelectorComponent } from "src/app/components/shared/training-methodology-selector/training-methodology-selector";
 
 @Component({
   selector: "app-exercise-component",
   imports: [
     ReactiveFormsModule,
     GymExerciseSelectorComponent,
+    TrainingMethodologySelectorComponent,
     SetComponent,
     MatFormFieldModule,
     MatSelectModule,
@@ -45,6 +47,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   @Output() onDeleteExercise = new EventEmitter<number>();
 
+  public idMetodologiaControl!: FormControl<number | null>;
   public idTipoEsercizioControl!: FormControl<number | null>;
   public ordinamentoControl!: FormControl<number | null>;
   public exerciseIconPath!: string;
@@ -60,6 +63,10 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     try {
       this.idTipoEsercizioControl = this.formEsercizio.form.controls[
         "idTipoEsercizio"
+      ] as FormControl<number | null>;
+
+      this.idMetodologiaControl = this.formEsercizio.form.controls[
+        "idMetodologia"
       ] as FormControl<number | null>;
 
       this.ordinamentoControl = this.formEsercizio.form.controls[
