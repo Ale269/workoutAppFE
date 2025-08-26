@@ -5,15 +5,20 @@ import {
   OnInit,
   ViewChild,
   OnDestroy,
+  TemplateRef,
 } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { AccordionGroupComponent } from "../shared/accordion/accordion-group/accordion-group.component";
 import { CreateOrEditTemplatePlanService } from "./create-or-edit-template-plan-service";
-import { MatTabGroup, MatTabsModule, MatTabChangeEvent } from "@angular/material/tabs";
+import {
+  MatTabGroup,
+  MatTabsModule,
+  MatTabChangeEvent,
+} from "@angular/material/tabs";
 import { CustomTabContainerComponent } from "../shared/tabs/custom-tab-container/custom-tab-container";
 import { CustomTabComponent } from "../shared/tabs/custom-tab-components/custom-tab-components";
 import { WorkoutComponent } from "./workout-component/workout-component";
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import {
   MatLabel,
@@ -23,6 +28,7 @@ import {
 } from "@angular/material/input";
 import { ExerciseComponent } from "./workout-component/exercise-component/exercise-component";
 import { Subscription } from "rxjs";
+import { ModalService } from "src/app/core/services/modal.service";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -35,22 +41,34 @@ import { Subscription } from "rxjs";
     MatFormField,
     MatInput,
     MatFormFieldModule,
-    MatTabsModule
+    MatTabsModule,
   ],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",
 })
-export class CreateOrEditTemplatePlanComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CreateOrEditTemplatePlanComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   @ViewChild(MatTabGroup) tabGroup!: MatTabGroup;
+
+  @ViewChild("headerAddWorkout") headerAddWorkout!: TemplateRef<any>;
+  @ViewChild("bodyAddWorkout") bodyAddWorkout!: TemplateRef<any>;
+  @ViewChild("footerCloseAddWorkout")
+  footerCloseAddWorkout!: TemplateRef<any>;
+  @ViewChild("footerConfirmAddWorkout")
+  footerConfirmAddWorkout!: TemplateRef<any>;
 
   public selectedTabIndex: number = 0;
   public idScheda: number = 0;
 
   private selectedIndexSubscription?: Subscription;
 
+  public newWorkoutNameControl!: FormControl<string>;
+
   constructor(
     private errorHandlerService: ErrorHandlerService,
-    public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService
+    public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -67,13 +85,14 @@ export class CreateOrEditTemplatePlanComponent implements OnInit, AfterViewInit,
   ngAfterViewInit(): void {
     // Sottoscrivi ai cambi di tab per gestire lo scroll automatico
     if (this.tabGroup) {
-      this.selectedIndexSubscription = this.tabGroup.selectedIndexChange.subscribe((newIndex: number) => {
-        this.selectedTabIndex = newIndex;
-        // Delay per assicurarsi che il DOM sia aggiornato
-        setTimeout(() => {
-          this.scrollToActiveTab(newIndex);
-        }, 150);
-      });
+      this.selectedIndexSubscription =
+        this.tabGroup.selectedIndexChange.subscribe((newIndex: number) => {
+          this.selectedTabIndex = newIndex;
+          // Delay per assicurarsi che il DOM sia aggiornato
+          setTimeout(() => {
+            this.scrollToActiveTab(newIndex);
+          }, 150);
+        });
     }
   }
 
@@ -90,11 +109,13 @@ export class CreateOrEditTemplatePlanComponent implements OnInit, AfterViewInit,
   private scrollToActiveTab(tabIndex: number): void {
     try {
       const tabGroupElement = this.tabGroup._elementRef.nativeElement;
-      const tabList = tabGroupElement.querySelector('.mat-mdc-tab-list') as HTMLElement;
-      const tabLabels = tabGroupElement.querySelectorAll('.mat-mdc-tab');
-      
+      const tabList = tabGroupElement.querySelector(
+        ".mat-mdc-tab-list"
+      ) as HTMLElement;
+      const tabLabels = tabGroupElement.querySelectorAll(".mat-mdc-tab");
+
       if (!tabList || !tabLabels || !tabLabels[tabIndex]) {
-        console.warn('Elementi tab non trovati per lo scroll');
+        console.warn("Elementi tab non trovati per lo scroll");
         return;
       }
 
@@ -105,14 +126,15 @@ export class CreateOrEditTemplatePlanComponent implements OnInit, AfterViewInit,
       // Calcola la posizione relativa della tab attiva rispetto al container
       const tabLeftRelative = activeTabElement.offsetLeft;
       const tabRightRelative = tabLeftRelative + activeTabElement.offsetWidth;
-      
+
       // Posizione corrente dello scroll
       const currentScrollLeft = tabList.scrollLeft;
       const containerWidth = tabList.clientWidth;
-      
+
       // Calcola se la tab è visibile completamente
       const tabLeftVisible = tabLeftRelative >= currentScrollLeft;
-      const tabRightVisible = tabRightRelative <= (currentScrollLeft + containerWidth);
+      const tabRightVisible =
+        tabRightRelative <= currentScrollLeft + containerWidth;
 
       let targetScrollPosition = currentScrollLeft;
 
@@ -132,16 +154,19 @@ export class CreateOrEditTemplatePlanComponent implements OnInit, AfterViewInit,
 
       // Effettua lo scroll smooth
       this.smoothScrollTo(tabList, targetScrollPosition);
-
     } catch (error) {
-      console.error('Errore durante lo scroll automatico delle tab:', error);
+      console.error("Errore durante lo scroll automatico delle tab:", error);
     }
   }
 
   /**
    * Implementazione custom dello smooth scroll
    */
-  private smoothScrollTo(element: HTMLElement, targetPosition: number, duration: number = 300): void {
+  private smoothScrollTo(
+    element: HTMLElement,
+    targetPosition: number,
+    duration: number = 300
+  ): void {
     const startPosition = element.scrollLeft;
     const distance = targetPosition - startPosition;
     const startTime = performance.now();
@@ -149,11 +174,11 @@ export class CreateOrEditTemplatePlanComponent implements OnInit, AfterViewInit,
     const animateScroll = (currentTime: number) => {
       const timeElapsed = currentTime - startTime;
       const progress = Math.min(timeElapsed / duration, 1);
-      
+
       // Easing function (ease-out)
       const easeOut = 1 - Math.pow(1 - progress, 3);
-      
-      element.scrollLeft = startPosition + (distance * easeOut);
+
+      element.scrollLeft = startPosition + distance * easeOut;
 
       if (progress < 1) {
         requestAnimationFrame(animateScroll);
@@ -165,14 +190,18 @@ export class CreateOrEditTemplatePlanComponent implements OnInit, AfterViewInit,
 
   deleteWorkout(identifier: number): void {
     try {
-      const currentTabsCount = this.createOrEditTemplatePlanService.formScheda.listaAllenamentiForm.length;
-      
+      const currentTabsCount =
+        this.createOrEditTemplatePlanService.formScheda.listaAllenamentiForm
+          .length;
+
       this.createOrEditTemplatePlanService.DeleteWorkout(identifier);
-      
+
       // Gestisci l'indice dopo la cancellazione
       setTimeout(() => {
-        const newTabsCount = this.createOrEditTemplatePlanService.formScheda.listaAllenamentiForm.length;
-        
+        const newTabsCount =
+          this.createOrEditTemplatePlanService.formScheda.listaAllenamentiForm
+            .length;
+
         if (newTabsCount === 0) {
           this.selectedTabIndex = 0;
         } else if (this.selectedTabIndex >= newTabsCount) {
@@ -183,7 +212,6 @@ export class CreateOrEditTemplatePlanComponent implements OnInit, AfterViewInit,
           }
         }
       }, 100);
-      
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
@@ -192,30 +220,8 @@ export class CreateOrEditTemplatePlanComponent implements OnInit, AfterViewInit,
     }
   }
 
-  addWorkout(nomeWorkout: string): void {
-    try {
-      this.createOrEditTemplatePlanService.AddWorkout(nomeWorkout);
-      
-      // Vai all'ultima tab (quella appena creata)
-      const newTabIndex = this.createOrEditTemplatePlanService.formScheda.listaAllenamentiForm.length - 1;
-      
-      setTimeout(() => {
-        this.selectedTabIndex = newTabIndex;
-        if (this.tabGroup) {
-          this.tabGroup.selectedIndex = newTabIndex;
-        }
-      }, 100);
-      
-    } catch (error) {
-      this.errorHandlerService.handleError(
-        error,
-        "WorkoutComponent.addWorkout"
-      );
-    }
-  }
-
   onTabChange(event: MatTabChangeEvent): void {
-    console.log('Tab change event:', event);
+    console.log("Tab change event:", event);
     // Questo metodo verrà chiamato automaticamente dal template
     // Lo scroll verrà gestito dalla sottoscrizione in ngAfterViewInit
   }
@@ -224,10 +230,83 @@ export class CreateOrEditTemplatePlanComponent implements OnInit, AfterViewInit,
    * Metodo pubblico per navigare programmaticamente a una tab specifica
    */
   public goToTab(index: number): void {
-    if (index >= 0 && index < this.createOrEditTemplatePlanService.formScheda.listaAllenamentiForm.length) {
+    if (
+      index >= 0 &&
+      index <
+        this.createOrEditTemplatePlanService.formScheda.listaAllenamentiForm
+          .length
+    ) {
       if (this.tabGroup) {
         this.tabGroup.selectedIndex = index;
       }
+    }
+  }
+
+  openAddWorkoutMdal() {
+    try {
+      // Devo creare un form da bindare all'html dell'add e passarlo al modal
+      this.initializeNewWorkoutControl();
+
+      this.modalService.open({
+        warning: false, // Non è un warning, è un'aggiunta
+        headerTemplate: this.headerAddWorkout,
+        bodyTemplate: this.bodyAddWorkout,
+        footerCloseTemplate: this.footerCloseAddWorkout,
+        footerConfirmTemplate: this.footerConfirmAddWorkout,
+        onConfirm: () => this.addWorkout(),
+      });
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "ExerciseComponent.openDeleteModal"
+      );
+    }
+  }
+
+  private initializeNewWorkoutControl(): void {
+    // Calcola il placeholder basato sulla posizione successiva
+    const nextPosition =
+      (this.createOrEditTemplatePlanService.formScheda?.listaAllenamentiForm?.length || 0) + 1;
+    const placeholder = `Giorno ${nextPosition}`;
+
+    // Crea il FormControl con il placeholder come valore iniziale
+    this.newWorkoutNameControl = new FormControl<string>(placeholder, {
+      nonNullable: true,
+    });
+  }
+
+  addWorkout() {
+    try {
+      // Ottieni il valore dal FormControl
+      let workoutName = this.newWorkoutNameControl.value?.trim();
+
+      // Se è vuoto o uguale al placeholder, usa il placeholder
+      const nextPosition =
+        (this.createOrEditTemplatePlanService.formScheda?.listaAllenamentiForm?.length || 0) + 1;
+      const placeholder = `Giorno ${nextPosition}`;
+
+      if (!workoutName || workoutName === placeholder) {
+        workoutName = placeholder;
+      }
+
+      this.createOrEditTemplatePlanService.AddWorkout(workoutName);
+
+      // Vai all'ultima tab (quella appena creata)
+      const newTabIndex =
+        this.createOrEditTemplatePlanService.formScheda.listaAllenamentiForm
+          .length - 1;
+
+      setTimeout(() => {
+        this.selectedTabIndex = newTabIndex;
+        if (this.tabGroup) {
+          this.tabGroup.selectedIndex = newTabIndex;
+        }
+      }, 100);
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.confirmAddWorkout"
+      );
     }
   }
 }

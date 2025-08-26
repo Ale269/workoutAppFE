@@ -53,7 +53,7 @@
       </form>
     </div>
     <div class="add-allenamento-button-row">
-      <button class="text-shape-button" (click)="openAddWorkoutMdal()">
+      <button class="text-shape-button" (click)="addWorkout()">
         <span>Aggiungi allenamento</span>
         <div class="text-shape-button-icon-container">
           <img src="assets/recollect/svg/google-add.svg" />
@@ -131,44 +131,4 @@
     alt="Aggiungi Allenamento"
     class="add-workout-icon"
   />
-</ng-template>
-
-<!-- Template per il body del modale -->
-<ng-template #bodyAddWorkout>
-  <div class="add-workout-modal-description">
-    <h3 class="text-white">Inserisci il nome del nuovo allenamento</h3>
-  </div>
-  <div class="workout-name-input-container">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Nome allenamento</mat-label>
-      <input
-        [formControl]="this.newWorkoutNameControl"
-        matInput
-        type="text"
-        [placeholder]="'Giorno ' + (formScheda.listaAllenamentiForm.length + 1 || 1)"
-        maxlength="50"
-      />
-      <mat-hint>Se lasci vuoto, verrà usato il nome predefinito</mat-hint>
-    </mat-form-field>
-  </div>
-</ng-template>
-
-<!-- Template per il bottone di chiusura -->
-<ng-template #footerCloseAddWorkout>
-  <button class="text-shape-button-cancel" slot="footer-btn-close">
-    <span>Annulla</span>
-    <div class="text-shape-button-icon-container-cancel">
-      <img src="assets/recollect/svg/google-close-icon.svg" />
-    </div>
-  </button>
-</ng-template>
-
-<!-- Template per il bottone di conferma -->
-<ng-template #footerConfirmAddWorkout>
-  <button class="text-shape-button">
-    <span>Aggiungi</span>
-    <div class="text-shape-button-icon-container">
-      <img src="assets/recollect/svg/google-add.svg" />
-    </div>
-  </button>
 </ng-template>

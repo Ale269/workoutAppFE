@@ -52,21 +52,12 @@ export class WorkoutComponent implements OnInit, OnDestroy {
   footerCloseDeleteWorkout!: TemplateRef<any>;
   @ViewChild("footerConfirmDeleteWorkout")
   footerConfirmDeleteWorkout!: TemplateRef<any>;
-
-  @ViewChild("headerAddWorkout") headerAddWorkout!: TemplateRef<any>;
-  @ViewChild("bodyAddWorkout") bodyAddWorkout!: TemplateRef<any>;
-  @ViewChild("footerCloseAddWorkout")
-  footerCloseAddWorkout!: TemplateRef<any>;
-  @ViewChild("footerConfirmAddWorkout")
-  footerConfirmAddWorkout!: TemplateRef<any>;
-
+  
   @Input() formAllenamento!: AllenamentoForm;
   @Input() formScheda!: SchedaForm;
 
   @Output() onDeleteWorkout = new EventEmitter<number>();
   @Output() onAddWorkout = new EventEmitter<string>();
-
-  public newWorkoutNameControl!: FormControl<string>;
 
   public ordinamentoControl!: FormControl<number | null>;
 
@@ -185,56 +176,10 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       );
     }
   }
-
-  openAddWorkoutMdal() {
-    try {
-      // Devo creare un form da bindare all'html dell'add e passarlo al modal
-      this.initializeNewWorkoutControl();
-
-      this.modalService.open({
-        warning: false, // Non è un warning, è un'aggiunta
-        headerTemplate: this.headerAddWorkout,
-        bodyTemplate: this.bodyAddWorkout,
-        footerCloseTemplate: this.footerCloseAddWorkout,
-        footerConfirmTemplate: this.footerConfirmAddWorkout,
-        onConfirm: () => this.addWorkout(),
-      });
-    } catch (error) {
-      this.errorHandlerService.handleError(
-        error,
-        "ExerciseComponent.openDeleteModal"
-      );
-    }
-  }
-
-  private initializeNewWorkoutControl(): void {
-    // Calcola il placeholder basato sulla posizione successiva
-    const nextPosition =
-      (this.formScheda?.listaAllenamentiForm?.length || 0) + 1;
-    const placeholder = `Giorno ${nextPosition}`;
-
-    // Crea il FormControl con il placeholder come valore iniziale
-    this.newWorkoutNameControl = new FormControl<string>(placeholder, {
-      nonNullable: true,
-    });
-  }
-
+ 
   addWorkout() {
     try {
-      // Ottieni il valore dal FormControl
-      let workoutName = this.newWorkoutNameControl.value?.trim();
-      
-      // Se è vuoto o uguale al placeholder, usa il placeholder
-      const nextPosition = (this.formScheda?.listaAllenamentiForm?.length || 0) + 1;
-      const placeholder = `Giorno ${nextPosition}`;
-      
-      if (!workoutName || workoutName === placeholder) {
-        workoutName = placeholder;
-      }
-
-      // Emetti il nome dell'allenamento al componente padre
-      this.onAddWorkout.emit(workoutName);
-      
+      this.onAddWorkout.emit();
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
