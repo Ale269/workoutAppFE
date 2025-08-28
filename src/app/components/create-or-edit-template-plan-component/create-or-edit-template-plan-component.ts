@@ -309,4 +309,25 @@ export class CreateOrEditTemplatePlanComponent
       );
     }
   }
+
+  savePlan(){
+    try {
+
+      // Bisognerebbe aprire uno spinner o un loader
+
+      // Raccolgo i dati della scheda
+
+      this.createOrEditTemplatePlanService.formScheda.getDatiSchedaDaSalvare()
+
+
+
+
+    }
+    catch (error) {
+      this.errorHandlerService.handleError(
+          error,
+          "WorkoutComponent.SavePlan"
+      );
+    }
+  }
 }

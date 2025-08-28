@@ -45,6 +45,15 @@ export class SerieForm {
     });
   }
 
+  getDatiSerieDaSalvare(){
+    try {
+
+    }
+    catch (error) {
+      throw new Error("SchedaForm.getDatiAllenamentoDaSalvare: " + error);
+    }
+  }
+
   public resetForm(): void {
     this.form.reset();
   }

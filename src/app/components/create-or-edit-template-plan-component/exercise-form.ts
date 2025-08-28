@@ -161,6 +161,17 @@ export class EsercizioForm {
     this.identifier = 0;
   }
 
+  getDatiEsercizioDaSalvare(){
+    try {
+      this.listaSerieForm.forEach((serie) => {
+        serie.getDatiSerieDaSalvare()
+      })
+    }
+    catch (error) {
+      throw new Error("SchedaForm.getDatiAllenamentoDaSalvare: " + error);
+    }
+  }
+
   get listaSerieFormArray(): FormArray<FormGroup<SerieFormModel>> {
     return this.form.controls["listaSerie"] as FormArray<FormGroup<SerieFormModel>>;
   }

@@ -207,4 +207,15 @@ export class SchedaForm {
       FormGroup<AllenamentoFormModel>
     >;
   }
+
+  getDatiSchedaDaSalvare(){
+    try {
+      this.listaAllenamentiForm.forEach((allenamento) => {
+        allenamento.getDatiAllenamentoDaSalvare()
+      })
+    }
+    catch (error) {
+      throw new Error("SchedaForm.GetDatiSchedaDaSalvare: " + error);
+    }
+  }
 }

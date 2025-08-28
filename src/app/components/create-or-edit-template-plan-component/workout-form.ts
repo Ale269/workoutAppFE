@@ -221,6 +221,17 @@ export class AllenamentoForm {
   //   this.listaEserciziForm = eserciziOrdinati;
   // }
 
+  getDatiAllenamentoDaSalvare(){
+    try {
+      this.listaEserciziForm.forEach((esercizio) => {
+        esercizio.getDatiEsercizioDaSalvare()
+      })
+    }
+    catch (error) {
+      throw new Error("SchedaForm.getDatiAllenamentoDaSalvare: " + error);
+    }
+  }
+
   public resetForm(): void {
     this.form.reset();
     this.listaEserciziForm = [];
