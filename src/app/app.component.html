@@ -8,6 +8,7 @@
     <router-outlet></router-outlet>
   </div>
 
+  <!-- Modal Service -->
   @for (modal of modalService.modals(); track modal) {
   <app-generic-modal
     [isVisible]="true"
@@ -24,5 +25,14 @@
     (confirmed)="modalService.confirm(modal)"
   >
   </app-generic-modal>
+  }
+
+  <!-- Spinner Service -->
+  @for (spinner of spinnerService.spinners(); track spinner.id) {
+  <app-spinner
+    [config]="spinner"
+    (completed)="onSpinnerCompleted($event)"
+  >
+  </app-spinner>
   }
 </div>

@@ -1,3 +1,4 @@
+// app.component.ts
 import {
   Component,
   ElementRef,
@@ -20,13 +21,22 @@ import { filter, Subject, take, takeUntil } from "rxjs";
 import { MenuComponent } from "./components/shared/menu-component/menu-component";
 import { GenericModal } from "./components/shared/generic-modal/generic-modal";
 import { ModalService } from "./core/services/modal.service";
+import { SpinnerService } from "./core/services/spinner.service";
+import { SpinnerComponent } from "./components/shared/spinner/spinner";
 
 @Component({
   selector: "app-root",
   standalone: true,
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
-  imports: [RouterOutlet, MenuComponent, LoginComponent, GenericModal, CommonModule],
+  imports: [
+    RouterOutlet, 
+    MenuComponent, 
+    LoginComponent, 
+    GenericModal, 
+    SpinnerComponent,
+    CommonModule
+  ],
 })
 export class AppComponent implements OnInit {
   currentTheme = "light-theme";
@@ -40,15 +50,14 @@ export class AppComponent implements OnInit {
     private themeService: ThemeService,
     private authService: AuthService,
     private router: Router,
-
     @Inject(PLATFORM_ID) private platformId: Object,
     private apiCatalogService: ApiCatalogService,
-    public modalService: ModalService
+    public modalService: ModalService,
+    public spinnerService: SpinnerService
   ) {
-      // Configura lingue supportate
-      this.translate.addLangs(["en", "it", "es"]);
-      this.translate.setDefaultLang("en");
-      
+    // Configura lingue supportate
+    this.translate.addLangs(["en", "it", "es"]);
+    this.translate.setDefaultLang("en");
     
     // Rileva lingua del browser
     const browserLang = this.translate.getBrowserLang();
@@ -100,5 +109,10 @@ export class AppComponent implements OnInit {
     ];
 
     this.MenuIsVisible = !routesWithoutMenu.includes(url.toLowerCase());
+  }
+
+  onSpinnerCompleted(spinnerId: string): void {
+    // Gestisci il completamento dello spinner se necessario
+    console.log(`Spinner ${spinnerId} completato`);
   }
 }

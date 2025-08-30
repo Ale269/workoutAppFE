@@ -1,3 +1,4 @@
+// create-or-edit-template-plan-component.ts
 import {
   AfterViewInit,
   Component,
@@ -29,12 +30,12 @@ import {
 import { ExerciseComponent } from "./workout-component/exercise-component/exercise-component";
 import { Subscription } from "rxjs";
 import { ModalService } from "src/app/core/services/modal.service";
+import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
+import { SpinnerService, SpinnerResult } from "src/app/core/services/spinner.service";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
   imports: [
-    CustomTabComponent,
-    CustomTabContainerComponent,
     WorkoutComponent,
     ReactiveFormsModule,
     MatLabel,
@@ -62,19 +63,48 @@ export class CreateOrEditTemplatePlanComponent
   public idScheda: number = 0;
 
   private selectedIndexSubscription?: Subscription;
+  private initSpinnerId: string | null = null;
+  private saveSpinnerId: string | null = null;
 
   public newWorkoutNameControl!: FormControl<string>;
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private spinnerService: SpinnerService
   ) {}
 
   ngOnInit(): void {
     try {
+      // Mostra lo spinner di inizializzazione
+      this.initSpinnerId = this.spinnerService.showWithResult(
+        "Recupero dati scheda",
+        {
+          successMessage: "Dati recuperati con successo",
+          errorMessage: "Errore nel recupero dei dati",
+          resultDuration: 500,
+          minSpinnerDuration: 500
+        }
+      );
+
+      // Simula l'inizializzazione (sostituisci con la tua logica asincrona)
       this.createOrEditTemplatePlanService.InitializeScheda(1);
+      
+      // Simula un caricamento asincrono
+      setTimeout(() => {
+        if (this.initSpinnerId) {
+          this.spinnerService.setSuccess(this.initSpinnerId);
+        }
+      }, 1000);
+
     } catch (error) {
+      if (this.initSpinnerId) {
+        this.spinnerService.setError(
+          this.initSpinnerId,
+          "Errore durante l'inizializzazione"
+        );
+      }
       this.errorHandlerService.handleError(
         error,
         "CreateOrEditTemplatePlanComponent.ngOnInit"
@@ -100,6 +130,14 @@ export class CreateOrEditTemplatePlanComponent
     // Pulisci la sottoscrizione per evitare memory leak
     if (this.selectedIndexSubscription) {
       this.selectedIndexSubscription.unsubscribe();
+    }
+    
+    // Chiudi eventuali spinner attivi
+    if (this.initSpinnerId) {
+      this.spinnerService.hide(this.initSpinnerId);
+    }
+    if (this.saveSpinnerId) {
+      this.spinnerService.hide(this.saveSpinnerId);
     }
   }
 
@@ -266,7 +304,8 @@ export class CreateOrEditTemplatePlanComponent
   private initializeNewWorkoutControl(): void {
     // Calcola il placeholder basato sulla posizione successiva
     const nextPosition =
-      (this.createOrEditTemplatePlanService.formScheda?.listaAllenamentiForm?.length || 0) + 1;
+      (this.createOrEditTemplatePlanService.formScheda?.listaAllenamentiForm
+        ?.length || 0) + 1;
     const placeholder = `Giorno ${nextPosition}`;
 
     // Crea il FormControl con il placeholder come valore iniziale
@@ -277,12 +316,16 @@ export class CreateOrEditTemplatePlanComponent
 
   addWorkout() {
     try {
+      // Mostra un breve spinner per l'aggiunta
+      const addSpinnerId = this.spinnerService.showLoading("Aggiunta allenamento...");
+
       // Ottieni il valore dal FormControl
       let workoutName = this.newWorkoutNameControl.value?.trim();
 
       // Se è vuoto o uguale al placeholder, usa il placeholder
       const nextPosition =
-        (this.createOrEditTemplatePlanService.formScheda?.listaAllenamentiForm?.length || 0) + 1;
+        (this.createOrEditTemplatePlanService.formScheda?.listaAllenamentiForm
+          ?.length || 0) + 1;
       const placeholder = `Giorno ${nextPosition}`;
 
       if (!workoutName || workoutName === placeholder) {
@@ -301,7 +344,10 @@ export class CreateOrEditTemplatePlanComponent
         if (this.tabGroup) {
           this.tabGroup.selectedIndex = newTabIndex;
         }
-      }, 100);
+        
+        // Nasconde lo spinner dopo l'operazione
+        this.spinnerService.hide(addSpinnerId);
+      }, 500);
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
@@ -310,24 +356,46 @@ export class CreateOrEditTemplatePlanComponent
     }
   }
 
-  savePlan(){
+  savePlan() {
     try {
-
-      // Bisognerebbe aprire uno spinner o un loader
-
-      // Raccolgo i dati della scheda
-
-      this.createOrEditTemplatePlanService.formScheda.getDatiSchedaDaSalvare()
-
-
-
-
-    }
-    catch (error) {
-      this.errorHandlerService.handleError(
-          error,
-          "WorkoutComponent.SavePlan"
+      // Mostra lo spinner di salvataggio
+      this.saveSpinnerId = this.spinnerService.showWithResult(
+        "Salvataggio in corso",
+        {
+          successMessage: "Salvataggio completato con successo",
+          errorMessage: "Errore durante il salvataggio",
+          resultDuration: 500,
+          minSpinnerDuration: 500
+        }
       );
+
+      let schedaDaSalvare: SchedaDTO =
+        this.createOrEditTemplatePlanService.formScheda.getDatiSchedaDaSalvare();
+
+      this.createOrEditTemplatePlanService
+        .savePlan(schedaDaSalvare)
+        .then((response) => {
+          if (this.saveSpinnerId) {
+            this.spinnerService.setSuccess(this.saveSpinnerId);
+          }
+        })
+        .catch((error) => {
+          if (this.saveSpinnerId) {
+            this.spinnerService.setError(
+              this.saveSpinnerId,
+              "Errore nella fase di salvataggio"
+            );
+          }
+          this.errorHandlerService.handleError(
+            error,
+            "WorkoutComponent.SavePlan"
+          );
+        });
+    } catch (error) {
+      if (this.saveSpinnerId) {
+        this.spinnerService.setError(this.saveSpinnerId);
+      }
+      this.errorHandlerService.handleError(error, "WorkoutComponent.SavePlan");
     }
   }
 }

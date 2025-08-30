@@ -5,6 +5,7 @@ import { EsercizioDTO } from "src/app/models/modifica-scheda/eserciziodto";
 
 export interface AllenamentoFormModel {
   identifier: FormControl<number | null>;
+  id: FormControl<number | null>;
   nomeAllenamento: FormControl<string | null>;
   ordinamento: FormControl<number | null>;
   listaEsercizi: FormArray<FormGroup<EsercizioFormModel>>;
@@ -20,7 +21,8 @@ export class AllenamentoForm {
   constructor(identifier: number, allenamentoDTO?: AllenamentoDTO) {
     this.form = new FormGroup<AllenamentoFormModel>({
       identifier: new FormControl<number | null>(identifier),
-      
+      id: new FormControl<number | null>(allenamentoDTO?.id || null),
+
       nomeAllenamento: new FormControl<string | null>(
         allenamentoDTO?.nomeAllenamento || null
       ),
@@ -221,13 +223,23 @@ export class AllenamentoForm {
   //   this.listaEserciziForm = eserciziOrdinati;
   // }
 
-  getDatiAllenamentoDaSalvare(){
+  getDatiAllenamentoDaSalvare(): AllenamentoDTO {
     try {
+      let allenamentoDaSalvare: AllenamentoDTO = {
+        id: this.form.controls["id"].value  ? this.form.controls["id"].value : 0,
+        nomeAllenamento: this.form.controls["nomeAllenamento"].value ? this.form.controls["nomeAllenamento"].value : "",
+        ordinamento: this.form.controls["ordinamento"].value ? this.form.controls["ordinamento"].value : 0,
+        listaEsercizi: [],
+      };
+
       this.listaEserciziForm.forEach((esercizio) => {
-        esercizio.getDatiEsercizioDaSalvare()
-      })
-    }
-    catch (error) {
+        allenamentoDaSalvare.listaEsercizi.push(
+          esercizio.getDatiEsercizioDaSalvare()
+        );
+      });
+
+      return allenamentoDaSalvare;
+    } catch (error) {
       throw new Error("SchedaForm.getDatiAllenamentoDaSalvare: " + error);
     }
   }

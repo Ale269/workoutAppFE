@@ -5,7 +5,7 @@ import { SerieDTO } from "src/app/models/modifica-scheda/seriedto";
 
 export interface EsercizioFormModel {
   identifier: FormControl<number | null>;
-  idEsercizio: FormControl<number | null>;
+  id: FormControl<number | null>;
   idTipoEsercizio: FormControl<number | null>;
   idIconaEsercizio: FormControl<number | null>;
   idMetodologia: FormControl<number | null>;
@@ -27,15 +27,15 @@ export class EsercizioForm {
   constructor(identifier: number, esercizioDTO?: EsercizioDTO) {
     this.form = new FormGroup<EsercizioFormModel>({
       identifier: new FormControl<number | null>(identifier),
-      idEsercizio: new FormControl<number | null>(
-        esercizioDTO?.idEsercizio || null
+      id: new FormControl<number | null>(
+        esercizioDTO?.id || null
       ),
       idTipoEsercizio: new FormControl<number | null>(
         esercizioDTO?.idTipoEsercizio || null
       ),
       idIconaEsercizio: new FormControl<number | null>(
         esercizioDTO?.idIconaEsercizio || null
-      ), 
+      ),
       idMetodologia: new FormControl<number | null>(
         esercizioDTO?.idMetodologia || null
       ),
@@ -161,18 +161,40 @@ export class EsercizioForm {
     this.identifier = 0;
   }
 
-  getDatiEsercizioDaSalvare(){
+  getDatiEsercizioDaSalvare(): EsercizioDTO {
     try {
+      let esercizioDaSalvare: EsercizioDTO = {
+        id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
+        idIconaEsercizio: this.form.controls["idIconaEsercizio"].value
+          ? this.form.controls["idIconaEsercizio"].value
+          : 0,
+        idMetodologia: this.form.controls["idMetodologia"].value
+          ? this.form.controls["idMetodologia"].value
+          : 0,
+        idTipoEsercizio: this.form.controls["idTipoEsercizio"].value
+          ? this.form.controls["idTipoEsercizio"].value
+          : 0,
+        ordinamento: this.form.controls["ordinamento"].value
+          ? this.form.controls["ordinamento"].value
+          : 0,
+        listaSerie: [],
+      };
+
       this.listaSerieForm.forEach((serie) => {
-        serie.getDatiSerieDaSalvare()
-      })
-    }
-    catch (error) {
-      throw new Error("SchedaForm.getDatiAllenamentoDaSalvare: " + error);
+       esercizioDaSalvare.listaSerie.push(
+         serie.getDatiSerieDaSalvare()
+       )
+      });
+
+      return esercizioDaSalvare;
+    } catch (error) {
+      throw new Error("SchedaForm.getDatiEsercizioDaSalvare: " + error);
     }
   }
 
   get listaSerieFormArray(): FormArray<FormGroup<SerieFormModel>> {
-    return this.form.controls["listaSerie"] as FormArray<FormGroup<SerieFormModel>>;
+    return this.form.controls["listaSerie"] as FormArray<
+      FormGroup<SerieFormModel>
+    >;
   }
 }

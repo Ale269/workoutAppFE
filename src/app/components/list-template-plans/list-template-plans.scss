@@ -1,0 +1,24 @@
+.template-scheda {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid #212121;
+  padding-bottom: 16px;
+  padding-top: 16px;
+}
+
+.template-scheda:first-of-type {
+  border-top: 1px solid #212121;
+}
+
+.naviga-scheda-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.nome-data-scheda {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

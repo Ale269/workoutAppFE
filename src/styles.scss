@@ -225,9 +225,6 @@ body.no-scroll {
     rgba(0, 43, 40, 1) 100%
   );
   border: 1px solid #00564c;
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
   border-radius: 32px;
   cursor: pointer;
 }
@@ -241,6 +238,10 @@ body.no-scroll {
 
 .section-container {
   padding-bottom: 16px;
+}
+
+.section-title-container{
+  padding-bottom: 32px;
 }
 
 .close-icon-title-container {
@@ -468,4 +469,13 @@ mat-tab-header {
   width: 100%;
   height: 100%;
   z-index: 9997;
+}
+
+.floating-static-button-container {
+  z-index: 9998;
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  justify-content: flex-end;
 }

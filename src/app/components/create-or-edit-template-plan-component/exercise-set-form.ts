@@ -3,8 +3,8 @@ import { SerieDTO } from "src/app/models/modifica-scheda/seriedto";
 
 export interface SerieFormModel {
   identifier: FormControl<number | null>;
-  idSerie: FormControl<number | null>;
-  ordinamentoSerie: FormControl<number | null>; // NUOVO CAMPO
+  id: FormControl<number | null>;
+  ordinamento: FormControl<number | null>; // NUOVO CAMPO
   ripetizioni: FormControl<number | null>;
   carico: FormControl<number | null>;
 }
@@ -13,13 +13,13 @@ export interface SerieFormModel {
 export function positiveIntegerValidator() {
   return (control: any) => {
     if (!control.value) return null;
-    
+
     const value = parseInt(control.value, 10);
-    
+
     if (isNaN(value) || value <= 0 || !Number.isInteger(value)) {
       return { positiveInteger: true };
     }
-    
+
     return null;
   };
 }
@@ -30,27 +30,37 @@ export class SerieForm {
   constructor(identifier: number, serieDTO?: SerieDTO) {
     this.form = new FormGroup<SerieFormModel>({
       identifier: new FormControl<number | null>(identifier),
-      idSerie: new FormControl<number | null>(serieDTO?.idSerie || null),
-      ordinamentoSerie: new FormControl<number | null>(
+      id: new FormControl<number | null>(serieDTO?.id || null),
+      ordinamento: new FormControl<number | null>(
         serieDTO?.ordinamento || null
       ), // NUOVO CAMPO
       ripetizioni: new FormControl<number | null>(
         serieDTO?.ripetizioni || null,
         [Validators.required, positiveIntegerValidator()]
       ),
-      carico: new FormControl<number | null>(
-        serieDTO?.carico || null,
-        [Validators.required, positiveIntegerValidator()]
-      ),
+      carico: new FormControl<number | null>(serieDTO?.carico || null, [
+        Validators.required,
+        positiveIntegerValidator(),
+      ]),
     });
   }
 
-  getDatiSerieDaSalvare(){
+  getDatiSerieDaSalvare(): SerieDTO {
     try {
-
-    }
-    catch (error) {
-      throw new Error("SchedaForm.getDatiAllenamentoDaSalvare: " + error);
+      return {
+        id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
+        carico: this.form.controls["carico"].value
+          ? this.form.controls["carico"].value
+          : 0,
+        ordinamento: this.form.controls["ordinamento"].value
+          ? this.form.controls["ordinamento"].value
+          : 0,
+        ripetizioni: this.form.controls["ripetizioni"].value
+          ? this.form.controls["ripetizioni"].value
+          : 0,
+      };
+    } catch (error) {
+      throw new Error("SchedaForm.getDatiSerieDaSalvare: " + error);
     }
   }
 

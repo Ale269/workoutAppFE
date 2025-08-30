@@ -4,12 +4,13 @@ import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
 import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
 
 interface SchedaFormModel {
+  id: FormControl<number | null>;
   nomeScheda: FormControl<string | null>;
   listaAllenamenti: FormArray<FormGroup<AllenamentoFormModel>>;
 }
 
 export class SchedaForm {
-  public listaAllenamentiForm : AllenamentoForm[] = [];
+  public listaAllenamentiForm: AllenamentoForm[] = [];
   public identifier: number = 0;
   public form: FormGroup;
 
@@ -17,6 +18,7 @@ export class SchedaForm {
 
   constructor(schedaDTO?: SchedaDTO) {
     this.form = new FormGroup<SchedaFormModel>({
+      id: new FormControl<number | null>(schedaDTO?.id || null),
       nomeScheda: new FormControl<string | null>(schedaDTO?.nomeScheda || null),
       listaAllenamenti: new FormArray<FormGroup<AllenamentoFormModel>>([]),
     });
@@ -208,13 +210,23 @@ export class SchedaForm {
     >;
   }
 
-  getDatiSchedaDaSalvare(){
+  getDatiSchedaDaSalvare(): SchedaDTO {
     try {
+      // Raccolgo i dati della scheda
+      let schedaDaSalvare: SchedaDTO = {
+        id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
+        nomeScheda: this.form.controls["nomeScheda"].value ? this.form.controls["nomeScheda"].value : '',
+        listaAllenamenti: [],
+      };
+
       this.listaAllenamentiForm.forEach((allenamento) => {
-        allenamento.getDatiAllenamentoDaSalvare()
-      })
-    }
-    catch (error) {
+        schedaDaSalvare.listaAllenamenti.push(
+          allenamento.getDatiAllenamentoDaSalvare()
+        );
+      });
+
+      return schedaDaSalvare;
+    } catch (error) {
       throw new Error("SchedaForm.GetDatiSchedaDaSalvare: " + error);
     }
   }

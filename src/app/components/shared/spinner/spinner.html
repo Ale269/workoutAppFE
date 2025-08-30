@@ -1,16 +1,25 @@
- <div class="spinner-overlay" *ngIf="isActive" #spinnerOverlay>
-      <div class="spinner-container">
-        <!-- Spinner rotante -->
-        <div class="spinner" #spinnerElement *ngIf="!showResult"></div>
-        
-        <!-- Risultato finale -->
-        <div class="result-icon" #resultElement *ngIf="showResult" [class]="'result-' + finalResult">
-          <span [innerHTML]="getResultIcon()"></span>
-        </div>
-        
-        <!-- Messaggio -->
-        <p class="spinner-text" *ngIf="getCurrentMessage()" #messageElement>
-          {{ getCurrentMessage() }}
-        </p>
-      </div>
+@if(config.id) {
+<div class="spinner-overlay" #spinnerOverlay>
+  <div class="spinner-container">
+    <!-- Spinner rotante -->
+    @if(!showResult) {
+    <div class="spinner" #spinnerElement></div>
+    }
+
+    <!-- Risultato finale -->
+    <div
+      class="result-icon"
+      #resultElement
+      [class]="'result-' + (finalResult || config.result)"
+      [style.display]="showResult ? 'flex' : 'none'"
+    >
+      <img [src]="getResultIcon()" alt="Result icon" />
     </div>
+
+    <!-- Messaggio -->
+    @if(getCurrentMessage()) {
+    <p class="spinner-text" #messageElement>{{ getCurrentMessage() }}</p>
+    }
+  </div>
+</div>
+}

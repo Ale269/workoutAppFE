@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SchedaForm } from "./template-plan-form";
-import { Observable } from "rxjs";
+import { Observable, timeInterval } from "rxjs";
 import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
 import { EsercizioDTO } from "src/app/models/modifica-scheda/eserciziodto";
 import { SerieDTO } from "src/app/models/modifica-scheda/seriedto";
@@ -413,6 +413,27 @@ export class CreateOrEditTemplatePlanService {
 
   // Simulazione chiamata API con dati mock
 
+  async savePlan(savePlanRequest: SchedaDTO): Promise<void> {
+    // Bisogna anche avere il modello della response
+    return new Promise((resolve, reject) => {
+      try {
+        // Esegui la chiamata mandando i dati necessari
+        // Adesso come request ho messo la SchedaDTO ma potrebbe servire altro
+
+        //per prova
+        setInterval(() => {
+          resolve();
+        }, 2000);
+
+        // setInterval(() => {
+        //   reject();
+        // }, 2000);
+      } catch (error) {
+        throw new Error("CreateOrEditTemplatePlanService.savePlan: " + error);
+      }
+    });
+  }
+
   private getSchedaById(id: number): SchedaDTO {
     // Dati mock per simulare risposta del server
     const mockSchedaDTO: SchedaDTO = {
@@ -426,7 +447,6 @@ export class CreateOrEditTemplatePlanService {
           listaEsercizi: [
             {
               id: 1,
-              idEsercizio: 101,
               idMetodologia: 1,
               idTipoEsercizio: 1,
               idIconaEsercizio: 0,
@@ -434,21 +454,18 @@ export class CreateOrEditTemplatePlanService {
               listaSerie: [
                 {
                   id: 1,
-                  idSerie: 1001,
                   ripetizioni: 8,
                   carico: 80,
                   ordinamento: 1,
                 },
                 {
                   id: 2,
-                  idSerie: 1002,
                   ripetizioni: 8,
                   carico: 80,
                   ordinamento: 2,
                 },
                 {
                   id: 3,
-                  idSerie: 1003,
                   ripetizioni: 6,
                   carico: 85,
                   ordinamento: 3,
@@ -457,7 +474,6 @@ export class CreateOrEditTemplatePlanService {
             },
             {
               id: 2,
-              idEsercizio: 102,
               idMetodologia: 1,
               idTipoEsercizio: 2,
               idIconaEsercizio: 2,
@@ -465,14 +481,12 @@ export class CreateOrEditTemplatePlanService {
               listaSerie: [
                 {
                   id: 4,
-                  idSerie: 2001,
                   ripetizioni: 10,
                   carico: 50,
                   ordinamento: 1,
                 },
                 {
                   id: 5,
-                  idSerie: 2002,
                   ripetizioni: 8,
                   carico: 55,
                   ordinamento: 2,
@@ -488,7 +502,6 @@ export class CreateOrEditTemplatePlanService {
           listaEsercizi: [
             {
               id: 3,
-              idEsercizio: 103,
               idMetodologia: 1,
               idTipoEsercizio: 3,
               idIconaEsercizio: 1,
@@ -496,14 +509,12 @@ export class CreateOrEditTemplatePlanService {
               listaSerie: [
                 {
                   id: 6,
-                  idSerie: 3001,
                   ripetizioni: 5,
                   carico: 120,
                   ordinamento: 1,
                 },
                 {
                   id: 7,
-                  idSerie: 3002,
                   ripetizioni: 5,
                   carico: 125,
                   ordinamento: 2,

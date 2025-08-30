@@ -1,0 +1,29 @@
+<!-- list-template-plans.html -->
+<div class="content">
+  <div class="section-title-container">
+    <h1 class="text-title">I tuoi template schede</h1>
+  </div>
+  
+  <div class="lista-template-schede-container">
+    @for (scheda of listaSchede; track scheda.id; let i = $index) {
+    <div class="template-scheda">
+      <div class="nome-data-scheda">
+        <h3 class="text-white">{{ scheda.nomeScheda }}</h3>
+        <h3 class="text-grey">
+          Creata il {{ scheda.dataCreazione | date: "dd/MM/yyyy" }}
+        </h3>
+      </div>
+      <div class="naviga-scheda-container">
+        <button class="text-shape-button">
+          <span>Vedi template scheda</span>
+          <div class="text-shape-button-icon-container">
+            <img src="assets/recollect/svg/google-arrow.svg" />
+          </div>
+        </button>
+      </div>
+    </div>
+    } @empty {
+    <h3 class="text-white">Nessuna scheda aggiunta</h3>
+    }
+  </div>
+</div>

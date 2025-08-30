@@ -1,5 +1,6 @@
+<!-- create-or-edit-template-plan-component.html -->
 <div class="content">
-  <div class="section-container close-icon-title-container">
+  <div class="section-title-container close-icon-title-container">
     <div class="close-icon-section-container">
       <div class="close-icon-trigger"></div>
       <img src="assets/recollect/svg/google-close-icon.svg" />
@@ -32,9 +33,7 @@
       } @empty {
       <div class="add-allenamento-button-row">
         <div class="warnign-row">
-          <h3 class="text-white">
-            Nessun allenamento aggiunto
-          </h3>
+          <h3 class="text-white">Nessun allenamento aggiunto</h3>
         </div>
         <button class="text-shape-button" (click)="openAddWorkoutMdal()">
           <span>Aggiungi allenamento</span>
@@ -46,8 +45,17 @@
       }
     </mat-tab-group>
   </div>
-</div>
 
+  <div class="floating-static-button-container">
+    <button
+      class="floating-static-button"
+      [class.button-disabled]="!createOrEditTemplatePlanService.formScheda.form.valid"
+      (click)="savePlan()"
+    >
+      <span>Salva</span>
+    </button>
+  </div>
+</div>
 
 <!-- Template per il body del modale -->
 <ng-template #bodyAddWorkout>
