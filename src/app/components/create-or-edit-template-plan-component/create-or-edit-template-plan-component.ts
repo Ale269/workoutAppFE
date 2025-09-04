@@ -258,12 +258,6 @@ export class CreateOrEditTemplatePlanComponent
     }
   }
 
-  onTabChange(event: MatTabChangeEvent): void {
-    console.log("Tab change event:", event);
-    // Questo metodo verrà chiamato automaticamente dal template
-    // Lo scroll verrà gestito dalla sottoscrizione in ngAfterViewInit
-  }
-
   /**
    * Metodo pubblico per navigare programmaticamente a una tab specifica
    */

@@ -17,12 +17,6 @@
         <mat-form-field
           appearance="outline"
           class="full-width"
-          [style.padding-bottom]="
-            this.loginForm.form.controls['email'].touched &&
-            !this.loginForm.form.controls['email'].valid
-              ? '16px'
-              : '0'
-          "
         >
           <mat-label>{{ "auth.email" | translate }}</mat-label>
           <input
@@ -44,12 +38,6 @@
         <mat-form-field
           appearance="outline"
           class="full-width"
-          [style.padding-bottom]="
-            this.loginForm.form.controls['password'].touched &&
-            !this.loginForm.form.controls['password'].valid
-              ? '16px'
-              : '0'
-          "
         >
           <mat-label>{{ "auth.password" | translate }}</mat-label>
           <input

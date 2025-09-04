@@ -91,35 +91,4 @@ export class SetComponent implements OnInit {
       );
     }
   }
-
-  // Metodi per input numerico
-  // onlyNumbers(event: KeyboardEvent): boolean {
-  //   // Permette: backspace, delete, tab, escape, enter
-  //   if ([8, 9, 27, 13, 46].indexOf(event.keyCode) !== -1 ||
-  //       // Permette: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-  //       (event.keyCode === 65 && event.ctrlKey === true) ||
-  //       (event.keyCode === 67 && event.ctrlKey === true) ||
-  //       (event.keyCode === 86 && event.ctrlKey === true) ||
-  //       (event.keyCode === 88 && event.ctrlKey === true)) {
-  //     return true;
-  //   }
-    
-  //   // Assicurati che sia un numero
-  //   if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && 
-  //       (event.keyCode < 96 || event.keyCode > 105)) {
-  //     event.preventDefault();
-  //     return false;
-  //   }
-    
-  //   return true;
-  // }
-
-  // onPaste(event: ClipboardEvent): void {
-  //   const clipboardData = event.clipboardData;
-  //   const pastedText = clipboardData?.getData('text');
-    
-  //   if (pastedText && !/^\d+$/.test(pastedText)) {
-  //     event.preventDefault();
-  //   }
-  // }
 }

@@ -7,6 +7,7 @@
 
 .input-row {
   width: 100%;
+  padding-bottom: 16px;
 
   mat-form-field {
     width: 100%;
@@ -39,11 +40,6 @@ app-set-component {
 
 app-set-component:first-of-type {
   border-top: 1px solid #212121;
-}
-
-app-set-component:last-of-type {
-  border-bottom: none;
-  padding-bottom: 0;
 }
 
 .icona-numero-esercizio-container {
@@ -86,7 +82,9 @@ mat-form-field {
   width: 100%;
 }
 
-.add-serie-button-row{
+.add-serie-button-row {
   display: flex;
   justify-content: flex-end;
+  padding-top: 32px;
+  padding-bottom: 16px;
 }

@@ -1,4 +1,4 @@
-import { FormArray, FormControl, FormGroup } from "@angular/forms";
+import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 import { AllenamentoForm, AllenamentoFormModel } from "./workout-form";
 import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
 import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
@@ -19,7 +19,7 @@ export class SchedaForm {
   constructor(schedaDTO?: SchedaDTO) {
     this.form = new FormGroup<SchedaFormModel>({
       id: new FormControl<number | null>(schedaDTO?.id || null),
-      nomeScheda: new FormControl<string | null>(schedaDTO?.nomeScheda || null),
+      nomeScheda: new FormControl<string | null>(schedaDTO?.nomeScheda || null, [Validators.required]),
       listaAllenamenti: new FormArray<FormGroup<AllenamentoFormModel>>([]),
     });
 
