@@ -6,15 +6,14 @@ import {SearchForm} from "../../core/models/searchform.model";
 import {CATEGORIE_DISPONIBILI} from "../../common/constants";
 import {ApiCatalogService} from "../../core/services/api-catalog.service";
 import {ProductsService} from "../../core/services/products.service";
+import { CreateOrEditWorkoutExecution } from '../create-or-edit-workout-execution/create-or-edit-workout-execution';
 import { CreateOrEditTemplatePlanComponent } from '../create-or-edit-template-plan-component/create-or-edit-template-plan-component';
-import { MenuComponent } from '../shared/menu-component/menu-component';
-import { ListTemplatePlans } from '../list-template-plans/list-template-plans';
 
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, SlicePipe, ListTemplatePlans, CreateOrEditTemplatePlanComponent], // Assicurati di includere FormsModule e i Pipes
+  imports: [CommonModule, RouterModule, FormsModule, CreateOrEditWorkoutExecution, CreateOrEditTemplatePlanComponent], // Assicurati di includere FormsModule e i Pipes
   templateUrl: './home-component.html',
   styleUrls: ['./home-component.scss']
 })

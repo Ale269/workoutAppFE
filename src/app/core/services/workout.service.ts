@@ -29,5 +29,4 @@ export class WorkoutService {
         return this.apiCatalogService.executeApiCall('workout','allUserWorkout', {userId: userId}, undefined);
 
     }
-
 }

@@ -1,0 +1,16 @@
+.add-exercise-button-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 32px 0;
+}
+
+.content{
+padding-bottom: 40px;
+}
+
+
+.exercise-data {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

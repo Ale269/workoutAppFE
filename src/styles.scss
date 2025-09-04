@@ -240,7 +240,7 @@ body.no-scroll {
   padding-bottom: 16px;
 }
 
-.section-title-container{
+.section-title-container {
   padding-bottom: 32px;
 }
 
@@ -478,4 +478,8 @@ mat-tab-header {
   bottom: 16px;
   display: flex;
   justify-content: flex-end;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
 }
