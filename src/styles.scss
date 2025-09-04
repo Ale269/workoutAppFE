@@ -256,6 +256,18 @@ body.no-scroll {
   position: relative;
 }
 
+.back-icon-title-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.back-icon-section-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
 .delete-icon-element-container {
   display: flex;
   align-items: center;
@@ -276,6 +288,23 @@ body.no-scroll {
   transform: translate(-50%, -50%);
   cursor: pointer;
   z-index: 99;
+}
+
+.back-icon-trigger {
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 99;
+}
+
+.back-icon-section-container img {
+  rotate: 180deg;
+  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
+    hue-rotate(89deg) brightness(104%) contrast(102%);
 }
 
 .close-icon-section-container img {

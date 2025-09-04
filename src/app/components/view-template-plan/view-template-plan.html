@@ -1,0 +1,41 @@
+<div class="content">
+  <div class="section-title-container back-icon-title-container">
+    <div class="back-icon-section-container">
+      <div class="back-icon-trigger"></div>
+      <img src="assets/recollect/svg/google-arrow.svg" />
+    </div>
+    <h1 class="text-title">{{scheda?.nomeScheda}}</h1>
+  </div>
+
+  <div class="lista-template-schede-container">
+    @for (allenamento of scheda?.listaAllenamenti; track allenamento.id; let i =
+    $index) {
+    <div class="section-title-container template-scheda">
+      <div class="nome-allenamento">
+        <h3 class="text-title">{{ allenamento?.nomeAllenamento }}</h3>
+      </div>
+      <div class="dati-allenamento-container">
+        @for(esercizio of allenamento?.listaEsercizi; track esercizio.id; let i
+        = $index) {
+        <div class="icon-esercizio-container"></div>
+        <div class="dati-esercizio-container">
+          <div class="nome-esercizio-container"></div>
+          <div class="chips-container">
+            @if(esercizio?.idMetodologia != null) {
+            <div class="dati-chip-contianer"></div>
+            } @if(esercizio?.listaSerie != null && esercizio.listaSerie.length >
+            0) {
+            <div class="dati-chip-contianer"></div>
+            }
+          </div>
+        </div>
+        } @empty {
+        <h3 class="text-white">Dati non trovati</h3>
+        }
+      </div>
+    </div>
+    } @empty {
+    <h3 class="text-white">Dati non trovati</h3>
+    }
+  </div>
+</div>

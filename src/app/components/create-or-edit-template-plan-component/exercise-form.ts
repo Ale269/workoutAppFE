@@ -59,15 +59,15 @@ export class EsercizioForm {
       this.identifier = this.identifier + 1;
 
       // Determina l'ordinamento per la nuova serie (ultima posizione)
-      const nextOrdinamentoSerie = this.listaSerieForm.length + 1;
+      const nextordinamento = this.listaSerieForm.length + 1;
 
       const newSerieForm: SerieForm = new SerieForm(this.identifier, serieDTO);
 
       // Se non ha già un ordinamento (nuova serie), assegna l'ultima posizione
       if (!serieDTO?.ordinamento) {
         newSerieForm.form
-          .get("ordinamentoSerie")
-          ?.setValue(nextOrdinamentoSerie, { emitEvent: false });
+          .get("ordinamento")
+          ?.setValue(nextordinamento, { emitEvent: false });
       }
 
       this.listaSerieForm.push(newSerieForm);
@@ -124,8 +124,8 @@ export class EsercizioForm {
 
     // 1. Ordina le serie per ordinamento corrente
     this.listaSerieForm.sort((a, b) => {
-      const ordinamentoA = a.form.get("ordinamentoSerie")?.value || 0;
-      const ordinamentoB = b.form.get("ordinamentoSerie")?.value || 0;
+      const ordinamentoA = a.form.get("ordinamento")?.value || 0;
+      const ordinamentoB = b.form.get("ordinamento")?.value || 0;
       return ordinamentoA - ordinamentoB;
     });
 
@@ -133,7 +133,7 @@ export class EsercizioForm {
     this.listaSerieForm.forEach((serie, index) => {
       const newOrdinamento = index + 1;
       serie.form
-        .get("ordinamentoSerie")
+        .get("ordinamento")
         ?.setValue(newOrdinamento, { emitEvent: false });
     });
 
