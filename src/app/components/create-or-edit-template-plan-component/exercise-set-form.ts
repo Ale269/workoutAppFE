@@ -36,10 +36,9 @@ export class SerieForm {
       ), // NUOVO CAMPO
       ripetizioni: new FormControl<number | null>(
         serieDTO?.ripetizioni || null,
-        [Validators.required, positiveIntegerValidator()]
+        [positiveIntegerValidator()]
       ),
       carico: new FormControl<number | null>(serieDTO?.carico || null, [
-        Validators.required,
         positiveIntegerValidator(),
       ]),
     });

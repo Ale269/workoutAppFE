@@ -509,6 +509,16 @@ mat-tab-header {
   justify-content: flex-end;
 }
 
+.floating-double-buttons-container {
+  z-index: 9998;
+  position: fixed;
+  right: 16px;
+  left: 16px;
+  bottom: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .mat-mdc-form-field-subscript-wrapper {
   display: none;
 }

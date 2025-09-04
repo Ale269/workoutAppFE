@@ -1,44 +1,58 @@
 <!-- create-or-edit-template-plan-component.html -->
 <div class="content">
-    <div class="section-title-container close-icon-title-container">
-        <div class="close-icon-section-container">
-            <div class="close-icon-trigger"></div>
-            <img src="assets/recollect/svg/google-close-icon.svg" />
-        </div>
-        <h1 class="text-title">Registra allenamento</h1>
+  <div class="section-title-container close-icon-title-container">
+    <div class="close-icon-section-container">
+      <div class="close-icon-trigger"></div>
+      <img src="assets/recollect/svg/google-close-icon.svg" />
     </div>
+    <h1 class="text-title">Registra allenamento</h1>
+  </div>
 
-    @if(this.createOrEditWorkoutExecutionService.AllenamentoForm?.form){
-    <div class="workout-data">
-        <div class="section-title-container">
-            <h3 class="text-title">
-                {{this.createOrEditWorkoutExecutionService.AllenamentoForm.form.controls['nomeAllenamento'].value}}
-            </h3>
-        </div>
+  @if(this.createOrEditWorkoutExecutionService.AllenamentoForm?.form){
+  <div class="workout-data">
+    <div class="section-title-container">
+      <h3 class="text-title">
+        {{this.createOrEditWorkoutExecutionService.AllenamentoForm.form.controls['nomeAllenamento'].value}}
+      </h3>
     </div>
-    <div class="exercise-data">
-        @for (esercizioForm of this.createOrEditWorkoutExecutionService.AllenamentoForm.listaEserciziForm; track
-        esercizioForm.form.controls['identifier'].value) {
-        <app-exercise-component [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm" (onDeleteExercise)="deleteEexercise($event)"
-            [formEsercizio]="esercizioForm"></app-exercise-component>
-        } @empty { }
-    </div>
-    <div class="add-exercise-button-row">
-        <button class="text-shape-button" (click)="addNuovoEsercizio()">
-            <span>Aggiungi esercizio</span>
-            <div class="text-shape-button-icon-container">
-                <img src="assets/recollect/svg/google-add.svg" />
-            </div>
-        </button>
-    </div>
-    <div class="floating-static-button-container">
-        <button class="floating-static-button"
-            [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
-            (click)="registraAllenamento()">
-            <span>Registra allenamento</span>
-        </button>
-    </div>
-    }@else {
-    <h3 class="text-white">Nessun allenamento aggiunto</h3>
-    }
+  </div>
+  <div class="exercise-data">
+    @for (esercizioForm of
+    this.createOrEditWorkoutExecutionService.AllenamentoForm.listaEserciziForm;
+    track esercizioForm.form.controls['identifier'].value) {
+    <app-exercise-component
+      [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm"
+      (onDeleteExercise)="deleteEexercise($event)"
+      [formEsercizio]="esercizioForm"
+    ></app-exercise-component>
+    } @empty { }
+  </div>
+  <div class="add-exercise-button-row">
+    <button class="text-shape-button" (click)="addNuovoEsercizio()">
+      <span>Aggiungi esercizio</span>
+      <div class="text-shape-button-icon-container">
+        <img src="assets/recollect/svg/google-add.svg" />
+      </div>
+    </button>
+  </div>
+
+  <div class="floating-double-buttons-container">
+    <app-multi-option-button
+      [options]="buttonOptions"
+      [transformButtonLabel]="'Cambia'"
+      (optionSelected)="onOptionSelected($event)"
+    >
+      <!-- Il pulsante statico viene proiettato qui -->
+      <button
+        class="floating-static-button"
+        [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
+        (click)="registraAllenamento()"
+      >
+        <span>Salva</span>
+      </button>
+    </app-multi-option-button>
+  </div>
+  }@else {
+  <h3 class="text-white">Nessun allenamento aggiunto</h3>
+  }
 </div>

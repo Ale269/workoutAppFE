@@ -1,3 +1,9 @@
+.buttons-container {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+}
+
 .transformation-button {
   background: linear-gradient(#000000 0 0) padding-box,
     linear-gradient(
@@ -12,13 +18,13 @@
   border-radius: 32px;
   cursor: pointer;
   overflow: hidden;
-  width: auto;
-  /* Larghezza iniziale automatica */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   width: fit-content;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .transformation-button.transformed {
@@ -33,18 +39,22 @@
 }
 
 .transformation-button button {
-  font-family: "poppins";
+  font-family: "poppins", sans-serif;
   font-weight: 700;
   background-color: transparent;
   border: none;
   color: rgba(0, 255, 225, 1);
   cursor: pointer;
   font-size: 14px;
-  padding: 4px 8px;
+  padding: 0;
+  margin: 0;
+  outline: none;
 }
 
 .basic-setting {
   opacity: 1;
+  white-space: nowrap;
+  display: block;
 }
 
 .transformed-setting {
@@ -52,12 +62,23 @@
   overflow: hidden;
   opacity: 0;
   width: 100%;
+  display: block;
 }
 
 .transformed-setting .transformed-setting-option-container {
   width: 100%;
   border-bottom: 1px solid #212121;
   padding: 16px 0;
+}
+
+.transformed-setting .transformed-setting-option-container button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 0;
+}
+
+.transformed-setting .transformed-setting-option-container button:hover {
+  color: rgba(0, 255, 225, 0.8);
 }
 
 .transformed-setting .transformed-setting-close-button-container {
@@ -69,8 +90,37 @@
 
 .transformed-setting .transformed-setting-close-button-container button {
   color: #858585;
+  padding: 8px 16px;
+}
+
+.transformed-setting .transformed-setting-close-button-container button:hover {
+  color: #ffffff;
 }
 
 .transformed-setting .transformed-setting-option-container:last-of-type {
   border-bottom: none;
+}
+
+.static-button {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  overflow: hidden;
+  transform-origin: right center;
+}
+
+.static-button-container {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  padding-left: 8px;
+}
+
+.transformed-setting {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  width: 100%;
+  display: block;
 }

@@ -2,10 +2,18 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
+  Input,
   OnInit,
+  Output,
   ViewChild,
 } from "@angular/core";
 import { gsap } from "gsap";
+
+export interface OptionButton {
+  id: number;
+  description: string;
+}
 
 @Component({
   selector: "app-multi-option-button",
@@ -15,241 +23,244 @@ import { gsap } from "gsap";
 })
 export class MultiOptionButton implements OnInit, AfterViewInit {
 
-@ViewChild('container', { static: false }) container!: ElementRef;
-@ViewChild('transformButton', { static: false }) transformButton!: ElementRef;
-@ViewChild('transformedContent', { static: false }) transformedContent!: ElementRef;
-@ViewChild('basicContent', { static: false }) basicContent!: ElementRef;
-@ViewChild('staticButton', { static: false }) staticButton!: ElementRef;
-@ViewChild('staticButtonContent', { static: false }) staticButtonContent!: ElementRef;
-@ViewChild('closeBtn', { static: false }) closeBtn!: ElementRef;
+  @Input() options: OptionButton[] = [];
+  @Input() transformButtonLabel: string = 'Transform button';
+  
+  @Output() optionSelected = new EventEmitter<number>();
+
+  @ViewChild('container', { static: false }) container!: ElementRef;
+  @ViewChild('transformButton', { static: false }) transformButton!: ElementRef;
+  @ViewChild('transformedContent', { static: false }) transformedContent!: ElementRef;
+  @ViewChild('basicContent', { static: false }) basicContent!: ElementRef;
+  @ViewChild('staticButton', { static: false }) staticButton!: ElementRef;
+  @ViewChild('closeBtn', { static: false }) closeBtn!: ElementRef;
 
   public isExpanded = false;
   public isAnimating = false;
-  public naturalHeight = 0;
-  public naturalHeightbasicContent = 0;
-  public initialWidth = 0;
-  public targetWidth = 0;
+  private naturalHeight = 0;
 
   constructor() {}
 
-  ngAfterViewInit(): void {
-    try {
-      this.isExpanded = false;
-      this.isAnimating = false;
-      this.naturalHeight = 0;
-      this.naturalHeightbasicContent = 0;
-      this.initialWidth = 0;
-      this.targetWidth = 0;
-
-      this.init();
-    } catch (error) {}
-  }
-
   ngOnInit() {}
 
-  init() {
-    // Calcola l'altezza naturale del contenuto e le larghezze
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.initializeComponent();
+    }, 0);
+  }
+
+  private initializeComponent() {
+    this.isExpanded = false;
+    this.isAnimating = false;
+    
+    this.setupEventListeners();
     this.calculateDimensions();
+    this.setInitialState();
+  }
 
-    // Event listeners
-
+  private setupEventListeners() {
     this.transformButton.nativeElement.addEventListener("click", () => {
       if (!this.isExpanded && !this.isAnimating) {
-        this.open();
+        this.expandButton();
       }
     });
 
     this.closeBtn.nativeElement.addEventListener("click", () => {
       if (this.isExpanded && !this.isAnimating) {
-        this.close();
+        this.collapseButton();
       }
     });
-
-    // Inizializza lo stato
-    gsap.set(this.transformedContent, { height: 0, opacity: 0 });
-    gsap.set(this.basicContent, { opacity: 1 });
   }
 
-  calculateDimensions() {
-    // Salva la larghezza iniziale del buttonS
-    this.initialWidth = this.transformButton.nativeElement.offsetWidth + 2;
-
-    // Calcola la larghezza target (100% del contenitore padre)
-    this.targetWidth = this.container.nativeElement.offsetWidth;
-
-    // Temporaneamente mostra il contenuto per misurarne l'altezza
-    gsap.set(this.transformedContent, { height: "auto", visibility: "hidden" });
-    this.naturalHeight = this.transformedContent.nativeElement.offsetHeight;
-    gsap.set(this.transformedContent, { height: 0, visibility: "visible" });
-
-    this.naturalHeightbasicContent = this.basicContent.nativeElement.offsetHeight;
+  private calculateDimensions() {
+    // Calcola l'altezza naturale del contenuto trasformato
+    gsap.set(this.transformedContent.nativeElement, { 
+      height: "auto", 
+      visibility: "hidden",
+      display: "block"
+    });
+    
+    this.naturalHeight = this.transformedContent.nativeElement.scrollHeight;
+    
+    // Reset
+    gsap.set(this.transformedContent.nativeElement, { 
+      height: 0, 
+      visibility: "visible",
+      opacity: 0
+    });
   }
 
-  open() {
+  private setInitialState() {
+    const childContainers = this.transformedContent.nativeElement.querySelectorAll(
+      '.transformed-setting-option-container, .transformed-setting-close-button-container'
+    );
+
+    // Reset completo di tutti gli elementi
+    gsap.set(this.transformButton.nativeElement, {
+      clearProps: "all" // Rimuove tutti gli stili inline di GSAP
+    });
+
+    gsap.set(this.transformedContent.nativeElement, {
+      height: 0,
+      opacity: 0,
+      display: "block"
+    });
+
+    gsap.set(childContainers, {
+      width: 0,
+      overflow: "hidden"
+    });
+
+    gsap.set(this.basicContent.nativeElement, {
+      opacity: 1,
+      height: "auto"
+    });
+
+    gsap.set(this.staticButton.nativeElement, {
+      opacity: 1,
+      scaleX: 1,
+      width: "auto"
+    });
+  }
+
+  onOptionClick(optionId: number) {
+    this.optionSelected.emit(optionId);
+    this.collapseButton();
+  }
+
+  private expandButton() {
     this.isAnimating = true;
     this.transformButton.nativeElement.classList.add("transformed");
-    this.transformButton.nativeElement.classList.remove("basic");
 
-    // Timeline per coordinare le animazioni
-    const tl = gsap.timeline({
+    const childContainers = this.transformedContent.nativeElement.querySelectorAll(
+      '.transformed-setting-option-container, .transformed-setting-close-button-container'
+    );
+
+    const timeline = gsap.timeline({
       onComplete: () => {
         this.isExpanded = true;
         this.isAnimating = false;
-      },
+      }
     });
-    // Prima fade out del basic button
-    tl.to(
-      this.basicContent.nativeElement,
-      {
+
+    timeline
+      // Nascondi contenuti di base
+      .to([this.basicContent.nativeElement, this.staticButton.nativeElement], {
         opacity: 0,
-        duration: 0.1,
-        ease: "power2.out",
+        duration: 0.2,
+        ease: "power2.out"
+      })
+      .to(this.basicContent.nativeElement, {
         height: 0,
-      },
-      "opacityZero"
-    )
-
-      // Simultaneamente anima larghezza e altezza con bounce
-      // Punto di sincronizzazione: espansione
-      .add("expandPoint")
-      .to(
-        this.staticButtonContent.nativeElement,
-        {
-          opacity: 0,
-          duration: 0.1,
-          ease: "power2.out",
-        },
-        "expandPoint"
-      )
-      // Button si espande
-      .to(
-        this.transformButton.nativeElement,
-        {
-          width: this.targetWidth,
-          duration: 1,
-          ease: "back.out(1)",
-        },
-        "expandPoint"
-      )
-
-      // Static content si chiude
-      .to(
-        this.staticButton.nativeElement,
-        {
-          opacity: 0,
-          duration: 1,
-          padding: "8px 0",
-          ease: "back.out(1)",
-        },
-        "expandPoint"
-      )
-
-      // Trasformed content si apre
-      .to(
-        this.transformedContent.nativeElement,
-        {
-          height: this.naturalHeight,
-          duration: 1,
-          ease: "back.out(1)",
-        },
-        "expandPoint"
-      )
-
-      // E fade-in finale del contenuto trasformato
-      .to(
-        this.transformedContent.nativeElement,
-        {
-          opacity: 1,
-          duration: 0.4,
-          ease: "power4.out",
-        },
-        "expandPoint+=0.4"
-      );
-
-    // Assicurati che l'altezza sia auto alla fine per il responsive
-    tl.set(this.transformedContent.nativeElement, { height: "auto" });
+        duration: 0.2,
+        ease: "power2.out"
+      }, "<")
+      .to(this.staticButton.nativeElement, {
+        scaleX: 0,
+        width: 0,
+        duration: 0.2,
+        ease: "power2.out"
+      }, "<")
+      
+      // Espansione
+      .to(this.transformButton.nativeElement, {
+        width: "100%",
+        duration: 0.4,
+        ease: "back.out(1.2)"
+      }, "+=0.1")
+      .to(this.transformedContent.nativeElement, {
+        height: this.naturalHeight,
+        opacity: 1,
+        duration: 0.4,
+        ease: "back.out(1)"
+      }, "<")
+      .to(childContainers, {
+        width: "100%",
+        duration: 0.4,
+        ease: "back.out(1)"
+      }, "<")
+      
+      // Altezza auto per responsiveness
+      .set(this.transformedContent.nativeElement, { height: "auto" });
   }
 
-  close() {
-    this.isAnimating = true;
-    this.transformButton.nativeElement.classList.remove("transformed");
-    this.transformButton.nativeElement.classList.add("basic");
+ private collapseButton() {
+  this.isAnimating = true;
+  this.transformButton.nativeElement.classList.remove("transformed");
 
-    // Prima imposta un'altezza fissa se è 'auto'
-    if (
-      this.transformedContent.nativeElement.style.height === "auto" ||
-      !this.transformedContent.nativeElement.style.height
-    ) {
-      gsap.set(this.transformedContent, {
-        height: this.transformedContent.nativeElement.offsetHeight,
-      });
-    }
+  const childContainers = this.transformedContent.nativeElement.querySelectorAll(
+    ".transformed-setting-option-container, .transformed-setting-close-button-container"
+  );
 
-    // Timeline per coordinare le animazioni di chiusura
-    const tl = gsap.timeline({
-      onComplete: () => {
-        this.isExpanded = false;
-        this.isAnimating = false;
-      },
+  // se height è auto → fissalo al valore corrente
+  if (this.transformedContent.nativeElement.style.height === "auto") {
+    gsap.set(this.transformedContent.nativeElement, {
+      height: this.transformedContent.nativeElement.scrollHeight,
     });
-    // Prima fade out del contenuto
-    tl.to(this.transformedContent.nativeElement, {
+  }
+
+  const timeline = gsap.timeline({
+    onComplete: () => {
+      this.isExpanded = false;
+      this.isAnimating = false;
+
+      // qui puoi fare il reset completo, incluso clearProps
+      gsap.set(this.transformButton.nativeElement, { clearProps: "width" });
+      this.setInitialState();
+    },
+  });
+
+  timeline
+    // Contrazione contenuto trasformato
+    .to(this.transformedContent.nativeElement, {
       opacity: 0,
-      duration: 0.1,
+      height: 0,
+      duration: 0.3,
       ease: "power2.out",
     })
+    .to(
+      childContainers,
+      {
+        width: 0,
+        duration: 0.3,
+        ease: "power2.out",
+      },
+      "<"
+    )
 
-      // Simultaneamente anima larghezza e altezza con leggero bounce
-      .add("collapsePoint")
-      .to(
-        this.staticButtonContent.nativeElement,
-        {
-          opacity: 1,
-          duration: 0.4,
-          ease: "back.in(1)",
-        },
-        "collapsePoint"
-      )
-      .to(
-        this.transformButton.nativeElement,
-        {
-          width: this.initialWidth,
-          duration: 0.6,
-          ease: "back.in(1)",
-        },
-        "collapsePoint"
-      )
-      .to(
-        this.staticButton.nativeElement,
-        {
-          opacity: 1,
-          duration: 0.6,
-          padding: "8px 16px",
-          ease: "back.in(1)",
-        },
-        "collapsePoint"
-      )
-      .to(
-        this.transformedContent.nativeElement,
-        {
-          height: 0,
-          duration: 0.6,
-          ease: "back.in(1)",
-        },
-        "collapsePoint"
-      )
-      // StaticContent si apre contemporaneamente
-      // Inizia insieme alla larghezza
-      // E fade in del basic button
-      .to(
-        this.basicContent.nativeElement,
-        {
-          opacity: 1,
-          duration: 0.4,
-          ease: "power4.out",
-          height: this.naturalHeightbasicContent,
-        },
-        "-=0.1"
-      ); // Inizia durante l'animazione di chiusura
-  }
+    // Anima la larghezza del transformButton verso una misura minima
+    .to(
+      this.transformButton.nativeElement,
+      {
+        width: "auto", // oppure una width fissa che fa da base
+        duration: 0.4,
+        ease: "back.in(1.2)",
+      },
+      "<" // parte in parallelo
+    )
+
+    // Ripristino elementi base
+    .to(
+      this.staticButton.nativeElement,
+      {
+        opacity: 1,
+        scaleX: 1,
+        width: "auto",
+        duration: 0.3,
+        ease: "back.out(1)",
+      },
+      "+=0.1"
+    )
+    .to(
+      this.basicContent.nativeElement,
+      {
+        height: "auto",
+        opacity: 1,
+        duration: 0.3,
+        ease: "power2.out",
+      },
+      "<"
+    );
+}
+
 }

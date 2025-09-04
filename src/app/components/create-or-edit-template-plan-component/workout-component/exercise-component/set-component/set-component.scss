@@ -6,9 +6,11 @@
 }
 
 mat-form-field {
-  width: 100%;
+  width: 50%;
 }
 
 .input-row {
   padding-bottom: 16px;
+  display: flex;
+  gap: 8px;
 }

@@ -19,27 +19,11 @@ export class CreateOrEditWorkoutExecutionService {
   InitializeScheda(idAllenamento: number) {
     try {
       if (idAllenamento && idAllenamento > 0) {
-        //dati mockati dalla componente
 
         const allenamentoDTO: AllenamentoDTO = this.getAllenamentoById(idAllenamento);
         this.AllenamentoForm = new AllenamentoForm(0, allenamentoDTO);
 
-        // this.workoutService.getSingleWorkout(idAllenamento).subscribe({
-        //   next: (response) => {
-        //     if (response.esito === "OK") {
-        //       if (response.payload.workout) {
-        //         const workout: AllenamentoDTO[] = response.payload.workout;
-        //         this.AllenamentoForm = new AllenamentoForm(workout[0]);
-        //       }
-        //     } else {
-        //       throw new Error(
-        //         "CreateOrEditTemplatePlanService.InitializeScheda: " + 'impossibile trovare l\'allenamento'
-        //       );
-        //     }
-        //   }
-        // })
       } else {
-        // Crea form vuoto per nuova scheda
         this.AllenamentoForm = new AllenamentoForm(0);
       }
     } catch (error) {
@@ -62,9 +46,7 @@ export class CreateOrEditWorkoutExecutionService {
           resolve();
         }, 2000);
 
-        // setInterval(() => {
-        //   reject();
-        // }, 2000);
+   
       } catch (error) {
         throw new Error("CreateOrEditTemplatePlanService.savePlan: " + error);
       }
