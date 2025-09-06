@@ -9,11 +9,8 @@ import {
   ViewChild,
 } from "@angular/core";
 import { gsap } from "gsap";
+import { altriAllenamentiSelectDTO } from "src/app/models/esecuzione-allenamento/altri-allenamenti-select-dto";
 
-export interface OptionButton {
-  id: number;
-  description: string;
-}
 
 @Component({
   selector: "app-multi-option-button",
@@ -23,7 +20,7 @@ export interface OptionButton {
 })
 export class MultiOptionButton implements OnInit, AfterViewInit {
 
-  @Input() options: OptionButton[] = [];
+  @Input() options: altriAllenamentiSelectDTO[] = [];
   @Input() transformButtonLabel: string = 'Transform button';
   
   @Output() optionSelected = new EventEmitter<number>();

@@ -2,10 +2,15 @@ import { Component } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
+import { TrainingMethodologyPipe } from "../../core/pipes/training-methodology";
+import { SeriesRepsPipe } from "../../core/pipes/series-reps-pipe ";
+import { ExerciseNamePipe } from "../../core/pipes/exercise-name";
+import { ExerciseIconPipe } from "../../core/pipes/exercise-icon";
+import { ExerciseIconColorPipe } from "../../core/pipes/exercise-icon-color";
 
 @Component({
   selector: "app-view-template-plan",
-  imports: [],
+  imports: [TrainingMethodologyPipe, SeriesRepsPipe, ExerciseNamePipe, ExerciseIconPipe, ExerciseIconColorPipe],
   templateUrl: "./view-template-plan.html",
   styleUrl: "./view-template-plan.scss",
 })

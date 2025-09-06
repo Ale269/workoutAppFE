@@ -1,8 +1,44 @@
-<div class="app-menu-container">
-  <div>
-    <h3>Home</h3>
+<!-- menu-component.html -->
+<div class="menu-wrapper">
+  <!-- Menu fisso in alto -->
+  <div class="app-menu-container">
+    <div [class.menu-hidden]="isMenuOpen">
+      <h3>Home</h3>
+    </div>
+    <div (click)="toggleMenu()" class="menu-trigger">
+      @if(!isMenuOpen){
+      <h3 class="menu-text">Menu</h3>
+      } @if(isMenuOpen){
+      <h3 class="close-button">Chiudi</h3>
+      }
+    </div>
   </div>
-  <div>
-    <h3>Menu</h3>
+
+  <!-- Overlay fullscreen menu -->
+  <div
+    class="fullscreen-menu-overlay"
+    [class.menu-open]="isMenuOpen"
+    (click)="closeMenu()"
+  >
+    <div class="menu-items-container" [class.items-visible]="isMenuOpen">
+      <div class="menu-item">
+        <h3 class="text-white">Profilo</h3>
+      </div>
+      <div class="menu-item">
+        <h3 class="text-white">Allenamenti</h3>
+      </div>
+      <div class="menu-item">
+        <h3 class="text-white">Schede</h3>
+      </div>
+      <div class="menu-item">
+        <h3 class="text-white">Statistiche</h3>
+      </div>
+      <div class="menu-item">
+        <h3 class="text-white">Impostazioni</h3>
+      </div>
+      <div class="menu-item">
+        <h3 class="text-white">Logout</h3>
+      </div>
+    </div>
   </div>
 </div>

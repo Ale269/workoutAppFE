@@ -4,6 +4,8 @@ import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
 import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
 import { WorkoutService } from "../../core/services/workout.service";
 import { AllenamentoForm } from "../create-or-edit-template-plan-component/workout-form";
+import { altriAllenamentiSelectDTO } from "src/app/models/esecuzione-allenamento/altri-allenamenti-select-dto";
+import { InitializeWorkoutResponse } from "src/app/models/esecuzione-allenamento/get-allenamento-dto";
 
 @Injectable({
   providedIn: "root",
@@ -14,17 +16,37 @@ export class CreateOrEditWorkoutExecutionService {
   constructor(
     private errorHandlerService: ErrorHandlerService,
     private workoutService: WorkoutService
-  ) { }
+  ) {}
 
-  InitializeScheda(idAllenamento: number) {
+  InitializeScheda(idAllenamento: number): InitializeWorkoutResponse {
     try {
       if (idAllenamento && idAllenamento > 0) {
+        const allenamentoDTO: AllenamentoDTO =
+          this.getAllenamentoById(idAllenamento);
+        const opzioni: altriAllenamentiSelectDTO[] =
+          this.getOpzioniAltriAllenamenti(idAllenamento);
 
-        const allenamentoDTO: AllenamentoDTO = this.getAllenamentoById(idAllenamento);
         this.AllenamentoForm = new AllenamentoForm(0, allenamentoDTO);
 
+        return {
+          allenamentoCorrente: allenamentoDTO,
+          opzioniAltriAllenamenti: opzioni,
+        };
       } else {
         this.AllenamentoForm = new AllenamentoForm(0);
+
+        // Crea un DTO vuoto con le proprietà di default
+        const allenamentoVuoto: AllenamentoDTO = {
+          id: 0,
+          nomeAllenamento: "",
+          ordinamento: 0,
+          listaEsercizi: [],
+        };
+
+        return {
+          allenamentoCorrente: allenamentoVuoto,
+          opzioniAltriAllenamenti: this.getOpzioniAltriAllenamenti(),
+        };
       }
     } catch (error) {
       throw new Error(
@@ -33,30 +55,33 @@ export class CreateOrEditWorkoutExecutionService {
     }
   }
 
+  // Nuovo metodo per ottenere le opzioni degli altri allenamenti
+  private getOpzioniAltriAllenamenti(
+    idAllenamentoCorrente?: number
+  ): altriAllenamentiSelectDTO[] {
+    // Dati mock per simulare le opzioni degli altri allenamenti
+    const tuttiAllenamenti: altriAllenamentiSelectDTO[] = [
+      { id: 1, description: "Push Day componente" },
+      { id: 2, description: "Pull Day componente" },
+      { id: 3, description: "Leg Day componente" },
+      { id: 4, description: "Full Body" },
+      { id: 5, description: "Upper Body" },
+    ];
 
-  async registraAllenamento(savePlanRequest: AllenamentoDTO): Promise<void> {
-    // Bisogna anche avere il modello della response
-    return new Promise((resolve, reject) => {
-      try {
-        // Esegui la chiamata mandando i dati necessari
-        // Adesso come request ho messo la SchedaDTO ma potrebbe servire altro
+    // Se è specificato un ID, escludiamo l'allenamento corrente dalle opzioni
+    if (idAllenamentoCorrente) {
+      return tuttiAllenamenti.filter(
+        (allenamento) => allenamento.id !== idAllenamentoCorrente
+      );
+    }
 
-        //per prova
-        setInterval(() => {
-          resolve();
-        }, 2000);
-
-   
-      } catch (error) {
-        throw new Error("CreateOrEditTemplatePlanService.savePlan: " + error);
-      }
-    });
+    return tuttiAllenamenti;
   }
 
+  // Il metodo getAllenamentoById rimane invariato
   private getAllenamentoById(id: number): AllenamentoDTO {
     // Dati mock per simulare risposta del server
     const mockAllenamentoDTO: AllenamentoDTO = {
-
       id: 1,
       nomeAllenamento: "Push Day componente",
       ordinamento: 1,
@@ -114,5 +139,22 @@ export class CreateOrEditWorkoutExecutionService {
 
     // Simula delay della chiamata HTTP
     return mockAllenamentoDTO;
+  }
+
+  async registraAllenamento(savePlanRequest: AllenamentoDTO): Promise<void> {
+    // Bisogna anche avere il modello della response
+    return new Promise((resolve, reject) => {
+      try {
+        // Esegui la chiamata mandando i dati necessari
+        // Adesso come request ho messo la SchedaDTO ma potrebbe servire altro
+
+        //per prova
+        setInterval(() => {
+          resolve();
+        }, 2000);
+      } catch (error) {
+        throw new Error("CreateOrEditTemplatePlanService.savePlan: " + error);
+      }
+    });
   }
 }

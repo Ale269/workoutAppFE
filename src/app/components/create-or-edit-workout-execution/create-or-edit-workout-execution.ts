@@ -9,8 +9,8 @@ import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
 import { ExerciseComponent } from "../create-or-edit-template-plan-component/workout-component/exercise-component/exercise-component";
 import {
   MultiOptionButton,
-  OptionButton,
 } from "../shared/multi-option-button/multi-option-button";
+import { altriAllenamentiSelectDTO } from "src/app/models/esecuzione-allenamento/altri-allenamenti-select-dto";
 
 @Component({
   selector: "app-create-or-edit-workout-execution",
@@ -31,13 +31,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   public accordionOpenKeys: string[] = [];
 
   // Definisci le opzioni del pulsante
-  public buttonOptions: OptionButton[] = [
-    { id: 1, description: "Prima opzione" },
-    { id: 2, description: "Seconda opzione" },
-    { id: 3, description: "Terza opzione" },
-    { id: 4, description: "Salva bozza" },
-    { id: 5, description: "Salva come template" },
-  ];
+  public buttonOptions: altriAllenamentiSelectDTO[] = [];
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
@@ -46,6 +40,78 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+  try {
+    // Mostra lo spinner di inizializzazione
+    this.initSpinnerId = this.spinnerService.showWithResult(
+      "Recupero dati allenamento",
+      {
+        successMessage: "Dati recuperati con successo",
+        errorMessage: "Errore nel recupero dei dati",
+        resultDuration: 500,
+        minSpinnerDuration: 500,
+      }
+    );
+
+    this.initializeWorkout();
+
+    // Simula un caricamento asincrono
+    setTimeout(() => {
+      if (this.initSpinnerId) {
+        this.spinnerService.setSuccess(this.initSpinnerId);
+      }
+    }, 1000);
+  } catch (error) {
+    this.errorHandlerService.handleError(
+      error,
+      "CreateOrEditWorkoutExecution.ngOnInit"
+    );
+  }
+}
+
+// Nuovo metodo unificato nel component
+initializeWorkout() {
+  try {
+    // Chiamata unificata che restituisce sia l'allenamento che le opzioni
+    const response = this.createOrEditWorkoutExecutionService.InitializeScheda(1);
+    
+    // Popola le opzioni del pulsante
+    this.buttonOptions = response.opzioniAltriAllenamenti;
+    
+  } catch (error) {
+    if (this.initSpinnerId) {
+      this.spinnerService.setError(
+        this.initSpinnerId,
+        "Errore durante l'inizializzazione"
+      );
+    }
+    this.errorHandlerService.handleError(
+      error,
+      "CreateOrEditWorkoutExecution.initializeWorkout"
+    );
+  }
+}
+  getOpzioniCambioAllenamento() {
+    try {
+     
+      // Simula l'inizializzazione (sostituisci con la tua logica asincrona)
+      this.createOrEditWorkoutExecutionService.InitializeScheda(1);
+
+      
+    } catch (error) {
+      if (this.initSpinnerId) {
+        this.spinnerService.setError(
+          this.initSpinnerId,
+          "Errore durante l'inizializzazione"
+        );
+      }
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditWorkoutExecution.getDatiAllenamento"
+      );
+    }
+  }
+
+  getDatiAllenamento() {
     try {
       // Mostra lo spinner di inizializzazione
       this.initSpinnerId = this.spinnerService.showWithResult(
@@ -76,7 +142,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       }
       this.errorHandlerService.handleError(
         error,
-        "CreateOrEditWorkoutExecution.ngOnInit"
+        "CreateOrEditWorkoutExecution.getDatiAllenamento"
       );
     }
   }
@@ -119,7 +185,8 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   onOptionSelected(optionId: number) {
     console.log("Opzione selezionata:", optionId);
 
-    switch (optionId) {
+    switch (
+      optionId
       // case "option1":
       //   this.handleOption1();
       //   break;
@@ -129,6 +196,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       // case "option3":
       //   this.handleOption3();
       //   break;
+    ) {
     }
   }
 

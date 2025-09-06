@@ -17,16 +17,37 @@
       <div class="dati-allenamento-container">
         @for(esercizio of allenamento?.listaEsercizi; track esercizio.id; let i
         = $index) {
-        <div class="icon-esercizio-container"></div>
-        <div class="dati-esercizio-container">
-          <div class="nome-esercizio-container"></div>
-          <div class="chips-container">
-            @if(esercizio?.idMetodologia != null) {
-            <div class="dati-chip-contianer"></div>
-            } @if(esercizio?.listaSerie != null && esercizio.listaSerie.length >
-            0) {
-            <div class="dati-chip-contianer"></div>
-            }
+        <div class="esercizio-container">
+          <div class="icon-esercizio-container">
+            <div
+              class="circle-icon"
+              [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor"
+            >
+              <img
+                [src]="esercizio.idIconaEsercizio | exerciseIcon"
+                class="exercise-icon"
+                [alt]="esercizio.idTipoEsercizio | exerciseName"
+              />
+            </div>
+          </div>
+          <div class="dati-esercizio-container">
+            <div class="nome-esercizio-container">
+              <h3 class="text-white">
+                {{ esercizio.idTipoEsercizio | exerciseName }}
+              </h3>
+            </div>
+            <div class="chips-container">
+              @if(esercizio?.idMetodologia != null) {
+              <div class="dati-chip-container metodologia-chip">
+                {{ esercizio.idMetodologia | trainingMethodology }}
+              </div>
+              } @if(esercizio?.listaSerie != null && esercizio.listaSerie.length
+              > 0) {
+              <div class="dati-chip-container serie-chip">
+                {{ esercizio.listaSerie | seriesReps }}
+              </div>
+              }
+            </div>
           </div>
         </div>
         } @empty {
@@ -37,5 +58,11 @@
     } @empty {
     <h3 class="text-white">Dati non trovati</h3>
     }
+  </div>
+
+    <div class="floating-static-button-container">
+    <button class="floating-static-button">
+      <span>Modifica scheda</span>
+    </button>
   </div>
 </div>

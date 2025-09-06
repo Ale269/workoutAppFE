@@ -14,7 +14,7 @@ import { ViewTemplatePlan } from '../view-template-plan/view-template-plan';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, CreateOrEditWorkoutExecution, CreateOrEditTemplatePlanComponent], // Assicurati di includere FormsModule e i Pipes
+  imports: [CommonModule, RouterModule, FormsModule, CreateOrEditWorkoutExecution, CreateOrEditTemplatePlanComponent, ViewTemplatePlan], // Assicurati di includere FormsModule e i Pipes
   templateUrl: './home-component.html',
   styleUrls: ['./home-component.scss']
 })

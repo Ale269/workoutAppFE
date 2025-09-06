@@ -1,11 +1,16 @@
 <div class="exercise-container">
   <div class="titolo-esercizio-container">
     <div class="icona-numero-esercizio-container">
-      <img
-        [src]="exerciseIconPath"
-        [alt]="'Icona esercizio ' + this.formEsercizio.form.controls['idIconaEsercizio'].value"
-        class="exercise-icon"
-      />
+      <div
+        class="circle-icon"
+        [style.border-color]="this.formEsercizio.form.controls['idIconaEsercizio'].value | exerciseIconColor"
+      >
+        <img
+          [src]="exerciseIconPath"
+          [alt]="'Icona esercizio ' + this.formEsercizio.form.controls['idIconaEsercizio'].value"
+          class="exercise-icon"
+        />
+      </div>
       <h3 class="text-white">
         Esercizio {{this.formEsercizio.form.controls['identifier'].value}}
       </h3>
@@ -47,9 +52,7 @@
     </div>
 
     <div class="input-row">
-      <app-training-methodology-selector
-        [control]="this.idMetodologiaControl"
-      >
+      <app-training-methodology-selector [control]="this.idMetodologiaControl">
       </app-training-methodology-selector>
     </div>
 

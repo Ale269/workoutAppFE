@@ -20,6 +20,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { AllenamentoForm } from "../../workout-form";
 import { Subject, takeUntil } from "rxjs";
 import { TrainingMethodologySelectorComponent } from "src/app/components/shared/training-methodology-selector/training-methodology-selector";
+import { ExerciseIconColorPipe } from "../../../../core/pipes/exercise-icon-color";
 
 @Component({
   selector: "app-exercise-component",
@@ -30,7 +31,8 @@ import { TrainingMethodologySelectorComponent } from "src/app/components/shared/
     SetComponent,
     MatFormFieldModule,
     MatSelectModule,
-  ],
+    ExerciseIconColorPipe
+],
   templateUrl: "./exercise-component.html",
   styleUrl: "./exercise-component.scss",
 })

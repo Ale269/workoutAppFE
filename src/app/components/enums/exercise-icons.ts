@@ -120,3 +120,27 @@ export function getExerciseIconsArray(): { id: number; label: string; path: stri
       path: ExerciseIconPaths[id as ExerciseIcons]
     }));
 }
+
+export const ExerciseIconColors: Record<ExerciseIcons, string> = {
+  [ExerciseIcons.DEFAULT]: '#6B7280',      // Grigio neutro
+  [ExerciseIcons.BICIPITI]: '#EF4444',     // Rosso per braccia
+  [ExerciseIcons.DORSALI]: '#10B981',      // Verde per schiena
+  [ExerciseIcons.PETTO]: '#F59E0B',        // Arancione per petto
+  [ExerciseIcons.SPALLE]: '#8B5CF6',       // Viola per spalle
+  [ExerciseIcons.GAMBE]: '#3B82F6',        // Blu per gambe
+  [ExerciseIcons.CORE]: '#F97316',         // Arancione scuro per core
+  [ExerciseIcons.CARDIO]: '#EC4899'        // Rosa per cardio
+};
+
+// Funzione per ottenere il colore dell'icona
+export function getExerciseIconColor(iconId: number | null | undefined): string {
+  if (iconId === null || iconId === undefined) {
+    return ExerciseIconColors[ExerciseIcons.DEFAULT];
+  }
+  
+  // Verifica che l'ID esista nell'enum
+  const iconExists = Object.values(ExerciseIcons).includes(iconId);
+  return iconExists 
+    ? ExerciseIconColors[iconId as ExerciseIcons]
+    : ExerciseIconColors[ExerciseIcons.DEFAULT];
+}
