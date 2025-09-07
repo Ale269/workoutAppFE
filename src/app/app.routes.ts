@@ -4,6 +4,7 @@ import { AuthGuard } from "./core/guards/auth.guard";
 import { HomeComponent } from "./components/home-component/home-component";
 import { DetailsAnnounce } from "./components/details-announce/details-announce";
 import { UserProfile } from "./components/user-profile/user-profile"; // Se il tuo guard è un servizio o funzionale
+import { ListTemplatePlans } from "./components/list-template-plans/list-template-plans";
 
 export const routes: Routes = [
   {
@@ -26,6 +27,11 @@ export const routes: Routes = [
   {
     path: "profilo/:userid", // Rotta per la pagina del profilo
     component: UserProfile,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: "le-mie-schede", // Rotta per la pagina del profilo
+    component: ListTemplatePlans,
     canActivate: [AuthGuard],
   },
 

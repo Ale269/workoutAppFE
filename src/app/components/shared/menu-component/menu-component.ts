@@ -1,15 +1,18 @@
 // menu-component.ts
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-menu-component',
+  selector: "app-menu-component",
   imports: [CommonModule],
-  templateUrl: './menu-component.html',
-  styleUrl: './menu-component.scss'
+  templateUrl: "./menu-component.html",
+  styleUrl: "./menu-component.scss",
 })
 export class MenuComponent {
   isMenuOpen = false;
+
+  constructor(private router: Router) {}
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -17,5 +20,45 @@ export class MenuComponent {
 
   closeMenu() {
     this.isMenuOpen = false;
+  }
+
+  navigateToHome() {
+    this.closeMenu();
+    // Piccolo delay per permettere all'animazione di chiusura di iniziare
+    setTimeout(() => {
+      this.router.navigate(["/home"]);
+    }, 100);
+  }
+
+  navigateToTemplateSchede() {
+    this.closeMenu();
+    // Piccolo delay per permettere all'animazione di chiusura di iniziare
+    setTimeout(() => {
+      this.router.navigate(["/le-mie-schede"]);
+    }, 100);
+  }
+
+  navigateToAccount() {
+    this.closeMenu();
+    setTimeout(() => {
+      // Aggiungi qui la navigazione per Account se necessario
+      // this.router.navigate(['/account']);
+    }, 100);
+  }
+
+  navigateToSchedeSvolte() {
+    this.closeMenu();
+    setTimeout(() => {
+      // Aggiungi qui la navigazione per Schede svolte se necessario
+      // this.router.navigate(['/schede-svolte']);
+    }, 100);
+  }
+
+  navigateToAllenamentiSvolti() {
+    this.closeMenu();
+    setTimeout(() => {
+      // Aggiungi qui la navigazione per Allenamenti svolti se necessario
+      // this.router.navigate(['/allenamenti-svolti']);
+    }, 100);
   }
 }

@@ -2,7 +2,7 @@
 <div class="menu-wrapper">
   <!-- Menu fisso in alto -->
   <div class="app-menu-container">
-    <div [class.menu-hidden]="isMenuOpen">
+    <div [class.menu-hidden]="isMenuOpen" (click)="navigateToHome()">
       <h3>Home</h3>
     </div>
     <div (click)="toggleMenu()" class="menu-trigger">
@@ -21,23 +21,17 @@
     (click)="closeMenu()"
   >
     <div class="menu-items-container" [class.items-visible]="isMenuOpen">
-      <div class="menu-item">
-        <h3 class="text-white">Profilo</h3>
+      <div class="menu-item" (click)="navigateToAccount()">
+        <h3 class="text-white">Account</h3>
       </div>
-      <div class="menu-item">
-        <h3 class="text-white">Allenamenti</h3>
+      <div class="menu-item" (click)="navigateToTemplateSchede()">
+        <h3 class="text-white">I miei template schede</h3>
       </div>
-      <div class="menu-item">
-        <h3 class="text-white">Schede</h3>
+      <div class="menu-item" (click)="navigateToSchedeSvolte()">
+        <h3 class="text-white">Schede svolte</h3>
       </div>
-      <div class="menu-item">
-        <h3 class="text-white">Statistiche</h3>
-      </div>
-      <div class="menu-item">
-        <h3 class="text-white">Impostazioni</h3>
-      </div>
-      <div class="menu-item">
-        <h3 class="text-white">Logout</h3>
+      <div class="menu-item" (click)="navigateToAllenamentiSvolti()">
+        <h3 class="text-white">Allenamenti svolti</h3>
       </div>
     </div>
   </div>
