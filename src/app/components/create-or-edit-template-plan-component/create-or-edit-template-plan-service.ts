@@ -21,220 +21,66 @@ export class CreateOrEditTemplatePlanService {
     private workoutService: WorkoutService
   ) {}
 
-  InitializeScheda(idScheda: number) {
+  CreateForm() {
     try {
-      if (idScheda && idScheda > 0) {
-        //dati mockati dalla componente
-
-        //const schedaDTO: SchedaDTO = this.getSchedaById(idScheda);
-        //this.formScheda = new SchedaForm(schedaDTO);
-        /*
-         */
-
-        //dati mockati reali dal api service (if mocked==true va su assets senno BE)
-        this.workoutService.getSingleWorkout(idScheda).subscribe({
-          next: (response) => {
-            console.log("RESPONSE WORKOUT: ", response);
-            if(response.esito === "OK"){
-              if (response.payload.workout){
-                const workout: SchedaDTO[] = response.payload.workout;
-                this.formScheda = new SchedaForm(workout[0]);
-              }
-            }else{
-              //apri modale con errore stampato
-            }
-          }
-        })
-
-
-      } else {
-        // Crea form vuoto per nuova scheda
-        this.formScheda = new SchedaForm();
-      }
+      this.formScheda = new SchedaForm();
     } catch (error) {
-      throw new Error(
-        "CreateOrEditTemplatePlanService.InitializeScheda: " + error
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanComponent.CreateForm"
       );
     }
   }
 
-  // AddAllenamento(allenamentoData?: Partial<AllenamentoDTO>): void {
-  //   try {
-  //     if (!this.formScheda) {
-  //       throw new Error(
-  //         "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
-  //       );
-  //     }
-
-  //     // Calcola il prossimo ordinamento
-  //     const nextOrdinamento =
-  //       this.formScheda?.listaAllenamentiForm?.length || 0;
-
-  //     // Se sono forniti dati parziali, crea un DTO completo con valori di default
-  //     const allenamentoDTO: AllenamentoDTO | undefined = allenamentoData
-  //       ? {
-  //           id: allenamentoData.id || 0,
-  //           idAllenamento: allenamentoData.idAllenamento || 0,
-  //           nomeAllenamento: allenamentoData.nomeAllenamento || "",
-  //           ordinamento: allenamentoData.ordinamento || nextOrdinamento,
-  //           listaEsercizi: allenamentoData.listaEsercizi || [],
-  //         }
-  //       : undefined;
-
-  //     // Se non sono forniti dati, crea comunque un DTO con l'ordinamento corretto
-  //     if (!allenamentoDTO) {
-  //       const emptyAllenamentoDTO: AllenamentoDTO = {
-  //         id: 0,
-  //         idAllenamento: 0,
-  //         nomeAllenamento: "",
-  //         ordinamento: nextOrdinamento,
-  //         listaEsercizi: [],
-  //       };
-
-  //       this.formScheda.addAllenamentoForm(emptyAllenamentoDTO);
-  //     } else {
-  //       this.formScheda.addAllenamentoForm(allenamentoDTO);
-  //     }
-  //   } catch (error) {
-  //     this.errorHandlerService.handleError(
-  //       error,
-  //       "CreateOrEditTemplatePlanService.AddAllenamento"
-  //     );
-  //     throw new Error(
-  //       "CreateOrEditTemplatePlanService.AddAllenamento: " + error
-  //     );
-  //   }
-  // }
-
-  // AddEsercizio(
-  //   allenamentoIdentifier: number,
-  //   esercizioData?: Partial<EsercizioDTO>
-  // ): void {
-  //   try {
-  //     if (!this.formScheda) {
-  //       throw new Error(
-  //         "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
-  //       );
-  //     }
-
-  //     // Trova l'allenamento tramite identifier
-  //     const allenamentoForm = this.findAllenamentoByIdentifier(
-  //       allenamentoIdentifier
-  //     );
-
-  //     if (!allenamentoForm) {
-  //       throw new Error(
-  //         `Allenamento con identifier ${allenamentoIdentifier} non trovato`
-  //       );
-  //     }
-
-  //     // Calcola il prossimo ordinamento per l'esercizio
-  //     const nextOrdinamento = allenamentoForm.listaEserciziForm.length + 1;
-
-  //     // Se sono forniti dati parziali, crea un DTO completo con valori di default
-  //     const esercizioDTO: EsercizioDTO | undefined = esercizioData
-  //       ? {
-  //           id: esercizioData.id || 0,
-  //           idEsercizio: esercizioData.idEsercizio || 0,
-  //           idTipoEsercizio: esercizioData.idTipoEsercizio || 0,
-  //           idIconaEsercizio: esercizioData.idIconaEsercizio || 0,
-  //           ordinamento: esercizioData.ordinamento || nextOrdinamento,
-  //           listaSerie: esercizioData.listaSerie || [],
-  //         }
-  //       : undefined;
-
-  //     // Se non sono forniti dati, crea comunque un DTO con l'ordinamento corretto
-  //     if (!esercizioDTO) {
-  //       const emptyEsercizioDTO: EsercizioDTO = {
-  //         id: 0,
-  //         idEsercizio: 0,
-  //         idTipoEsercizio: 0,
-  //         idIconaEsercizio: 0,
-  //         ordinamento: nextOrdinamento,
-  //         listaSerie: [],
-  //       };
-
-  //       allenamentoForm.addEsercizioForm(emptyEsercizioDTO);
-  //     } else {
-  //       allenamentoForm.addEsercizioForm(esercizioDTO);
-  //     }
-  //   } catch (error) {
-  //     this.errorHandlerService.handleError(
-  //       error,
-  //       "CreateOrEditTemplatePlanService.AddEsercizio"
-  //     );
-  //     throw new Error("CreateOrEditTemplatePlanService.AddEsercizio: " + error);
-  //   }
-  // }
-
-  // AddSerie(
-  //   allenamentoIdentifier: number,
-  //   esercizioIdentifier: number,
-  //   serieData?: Partial<SerieDTO>
-  // ): void {
-  //   try {
-  //     if (!this.formScheda) {
-  //       throw new Error(
-  //         "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
-  //       );
-  //     }
-
-  //     // Trova l'allenamento tramite identifier
-  //     const allenamentoForm = this.findAllenamentoByIdentifier(
-  //       allenamentoIdentifier
-  //     );
-
-  //     if (!allenamentoForm) {
-  //       throw new Error(
-  //         `Allenamento con identifier ${allenamentoIdentifier} non trovato`
-  //       );
-  //     }
-
-  //     // Trova l'esercizio tramite identifier
-  //     const esercizioForm =
-  //       allenamentoForm.findEsercizioByIdentifier(esercizioIdentifier);
-
-  //     if (!esercizioForm) {
-  //       throw new Error(
-  //         `Esercizio con identifier ${esercizioIdentifier} non trovato nell'allenamento ${allenamentoIdentifier}`
-  //       );
-  //     }
-
-  //     // Se sono forniti dati parziali, crea un DTO completo con valori di default
-  //     const serieDTO: SerieDTO | undefined = serieData
-  //       ? {
-  //           id: serieData.id || 0,
-  //           idSerie: serieData.idSerie || 0,
-  //           ripetizioni: serieData.ripetizioni || 0,
-  //           carico: serieData.carico || 0,
-  //         }
-  //       : undefined;
-
-  //     // Chiama il metodo del form esercizio per aggiungere la serie
-  //     esercizioForm.addSerieForm(serieDTO);
-  //   } catch (error) {
-  //     this.errorHandlerService.handleError(
-  //       error,
-  //       "CreateOrEditTemplatePlanService.AddSerie"
-  //     );
-  //     throw new Error("CreateOrEditTemplatePlanService.AddSerie: " + error);
-  //   }
-  // }
-
-  // private findAllenamentoByIdentifier(
-  //   identifier: number
-  // ): AllenamentoForm | null {
-  //   if (!this.formScheda?.listaAllenamentiForm) {
-  //     return null;
-  //   }
-
-  //   return (
-  //     this.formScheda.listaAllenamentiForm.find(
-  //       (allenamento) =>
-  //         allenamento.form.get("identifier")?.value === identifier
-  //     ) || null
-  //   );
-  // }
+  InitializeScheda(idScheda: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        if (idScheda && idScheda > 0) {
+          // Dati mockati reali dal api service (if mocked==true va su assets senno BE)
+          this.workoutService.getSingleWorkout(idScheda).subscribe({
+            next: (response) => {
+              console.log("RESPONSE WORKOUT: ", response);
+              if (response.esito === "OK") {
+                if (response.payload.workout) {
+                  const workout: SchedaDTO[] = response.payload.workout;
+                  this.formScheda = new SchedaForm();
+                  this.formScheda.updateForm(workout[0]);
+                  resolve(); // Risolve la promise in caso di successo
+                } else {
+                  reject(new Error("Nessun workout trovato nella response"));
+                }
+              } else {
+                reject(
+                  new Error(
+                    `Errore dal server: ${
+                      response.messaggio || "Errore sconosciuto"
+                    }`
+                  )
+                );
+              }
+            },
+            error: (error) => {
+              reject(
+                new Error(
+                  `Errore nella chiamata API: ${error.message || error}`
+                )
+              );
+            },
+          });
+        } else {
+          // Crea form vuoto per nuova scheda
+          this.formScheda = new SchedaForm();
+          resolve(); // Risolve immediatamente per nuova scheda
+        }
+      } catch (error) {
+        reject(
+          new Error(
+            `CreateOrEditTemplatePlanService.InitializeScheda: ${error}`
+          )
+        );
+      }
+    });
+  }
 
   AddWorkout(nomeAllenamento?: string): void {
     try {

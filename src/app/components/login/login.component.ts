@@ -2,7 +2,6 @@ import { Component, EventEmitter, OnInit, Output } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { AuthService } from "../../core/services/auth.service";
-import { LoginRequest } from "../../core/models/auth.model";
 import { TranslatePipe } from "@ngx-translate/core";
 import {
   MatError,
@@ -15,7 +14,10 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatIconButton } from "@angular/material/button";
 import { MatHint } from "@angular/material/form-field";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
+import { SpinnerService } from "src/app/core/services/spinner.service"; // Aggiungi import
 import { LoginForm } from "./login-form";
+import { LoginRequestModel } from "src/app/models/auth/login-model";
+import { SignupRequestModel } from "src/app/models/auth/signup-model";
 
 @Component({
   selector: "app-login",
@@ -41,10 +43,15 @@ export class LoginComponent implements OnInit {
   public hidePassword = true;
   public version: string | undefined;
 
+  // Aggiungi proprietà per gestire gli spinner ID
+  private loginSpinnerId: string | null = null;
+  private registerSpinnerId: string | null = null;
+
   constructor(
     private authService: AuthService,
     private router: Router,
-    private errorHandlerService: ErrorHandlerService
+    private errorHandlerService: ErrorHandlerService,
+    private spinnerService: SpinnerService // Aggiungi spinner service
   ) {
     try {
       this.loginForm = new LoginForm();
@@ -56,12 +63,10 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     // Redirect se già autenticato
-    if (this.authService.isAuthenticated()) {
-      this.router.navigate(["/home"]);
-    }
+    // if (this.authService.isAuthenticated()) {
+    //   this.router.navigate(["/home"]);
+    // }
   }
-
-  onSubmit(): void {}
 
   togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;
@@ -69,67 +74,190 @@ export class LoginComponent implements OnInit {
 
   onForgotPassword() {
     console.log("ON CLICK FORGOT PASSWORD");
+    // Implementa la logica per recupero password
   }
 
   onRegister() {
     try {
       console.log("ON CLICK REGISTER");
-      if (this.loginForm.form.valid) {
-        this.isLoading = true;
-        this.errorMessage = "";
-
-        const credentials: LoginRequest = {
-          email: this.loginForm.form.controls["email"].value,
-          password: this.loginForm.form.controls["password"].value,
-        };
-
-        this.authService.registerUser(credentials).subscribe({
-          next: (response) => {
-            this.isLoading = false;
-            //this.router.navigate(['/yacht-selection']);
-          },
-          error: (error) => {
-            this.isLoading = false;
-            throw new Error(error);
-          },
-        });
+      
+      if (!this.loginForm.form.valid) {
+        this.markFormGroupTouched();
+        return;
       }
+
+      // Mostra lo spinner per la registrazione
+      this.registerSpinnerId = this.spinnerService.showWithResult(
+        "Registrazione in corso...",
+        {
+          successMessage: "Registrazione completata con successo",
+          errorMessage: "Errore durante la registrazione",
+          resultDuration: 1000,
+          minSpinnerDuration: 500,
+        }
+      );
+
+      this.isLoading = true;
+      this.errorMessage = "";
+
+      const credentials: SignupRequestModel = {
+        username: this.loginForm.form.controls["username"].value,
+        password: this.loginForm.form.controls["password"].value,
+      };
+
+      this.authService.registerUser(credentials).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          
+          if (this.registerSpinnerId) {
+            this.spinnerService.setSuccess(this.registerSpinnerId);
+          }
+          
+          // Implementa la logica dopo registrazione riuscita
+          // this.router.navigate(['/yacht-selection']);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          
+          if (this.registerSpinnerId) {
+            this.spinnerService.setError(
+              this.registerSpinnerId,
+              error.error?.message || "Errore durante la registrazione"
+            );
+          }
+          
+          this.errorMessage = error.error?.message || "Errore durante la registrazione";
+          this.errorHandlerService.handleError(error, "LoginComponent.onRegister");
+        },
+      });
     } catch (error) {
-      this.errorHandlerService.handleError(error, "LoginComponent");
+      this.isLoading = false;
+      
+      if (this.registerSpinnerId) {
+        this.spinnerService.setError(this.registerSpinnerId);
+      }
+      
+      this.errorHandlerService.handleError(error, "LoginComponent.onRegister");
     }
   }
 
   onLogin() {
-    console.log("Login form submitted:", this.loginForm);
-    if (this.loginForm.form.valid) {
+    try {
+      console.log("Login form submitted:", this.loginForm);
+      
+      if (!this.loginForm.form.valid) {
+        this.markFormGroupTouched();
+        return;
+      }
+
+      // Mostra lo spinner per il login
+      this.loginSpinnerId = this.spinnerService.showWithResult(
+        "Accesso in corso...",
+        {
+          successMessage: "Accesso effettuato con successo",
+          errorMessage: "Errore durante l'accesso",
+          resultDuration: 1000,
+          minSpinnerDuration: 500,
+        }
+      );
+
       this.isLoading = true;
       this.errorMessage = "";
 
-      const credentials: LoginRequest = {
-        email: this.loginForm.form.controls["email"].value,
+      const credentials: LoginRequestModel = {
+        username: this.loginForm.form.controls["username"].value,
         password: this.loginForm.form.controls["password"].value,
       };
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
           console.log("RESPONSE LOGIN: ", response);
-          if (response.esito === "OK") {
-            this.authService.setAuthState(
-              response.payload.token,
-              response.payload.user
-            );
-          } else {
-            console.log("ERRORE LOGIN");
-          }
-          this.isLoading = false;
-          this.router.navigate(["/home"]);
+          
+          // if (response.esito === "OK") {
+           
+          console.log(response)
+
+          // this.authService.setAuthState(
+            //   response.payload.token,
+            //   response.payload.user
+            // );
+            
+            this.isLoading = false;
+            
+            if (this.loginSpinnerId) {
+              this.spinnerService.setSuccess(this.loginSpinnerId);
+            }
+            
+            // Naviga solo se login riuscito
+            setTimeout(() => {
+              this.router.navigate(["/home"]);
+            }, 1000); // Attende che lo spinner mostri il successo
+            
+          // } else {
+          //   // Login fallito - utente non trovato o credenziali errate
+          //   this.isLoading = false;
+            
+          //   if (this.loginSpinnerId) {
+          //     this.spinnerService.setError(
+          //       this.loginSpinnerId,
+          //       "Credenziali non valide o utente non esistente"
+          //     );
+          //   }
+            
+          //   this.errorMessage = "Credenziali non valide o utente non esistente";
+          //   console.log("ERRORE LOGIN - Credenziali non valide");
+          // }
         },
         error: (error) => {
           this.isLoading = false;
-          this.errorMessage = error.error?.message || "Errore durante il login";
-          this.router.navigate(["/home"]);
+          
+          // Determina il messaggio di errore appropriato
+          let errorMsg = "Errore durante il login";
+          
+          if (error.status === 401) {
+            errorMsg = "Credenziali non valide";
+          } else if (error.status === 404) {
+            errorMsg = "Utente non trovato";
+          } else if (error.error?.message) {
+            errorMsg = error.error.message;
+          }
+          
+          if (this.loginSpinnerId) {
+            this.spinnerService.setError(this.loginSpinnerId, errorMsg);
+          }
+          
+          this.errorMessage = errorMsg;
+          
+          // NON navigare su /home in caso di errore
+          this.errorHandlerService.handleError(error, "LoginComponent.onLogin");
         },
       });
+    } catch (error) {
+      this.isLoading = false;
+      
+      if (this.loginSpinnerId) {
+        this.spinnerService.setError(this.loginSpinnerId);
+      }
+      
+      this.errorHandlerService.handleError(error, "LoginComponent.onLogin");
+    }
+  }
+
+
+  private markFormGroupTouched(): void {
+    Object.keys(this.loginForm.form.controls).forEach(key => {
+      const control = this.loginForm.form.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+
+  ngOnDestroy(): void {
+    if (this.loginSpinnerId) {
+      this.spinnerService.hide(this.loginSpinnerId);
+    }
+    if (this.registerSpinnerId) {
+      this.spinnerService.hide(this.registerSpinnerId);
     }
   }
 }

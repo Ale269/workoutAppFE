@@ -1,7 +1,7 @@
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 
 interface LoginFormModel {
-  email: FormControl<string | null>;
+  username: FormControl<string | null>;
   password: FormControl<string | null>;
 }
 
@@ -10,8 +10,8 @@ export class LoginForm {
 
   constructor() {
     this.form = new FormGroup<LoginFormModel>({
-      email: new FormControl<string | null>(null, [Validators.required, Validators.email]),
-      password: new FormControl<string | null>(null, [Validators.required, Validators.minLength(6)]),
+      username: new FormControl<string | null>(null, [Validators.required]),
+      password: new FormControl<string | null>(null, [Validators.required]),
     });
   }
 

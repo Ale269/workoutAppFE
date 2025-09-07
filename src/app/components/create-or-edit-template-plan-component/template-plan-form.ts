@@ -16,15 +16,49 @@ export class SchedaForm {
 
   public availableWorkoutPositions: number[] = [];
 
-  constructor(schedaDTO?: SchedaDTO) {
+  constructor() {
+    // Inizializza il form con valori di default
     this.form = new FormGroup<SchedaFormModel>({
-      id: new FormControl<number | null>(schedaDTO?.id || null),
-      nomeScheda: new FormControl<string | null>(schedaDTO?.nomeScheda || null, [Validators.required]),
+      id: new FormControl<number | null>(null),
+      nomeScheda: new FormControl<string | null>("Scheda allenamento", [
+        Validators.required,
+      ]),
       listaAllenamenti: new FormArray<FormGroup<AllenamentoFormModel>>([]),
     });
 
-    // Se ci sono dati DTO, popola gli allenamenti
-    if (schedaDTO?.listaAllenamenti) {
+    // Crea un DTO temporaneo per il primo allenamento
+    const primoAllenamentoDTO: AllenamentoDTO = {
+      id: 0,
+      nomeAllenamento: "Giorno 1",
+      ordinamento: 1,
+      listaEsercizi: [], // o altri campi necessari per AllenamentoDTO
+    };
+
+    // Aggiunge il primo allenamento con nome di default "Giorno 1"
+    this.addAllenamentoForm(primoAllenamentoDTO);
+  }
+
+  updateForm(schedaDTO: SchedaDTO): void {
+    if (!schedaDTO) {
+      return;
+    }
+
+    // Aggiorna i campi base
+    this.form.patchValue({
+      id: schedaDTO.id,
+      nomeScheda: schedaDTO.nomeScheda,
+    });
+
+    // Pulisce gli allenamenti esistenti
+    const listaAllenamentiArray = this.form.get(
+      "listaAllenamenti"
+    ) as FormArray;
+    while (listaAllenamentiArray.length !== 0) {
+      listaAllenamentiArray.removeAt(0);
+    }
+
+    // Aggiunge i nuovi allenamenti
+    if (schedaDTO.listaAllenamenti) {
       schedaDTO.listaAllenamenti.forEach((allenamentoDTO) => {
         this.addAllenamentoForm(allenamentoDTO);
       });
@@ -215,7 +249,9 @@ export class SchedaForm {
       // Raccolgo i dati della scheda
       let schedaDaSalvare: SchedaDTO = {
         id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
-        nomeScheda: this.form.controls["nomeScheda"].value ? this.form.controls["nomeScheda"].value : '',
+        nomeScheda: this.form.controls["nomeScheda"].value
+          ? this.form.controls["nomeScheda"].value
+          : "",
         listaAllenamenti: [],
       };
 

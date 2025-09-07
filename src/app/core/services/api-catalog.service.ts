@@ -10,7 +10,7 @@ import {
 } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { environment } from "../../../environments/environment"; // Importa l'oggetto environment
-import { ApiCatalog, ApiName } from "../models/api-catalog.model";
+import { ApiCatalog } from "src/app/models/api-catalog/api-catalog.model";
 
 @Injectable({
   providedIn: "root",

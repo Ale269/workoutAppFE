@@ -4,6 +4,8 @@ import { ErrorHandlerService } from "src/app/core/services/error-handler.service
 import { SchedaListaDTO } from "src/app/models/lista-template-schede/seriedto";
 import { CommonModule } from "@angular/common";
 import { SpinnerService } from "src/app/core/services/spinner.service";
+import { WorkoutService } from "src/app/core/services/workout.service";
+import { AuthService } from "src/app/core/services/auth.service";
 
 @Component({
   selector: "app-list-template-plans",
@@ -17,7 +19,9 @@ export class ListTemplatePlans implements OnInit {
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
-    private spinnerService: SpinnerService
+    private spinnerService: SpinnerService,
+    private workoutService: WorkoutService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -28,30 +32,32 @@ export class ListTemplatePlans implements OnInit {
     }
   }
 
-  async getListaTemplateSchede() {
+  getListaTemplateSchede() {
     try {
-      // Mostra lo spinner con risultato finale
+      // Mostra lo spinner di inizializzazione
       this.currentSpinnerId = this.spinnerService.showWithResult(
         "Recupero dati scheda",
         {
           successMessage: "Dati recuperati con successo",
           errorMessage: "Errore nel recupero dei dati",
           resultDuration: 500,
-          minSpinnerDuration: 500
+          minSpinnerDuration: 500,
         }
       );
 
-      this.fetchMockSchede()
-        .then((response) => {
-          this.listaSchede = response;
+      // Attende il completamento del caricamento delle schede
+      this.initializeListaSchede()
+        .then(() => {
+          // Imposta il successo dello spinner
           if (this.currentSpinnerId) {
             this.spinnerService.setSuccess(this.currentSpinnerId);
           }
         })
         .catch((error) => {
+          // Gestisce gli errori
           if (this.currentSpinnerId) {
             this.spinnerService.setError(
-              this.currentSpinnerId, 
+              this.currentSpinnerId,
               "Errore durante il caricamento delle schede"
             );
           }
@@ -64,38 +70,56 @@ export class ListTemplatePlans implements OnInit {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(error, "ListTemplatePlans.getListaTemplateSchede");
+      this.errorHandlerService.handleError(
+        error,
+        "ListTemplatePlans.getListaTemplateSchede"
+      );
     }
   }
 
-  private fetchMockSchede(): Promise<SchedaListaDTO[]> {
-    const mockData: SchedaListaDTO[] = [
-      {
-        id: 1,
-        nomeScheda: "Scheda Forza A",
-        dataCreazione: new Date("2025-08-15T10:00:00Z"),
-      },
-      {
-        id: 2,
-        nomeScheda: "Scheda Ipertrofia B",
-        dataCreazione: new Date("2025-08-20T11:30:00Z"),
-      },
-      {
-        id: 3,
-        nomeScheda: "Programma Cardio HIIT",
-        dataCreazione: new Date("2025-08-28T09:00:00Z"),
-      },
-    ];
-
+  private initializeListaSchede(): Promise<void> {
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Simula successo o errore casuale per test
-        if (Math.random() > 0.1) { // 90% successo
-          resolve(mockData);
-        } else {
-          reject(new Error("Errore simulato di rete"));
-        }
-      }, 2000);
+      try {
+        // Chiamata al servizio per ottenere la lista delle schede
+        // const idUser: string | undefined =
+        //   this.authService.getCurrentUser()?.id;
+
+        // if (idUser != null) {
+        //   this.workoutService.getlistTemplatePlans(idUser).subscribe({
+        //     next: (response) => {
+        //       console.log("RESPONSE WORKOUT LIST: ", response);
+        //       if (response.esito === "OK") {
+        //         if (response.payload.workouts) {
+        //           const workouts: SchedaListaDTO[] = response.payload.workouts;
+        //           this.listaSchede = workouts;
+        //           resolve(); // Risolve la promise in caso di successo
+        //         } else {
+        //           reject(new Error("Nessuna scheda trovata nella response"));
+        //         }
+        //       } else {
+        //         reject(
+        //           new Error(
+        //             `Errore dal server: ${
+        //               response.messaggio || "Errore sconosciuto"
+        //             }`
+        //           )
+        //         );
+        //       }
+        //     },
+        //     error: (error) => {
+        //       reject(
+        //         new Error(
+        //           `Errore nella chiamata API: ${error.message || error}`
+        //         )
+        //       );
+        //     },
+        //   });
+        // } else {
+        //   reject(new Error("Nessun utente trovato"));
+        // }
+      } catch (error) {
+        reject(new Error(`ListTemplatePlans.initializeListaSchede: ${error}`));
+      }
     });
   }
 }

@@ -12,7 +12,7 @@ import { ThemeService } from "./core/services/theme.service";
 import { environment } from "../environments/environment";
 import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
 import { AuthService } from "./core/services/auth.service";
-import { User } from "./core/models/user.model";
+// import { User } from "./core/models/user.model";
 
 import { LoginComponent } from "./components/login/login.component";
 import { CommonModule, isPlatformBrowser } from "@angular/common";
@@ -40,7 +40,7 @@ import { SpinnerComponent } from "./components/shared/spinner/spinner";
 })
 export class AppComponent implements OnInit {
   currentTheme = "light-theme";
-  currentUser: User | null = null;
+  // currentUser: User | null = null;
   public MenuIsVisible: boolean = false;
   
   private destroy$ = new Subject<void>();

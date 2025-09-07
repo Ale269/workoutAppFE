@@ -7,35 +7,18 @@
     "mocked": false
   },
   "apis": {
-
     "auth": [
       {
         "name": "login",
-        "endpoint": "/login",
+        "endpoint": "/auth/login",
         "method": "post",
-        "isMocked": true
+        "isMocked": false
       },
       {
         "name": "register",
-        "endpoint": "/register",
+        "endpoint": "/auth/register",
         "method": "post",
-        "isMocked": true
-      }
-    ],
-    "products": [
-      {
-        "name": "getAll",
-        "endpoint": "/getAll",
-        "method": "get",
-        "description": "Recupera i prodotti.",
-        "isMocked": true
-      },
-      {
-        "name": "annuncio",
-        "endpoint": "/annuncio/",
-        "method": "get",
-        "description": "Recupera il singolo prodotto.",
-        "isMocked": true
+        "isMocked": false
       }
     ],
     "workout": [
@@ -48,10 +31,10 @@
       },
       {
         "name": "allUserWorkout",
-        "endpoint": "/workout/user",
+        "endpoint": "/workout/user/:userId",
         "method": "get",
         "description": "Recupera tutte le schede di un utente.",
-        "isMocked": true
+        "isMocked": false
       }
     ]
   }

@@ -31,7 +31,10 @@ import { ExerciseComponent } from "./workout-component/exercise-component/exerci
 import { Subscription } from "rxjs";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
-import { SpinnerService, SpinnerResult } from "src/app/core/services/spinner.service";
+import {
+  SpinnerService,
+  SpinnerResult,
+} from "src/app/core/services/spinner.service";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -77,6 +80,29 @@ export class CreateOrEditTemplatePlanComponent
 
   ngOnInit(): void {
     try {
+      this.CreateForm();
+      this.getDatiScheda();
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanComponent.ngOnInit"
+      );
+    }
+  }
+
+  CreateForm() {
+    try {
+      this.createOrEditTemplatePlanService.CreateForm();
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanComponent.CreateForm"
+      );
+    }
+  }
+
+  getDatiScheda() {
+    try {
       // Mostra lo spinner di inizializzazione
       this.initSpinnerId = this.spinnerService.showWithResult(
         "Recupero dati scheda",
@@ -84,30 +110,39 @@ export class CreateOrEditTemplatePlanComponent
           successMessage: "Dati recuperati con successo",
           errorMessage: "Errore nel recupero dei dati",
           resultDuration: 500,
-          minSpinnerDuration: 500
+          minSpinnerDuration: 500,
         }
       );
 
-      // Simula l'inizializzazione (sostituisci con la tua logica asincrona)
-      this.createOrEditTemplatePlanService.InitializeScheda(1);
-      
-      // Simula un caricamento asincrono
-      setTimeout(() => {
-        if (this.initSpinnerId) {
-          this.spinnerService.setSuccess(this.initSpinnerId);
-        }
-      }, 1000);
-
+      // Attende il completamento dell'inizializzazione
+      this.createOrEditTemplatePlanService
+        .InitializeScheda(this.idScheda)
+        .then(() => {
+          // Imposta il successo dello spinner
+          if (this.initSpinnerId) {
+            this.spinnerService.setSuccess(this.initSpinnerId);
+          }
+        })
+        .catch((error) => {
+          // Gestisce gli errori
+          if (this.initSpinnerId) {
+            this.spinnerService.setError(
+              this.initSpinnerId,
+              "Errore durante l'inizializzazione"
+            );
+          }
+          this.errorHandlerService.handleError(
+            error,
+            "CreateOrEditTemplatePlanComponent.getDatiScheda"
+          );
+        });
     } catch (error) {
       if (this.initSpinnerId) {
-        this.spinnerService.setError(
-          this.initSpinnerId,
-          "Errore durante l'inizializzazione"
-        );
+        this.spinnerService.setError(this.initSpinnerId);
       }
       this.errorHandlerService.handleError(
         error,
-        "CreateOrEditTemplatePlanComponent.ngOnInit"
+        "CreateOrEditTemplatePlanComponent.getDatiScheda"
       );
     }
   }
@@ -131,7 +166,7 @@ export class CreateOrEditTemplatePlanComponent
     if (this.selectedIndexSubscription) {
       this.selectedIndexSubscription.unsubscribe();
     }
-    
+
     // Chiudi eventuali spinner attivi
     if (this.initSpinnerId) {
       this.spinnerService.hide(this.initSpinnerId);
@@ -311,7 +346,9 @@ export class CreateOrEditTemplatePlanComponent
   addWorkout() {
     try {
       // Mostra un breve spinner per l'aggiunta
-      const addSpinnerId = this.spinnerService.showLoading("Aggiunta allenamento...");
+      const addSpinnerId = this.spinnerService.showLoading(
+        "Aggiunta allenamento..."
+      );
 
       // Ottieni il valore dal FormControl
       let workoutName = this.newWorkoutNameControl.value?.trim();
@@ -338,7 +375,7 @@ export class CreateOrEditTemplatePlanComponent
         if (this.tabGroup) {
           this.tabGroup.selectedIndex = newTabIndex;
         }
-        
+
         // Nasconde lo spinner dopo l'operazione
         this.spinnerService.hide(addSpinnerId);
       }, 500);
@@ -359,7 +396,7 @@ export class CreateOrEditTemplatePlanComponent
           successMessage: "Salvataggio completato con successo",
           errorMessage: "Errore durante il salvataggio",
           resultDuration: 500,
-          minSpinnerDuration: 500
+          minSpinnerDuration: 500,
         }
       );
 
