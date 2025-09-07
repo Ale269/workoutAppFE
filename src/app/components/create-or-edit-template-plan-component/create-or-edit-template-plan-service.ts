@@ -9,6 +9,7 @@ import { FormArray } from "@angular/forms";
 import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
 import { AllenamentoForm } from "./workout-form";
 import { WorkoutService } from "../../core/services/workout.service";
+import {GetSingleWorkoutResponsetModel} from "../../models/workout/workout-model";
 
 @Injectable({
   providedIn: "root",
@@ -37,14 +38,15 @@ export class CreateOrEditTemplatePlanService {
       try {
         if (idScheda && idScheda > 0) {
           // Dati mockati reali dal api service (if mocked==true va su assets senno BE)
-          this.workoutService.getSingleWorkout(idScheda).subscribe({
-            next: (response) => {
+          this.workoutService.getSingleWorkout(1).subscribe({
+            next: (response: GetSingleWorkoutResponsetModel) => {
               console.log("RESPONSE WORKOUT: ", response);
-              if (response.esito === "OK") {
-                if (response.payload.workout) {
-                  const workout: SchedaDTO[] = response.payload.workout;
+              if (!response.errore.error) {
+                if (response.workouts) {
+                  const workouts: SchedaDTO[] = response.workouts;
                   this.formScheda = new SchedaForm();
-                  this.formScheda.updateForm(workout[0]);
+                  //TODO capire perche costruisce e mappa il workout in modo sbagliato
+                  this.formScheda.updateForm(workouts[0]);
                   resolve(); // Risolve la promise in caso di successo
                 } else {
                   reject(new Error("Nessun workout trovato nella response"));
@@ -53,7 +55,7 @@ export class CreateOrEditTemplatePlanService {
                 reject(
                   new Error(
                     `Errore dal server: ${
-                      response.messaggio || "Errore sconosciuto"
+                      response.errore.errorMessage || "Errore sconosciuto"
                     }`
                   )
                 );

@@ -63,7 +63,7 @@ export class CreateOrEditTemplatePlanComponent
   footerConfirmAddWorkout!: TemplateRef<any>;
 
   public selectedTabIndex: number = 0;
-  public idScheda: number = 0;
+  public idScheda: number = 1;
 
   private selectedIndexSubscription?: Subscription;
   private initSpinnerId: string | null = null;

@@ -35,7 +35,7 @@ export class SchedaForm {
     };
 
     // Aggiunge il primo allenamento con nome di default "Giorno 1"
-    this.addAllenamentoForm(primoAllenamentoDTO);
+    //this.addAllenamentoForm(primoAllenamentoDTO);
   }
 
   updateForm(schedaDTO: SchedaDTO): void {

@@ -6,6 +6,7 @@ export interface LoginRequestModel {
 }
 
 export interface LoginResponseModel extends BaseResponseModel {
+  usedId: number;
   username: string;
   jwtToken: string;
   expiresIn: number;
