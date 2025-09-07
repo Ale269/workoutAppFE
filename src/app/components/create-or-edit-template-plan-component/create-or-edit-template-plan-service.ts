@@ -26,12 +26,11 @@ export class CreateOrEditTemplatePlanService {
       if (idScheda && idScheda > 0) {
         //dati mockati dalla componente
 
-        const schedaDTO: SchedaDTO = this.getSchedaById(idScheda);
-        this.formScheda = new SchedaForm(schedaDTO);
+        //const schedaDTO: SchedaDTO = this.getSchedaById(idScheda);
+        //this.formScheda = new SchedaForm(schedaDTO);
         /*
          */
 
-        /*
         //dati mockati reali dal api service (if mocked==true va su assets senno BE)
         this.workoutService.getSingleWorkout(idScheda).subscribe({
           next: (response) => {
@@ -46,8 +45,8 @@ export class CreateOrEditTemplatePlanService {
             }
           }
         })
-/*
-         */
+
+
       } else {
         // Crea form vuoto per nuova scheda
         this.formScheda = new SchedaForm();

@@ -20,13 +20,15 @@ export class WorkoutService {
     getSingleWorkout(workoutId: number): Observable<any> {
         // In un'app reale, dovresti inviare una richiesta al server per registrare l'utente
         console.log('workout request:', workoutId);
-        return this.apiCatalogService.executeApiCall('workout','singleUserWorkout', undefined, {workoutId: workoutId});
+        /*
+        parametri funzionmento
+        1 apiname
+        2 namekey nel apiname
+        3 pathparams? se è richiesto per chiamate get solitamente (senza body) endpoint sarà tipo api/workout/{workoutId}
+        4 body? se è richiesto per chiamate post
+        //TODO da modificare, body da passare direttamente come paramentro func getSingleWorkout
+         */
+        return this.apiCatalogService.executeApiCall('workout','singleUserWorkout', {workoutId: workoutId}, null);
     }
 
-    getAllUserWorkout(userId: string): Observable<any> {
-        // In un'app reale, dovresti inviare una richiesta al server per registrare l'utente
-        console.log('all user workout:', userId);
-        return this.apiCatalogService.executeApiCall('workout','allUserWorkout', {userId: userId}, undefined);
-
-    }
 }

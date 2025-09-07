@@ -160,7 +160,9 @@ export class ApiCatalogService {
             if (pathParams) {
               for (const key in pathParams) {
                 if (pathParams.hasOwnProperty(key)) {
-                  //url = url.replace(`:${key}`, pathParams[key]);
+                  //prende l oggetto tipo api/workout/:{workoutId} nel file api.json e lo sostituisce
+                  // con pathprams vero -> api/workout/1
+                  baseUrl2 = baseUrl2.replace(`:${key}`, pathParams[key]);
                 }
               }
             }

@@ -4,7 +4,7 @@
     "host": "localhost:8443",
     "baseUrl": "/api",
     "security": "none",
-    "mocked": true
+    "mocked": false
   },
   "apis": {
 
@@ -41,10 +41,10 @@
     "workout": [
       {
         "name": "singleUserWorkout",
-        "endpoint": "/workout/user",
-        "method": "post",
+        "endpoint": "/workout/:workoutId",
+        "method": "get",
         "description": "Recupera la singola scheda di un utente.",
-        "isMocked": true
+        "isMocked": false
       },
       {
         "name": "allUserWorkout",
