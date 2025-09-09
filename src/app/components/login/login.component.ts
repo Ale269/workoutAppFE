@@ -62,10 +62,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Redirect se già autenticato
-    // if (this.authService.isAuthenticated()) {
-    //   this.router.navigate(["/home"]);
-    // }
+    //Redirect se già autenticato
+    if (this.authService.isAuthenticated()) {
+       this.router.navigate(["/home"]);
+    }
   }
 
   togglePasswordVisibility(): void {
@@ -105,7 +105,7 @@ export class LoginComponent implements OnInit {
         password: this.loginForm.form.controls["password"].value,
       };
 
-      this.authService.registerUser(credentials).subscribe({
+      this.authService.signup(credentials).subscribe({
         next: (response) => {
           this.isLoading = false;
           
@@ -114,7 +114,7 @@ export class LoginComponent implements OnInit {
           }
           
           // Implementa la logica dopo registrazione riuscita
-          // this.router.navigate(['/yacht-selection']);
+          // this.router.navigate(['/home']);
         },
         error: (error) => {
           this.isLoading = false;
@@ -171,42 +171,27 @@ export class LoginComponent implements OnInit {
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
-          console.log("RESPONSE LOGIN: ", response);
-          
-          // if (response.esito === "OK") {
-           
-          console.log(response)
 
-          // this.authService.setAuthState(
-            //   response.payload.token,
-            //   response.payload.user
-            // );
-            
-            this.isLoading = false;
-            
-            if (this.loginSpinnerId) {
-              this.spinnerService.setSuccess(this.loginSpinnerId);
-            }
-            
-            // Naviga solo se login riuscito
-            setTimeout(() => {
-              this.router.navigate(["/home"]);
-            }, 1000); // Attende che lo spinner mostri il successo
-            
-          // } else {
-          //   // Login fallito - utente non trovato o credenziali errate
-          //   this.isLoading = false;
-            
-          //   if (this.loginSpinnerId) {
-          //     this.spinnerService.setError(
-          //       this.loginSpinnerId,
-          //       "Credenziali non valide o utente non esistente"
-          //     );
-          //   }
-            
-          //   this.errorMessage = "Credenziali non valide o utente non esistente";
-          //   console.log("ERRORE LOGIN - Credenziali non valide");
-          // }
+          console.log("RESPONSE LOGIN: ",response)
+          //imposto lo stato autenticato user
+          this.authService.setAuthState(
+              response.jwtToken,
+              {
+                usedId:response.usedId,
+                username: response.username,
+              }
+          );
+
+          this.isLoading = false;
+          if (this.loginSpinnerId) {
+            this.spinnerService.setSuccess(this.loginSpinnerId);
+          }
+          // Naviga solo se login riuscito
+          setTimeout(() => {
+            this.router.navigate(["/home"]);
+          }, 1000); // Attende che lo spinner mostri il successo
+
+
         },
         error: (error) => {
           this.isLoading = false;
