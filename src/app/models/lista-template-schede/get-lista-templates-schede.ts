@@ -6,5 +6,5 @@ export interface GetListaTemplatesSchedaRequestModel {
 }
 
 export interface GetListaTemplatesSchedaResponseModel extends BaseResponseModel {
-  ListaSchedeDTO: SchedaListaDTO[];
+  listaSchedeDTO: SchedaListaDTO[];
 }
