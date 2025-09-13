@@ -1,7 +1,7 @@
 import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 import { AllenamentoForm, AllenamentoFormModel } from "./workout-form";
-import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
-import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
+import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
+import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentodto";
 
 interface SchedaFormModel {
   id: FormControl<number | null>;
@@ -35,7 +35,7 @@ export class SchedaForm {
     };
 
     // Aggiunge il primo allenamento con nome di default "Giorno 1"
-    //this.addAllenamentoForm(primoAllenamentoDTO);
+    this.addAllenamentoForm(primoAllenamentoDTO);
   }
 
   updateForm(schedaDTO: SchedaDTO): void {
@@ -93,6 +93,7 @@ export class SchedaForm {
 
       // Aggiorna le posizioni disponibili senza riordinare
       this.updateAvailableWorkoutPositions();
+      this.form.markAsDirty();
     } catch (error) {
       throw new Error("SchedaForm.addAllenamentoForm: " + error);
     }
@@ -135,6 +136,7 @@ export class SchedaForm {
 
       // Riassegna gli ordinamenti dopo l'eliminazione
       this.sanitizeWorkoutOrdering();
+      this.form.markAsDirty();
 
       return true;
     } catch (error) {
@@ -222,6 +224,7 @@ export class SchedaForm {
       // 3. Ora che l'ordine è stato modificato, chiama la sanificazione
       // per aggiornare i valori 'ordinamento' e ricostruire il FormArray.
       this.sanitizeWorkoutOrdering();
+      this.form.markAsDirty();
 
       return true;
     } catch (error) {

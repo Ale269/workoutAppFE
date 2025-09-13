@@ -5,7 +5,7 @@ import { CreateOrEditWorkoutExecutionService } from "./create-or-edit-workout-ex
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatTabsModule } from "@angular/material/tabs";
-import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
+import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentodto";
 import { ExerciseComponent } from "../create-or-edit-template-plan-component/workout-component/exercise-component/exercise-component";
 import {
   MultiOptionButton,

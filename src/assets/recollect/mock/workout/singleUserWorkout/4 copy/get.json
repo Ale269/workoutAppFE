@@ -1,0 +1,175 @@
+{
+  "id": "req-12349-get-dati-scheda-5",
+  "errore": {
+    "error": false,
+    "errorMessage": ""
+  },
+  "datiScheda": {
+    "id": 5,
+    "nomeScheda": "Scheda Ipertrofia Avanzata",
+    "listaAllenamenti": [
+      {
+        "id": 11,
+        "nomeAllenamento": "Petto e Tricipiti",
+        "ordinamento": 1,
+        "listaEsercizi": [
+          {
+            "id": 14,
+            "idTipoEsercizio": 1,
+            "idIconaEsercizio": 10,
+            "idMetodologia": 5,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 30,
+                "ripetizioni": 12,
+                "ordinamento": 1,
+                "carico": 70
+              },
+              {
+                "id": 31,
+                "ripetizioni": 10,
+                "ordinamento": 2,
+                "carico": 75
+              },
+              {
+                "id": 32,
+                "ripetizioni": 8,
+                "ordinamento": 3,
+                "carico": 80
+              },
+              {
+                "id": 33,
+                "ripetizioni": 6,
+                "ordinamento": 4,
+                "carico": 85
+              }
+            ]
+          },
+          {
+            "id": 15,
+            "idTipoEsercizio": 8,
+            "idIconaEsercizio": 80,
+            "idMetodologia": 5,
+            "ordinamento": 2,
+            "listaSerie": [
+              {
+                "id": 34,
+                "ripetizioni": 15,
+                "ordinamento": 1,
+                "carico": 30
+              },
+              {
+                "id": 35,
+                "ripetizioni": 12,
+                "ordinamento": 2,
+                "carico": 35
+              },
+              {
+                "id": 36,
+                "ripetizioni": 10,
+                "ordinamento": 3,
+                "carico": 40
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "nomeAllenamento": "Dorso e Bicipiti",
+        "ordinamento": 2,
+        "listaEsercizi": [
+          {
+            "id": 16,
+            "idTipoEsercizio": 9,
+            "idIconaEsercizio": 90,
+            "idMetodologia": 5,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 37,
+                "ripetizioni": 10,
+                "ordinamento": 1,
+                "carico": 80
+              },
+              {
+                "id": 38,
+                "ripetizioni": 8,
+                "ordinamento": 2,
+                "carico": 85
+              },
+              {
+                "id": 39,
+                "ripetizioni": 6,
+                "ordinamento": 3,
+                "carico": 90
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "nomeAllenamento": "Gambe e Spalle",
+        "ordinamento": 3,
+        "listaEsercizi": [
+          {
+            "id": 17,
+            "idTipoEsercizio": 4,
+            "idIconaEsercizio": 40,
+            "idMetodologia": 5,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 40,
+                "ripetizioni": 15,
+                "ordinamento": 1,
+                "carico": 90
+              },
+              {
+                "id": 41,
+                "ripetizioni": 12,
+                "ordinamento": 2,
+                "carico": 100
+              },
+              {
+                "id": 42,
+                "ripetizioni": 10,
+                "ordinamento": 3,
+                "carico": 110
+              }
+            ]
+          },
+          {
+            "id": 18,
+            "idTipoEsercizio": 2,
+            "idIconaEsercizio": 20,
+            "idMetodologia": 5,
+            "ordinamento": 2,
+            "listaSerie": [
+              {
+                "id": 43,
+                "ripetizioni": 12,
+                "ordinamento": 1,
+                "carico": 45
+              },
+              {
+                "id": 44,
+                "ripetizioni": 10,
+                "ordinamento": 2,
+                "carico": 50
+              },
+              {
+                "id": 45,
+                "ripetizioni": 8,
+                "ordinamento": 3,
+                "carico": 55
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

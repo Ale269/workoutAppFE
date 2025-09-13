@@ -56,15 +56,15 @@ export class AppComponent implements OnInit {
     public spinnerService: SpinnerService
   ) {
     // Configura lingue supportate
-    this.translate.addLangs(["en", "it", "es"]);
-    this.translate.setDefaultLang("en");
+    // this.translate.addLangs(["en", "it", "es"]);
+    // this.translate.setDefaultLang("en");
     
-    // Rileva lingua del browser
-    const browserLang = this.translate.getBrowserLang();
-    const lang = browserLang?.match(/en|it|es/) ? browserLang : "en";
-    if (lang != null) {
-      this.translate.use(lang);
-    }
+    // // Rileva lingua del browser
+    // const browserLang = this.translate.getBrowserLang();
+    // const lang = browserLang?.match(/en|it|es/) ? browserLang : "en";
+    // if (lang != null) {
+    //   this.translate.use(lang);
+    // }
 
     this.router.events
       .pipe(

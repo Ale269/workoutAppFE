@@ -1,7 +1,7 @@
 <div class="content">
   <div class="section-title-container back-icon-title-container">
     <div class="back-icon-section-container">
-      <div class="back-icon-trigger"></div>
+      <div class="back-icon-trigger" (click)="goBack()"></div>
       <img src="assets/recollect/svg/google-arrow.svg" />
     </div>
     <h1 class="text-title">{{scheda?.nomeScheda}}</h1>
@@ -61,7 +61,7 @@
   </div>
 
     <div class="floating-static-button-container">
-    <button class="floating-static-button">
+    <button class="floating-static-button" (click)="modificaScheda()">
       <span>Modifica scheda</span>
     </button>
   </div>

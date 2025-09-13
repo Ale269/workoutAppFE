@@ -1,0 +1,124 @@
+{
+  "id": "req-12345-get-dati-scheda-1",
+  "errore": {
+    "error": false,
+    "errorMessage": ""
+  },
+  "datiScheda": {
+    "id": 1,
+    "nomeScheda": "Scheda Push/Pull/Legs",
+    "listaAllenamenti": [
+      {
+        "id": 1,
+        "nomeAllenamento": "Push Day",
+        "ordinamento": 1,
+        "listaEsercizi": [
+          {
+            "id": 1,
+            "idTipoEsercizio": 1,
+            "idIconaEsercizio": 10,
+            "idMetodologia": 1,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 1,
+                "ripetizioni": 8,
+                "ordinamento": 1,
+                "carico": 80
+              },
+              {
+                "id": 2,
+                "ripetizioni": 8,
+                "ordinamento": 2,
+                "carico": 80
+              },
+              {
+                "id": 3,
+                "ripetizioni": 6,
+                "ordinamento": 3,
+                "carico": 85
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "idTipoEsercizio": 2,
+            "idIconaEsercizio": 20,
+            "idMetodologia": 1,
+            "ordinamento": 2,
+            "listaSerie": [
+              {
+                "id": 4,
+                "ripetizioni": 10,
+                "ordinamento": 1,
+                "carico": 50
+              },
+              {
+                "id": 5,
+                "ripetizioni": 8,
+                "ordinamento": 2,
+                "carico": 55
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "nomeAllenamento": "Pull Day",
+        "ordinamento": 2,
+        "listaEsercizi": [
+          {
+            "id": 3,
+            "idTipoEsercizio": 3,
+            "idIconaEsercizio": 30,
+            "idMetodologia": 1,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 6,
+                "ripetizioni": 5,
+                "ordinamento": 1,
+                "carico": 120
+              },
+              {
+                "id": 7,
+                "ripetizioni": 5,
+                "ordinamento": 2,
+                "carico": 125
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "nomeAllenamento": "Leg Day",
+        "ordinamento": 3,
+        "listaEsercizi": [
+          {
+            "id": 4,
+            "idTipoEsercizio": 4,
+            "idIconaEsercizio": 40,
+            "idMetodologia": 1,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 8,
+                "ripetizioni": 12,
+                "ordinamento": 1,
+                "carico": 100
+              },
+              {
+                "id": 9,
+                "ripetizioni": 10,
+                "ordinamento": 2,
+                "carico": 110
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -5,6 +5,8 @@ import { HomeComponent } from "./components/home-component/home-component";
 import { DetailsAnnounce } from "./components/details-announce/details-announce";
 import { UserProfile } from "./components/user-profile/user-profile"; // Se il tuo guard è un servizio o funzionale
 import { ListTemplatePlans } from "./components/list-template-plans/list-template-plans";
+import { ViewTemplatePlan } from "./components/view-template-plan/view-template-plan";
+import { CreateOrEditTemplatePlanComponent } from "./components/create-or-edit-template-plan-component/create-or-edit-template-plan-component";
 
 export const routes: Routes = [
   {
@@ -34,6 +36,20 @@ export const routes: Routes = [
     component: ListTemplatePlans,
     canActivate: [AuthGuard],
   },
-
+  {
+    path: "le-mie-schede/visualizza-scheda/:id", // Rotta per la pagina del profilo
+    component: ViewTemplatePlan,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: "le-mie-schede/modifica-scheda/:id",
+    component: CreateOrEditTemplatePlanComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: "le-mie-schede/modifica-scheda",
+    component: CreateOrEditTemplatePlanComponent,
+    canActivate: [AuthGuard],
+  },
   { path: "**", redirectTo: "login" },
 ];

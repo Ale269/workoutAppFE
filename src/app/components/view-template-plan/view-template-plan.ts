@@ -1,39 +1,64 @@
 import { Component } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
-import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
+import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
 import { TrainingMethodologyPipe } from "../../core/pipes/training-methodology";
 import { SeriesRepsPipe } from "../../core/pipes/series-reps-pipe ";
 import { ExerciseNamePipe } from "../../core/pipes/exercise-name";
 import { ExerciseIconPipe } from "../../core/pipes/exercise-icon";
 import { ExerciseIconColorPipe } from "../../core/pipes/exercise-icon-color";
+import { ActivatedRoute, Router } from "@angular/router";
+import { WorkoutService } from "src/app/core/services/workout.service";
+import {
+  GetDatiTemplateSchedaRequestModel,
+  GetDatiTemplateSchedaResponseModel,
+} from "src/app/models/view-modifica-scheda/getDatiTemplateScheda";
 
 @Component({
   selector: "app-view-template-plan",
-  imports: [TrainingMethodologyPipe, SeriesRepsPipe, ExerciseNamePipe, ExerciseIconPipe, ExerciseIconColorPipe],
+  imports: [
+    TrainingMethodologyPipe,
+    SeriesRepsPipe,
+    ExerciseNamePipe,
+    ExerciseIconPipe,
+    ExerciseIconColorPipe,
+  ],
   templateUrl: "./view-template-plan.html",
   styleUrl: "./view-template-plan.scss",
 })
 export class ViewTemplatePlan {
+  public idScheda: number | null = 0;
   public scheda!: SchedaDTO;
   private currentSpinnerId: string | null = null;
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
-    private spinnerService: SpinnerService
-  ) {}
+    private spinnerService: SpinnerService,
+    private activatedRouter: ActivatedRoute,
+    private router: Router,
+    private workoutService: WorkoutService
+  ) {
+    try {
+      this.idScheda = Number(this.activatedRouter.snapshot.paramMap.get("id"));
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "ViewTemplatePlan.constructor"
+      );
+    }
+  }
 
   ngOnInit(): void {
     try {
       this.getDatiScheda();
     } catch (error) {
-      this.errorHandlerService.handleError(error, "ListTemplatePlans.ngOnInit");
+      this.errorHandlerService.handleError(error, "ViewTemplatePlan.ngOnInit");
     }
   }
 
-  async getDatiScheda() {
+  getDatiScheda() {
     try {
-      // Mostra lo spinner con risultato finale
+      // Mostra lo spinner di inizializzazione
       this.currentSpinnerId = this.spinnerService.showWithResult(
         "Recupero dati scheda",
         {
@@ -44,138 +69,86 @@ export class ViewTemplatePlan {
         }
       );
 
-      this.getSchedaById(1)
-        .then((response) => {
-          this.scheda = response;
-          if (this.currentSpinnerId) {
-            this.spinnerService.setSuccess(this.currentSpinnerId);
-          }
-        })
-        .catch((error) => {
-          if (this.currentSpinnerId) {
-            this.spinnerService.setError(
-              this.currentSpinnerId,
-              "Errore durante il caricamento delle schede"
+      if (this.idScheda !== null && this.idScheda > 0) {
+        const request: GetDatiTemplateSchedaRequestModel = {
+          workoutId: this.idScheda,
+        };
+
+        this.workoutService.getDatiTemplateShceda(request).subscribe({
+          next: (response: GetDatiTemplateSchedaResponseModel) => {
+            if (!response.errore?.error) {
+              if (response.datiScheda) {
+                this.scheda = response.datiScheda;
+                if (this.currentSpinnerId) {
+                  this.spinnerService.setSuccess(this.currentSpinnerId);
+                }
+              } else {
+                if (this.currentSpinnerId) {
+                  this.spinnerService.setError(this.currentSpinnerId);
+                }
+                this.errorHandlerService.handleError(
+                  response.errore.error,
+                  "ViewTemplatePlan.getListaTemplateSchede"
+                );
+              }
+            } else {
+              if (this.currentSpinnerId) {
+                this.spinnerService.setError(this.currentSpinnerId);
+              }
+              this.errorHandlerService.handleError(
+                response.errore.error,
+                "ViewTemplatePlan.getListaTemplateSchede"
+              );
+            }
+          },
+          error: (error) => {
+            if (this.currentSpinnerId) {
+              this.spinnerService.setError(this.currentSpinnerId);
+            }
+            this.errorHandlerService.handleError(
+              error,
+              "ViewTemplatePlan.getListaTemplateSchede"
             );
-          }
-          this.errorHandlerService.handleError(
-            error,
-            "ListTemplatePlans.getListaTemplateSchede"
-          );
+          },
         });
+      } else {
+        if (this.currentSpinnerId) {
+          this.spinnerService.setError(this.currentSpinnerId);
+        }
+        this.errorHandlerService.handleError(
+          "Nessuna scheda trovata: ",
+          "ViewTemplatePlan.getListaTemplateSchede"
+        );
+      }
     } catch (error) {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
       this.errorHandlerService.handleError(
         error,
-        "ListTemplatePlans.getListaTemplateSchede"
+        "ViewTemplatePlan.getListaTemplateSchede"
       );
     }
   }
 
-  private getSchedaById(id: number): Promise<SchedaDTO> {
-    // Dati mock per simulare risposta del server
-    const mockSchedaDTO: SchedaDTO = {
-      id: id,
-      nomeScheda: "Scheda Push/Pull/Legs",
-      listaAllenamenti: [
-        {
-          id: 1,
-          nomeAllenamento: "Push Day",
-          ordinamento: 1,
-          listaEsercizi: [
-            {
-              id: 1,
-              idMetodologia: 1,
-              idTipoEsercizio: 1,
-              idIconaEsercizio: 0,
-              ordinamento: 1,
-              listaSerie: [
-                {
-                  id: 1,
-                  ripetizioni: 8,
-                  carico: 80,
-                  ordinamento: 1,
-                },
-                {
-                  id: 2,
-                  ripetizioni: 8,
-                  carico: 80,
-                  ordinamento: 2,
-                },
-                {
-                  id: 3,
-                  ripetizioni: 6,
-                  carico: 85,
-                  ordinamento: 3,
-                },
-              ],
-            },
-            {
-              id: 2,
-              idMetodologia: 1,
-              idTipoEsercizio: 2,
-              idIconaEsercizio: 2,
-              ordinamento: 2,
-              listaSerie: [
-                {
-                  id: 4,
-                  ripetizioni: 10,
-                  carico: 50,
-                  ordinamento: 1,
-                },
-                {
-                  id: 5,
-                  ripetizioni: 8,
-                  carico: 55,
-                  ordinamento: 2,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          id: 2,
-          nomeAllenamento: "Pull Day",
-          ordinamento: 2,
-          listaEsercizi: [
-            {
-              id: 3,
-              idMetodologia: 1,
-              idTipoEsercizio: 3,
-              idIconaEsercizio: 1,
-              ordinamento: 1,
-              listaSerie: [
-                {
-                  id: 6,
-                  ripetizioni: 5,
-                  carico: 120,
-                  ordinamento: 1,
-                },
-                {
-                  id: 7,
-                  ripetizioni: 5,
-                  carico: 125,
-                  ordinamento: 2,
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
+  goBack() {
+    try {
+      this.router.navigate(["/le-mie-schede"]);
+    } catch (error) {
+      this.errorHandlerService.handleError(error, "ViewTemplatePlan.goBack");
+    }
+  }
 
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Simula successo o errore casuale per test
-        if (Math.random() > 0.1) {
-          // 90% successo
-          resolve(mockSchedaDTO);
-        } else {
-          reject(new Error("Errore simulato di rete"));
-        }
-      }, 2000);
-    });
+  modificaScheda() {
+    try {
+      this.router.navigate(["/le-mie-schede/modifica-scheda/", this.idScheda], {
+        state: { scheda: this.scheda },
+      });
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "ViewTemplatePlan.modificaScheda"
+      );
+    }
   }
 }

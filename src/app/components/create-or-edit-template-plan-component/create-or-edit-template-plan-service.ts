@@ -1,15 +1,13 @@
 import { Injectable } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SchedaForm } from "./template-plan-form";
-import { Observable, timeInterval } from "rxjs";
-import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
-import { EsercizioDTO } from "src/app/models/modifica-scheda/eserciziodto";
-import { SerieDTO } from "src/app/models/modifica-scheda/seriedto";
-import { FormArray } from "@angular/forms";
-import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
-import { AllenamentoForm } from "./workout-form";
+import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
+import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentodto";
 import { WorkoutService } from "../../core/services/workout.service";
-import {GetSingleWorkoutResponsetModel} from "../../models/workout/workout-model";
+import {
+  GetDatiTemplateSchedaRequestModel,
+  GetDatiTemplateSchedaResponseModel,
+} from "src/app/models/view-modifica-scheda/getDatiTemplateScheda";
 
 @Injectable({
   providedIn: "root",
@@ -22,66 +20,21 @@ export class CreateOrEditTemplatePlanService {
     private workoutService: WorkoutService
   ) {}
 
-  CreateForm() {
+  initializeFormWithData(scheda: SchedaDTO): void {
     try {
       this.formScheda = new SchedaForm();
+      this.formScheda.updateForm(scheda);
     } catch (error) {
-      this.errorHandlerService.handleError(
-        error,
-        "CreateOrEditTemplatePlanComponent.CreateForm"
-      );
+      throw new Error(`initializeFormWithData: ${error}`);
     }
   }
 
-  InitializeScheda(idScheda: number): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        if (idScheda && idScheda > 0) {
-          // Dati mockati reali dal api service (if mocked==true va su assets senno BE)
-          this.workoutService.getSingleWorkout(1).subscribe({
-            next: (response: GetSingleWorkoutResponsetModel) => {
-              console.log("RESPONSE WORKOUT: ", response);
-              if (!response.errore.error) {
-                if (response.workouts) {
-                  const workouts: SchedaDTO[] = response.workouts;
-                  this.formScheda = new SchedaForm();
-                  //TODO capire perche costruisce e mappa il workout in modo sbagliato
-                  this.formScheda.updateForm(workouts[0]);
-                  resolve(); // Risolve la promise in caso di successo
-                } else {
-                  reject(new Error("Nessun workout trovato nella response"));
-                }
-              } else {
-                reject(
-                  new Error(
-                    `Errore dal server: ${
-                      response.errore.errorMessage || "Errore sconosciuto"
-                    }`
-                  )
-                );
-              }
-            },
-            error: (error) => {
-              reject(
-                new Error(
-                  `Errore nella chiamata API: ${error.message || error}`
-                )
-              );
-            },
-          });
-        } else {
-          // Crea form vuoto per nuova scheda
-          this.formScheda = new SchedaForm();
-          resolve(); // Risolve immediatamente per nuova scheda
-        }
-      } catch (error) {
-        reject(
-          new Error(
-            `CreateOrEditTemplatePlanService.InitializeScheda: ${error}`
-          )
-        );
-      }
-    });
+  initializeEmptyForm(): void {
+    try {
+      this.formScheda = new SchedaForm();
+    } catch (error) {
+      throw new Error(`initializeEmptyForm: ${error}`);
+    }
   }
 
   AddWorkout(nomeAllenamento?: string): void {
@@ -120,146 +73,6 @@ export class CreateOrEditTemplatePlanService {
     }
   }
 
-  // DeleteEsercizio(
-  //   allenamentoIdentifier: number,
-  //   esercizioIdentifier: number
-  // ): void {
-  //   try {
-  //     if (!this.formScheda) {
-  //       throw new Error(
-  //         "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
-  //       );
-  //     }
-
-  //     Trova l'allenamento tramite identifier
-  //     const allenamentoForm = this.findAllenamentoByIdentifier(
-  //       allenamentoIdentifier
-  //     );
-
-  //     if (!allenamentoForm) {
-  //       throw new Error(
-  //         `Allenamento con identifier ${allenamentoIdentifier} non trovato`
-  //       );
-  //     }
-
-  //     Trova l'indice dell'esercizio da eliminare
-  //     const indexToDelete = allenamentoForm.listaEserciziForm.findIndex(
-  //       (esercizio) =>
-  //         esercizio.form.controls["identifier"]?.value === esercizioIdentifier
-  //     );
-
-  //     if (indexToDelete === -1) {
-  //       throw new Error(
-  //         `Esercizio con identifier ${esercizioIdentifier} non trovato nell'allenamento ${allenamentoIdentifier}`
-  //       );
-  //     }
-
-  //     Rimuovi l'esercizio dalla lista
-  //     allenamentoForm.listaEserciziForm.splice(indexToDelete, 1);
-
-  //     Rimuovi il controllo dal FormArray
-  //     allenamentoForm.listaEserciziFormArray.removeAt(indexToDelete);
-
-  //     Riassegna gli ordinamenti corretti per gli esercizi di questo allenamento
-  //     allenamentoForm.reassignOrdinamentiEsercizi();
-  //   } catch (error) {
-  //     this.errorHandlerService.handleError(
-  //       error,
-  //       "CreateOrEditTemplatePlanService.DeleteEsercizio"
-  //     );
-  //     throw new Error(
-  //       "CreateOrEditTemplatePlanService.DeleteEsercizio: " + error
-  //     );
-  //   }
-  // }
-
-  // DeleteSerie(
-  //   allenamentoIdentifier: number,
-  //   esercizioIdentifier: number,
-  //   serieIdentifier: number
-  // ): void {
-  //   try {
-  //     if (!this.formScheda) {
-  //       throw new Error(
-  //         "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
-  //       );
-  //     }
-
-  //     Trova l'allenamento tramite identifier
-  //     const allenamentoForm = this.findAllenamentoByIdentifier(
-  //       allenamentoIdentifier
-  //     );
-
-  //     if (!allenamentoForm) {
-  //       throw new Error(
-  //         `Allenamento con identifier ${allenamentoIdentifier} non trovato`
-  //       );
-  //     }
-
-  //     Trova l'esercizio tramite identifier
-  //     const esercizioForm =
-  //       allenamentoForm.findEsercizioByIdentifier(esercizioIdentifier);
-
-  //     if (!esercizioForm) {
-  //       throw new Error(
-  //         `Esercizio con identifier ${esercizioIdentifier} non trovato nell'allenamento ${allenamentoIdentifier}`
-  //       );
-  //     }
-
-  //     Trova l'indice della serie da eliminare
-  //     const serieIndexToDelete = esercizioForm.listaSerieForm.findIndex(
-  //       (serie) => serie.form.controls["identifier"]?.value === serieIdentifier
-  //     );
-
-  //     if (serieIndexToDelete === -1) {
-  //       throw new Error(
-  //         `Serie con identifier ${serieIdentifier} non trovata nell'esercizio ${esercizioIdentifier}`
-  //       );
-  //     }
-
-  //     Rimuovi la serie dalla lista
-  //     esercizioForm.listaSerieForm.splice(serieIndexToDelete, 1);
-
-  //     Rimuovi il controllo dal FormArray
-  //     const listaSerieFormArray = esercizioForm.form.controls[
-  //       "listaSerie"
-  //     ] as FormArray;
-  //     listaSerieFormArray.removeAt(serieIndexToDelete);
-  //   } catch (error) {
-  //     this.errorHandlerService.handleError(
-  //       error,
-  //       "CreateOrEditTemplatePlanService.DeleteSerie"
-  //     );
-  //     throw new Error("CreateOrEditTemplatePlanService.DeleteSerie: " + error);
-  //   }
-  // }
-
-  // private reassignOrdinamentiAllenamenti(): void {
-  //   if (!this.formScheda?.listaAllenamentiForm) {
-  //     return;
-  //   }
-
-  //   Ordina gli allenamenti per ordinamento corrente
-  //   const allenamentiOrdinati = [...this.formScheda.listaAllenamentiForm].sort(
-  //     (a, b) => {
-  //       const ordinamentoA = a.form.controls["ordinamento"]?.value || 0;
-  //       const ordinamentoB = b.form.controls["ordinamento"]?.value || 0;
-  //       return ordinamentoA - ordinamentoB;
-  //     }
-  //   );
-
-  //   Riassegna gli ordinamenti da 1 a N
-  //   allenamentiOrdinati.forEach((allenamento, index) => {
-  //     const newOrdinamento = index + 1;
-  //     allenamento.form.controls["ordinamento"]?.setValue(newOrdinamento);
-  //   });
-
-  //   Riordina anche l'array principale
-  //   this.formScheda.listaAllenamentiForm = allenamentiOrdinati;
-  // }
-
-  // Simulazione chiamata API con dati mock
-
   async savePlan(savePlanRequest: SchedaDTO): Promise<void> {
     // Bisogna anche avere il modello della response
     return new Promise((resolve, reject) => {
@@ -279,101 +92,5 @@ export class CreateOrEditTemplatePlanService {
         throw new Error("CreateOrEditTemplatePlanService.savePlan: " + error);
       }
     });
-  }
-
-  private getSchedaById(id: number): SchedaDTO {
-    // Dati mock per simulare risposta del server
-    const mockSchedaDTO: SchedaDTO = {
-      id: id,
-      nomeScheda: "Scheda Push/Pull/Legs",
-      listaAllenamenti: [
-        {
-          id: 1,
-          nomeAllenamento: "Push Day componente",
-          ordinamento: 1,
-          listaEsercizi: [
-            {
-              id: 1,
-              idMetodologia: 1,
-              idTipoEsercizio: 1,
-              idIconaEsercizio: 0,
-              ordinamento: 1,
-              listaSerie: [
-                {
-                  id: 1,
-                  ripetizioni: 8,
-                  carico: 80,
-                  ordinamento: 1,
-                },
-                {
-                  id: 2,
-                  ripetizioni: 8,
-                  carico: 80,
-                  ordinamento: 2,
-                },
-                {
-                  id: 3,
-                  ripetizioni: 6,
-                  carico: 85,
-                  ordinamento: 3,
-                },
-              ],
-            },
-            {
-              id: 2,
-              idMetodologia: 1,
-              idTipoEsercizio: 2,
-              idIconaEsercizio: 2,
-              ordinamento: 2,
-              listaSerie: [
-                {
-                  id: 4,
-                  ripetizioni: 10,
-                  carico: 50,
-                  ordinamento: 1,
-                },
-                {
-                  id: 5,
-                  ripetizioni: 8,
-                  carico: 55,
-                  ordinamento: 2,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          id: 2,
-          nomeAllenamento: "Pull Day",
-          ordinamento: 2,
-          listaEsercizi: [
-            {
-              id: 3,
-              idMetodologia: 1,
-              idTipoEsercizio: 3,
-              idIconaEsercizio: 1,
-              ordinamento: 1,
-              listaSerie: [
-                {
-                  id: 6,
-                  ripetizioni: 5,
-                  carico: 120,
-                  ordinamento: 1,
-                },
-                {
-                  id: 7,
-                  ripetizioni: 5,
-                  carico: 125,
-                  ordinamento: 2,
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
-
-    // Simula delay della chiamata HTTP
-    return mockSchedaDTO;
   }
 }

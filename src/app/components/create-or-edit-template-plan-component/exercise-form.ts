@@ -1,7 +1,7 @@
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { SerieForm, SerieFormModel } from "./exercise-set-form";
-import { EsercizioDTO } from "src/app/models/modifica-scheda/eserciziodto";
-import { SerieDTO } from "src/app/models/modifica-scheda/seriedto";
+import { EsercizioDTO } from "src/app/models/view-modifica-scheda/eserciziodto";
+import { SerieDTO } from "src/app/models/view-modifica-scheda/seriedto";
 
 export interface EsercizioFormModel {
   identifier: FormControl<number | null>;
@@ -77,6 +77,8 @@ export class EsercizioForm {
 
       // Dopo l'aggiunta, riordina le serie per essere sicuri
       this.sanitizeSeriesOrdering();
+      this.form.markAsDirty();
+    
     } catch (error) {
       throw new Error("EsercizioForm.addSerieForm: " + error);
     }
@@ -102,6 +104,7 @@ export class EsercizioForm {
 
       // Riassegna gli ordinamenti dopo l'eliminazione
       this.sanitizeSeriesOrdering();
+      this.form.markAsDirty();
 
       return true;
     } catch (error) {

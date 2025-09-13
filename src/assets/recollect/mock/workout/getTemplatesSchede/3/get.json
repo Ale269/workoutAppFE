@@ -1,0 +1,34 @@
+{
+  "id": "req-12345-get-lista-templates",
+  "errore": {
+    "error": false,
+    "errorMessage": ""
+  },
+  "ListaSchedeDTO": [
+    {
+      "id": 1,
+      "nomeScheda": "Scheda Push/Pull/Legs",
+      "dataCreazione": "2024-01-15T10:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "nomeScheda": "Scheda Full Body Principianti",
+      "dataCreazione": "2024-02-20T14:15:00.000Z"
+    },
+    {
+      "id": 3,
+      "nomeScheda": "Scheda Upper/Lower Split",
+      "dataCreazione": "2024-03-10T09:45:00.000Z"
+    },
+    {
+      "id": 4,
+      "nomeScheda": "Scheda Forza Powerlifting",
+      "dataCreazione": "2024-03-25T16:20:00.000Z"
+    },
+    {
+      "id": 5,
+      "nomeScheda": "Scheda Ipertrofia Avanzata",
+      "dataCreazione": "2024-04-05T11:10:00.000Z"
+    }
+  ]
+}

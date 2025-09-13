@@ -1,7 +1,7 @@
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { EsercizioForm, EsercizioFormModel } from "./exercise-form";
-import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
-import { EsercizioDTO } from "src/app/models/modifica-scheda/eserciziodto";
+import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentodto";
+import { EsercizioDTO } from "src/app/models/view-modifica-scheda/eserciziodto";
 
 export interface AllenamentoFormModel {
   identifier: FormControl<number | null>;
@@ -72,6 +72,7 @@ export class AllenamentoForm {
 
       // Aggiorna le posizioni disponibili senza riordinare
       this.updateAvailablePositions();
+      this.form.markAsDirty();
     } catch (error) {
       throw new Error("AllenamentoForm.addEsercizioForm: " + error);
     }
@@ -107,6 +108,7 @@ export class AllenamentoForm {
 
       // Riassegna gli ordinamenti dopo l'eliminazione
       this.sanitizeExerciseOrdering();
+      this.form.markAsDirty();
 
       return true;
     } catch (error) {
@@ -193,6 +195,7 @@ export class AllenamentoForm {
       // 3. Ora che l'ordine è stato modificato, chiama la sanificazione
       // per aggiornare i valori 'ordinamento' e ricostruire il FormArray.
       this.sanitizeExerciseOrdering();
+      this.form.markAsDirty();
 
       return true;
     } catch (error) {
@@ -200,28 +203,6 @@ export class AllenamentoForm {
       return false;
     }
   }
-
-  // reassignOrdinamentiEsercizi(): void {
-  //   if (!this.listaEserciziForm) {
-  //     return;
-  //   }
-
-  //   // Ordina gli esercizi per ordinamento corrente
-  //   const eserciziOrdinati = [...this.listaEserciziForm].sort((a, b) => {
-  //     const ordinamentoA = a.form.get("Ordinamento")?.value || 0;
-  //     const ordinamentoB = b.form.get("Ordinamento")?.value || 0;
-  //     return ordinamentoA - ordinamentoB;
-  //   });
-
-  //   // Riassegna gli ordinamenti da 1 a N
-  //   eserciziOrdinati.forEach((esercizio, index) => {
-  //     const newOrdinamento = index + 1;
-  //     esercizio.form.get("Ordinamento")?.setValue(newOrdinamento);
-  //   });
-
-  //   // Riordina anche l'array principale
-  //   this.listaEserciziForm = eserciziOrdinati;
-  // }
 
   getDatiAllenamentoDaSalvare(): AllenamentoDTO {
     try {

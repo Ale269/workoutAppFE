@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
-import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
-import { AllenamentoDTO } from "src/app/models/modifica-scheda/allenamentodto";
+import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
+import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentodto";
 import { WorkoutService } from "../../core/services/workout.service";
 import { AllenamentoForm } from "../create-or-edit-template-plan-component/workout-form";
 import { altriAllenamentiSelectDTO } from "src/app/models/esecuzione-allenamento/altri-allenamenti-select-dto";

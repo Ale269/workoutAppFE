@@ -1,0 +1,90 @@
+{
+  "id": "req-12346-get-dati-scheda-2",
+  "errore": {
+    "error": false,
+    "errorMessage": ""
+  },
+  "datiScheda": {
+    "id": 2,
+    "nomeScheda": "Scheda Full Body Principianti",
+    "listaAllenamenti": [
+      {
+        "id": 4,
+        "nomeAllenamento": "Full Body A",
+        "ordinamento": 1,
+        "listaEsercizi": [
+          {
+            "id": 5,
+            "idTipoEsercizio": 1,
+            "idIconaEsercizio": 10,
+            "idMetodologia": 2,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 10,
+                "ripetizioni": 12,
+                "ordinamento": 1,
+                "carico": 40
+              },
+              {
+                "id": 11,
+                "ripetizioni": 12,
+                "ordinamento": 2,
+                "carico": 40
+              }
+            ]
+          },
+          {
+            "id": 6,
+            "idTipoEsercizio": 5,
+            "idIconaEsercizio": 50,
+            "idMetodologia": 2,
+            "ordinamento": 2,
+            "listaSerie": [
+              {
+                "id": 12,
+                "ripetizioni": 10,
+                "ordinamento": 1,
+                "carico": 20
+              },
+              {
+                "id": 13,
+                "ripetizioni": 10,
+                "ordinamento": 2,
+                "carico": 20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "nomeAllenamento": "Full Body B",
+        "ordinamento": 2,
+        "listaEsercizi": [
+          {
+            "id": 7,
+            "idTipoEsercizio": 3,
+            "idIconaEsercizio": 30,
+            "idMetodologia": 2,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 14,
+                "ripetizioni": 8,
+                "ordinamento": 1,
+                "carico": 60
+              },
+              {
+                "id": 15,
+                "ripetizioni": 8,
+                "ordinamento": 2,
+                "carico": 60
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

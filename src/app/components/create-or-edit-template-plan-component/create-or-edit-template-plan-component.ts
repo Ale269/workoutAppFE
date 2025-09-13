@@ -30,11 +30,12 @@ import {
 import { ExerciseComponent } from "./workout-component/exercise-component/exercise-component";
 import { Subscription } from "rxjs";
 import { ModalService } from "src/app/core/services/modal.service";
-import { SchedaDTO } from "src/app/models/modifica-scheda/schedadto";
+import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
 import {
   SpinnerService,
   SpinnerResult,
 } from "src/app/core/services/spinner.service";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -62,8 +63,15 @@ export class CreateOrEditTemplatePlanComponent
   @ViewChild("footerConfirmAddWorkout")
   footerConfirmAddWorkout!: TemplateRef<any>;
 
+  @ViewChild("headerGoBack") headerGoBack!: TemplateRef<any>;
+  @ViewChild("bodyGoBack") bodyGoBack!: TemplateRef<any>;
+  @ViewChild("footerCloseGoBack")
+  footerCloseGoBack!: TemplateRef<any>;
+  @ViewChild("footerConfirmGoBack")
+  footerConfirmGoBack!: TemplateRef<any>;
+
   public selectedTabIndex: number = 0;
-  public idScheda: number = 1;
+  public scheda: SchedaDTO | null = null;
 
   private selectedIndexSubscription?: Subscription;
   private initSpinnerId: string | null = null;
@@ -71,78 +79,72 @@ export class CreateOrEditTemplatePlanComponent
 
   public newWorkoutNameControl!: FormControl<string>;
 
+  private currentSpinnerId: string | null = null;
+
   constructor(
     private errorHandlerService: ErrorHandlerService,
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
     private modalService: ModalService,
-    private spinnerService: SpinnerService
-  ) {}
+    private spinnerService: SpinnerService,
+
+    private router: Router
+  ) {
+    try {
+      const navigation = this.router.getCurrentNavigation();
+      const state = navigation?.extras.state as { scheda: SchedaDTO };
+
+      if (state?.scheda) {
+        this.scheda = state.scheda;
+      }
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanComponent.constructor"
+      );
+    }
+  }
 
   ngOnInit(): void {
     try {
-      this.CreateForm();
-      this.getDatiScheda();
-    } catch (error) {
-      this.errorHandlerService.handleError(
-        error,
-        "CreateOrEditTemplatePlanComponent.ngOnInit"
-      );
-    }
-  }
-
-  CreateForm() {
-    try {
-      this.createOrEditTemplatePlanService.CreateForm();
-    } catch (error) {
-      this.errorHandlerService.handleError(
-        error,
-        "CreateOrEditTemplatePlanComponent.CreateForm"
-      );
-    }
-  }
-
-  getDatiScheda() {
-    try {
       // Mostra lo spinner di inizializzazione
-      this.initSpinnerId = this.spinnerService.showWithResult(
-        "Recupero dati scheda",
+      this.currentSpinnerId = this.spinnerService.showWithResult(
+        "Inizializzazione dati scheda",
         {
-          successMessage: "Dati recuperati con successo",
-          errorMessage: "Errore nel recupero dei dati",
+          successMessage: "Inizializzazione completata",
+          errorMessage: "Errore nel processo di inizializzazione",
           resultDuration: 500,
           minSpinnerDuration: 500,
         }
       );
 
-      // Attende il completamento dell'inizializzazione
-      this.createOrEditTemplatePlanService
-        .InitializeScheda(this.idScheda)
-        .then(() => {
-          // Imposta il successo dello spinner
-          if (this.initSpinnerId) {
-            this.spinnerService.setSuccess(this.initSpinnerId);
+      if (this.scheda) {
+        this.createOrEditTemplatePlanService.initializeFormWithData(
+          this.scheda
+        );
+        setTimeout(() => {
+          if (this.currentSpinnerId) {
+            this.spinnerService.setSuccess(this.currentSpinnerId);
           }
-        })
-        .catch((error) => {
-          // Gestisce gli errori
-          if (this.initSpinnerId) {
-            this.spinnerService.setError(
-              this.initSpinnerId,
-              "Errore durante l'inizializzazione"
-            );
+        }, 100);
+      } else {
+        this.createOrEditTemplatePlanService.initializeEmptyForm();
+
+        setTimeout(() => {
+          if (this.currentSpinnerId) {
+            this.spinnerService.setSuccess(this.currentSpinnerId);
           }
-          this.errorHandlerService.handleError(
-            error,
-            "CreateOrEditTemplatePlanComponent.getDatiScheda"
-          );
-        });
-    } catch (error) {
-      if (this.initSpinnerId) {
-        this.spinnerService.setError(this.initSpinnerId);
+        }, 100);
       }
+    } catch (error) {
+      setTimeout(() => {
+        if (this.currentSpinnerId) {
+          this.spinnerService.setError(this.currentSpinnerId);
+        }
+      }, 100);
+
       this.errorHandlerService.handleError(
         error,
-        "CreateOrEditTemplatePlanComponent.getDatiScheda"
+        "CreateOrEditTemplatePlanComponent.ngOnInit"
       );
     }
   }
@@ -427,6 +429,41 @@ export class CreateOrEditTemplatePlanComponent
         this.spinnerService.setError(this.saveSpinnerId);
       }
       this.errorHandlerService.handleError(error, "WorkoutComponent.SavePlan");
+    }
+  }
+
+  goBack() {
+    try {
+      if (this.createOrEditTemplatePlanService.formScheda.form.dirty) {
+        this.modalService.open({
+          warning: true,
+          headerTemplate: this.headerGoBack,
+          bodyTemplate: this.bodyGoBack,
+          footerCloseTemplate: this.footerCloseGoBack,
+          footerConfirmTemplate: this.footerConfirmGoBack,
+          onConfirm: () => {
+            if (this.scheda) {
+              this.router.navigate([
+                "/le-mie-schede/visualizza-scheda",
+                this.scheda.id,
+              ]);
+            } else {
+              this.router.navigate(["/le-mie-schede"]);
+            }
+          },
+        });
+      } else {
+        if (this.scheda) {
+          this.router.navigate([
+            "/le-mie-schede/visualizza-scheda",
+            this.scheda.id,
+          ]);
+        } else {
+          this.router.navigate(["/le-mie-schede"]);
+        }
+      }
+    } catch (error) {
+      this.errorHandlerService.handleError(error, "ViewTemplatePlan.goBack");
     }
   }
 }

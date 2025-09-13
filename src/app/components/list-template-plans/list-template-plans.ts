@@ -6,6 +6,11 @@ import { CommonModule } from "@angular/common";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { WorkoutService } from "src/app/core/services/workout.service";
 import { AuthService } from "src/app/core/services/auth.service";
+import {
+  GetListaTemplatesSchedaRequestModel,
+  GetListaTemplatesSchedaResponseModel,
+} from "src/app/models/lista-template-schede/get-lista-templates-schede";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-list-template-plans",
@@ -21,7 +26,8 @@ export class ListTemplatePlans implements OnInit {
     private errorHandlerService: ErrorHandlerService,
     private spinnerService: SpinnerService,
     private workoutService: WorkoutService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -36,7 +42,7 @@ export class ListTemplatePlans implements OnInit {
     try {
       // Mostra lo spinner di inizializzazione
       this.currentSpinnerId = this.spinnerService.showWithResult(
-        "Recupero dati scheda",
+        "Recupero dati schede",
         {
           successMessage: "Dati recuperati con successo",
           errorMessage: "Errore nel recupero dei dati",
@@ -45,27 +51,55 @@ export class ListTemplatePlans implements OnInit {
         }
       );
 
-      // Attende il completamento del caricamento delle schede
-      this.initializeListaSchede()
-        .then(() => {
-          // Imposta il successo dello spinner
-          if (this.currentSpinnerId) {
-            this.spinnerService.setSuccess(this.currentSpinnerId);
-          }
-        })
-        .catch((error) => {
-          // Gestisce gli errori
-          if (this.currentSpinnerId) {
-            this.spinnerService.setError(
-              this.currentSpinnerId,
-              "Errore durante il caricamento delle schede"
+      const user = this.authService.getCurrentUser();
+
+      if (user) {
+        const request: GetListaTemplatesSchedaRequestModel = {
+          userId: user.usedId,
+        };
+
+        this.workoutService.getListaTemplatesScheda(request).subscribe({
+          next: (response: GetListaTemplatesSchedaResponseModel) => {
+            if (!response.errore?.error) {
+              if (response.ListaSchedeDTO) {
+                this.listaSchede = response.ListaSchedeDTO;
+                if (this.currentSpinnerId) {
+                  this.spinnerService.setSuccess(this.currentSpinnerId);
+                }
+              } else {
+                if (this.currentSpinnerId) {
+                  this.spinnerService.setError(this.currentSpinnerId);
+                }
+                this.errorHandlerService.handleError(
+                  response.errore.error,
+                  "ListTemplatePlans.getListaTemplateSchede"
+                );
+              }
+            } else {
+              if (this.currentSpinnerId) {
+                this.spinnerService.setError(this.currentSpinnerId);
+              }
+              this.errorHandlerService.handleError(
+                response.errore.error,
+                "ListTemplatePlans.getListaTemplateSchede"
+              );
+            }
+          },
+          error: (error) => {
+            if (this.currentSpinnerId) {
+              this.spinnerService.setError(this.currentSpinnerId);
+            }
+            this.errorHandlerService.handleError(
+              error,
+              "ListTemplatePlans.getListaTemplateSchede"
             );
-          }
-          this.errorHandlerService.handleError(
-            error,
-            "ListTemplatePlans.getListaTemplateSchede"
-          );
+          },
         });
+      } else {
+        throw new Error(
+          "ListTemplatePlans.addEsercizioForm: " + "nessun user trovato"
+        );
+      }
     } catch (error) {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
@@ -77,49 +111,25 @@ export class ListTemplatePlans implements OnInit {
     }
   }
 
-  private initializeListaSchede(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        // Chiamata al servizio per ottenere la lista delle schede
-        // const idUser: string | undefined =
-        //   this.authService.getCurrentUser()?.id;
+  visualizzaDatiScheda(idScheda: number) {
+    try {
+      this.router.navigate(["/le-mie-schede/visualizza-scheda", idScheda]);
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "ListTemplatePlans.VisualizzaDatiScheda"
+      );
+    }
+  }
 
-        // if (idUser != null) {
-        //   this.workoutService.getlistTemplatePlans(idUser).subscribe({
-        //     next: (response) => {
-        //       console.log("RESPONSE WORKOUT LIST: ", response);
-        //       if (response.esito === "OK") {
-        //         if (response.payload.workouts) {
-        //           const workouts: SchedaListaDTO[] = response.payload.workouts;
-        //           this.listaSchede = workouts;
-        //           resolve(); // Risolve la promise in caso di successo
-        //         } else {
-        //           reject(new Error("Nessuna scheda trovata nella response"));
-        //         }
-        //       } else {
-        //         reject(
-        //           new Error(
-        //             `Errore dal server: ${
-        //               response.messaggio || "Errore sconosciuto"
-        //             }`
-        //           )
-        //         );
-        //       }
-        //     },
-        //     error: (error) => {
-        //       reject(
-        //         new Error(
-        //           `Errore nella chiamata API: ${error.message || error}`
-        //         )
-        //       );
-        //     },
-        //   });
-        // } else {
-        //   reject(new Error("Nessun utente trovato"));
-        // }
-      } catch (error) {
-        reject(new Error(`ListTemplatePlans.initializeListaSchede: ${error}`));
-      }
-    });
+  createNewScheda() {
+    try {
+      this.router.navigate(["/le-mie-schede/modifica-scheda" ]);
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "ListTemplatePlans.VisualizzaDatiScheda"
+      );
+    }
   }
 }

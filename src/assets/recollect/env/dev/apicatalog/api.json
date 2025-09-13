@@ -27,7 +27,7 @@
         "endpoint": "/workout/:workoutId",
         "method": "get",
         "description": "Recupera la singola scheda di un utente.",
-        "isMocked": false
+        "isMocked": true
       },
       {
         "name": "allUserWorkout",
@@ -35,6 +35,13 @@
         "method": "get",
         "description": "Recupera tutte le schede di un utente.",
         "isMocked": false
+      },
+      {
+        "name": "getTemplatesSchede",
+        "endpoint": "/workout/user/:userId",
+        "method": "get",
+        "description": "Recupera tutti i template schede di un utente.",
+        "isMocked": true
       }
     ]
   }

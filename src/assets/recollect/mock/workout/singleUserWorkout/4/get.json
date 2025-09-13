@@ -1,0 +1,103 @@
+{
+  "id": "req-12348-get-dati-scheda-4",
+  "errore": {
+    "error": false,
+    "errorMessage": ""
+  },
+  "datiScheda": {
+    "id": 4,
+    "nomeScheda": "Scheda Forza Powerlifting",
+    "listaAllenamenti": [
+      {
+        "id": 8,
+        "nomeAllenamento": "Panca e Accessori",
+        "ordinamento": 1,
+        "listaEsercizi": [
+          {
+            "id": 11,
+            "idTipoEsercizio": 1,
+            "idIconaEsercizio": 10,
+            "idMetodologia": 4,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 23,
+                "ripetizioni": 3,
+                "ordinamento": 1,
+                "carico": 110
+              },
+              {
+                "id": 24,
+                "ripetizioni": 2,
+                "ordinamento": 2,
+                "carico": 120
+              },
+              {
+                "id": 25,
+                "ripetizioni": 1,
+                "ordinamento": 3,
+                "carico": 130
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "nomeAllenamento": "Squat e Accessori",
+        "ordinamento": 2,
+        "listaEsercizi": [
+          {
+            "id": 12,
+            "idTipoEsercizio": 7,
+            "idIconaEsercizio": 70,
+            "idMetodologia": 4,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 26,
+                "ripetizioni": 5,
+                "ordinamento": 1,
+                "carico": 140
+              },
+              {
+                "id": 27,
+                "ripetizioni": 3,
+                "ordinamento": 2,
+                "carico": 150
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "nomeAllenamento": "Stacco e Accessori",
+        "ordinamento": 3,
+        "listaEsercizi": [
+          {
+            "id": 13,
+            "idTipoEsercizio": 3,
+            "idIconaEsercizio": 30,
+            "idMetodologia": 4,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 28,
+                "ripetizioni": 5,
+                "ordinamento": 1,
+                "carico": 160
+              },
+              {
+                "id": 29,
+                "ripetizioni": 3,
+                "ordinamento": 2,
+                "carico": 170
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

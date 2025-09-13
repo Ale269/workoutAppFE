@@ -1,0 +1,96 @@
+{
+  "id": "req-12347-get-dati-scheda-3",
+  "errore": {
+    "error": false,
+    "errorMessage": ""
+  },
+  "datiScheda": {
+    "id": 3,
+    "nomeScheda": "Scheda Upper/Lower Split",
+    "listaAllenamenti": [
+      {
+        "id": 6,
+        "nomeAllenamento": "Upper Body",
+        "ordinamento": 1,
+        "listaEsercizi": [
+          {
+            "id": 8,
+            "idTipoEsercizio": 1,
+            "idIconaEsercizio": 10,
+            "idMetodologia": 3,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 16,
+                "ripetizioni": 6,
+                "ordinamento": 1,
+                "carico": 90
+              },
+              {
+                "id": 17,
+                "ripetizioni": 6,
+                "ordinamento": 2,
+                "carico": 90
+              },
+              {
+                "id": 18,
+                "ripetizioni": 4,
+                "ordinamento": 3,
+                "carico": 95
+              }
+            ]
+          },
+          {
+            "id": 9,
+            "idTipoEsercizio": 6,
+            "idIconaEsercizio": 60,
+            "idMetodologia": 3,
+            "ordinamento": 2,
+            "listaSerie": [
+              {
+                "id": 19,
+                "ripetizioni": 8,
+                "ordinamento": 1,
+                "carico": 70
+              },
+              {
+                "id": 20,
+                "ripetizioni": 8,
+                "ordinamento": 2,
+                "carico": 70
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "nomeAllenamento": "Lower Body",
+        "ordinamento": 2,
+        "listaEsercizi": [
+          {
+            "id": 10,
+            "idTipoEsercizio": 4,
+            "idIconaEsercizio": 40,
+            "idMetodologia": 3,
+            "ordinamento": 1,
+            "listaSerie": [
+              {
+                "id": 21,
+                "ripetizioni": 10,
+                "ordinamento": 1,
+                "carico": 120
+              },
+              {
+                "id": 22,
+                "ripetizioni": 8,
+                "ordinamento": 2,
+                "carico": 130
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { SerieDTO } from "src/app/models/modifica-scheda/seriedto";
+import { SerieDTO } from "src/app/models/view-modifica-scheda/seriedto";
 
 export interface SerieFormModel {
   identifier: FormControl<number | null>;
