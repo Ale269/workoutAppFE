@@ -4,10 +4,6 @@ import { SchedaForm } from "./template-plan-form";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
 import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentodto";
 import { WorkoutService } from "../../core/services/workout.service";
-import {
-  GetDatiTemplateSchedaRequestModel,
-  GetDatiTemplateSchedaResponseModel,
-} from "src/app/models/view-modifica-scheda/getDatiTemplateScheda";
 
 @Injectable({
   providedIn: "root",
