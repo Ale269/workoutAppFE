@@ -71,6 +71,13 @@ export class CreateOrEditTemplatePlanService {
 
   async savePlan(savePlanRequest: SchedaDTO): Promise<void> {
     // Bisogna anche avere il modello della response
+
+    const request = {
+      userId: 1,
+      schedaDTO: savePlanRequest
+    }
+
+    console.log("REQUEST CHIAMATA SAVE: ", request);
     return new Promise((resolve, reject) => {
       try {
         // Esegui la chiamata mandando i dati necessari
