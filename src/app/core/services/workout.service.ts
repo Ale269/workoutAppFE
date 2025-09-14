@@ -15,7 +15,7 @@ export class WorkoutService {
     private apiCatalogService: ApiCatalogService
   ) {}
 
-  getDatiTemplateShceda(
+  getDatiTemplateScheda(
     request: GetDatiTemplateSchedaRequestModel
   ): Observable<GetDatiTemplateSchedaResponseModel> {
     return this.apiCatalogService.executeApiCall(

@@ -61,8 +61,8 @@ export class ListTemplatePlans implements OnInit {
         this.workoutService.getListaTemplatesScheda(request).subscribe({
           next: (response: GetListaTemplatesSchedaResponseModel) => {
             if (!response.errore?.error) {
-              if (response.ListaSchedeDTO) {
-                this.listaSchede = response.ListaSchedeDTO;
+              if (response.listaSchedeDTO) {
+                this.listaSchede = response.listaSchedeDTO;
                 if (this.currentSpinnerId) {
                   this.spinnerService.setSuccess(this.currentSpinnerId);
                 }

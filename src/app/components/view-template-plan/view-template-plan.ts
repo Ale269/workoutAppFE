@@ -74,7 +74,7 @@ export class ViewTemplatePlan {
           workoutId: this.idScheda,
         };
 
-        this.workoutService.getDatiTemplateShceda(request).subscribe({
+        this.workoutService.getDatiTemplateScheda(request).subscribe({
           next: (response: GetDatiTemplateSchedaResponseModel) => {
             if (!response.errore?.error) {
               if (response.datiScheda) {
