@@ -7,6 +7,7 @@ import {
   TemplateRef,
   ViewChild,
   OnDestroy,
+  ChangeDetectorRef,
 } from "@angular/core";
 import { EsercizioForm } from "../../exercise-form";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
@@ -31,8 +32,8 @@ import { ExerciseIconColorPipe } from "../../../../core/pipes/exercise-icon-colo
     SetComponent,
     MatFormFieldModule,
     MatSelectModule,
-    ExerciseIconColorPipe
-],
+    ExerciseIconColorPipe,
+  ],
   templateUrl: "./exercise-component.html",
   styleUrl: "./exercise-component.scss",
 })
@@ -58,7 +59,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -93,12 +95,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         .subscribe(() => {
           this.updateExerciseIcon();
         });
-
     } catch (error) {
-      this.errorHandlerService.handleError(
-        error,
-        "ExerciseComponent.ngOnInit"
-      );
+      this.errorHandlerService.handleError(error, "ExerciseComponent.ngOnInit");
     }
   }
 
@@ -144,7 +142,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     try {
       const currentExerciseId =
         this.formEsercizio.form.controls["identifier"].value;
-      
+
       if (!currentExerciseId) {
         console.warn("Identifier dell'esercizio non trovato");
         return;
@@ -152,14 +150,18 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
       // Usa il metodo moveEsercizio di AllenamentoForm per gestire lo spostamento
       // e il riallineamento automatico di tutti gli ordinamenti
-      const success = this.formAllenamento.moveEsercizio(currentExerciseId, newPosition);
-      
+      const success = this.formAllenamento.moveEsercizio(
+        currentExerciseId,
+        newPosition
+      );
+
       if (!success) {
         console.error("Errore durante lo spostamento dell'esercizio");
         // Opzionalmente, potresti ripristinare il valore precedente
         // o mostrare un messaggio di errore all'utente
       }
 
+      this.cdr.detectChanges();
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
@@ -171,17 +173,16 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   addSerie() {
     try {
       this.formEsercizio.addSerieForm();
+      this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.handleError(
-        error,
-        "ExerciseComponent.addSerie"
-      );
+      this.errorHandlerService.handleError(error, "ExerciseComponent.addSerie");
     }
   }
 
   deleteSerie(identifier: number) {
     try {
       this.formEsercizio.deleteSerie(identifier);
+      this.cdr.detectChanges();
     } catch (error) {
       this.errorHandlerService.handleError(
         error,

@@ -3,8 +3,18 @@ import { ApiCatalogService } from "./api-catalog.service";
 import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { SchedaDTO } from "../../models/view-modifica-scheda/schedadto";
-import { GetListaTemplatesSchedaRequestModel, GetListaTemplatesSchedaResponseModel } from "src/app/models/lista-template-schede/get-lista-templates-schede";
-import { GetDatiTemplateSchedaRequestModel, GetDatiTemplateSchedaResponseModel } from "src/app/models/view-modifica-scheda/getDatiTemplateScheda";
+import {
+  GetListaTemplatesSchedaRequestModel,
+  GetListaTemplatesSchedaResponseModel,
+} from "src/app/models/lista-template-schede/get-lista-templates-schede";
+import {
+  GetDatiTemplateSchedaRequestModel,
+  GetDatiTemplateSchedaResponseModel,
+} from "src/app/models/view-modifica-scheda/getDatiTemplateScheda";
+import {
+  SaveDatiTemplateSchedaRequestModel,
+  SaveDatiTemplateSchedaResponseModel,
+} from "src/app/models/view-modifica-scheda/saveDatiTemplateScheda";
 
 @Injectable({
   providedIn: "root",
@@ -34,6 +44,28 @@ export class WorkoutService {
       "getTemplatesSchede",
       request,
       null
+    );
+  }
+
+  editTemplateScheda(
+    request: SaveDatiTemplateSchedaRequestModel
+  ): Observable<SaveDatiTemplateSchedaResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "workout",
+      "editTemplateScheda",
+      undefined,
+      request
+    );
+  }
+
+  addTemplateScheda(
+    request: SaveDatiTemplateSchedaRequestModel
+  ): Observable<SaveDatiTemplateSchedaResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "workout",
+      "addTemplateScheda",
+      undefined,
+      request
     );
   }
 }

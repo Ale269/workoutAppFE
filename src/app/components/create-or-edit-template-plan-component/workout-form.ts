@@ -2,6 +2,7 @@ import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { EsercizioForm, EsercizioFormModel } from "./exercise-form";
 import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentodto";
 import { EsercizioDTO } from "src/app/models/view-modifica-scheda/eserciziodto";
+import { ChangeDetectorRef } from '@angular/core';
 
 export interface AllenamentoFormModel {
   identifier: FormControl<number | null>;

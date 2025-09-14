@@ -523,3 +523,41 @@ mat-tab-header {
 .mat-mdc-form-field-subscript-wrapper {
   display: none;
 }
+
+.widget-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid #212121;
+
+  .icon-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    height: 80px;
+
+    img {
+      position: relative;
+      bottom: -32px;
+      height: 120px;
+    }
+  }
+}
+
+.section-widget-title-container .text-title {
+  line-height: 24px;
+}
+
+.section-widget-title-container {
+  padding-bottom: 16px;
+}
+
+.widget-button {
+  padding-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}

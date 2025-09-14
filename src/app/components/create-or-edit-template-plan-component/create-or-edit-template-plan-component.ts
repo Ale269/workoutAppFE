@@ -7,6 +7,7 @@ import {
   ViewChild,
   OnDestroy,
   TemplateRef,
+  ChangeDetectorRef,
 } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { AccordionGroupComponent } from "../shared/accordion/accordion-group/accordion-group.component";
@@ -36,6 +37,8 @@ import {
   SpinnerResult,
 } from "src/app/core/services/spinner.service";
 import { ActivatedRoute, Router } from "@angular/router";
+import { SaveDatiTemplateSchedaRequestModel } from "src/app/models/view-modifica-scheda/saveDatiTemplateScheda";
+import { AuthService } from "src/app/core/services/auth.service";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -86,8 +89,9 @@ export class CreateOrEditTemplatePlanComponent
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
     private modalService: ModalService,
     private spinnerService: SpinnerService,
-
-    private router: Router
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private authService: AuthService
   ) {
     try {
       const navigation = this.router.getCurrentNavigation();
@@ -287,6 +291,7 @@ export class CreateOrEditTemplatePlanComponent
           }
         }
       }, 100);
+      this.cdr.detectChanges();
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
@@ -381,6 +386,7 @@ export class CreateOrEditTemplatePlanComponent
         // Nasconde lo spinner dopo l'operazione
         this.spinnerService.hide(addSpinnerId);
       }, 500);
+      this.cdr.detectChanges();
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
@@ -405,30 +411,55 @@ export class CreateOrEditTemplatePlanComponent
       let schedaDaSalvare: SchedaDTO =
         this.createOrEditTemplatePlanService.formScheda.getDatiSchedaDaSalvare();
 
-      this.createOrEditTemplatePlanService
-        .savePlan(schedaDaSalvare)
-        .then((response) => {
-          if (this.saveSpinnerId) {
-            this.spinnerService.setSuccess(this.saveSpinnerId);
-          }
-        })
-        .catch((error) => {
-          if (this.saveSpinnerId) {
-            this.spinnerService.setError(
-              this.saveSpinnerId,
-              "Errore nella fase di salvataggio"
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        const SaveDatiTemplateSchedaRequest: SaveDatiTemplateSchedaRequestModel =
+          {
+            schedaDTO: schedaDaSalvare,
+            userId: user.usedId,
+          };
+
+        this.createOrEditTemplatePlanService
+          .savePlan(SaveDatiTemplateSchedaRequest)
+          .then((response) => {
+            this.resetAll(response);
+
+            if (this.saveSpinnerId) {
+              this.spinnerService.setSuccess(this.saveSpinnerId);
+            }
+          })
+          .catch((error) => {
+            if (this.saveSpinnerId) {
+              this.spinnerService.setError(
+                this.saveSpinnerId,
+                "Errore nella fase di salvataggio"
+              );
+            }
+            this.errorHandlerService.handleError(
+              error,
+              "WorkoutComponent.SavePlan"
             );
-          }
-          this.errorHandlerService.handleError(
-            error,
-            "WorkoutComponent.SavePlan"
-          );
-        });
+          });
+      } else {
+        throw new Error("WorkoutComponent.SavePlan: " + "nessun user trovato");
+      }
     } catch (error) {
       if (this.saveSpinnerId) {
         this.spinnerService.setError(this.saveSpinnerId);
       }
       this.errorHandlerService.handleError(error, "WorkoutComponent.SavePlan");
+    }
+  }
+
+  resetAll(datiScheda: SchedaDTO) {
+    try {
+      this.selectedTabIndex = 1;
+      this.scheda = datiScheda;
+      this.createOrEditTemplatePlanService.resetAll();
+      this.createOrEditTemplatePlanService.initializeFormWithData(datiScheda);
+      this.cdr.detectChanges();
+    } catch (error) {
+      this.errorHandlerService.handleError(error, "WorkoutComponent.resetAll");
     }
   }
 

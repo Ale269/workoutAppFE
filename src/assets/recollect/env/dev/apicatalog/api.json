@@ -42,6 +42,20 @@
         "method": "get",
         "description": "Recupera tutti i template schede di un utente.",
         "isMocked": false
+      },
+      {
+        "name": "editTemplateScheda",
+        "endpoint": "/workout/edit",
+        "method": "post",
+        "description": "Salva i dati del template scheda di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "addTemplateScheda",
+        "endpoint": "/workout/add",
+        "method": "post",
+        "description": "Salva i dati del template scheda di un utente.",
+        "isMocked": false
       }
     ]
   }

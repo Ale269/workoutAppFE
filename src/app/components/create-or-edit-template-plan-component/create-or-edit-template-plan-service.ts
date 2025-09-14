@@ -4,6 +4,11 @@ import { SchedaForm } from "./template-plan-form";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
 import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentodto";
 import { WorkoutService } from "../../core/services/workout.service";
+import {
+  SaveDatiTemplateSchedaRequestModel,
+  SaveDatiTemplateSchedaResponseModel,
+} from "src/app/models/view-modifica-scheda/saveDatiTemplateScheda";
+import { P } from "@angular/cdk/platform.d-B3vREl3q";
 
 @Injectable({
   providedIn: "root",
@@ -69,24 +74,57 @@ export class CreateOrEditTemplatePlanService {
     }
   }
 
-  async savePlan(savePlanRequest: SchedaDTO): Promise<void> {
-    // Bisogna anche avere il modello della response
-    return new Promise((resolve, reject) => {
+  async savePlan(
+    request: SaveDatiTemplateSchedaRequestModel
+  ): Promise<SchedaDTO> {
+    return new Promise<SchedaDTO>((resolve, reject) => {
       try {
-        // Esegui la chiamata mandando i dati necessari
-        // Adesso come request ho messo la SchedaDTO ma potrebbe servire altro
-
-        //per prova
-        setInterval(() => {
-          resolve();
-        }, 2000);
-
-        // setInterval(() => {
-        //   reject();
-        // }, 2000);
+        if (request.schedaDTO.id) {
+          this.workoutService.editTemplateScheda(request).subscribe({
+            next: (response: SaveDatiTemplateSchedaResponseModel) => {
+              if (!response.errore?.error) {
+                if (response.datiScheda) {
+                  resolve(response.datiScheda);
+                } else {
+                  reject(response.errore.error);
+                }
+              } else {
+                reject(response.errore.error);
+              }
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+        } else {
+          this.workoutService.addTemplateScheda(request).subscribe({
+            next: (response: SaveDatiTemplateSchedaResponseModel) => {
+              if (!response.errore?.error) {
+                if (response.datiScheda) {
+                  resolve(response.datiScheda);
+                } else {
+                  reject(response.errore.error);
+                }
+              } else {
+                reject(response.errore.error);
+              }
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+        }
       } catch (error) {
-        throw new Error("CreateOrEditTemplatePlanService.savePlan: " + error);
+        reject(error);
       }
     });
+  }
+
+  resetAll() {
+    try {
+      this.formScheda.resetForm();
+    } catch (error) {
+      throw new Error("CreateOrEditTemplatePlanService.resetAll: " + error);
+    }
   }
 }

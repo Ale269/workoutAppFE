@@ -9,6 +9,7 @@ import {
   ViewChild,
   OnInit,
   OnDestroy,
+  ChangeDetectorRef,
 } from "@angular/core";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatIconButton } from "@angular/material/button";
@@ -65,7 +66,8 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -130,6 +132,8 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         // Opzionalmente, potresti ripristinare il valore precedente
         // o mostrare un messaggio di errore all'utente
       }
+      
+      this.cdr.detectChanges();
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
@@ -151,6 +155,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
   addNuovoEsercizio() {
     try {
       this.formAllenamento.addEsercizioForm(undefined);
+      this.cdr.detectChanges();
     } catch (error) {
       this.errorHandlerService.handleError(
         error,

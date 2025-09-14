@@ -1,23 +1,104 @@
-import {Component, ElementRef, HostListener, Inject, OnInit, PLATFORM_ID, Renderer2, ViewChild} from '@angular/core';
-import {CommonModule, NgIf, NgFor, DecimalPipe, SlicePipe, isPlatformBrowser} from '@angular/common'; // Aggiungi DecimalPipe e SlicePipe
-import {ActivatedRoute, Router, RouterModule} from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { CreateOrEditWorkoutExecution } from '../create-or-edit-workout-execution/create-or-edit-workout-execution';
-import { CreateOrEditTemplatePlanComponent } from '../create-or-edit-template-plan-component/create-or-edit-template-plan-component';
-import { ViewTemplatePlan } from '../view-template-plan/view-template-plan';
-import { ListTemplatePlans } from '../list-template-plans/list-template-plans';
-
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { RouterModule } from "@angular/router";
+import { FormsModule } from "@angular/forms";
+import { ProssimoAllenamento } from "../widgets/prossimo-allenamento/prossimo-allenamento";
+import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
+import { SpinnerService } from "src/app/core/services/spinner.service";
 
 @Component({
-  selector: 'app-home',
+  selector: "app-home",
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, CreateOrEditWorkoutExecution, CreateOrEditTemplatePlanComponent, ViewTemplatePlan, ListTemplatePlans], // Assicurati di includere FormsModule e i Pipes
-  templateUrl: './home-component.html',
-  styleUrls: ['./home-component.scss']
+  imports: [CommonModule, RouterModule, FormsModule, ProssimoAllenamento],
+  templateUrl: "./home-component.html",
+  styleUrls: ["./home-component.scss"],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, AfterViewInit {
+  @ViewChild(ProssimoAllenamento) prossimoAllenamento!: ProssimoAllenamento;
 
+  private currentSpinnerId: string | null = null;
 
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private errorHandlerService: ErrorHandlerService,
+    private spinnerService: SpinnerService
+  ) {}
+
+  ngOnInit() {
+    try {
+    } catch (error) {
+      this.errorHandlerService.handleError(error, "HomeComponent.ngOnInit");
+    }
+  }
+
+  async ngAfterViewInit() {
+    try {
+      await this.getWidgetsData();
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "HomeComponent.ngAfterViewInit"
+      );
+    }
+  }
+
+  async getWidgetsData() {
+    try {
+      // Mostra lo spinner di inizializzazione
+      this.currentSpinnerId = this.spinnerService.showWithResult(
+        "Caricamento dati widgets",
+        {
+          successMessage: "Caricamento completato",
+          errorMessage: "Errore nel processo di caricamento",
+          resultDuration: 500,
+          minSpinnerDuration: 500,
+        }
+      );
+
+      // Gestione errori per singolo widget
+      const results = await Promise.allSettled([
+        this.prossimoAllenamento
+          .getDatiProssimoAllenamentoWidget()
+          .catch((error) => {
+            this.errorHandlerService.handleError(
+              error,
+              "Widget ProssimoAllenamento"
+            );
+            return null;
+          }),
+
+        // Altri widget...
+        // this.altroWidget.getDatiWidget().catch(...)
+      ]);
+
+      // Controlla quali widget sono andati in errore
+      results.forEach((result, index) => {
+        if (result.status === "rejected") {
+          console.error(`Widget ${index} fallito:`, result.reason);
+        }
+      });
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "HomeComponent.getWidgetsData"
+      );
+    } finally {
+      setTimeout(() => {
+        if (this.currentSpinnerId) {
+          this.spinnerService.setSuccess(this.currentSpinnerId);
+        }
+      }, 100);
+    }
+  }
+
+  // Metodo per ricaricare i dati (utile per refresh button)
+  async refreshWidgets() {
+    await this.getWidgetsData();
+  }
 }
-
-

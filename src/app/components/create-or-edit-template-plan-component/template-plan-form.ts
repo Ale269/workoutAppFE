@@ -50,9 +50,8 @@ export class SchedaForm {
     });
 
     // Pulisce gli allenamenti esistenti
-    const listaAllenamentiArray = this.form.get(
-      "listaAllenamenti"
-    ) as FormArray;
+    this.listaAllenamentiForm = [];
+    const listaAllenamentiArray = this.form.controls["listaAllenamenti"] as FormArray<FormGroup<AllenamentoFormModel>>;
     while (listaAllenamentiArray.length !== 0) {
       listaAllenamentiArray.removeAt(0);
     }
