@@ -41,41 +41,96 @@ export const ExerciseIconLabels: Record<ExerciseIcons, string> = {
 // Questa è la mappatura che collega ogni esercizio alla sua icona
 // Più esercizi possono condividere la stessa icona
 export const ExerciseToIconMapping: Record<GymExercises, ExerciseIcons> = {
-  // Esercizi per le gambe
-  [GymExercises.SQUAT]: ExerciseIcons.GAMBE,
-  [GymExercises.DEADLIFT]: ExerciseIcons.GAMBE,
-  [GymExercises.LUNGES]: ExerciseIcons.GAMBE,
-  [GymExercises.BULGARIAN_SPLIT_SQUAT]: ExerciseIcons.GAMBE,
-
   // Esercizi per il petto
-  [GymExercises.BENCH_PRESS]: ExerciseIcons.PETTO,
-  [GymExercises.DIPS]: ExerciseIcons.PETTO,
-
-  // Esercizi per le spalle
-  [GymExercises.OVERHEAD_PRESS]: ExerciseIcons.SPALLE,
-  [GymExercises.LATERAL_RAISES]: ExerciseIcons.SPALLE,
+  [GymExercises.BENCH_PRESS_BILANCIERE]: ExerciseIcons.PETTO,
+  [GymExercises.PANCA_INCLINATA_MANUBRI]: ExerciseIcons.PETTO,
+  [GymExercises.CROCI_CAVI]: ExerciseIcons.PETTO,
+  [GymExercises.FLESSIONI]: ExerciseIcons.PETTO,
+  [GymExercises.PANCA_DECLINATA_BILANCIERE]: ExerciseIcons.PETTO,
+  [GymExercises.CROCI_PANCA_PIANA_MANUBRI]: ExerciseIcons.PETTO,
+  [GymExercises.DISTENSIONI_MANUBRI_PANCA_PIANA]: ExerciseIcons.PETTO,
+  [GymExercises.PEC_DECK]: ExerciseIcons.PETTO,
+  [GymExercises.PUSH_UP_LARGHI]: ExerciseIcons.PETTO,
+  [GymExercises.PULLOVER_MANUBRIO]: ExerciseIcons.PETTO,
+  [GymExercises.DIP_PARALLELE]: ExerciseIcons.PETTO, // Dip sono un esercizio per il petto e tricipiti. Ho mantenuto il mapping originale del tuo esempio.
 
   // Esercizi per i dorsali
-  [GymExercises.BARBELL_ROW]: ExerciseIcons.DORSALI,
-  [GymExercises.PULL_UP]: ExerciseIcons.DORSALI,
-  [GymExercises.CHIN_UP]: ExerciseIcons.DORSALI,
-  [GymExercises.FACE_PULLS]: ExerciseIcons.DORSALI,
+  [GymExercises.TRAZIONI_SBARRA]: ExerciseIcons.DORSALI,
+  [GymExercises.REMATORE_BILANCIERE]: ExerciseIcons.DORSALI,
+  [GymExercises.LAT_MACHINE]: ExerciseIcons.DORSALI,
+  [GymExercises.STACCO_DA_TERRA]: ExerciseIcons.DORSALI,
+  [GymExercises.REMATORE_MANUBRIO]: ExerciseIcons.DORSALI,
+  [GymExercises.PULLEY_BASSO]: ExerciseIcons.DORSALI,
+  [GymExercises.IPERESTENSIONI]: ExerciseIcons.DORSALI,
+  [GymExercises.GOOD_MORNING]: ExerciseIcons.DORSALI,
+  [GymExercises.FARMERS_WALK]: ExerciseIcons.DORSALI,
+
+  // Esercizi per le spalle
+  [GymExercises.LENTO_AVANTI]: ExerciseIcons.SPALLE,
+  [GymExercises.ALZATE_LATERALI_MANUBRI]: ExerciseIcons.SPALLE,
+  [GymExercises.SHOULDER_PRESS_MANUBRI]: ExerciseIcons.SPALLE,
+  [GymExercises.ALZATE_FRONTALI_MANUBRI]: ExerciseIcons.SPALLE,
+  [GymExercises.ARNOLD_PRESS]: ExerciseIcons.SPALLE,
+  [GymExercises.TIRATE_AL_MENTO]: ExerciseIcons.SPALLE,
+  [GymExercises.CROCI_INVERSE_PANCA]: ExerciseIcons.SPALLE,
 
   // Esercizi per i bicipiti
-  [GymExercises.BICEP_CURLS]: ExerciseIcons.BICIPITI,
+  [GymExercises.CURL_BILANCIERE]: ExerciseIcons.BICIPITI,
+  [GymExercises.CURL_ALTERNATO_MANUBRI]: ExerciseIcons.BICIPITI,
+  [GymExercises.HAMMER_CURL]: ExerciseIcons.BICIPITI,
+  [GymExercises.CURL_CONCENTRAZIONE]: ExerciseIcons.BICIPITI,
+  [GymExercises.CURL_PANCA_SCOTT]: ExerciseIcons.BICIPITI,
 
-  // Esercizi per i tricipiti (potresti voler creare un'icona specifica)
-  [GymExercises.TRICEP_EXTENSIONS]: ExerciseIcons.BICIPITI, // O creare ExerciseIcons.TRICIPITI
+  // Esercizi per i tricipiti
+  // Non hai un'icona specifica per i tricipiti nel tuo FE, quindi li ho mappati alla stessa icona dei bicipiti come avevi nel tuo esempio
+  [GymExercises.FRENCH_PRESS_MANUBRI]: ExerciseIcons.BICIPITI,
+  [GymExercises.PUSHDOWN_CAVI]: ExerciseIcons.BICIPITI,
+  [GymExercises.KICKBACK_MANUBRIO]: ExerciseIcons.BICIPITI,
+  [GymExercises.SKULL_CRUSHER]: ExerciseIcons.BICIPITI,
+
+  // Esercizi per avambracci
+  // Anche qui, non hai un'icona specifica, quindi li ho mappati ai bicipiti che sono un gruppo muscolare vicino.
+  [GymExercises.CURL_AVAMBRACCI]: ExerciseIcons.BICIPITI,
+  [GymExercises.REVERSE_CURL]: ExerciseIcons.BICIPITI,
+
+  // Esercizi per le gambe
+  [GymExercises.SQUAT_BILANCIERE]: ExerciseIcons.GAMBE,
+  [GymExercises.LEG_PRESS]: ExerciseIcons.GAMBE,
+  [GymExercises.LEG_EXTENSION]: ExerciseIcons.GAMBE,
+  [GymExercises.HACK_SQUAT]: ExerciseIcons.GAMBE,
+  [GymExercises.SQUAT_BULGARO]: ExerciseIcons.GAMBE,
+  [GymExercises.PISTOL_SQUAT]: ExerciseIcons.GAMBE,
+  [GymExercises.AFFONDI]: ExerciseIcons.GAMBE,
+  [GymExercises.LEG_CURL]: ExerciseIcons.GAMBE,
+  [GymExercises.HIP_THRUST]: ExerciseIcons.GAMBE,
+  [GymExercises.STACCO_RUMENO]: ExerciseIcons.GAMBE,
+  [GymExercises.GLUTE_BRIDGE]: ExerciseIcons.GAMBE,
+  [GymExercises.CABLE_PULL_THROUGH]: ExerciseIcons.GAMBE,
+  [GymExercises.CALF_RAISE_IN_PIEDI]: ExerciseIcons.GAMBE,
+  [GymExercises.CALF_RAISE_SEDUTO]: ExerciseIcons.GAMBE,
+  [GymExercises.BOX_JUMP]: ExerciseIcons.GAMBE,
 
   // Esercizi per il core
   [GymExercises.PLANK]: ExerciseIcons.CORE,
-  [GymExercises.RUSSIAN_TWISTS]: ExerciseIcons.CORE,
+  [GymExercises.CRUNCH]: ExerciseIcons.CORE,
+  [GymExercises.RUSSIAN_TWIST]: ExerciseIcons.CORE,
+  [GymExercises.LEG_RAISE]: ExerciseIcons.CORE,
+  [GymExercises.SIT_UP]: ExerciseIcons.CORE,
+  [GymExercises.CRUNCH_INVERSO]: ExerciseIcons.CORE,
+  [GymExercises.V_UP]: ExerciseIcons.CORE,
+  [GymExercises.SUPERWOMAN]: ExerciseIcons.CORE,
 
   // Esercizi cardio
+  [GymExercises.CORSA_TAPIS_ROULANT]: ExerciseIcons.CARDIO,
+  [GymExercises.CYCLETTE]: ExerciseIcons.CARDIO,
+  [GymExercises.VOGATORE]: ExerciseIcons.CARDIO,
+  [GymExercises.ELLITTICA]: ExerciseIcons.CARDIO,
+  [GymExercises.SALTO_CORDA]: ExerciseIcons.CARDIO,
+  [GymExercises.HIGH_KNEES]: ExerciseIcons.CARDIO,
+  [GymExercises.JUMPING_JACKS]: ExerciseIcons.CARDIO,
   [GymExercises.MOUNTAIN_CLIMBERS]: ExerciseIcons.CARDIO,
   [GymExercises.BURPEES]: ExerciseIcons.CARDIO,
-  [GymExercises.JUMPING_JACKS]: ExerciseIcons.CARDIO,
-  [GymExercises.HIGH_KNEES]: ExerciseIcons.CARDIO
+  [GymExercises.KETTLEBELL_SWING]: ExerciseIcons.CARDIO // Lo Kettlebell Swing è un esercizio total body ma ha una forte componente cardio
 };
 
 // Utility functions
