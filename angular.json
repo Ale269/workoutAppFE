@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "dolphyn-frontend": {
+    "gymshark-frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/dolphyn-frontend",
+            "outputPath": "dist/gymshark-frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -103,25 +103,25 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "dolphyn-frontend:build",
+            "buildTarget": "gymshark-frontend:build",
             "port": 4202
           },
           "configurations": {
 
             "production": {
-              "buildTarget": "dolphyn-frontend:build:production"
+              "buildTarget": "gymshark-frontend:build:production"
             },
 
             "development": {
-              "buildTarget": "dolphyn-frontend:build:development"
+              "buildTarget": "gymshark-frontend:build:development"
             },
 
             "svil": {
-              "buildTarget": "dolphyn-frontend:build:svil"
+              "buildTarget": "gymshark-frontend:build:svil"
             },
 
             "test": {
-              "buildTarget": "dolphyn-frontend:build:test"
+              "buildTarget": "gymshark-frontend:build:test"
             }
           },
           "defaultConfiguration": "development"
@@ -129,7 +129,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "dolphyn-frontend:build"
+            "buildTarget": "gymshark-frontend:build"
           }
         },
         "test": {
