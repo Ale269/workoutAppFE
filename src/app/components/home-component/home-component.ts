@@ -11,11 +11,12 @@ import { FormsModule } from "@angular/forms";
 import { ProssimoAllenamento } from "../widgets/prossimo-allenamento/prossimo-allenamento";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
+import {CreateOrEditWorkoutExecution} from "../create-or-edit-workout-execution/create-or-edit-workout-execution";
 
 @Component({
   selector: "app-home",
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ProssimoAllenamento],
+  imports: [CommonModule, RouterModule, FormsModule, ProssimoAllenamento, CreateOrEditWorkoutExecution],
   templateUrl: "./home-component.html",
   styleUrls: ["./home-component.scss"],
 })
