@@ -1,7 +1,7 @@
 {
   "defaults": {
     "protocol": "http",
-    "host": "localhost:8443",
+    "host": "",
     "baseUrl": "/api",
     "security": "none",
     "mocked": false
