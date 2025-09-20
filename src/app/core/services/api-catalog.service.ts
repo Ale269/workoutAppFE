@@ -125,7 +125,7 @@ export class ApiCatalogService {
           //TODO
           //da fixare - la baseUrl viene caricata piu tardi, e la url finale viene composta male
           //forzato per ora con host statico
-          let baseUrl2 = "http://localhost:8080/api" + endpointObject?.endpoint;
+          let baseUrl2 = "http://localhost:8090/api" + endpointObject?.endpoint;
 
           console.log("BASEURL ENDPOINT: ", baseUrl2);
 

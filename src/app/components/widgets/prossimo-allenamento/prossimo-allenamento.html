@@ -7,13 +7,17 @@
       <img src="assets/recollect/images/prossimo-allenamento-icon.png" />
     </div>
   </div>
+  @if(datiRecuperati){
   <div class="widget-data">
     <div class="giorni-counter-container">
-      <h3 class="text-white"><span>3</span> di <span>4</span></h3>
+      <h3 class="text-white">
+        <span>{{this.numeroGiornoAllenamentoCorrente}}</span> di
+        <span>{{this.numeroGiornoAllenamentiTotali}}</span>
+      </h3>
     </div>
     <div class="nome-graphic-visualizer-container">
       <div class="nome-allenamento-container">
-        <h3 class="text-white">Pull day</h3>
+        <h3 class="text-white">{{this.descrizioneAllenamentoCorrente}}</h3>
       </div>
       <div class="visualizer-allenamento-container">
         <div></div>
@@ -31,4 +35,9 @@
       </div>
     </button>
   </div>
+  } @else{
+  <div class="widget-data">
+    <h3 class="text-white">Nessun dato trovato</h3>
+  </div>
+  }
 </div>

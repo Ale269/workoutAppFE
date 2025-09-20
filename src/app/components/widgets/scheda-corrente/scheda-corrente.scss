@@ -1,0 +1,43 @@
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.widget-data {
+  display: flex;
+  flex-flow: column;
+  padding-top: 16px;
+  border-bottom: 1px solid #212121;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 16px;
+
+  .giorni-counter-container span {
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+  .nome-graphic-visualizer-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .visualizer-allenamento-container {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+
+    div {
+      flex: 1;
+      height: 2px;
+      background-color: #fff;
+      border-radius: 16px;
+    }
+
+    .current-day-visualizer {
+      height: 8px;
+    }
+  }
+}

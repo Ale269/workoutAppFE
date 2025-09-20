@@ -1,0 +1,12 @@
+{
+  "id": "12345678-1234-1234-1234-123456789012",
+  "errore": {
+    "error": false,
+    "errorMessage": ""
+  },
+  "titoloScheda": "Programma Forza e Massa - Principianti",
+  "descrizioneAllenamentoPrecedente": "Allenamento upper body completato - Panca piana, trazioni e spalle",
+  "descrizioneProssimoAllenamento": "Allenamento lower body - Squat, stacchi e polpacci",
+  "dataInizio": "2024-09-01T00:00:00.000Z",
+  "numeroAllenamentiEffettuati": 8
+}

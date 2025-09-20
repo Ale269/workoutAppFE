@@ -11,24 +11,38 @@ import { FormsModule } from "@angular/forms";
 import { ProssimoAllenamento } from "../widgets/prossimo-allenamento/prossimo-allenamento";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
-import {CreateOrEditWorkoutExecution} from "../create-or-edit-workout-execution/create-or-edit-workout-execution";
+import { CreateOrEditWorkoutExecution } from "../create-or-edit-workout-execution/create-or-edit-workout-execution";
+import { AuthService } from "src/app/core/services/auth.service";
+import { SchedaCorrente } from "../widgets/scheda-corrente/scheda-corrente";
+import { UltimiAllenamentiSvolti } from "../widgets/ultimi-allenamenti-svolti/ultimi-allenamenti-svolti";
 
 @Component({
   selector: "app-home",
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ProssimoAllenamento, CreateOrEditWorkoutExecution],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ProssimoAllenamento,
+    SchedaCorrente,
+    UltimiAllenamentiSvolti,
+  ],
   templateUrl: "./home-component.html",
   styleUrls: ["./home-component.scss"],
 })
 export class HomeComponent implements OnInit, AfterViewInit {
   @ViewChild(ProssimoAllenamento) prossimoAllenamento!: ProssimoAllenamento;
+  @ViewChild(SchedaCorrente) SchedaCorrente!: SchedaCorrente;
+  @ViewChild(UltimiAllenamentiSvolti)
+  UltimiAllenamentiSvolti!: UltimiAllenamentiSvolti;
 
   private currentSpinnerId: string | null = null;
 
   constructor(
     private cdr: ChangeDetectorRef,
     private errorHandlerService: ErrorHandlerService,
-    private spinnerService: SpinnerService
+    private spinnerService: SpinnerService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -40,7 +54,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   async ngAfterViewInit() {
     try {
-      await this.getWidgetsData();
+      this.initializeWidgets();
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
@@ -49,7 +63,26 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
   }
 
-  async getWidgetsData() {
+  async initializeWidgets() {
+    try {
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        await this.getWidgetsData(user.usedId);
+      } else {
+        this.errorHandlerService.handleError(
+          "nessun user trovato",
+          "HomeComponent.initializeWidgets"
+        );
+      }
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "HomeComponent.initializeWidgets"
+      );
+    }
+  }
+
+  async getWidgetsData(idUser: number) {
     try {
       // Mostra lo spinner di inizializzazione
       this.currentSpinnerId = this.spinnerService.showWithResult(
@@ -65,7 +98,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       // Gestione errori per singolo widget
       const results = await Promise.allSettled([
         this.prossimoAllenamento
-          .getDatiProssimoAllenamentoWidget()
+          .getDatiProssimoAllenamentoWidget(idUser)
           .catch((error) => {
             this.errorHandlerService.handleError(
               error,
@@ -73,6 +106,21 @@ export class HomeComponent implements OnInit, AfterViewInit {
             );
             return null;
           }),
+        this.SchedaCorrente.getDatiSchedaCorrenteWidget(idUser).catch(
+          (error) => {
+            this.errorHandlerService.handleError(
+              error,
+              "Widget SchedaCorrente"
+            );
+            return null;
+          }
+        ),
+        this.UltimiAllenamentiSvolti.getDatiUltimiAllenamentiSvoltiWidget(
+          idUser
+        ).catch((error) => {
+          this.errorHandlerService.handleError(error, "Widget SchedaCorrente");
+          return null;
+        }),
 
         // Altri widget...
         // this.altroWidget.getDatiWidget().catch(...)
@@ -100,6 +148,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   // Metodo per ricaricare i dati (utile per refresh button)
   async refreshWidgets() {
-    await this.getWidgetsData();
+    this.initializeWidgets();
   }
 }
