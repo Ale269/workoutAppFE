@@ -165,6 +165,9 @@ export class ApiCatalogService {
                 if (pathParams.hasOwnProperty(key)) {
                   //prende l oggetto tipo api/workout/:{workoutId} nel file api.json e lo sostituisce
                   // con pathprams vero -> api/workout/1
+                  console.log("PATH PARAm KEY: ", key);
+                  console.log("PATH PARAMS value: ", pathParams[key]);
+                  console.log("PATH PARAMS: ", pathParams);
                   baseUrl2 = baseUrl2.replace(`:${key}`, pathParams[key]);
                 }
               }
