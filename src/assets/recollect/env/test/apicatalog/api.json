@@ -1,0 +1,85 @@
+{
+  "defaults": {
+    "protocol": "http",
+    "host": "gmarra.it:3333",
+    "baseUrl": "/api",
+    "security": "none",
+    "mocked": false
+  },
+  "apis": {
+    "auth": [
+      {
+        "name": "login",
+        "endpoint": "/auth/login",
+        "method": "post",
+        "isMocked": false
+      },
+      {
+        "name": "register",
+        "endpoint": "/auth/register",
+        "method": "post",
+        "isMocked": false
+      }
+    ],
+    "workout": [
+      {
+        "name": "singleUserWorkout",
+        "endpoint": "/workout/:workoutId",
+        "method": "get",
+        "description": "Recupera la singola scheda di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "allUserWorkout",
+        "endpoint": "/workout/user/:userId",
+        "method": "get",
+        "description": "Recupera tutte le schede di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "getTemplatesSchede",
+        "endpoint": "/preview/templateScheda/:userId",
+        "method": "get",
+        "description": "Recupera tutti i template schede di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "editTemplateScheda",
+        "endpoint": "/workout/edit",
+        "method": "post",
+        "description": "Salva i dati del template scheda di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "addTemplateScheda",
+        "endpoint": "/workout/add",
+        "method": "post",
+        "description": "Salva i dati del template scheda di un utente.",
+        "isMocked": false
+      }
+    ],
+    "widgets": [
+      {
+        "name": "prossimoAllenamento",
+        "endpoint": "/widgets/nextTraining/:userId",
+        "method": "get",
+        "description": "Recupera i dati del prossimo allenamento dell'utente.",
+        "isMocked": false
+      },
+      {
+        "name": "schedaCorrente",
+        "endpoint": "/widgets/currentWorkout/:userId",
+        "method": "get",
+        "description": "Recupera i dati della scheda corrente dell'utente.",
+        "isMocked": false
+      },
+      {
+        "name": "ultimiAllenamentiSvolti",
+        "endpoint": "/widgets/lastTrainingsDone/:userId",
+        "method": "get",
+        "description": "Recupera i dati degli ultimi allenamenti svolti dell'utente.",
+        "isMocked": false
+      }
+    ]
+  }
+}

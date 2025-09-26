@@ -61,26 +61,25 @@
     "widgets": [
       {
         "name": "prossimoAllenamento",
-        "endpoint": "/widgets/prossimoAllenamento/:userId",
+        "endpoint": "/widgets/nextTraining/:userId",
         "method": "get",
         "description": "Recupera i dati del prossimo allenamento dell'utente.",
-        "isMocked": true
+        "isMocked": false
       },
       {
         "name": "schedaCorrente",
-        "endpoint": "/widgets/schedaCorrente/:userId",
+        "endpoint": "/widgets/currentWorkout/:userId",
         "method": "get",
         "description": "Recupera i dati della scheda corrente dell'utente.",
-        "isMocked": true
+        "isMocked": false
       },
       {
         "name": "ultimiAllenamentiSvolti",
-        "endpoint": "/widgets/ultimiAllenamentiSvolti/:userId",
+        "endpoint": "/widgets/lastTrainingsDone/:userId",
         "method": "get",
         "description": "Recupera i dati degli ultimi allenamenti svolti dell'utente.",
-        "isMocked": true
+        "isMocked": false
       }
     ]
   }
-
 }

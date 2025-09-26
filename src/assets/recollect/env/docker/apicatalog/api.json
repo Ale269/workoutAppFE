@@ -57,6 +57,29 @@
         "description": "Salva i dati del template scheda di un utente.",
         "isMocked": false
       }
+    ],
+    "widgets": [
+      {
+        "name": "prossimoAllenamento",
+        "endpoint": "/widgets/nextTraining/:userId",
+        "method": "get",
+        "description": "Recupera i dati del prossimo allenamento dell'utente.",
+        "isMocked": false
+      },
+      {
+        "name": "schedaCorrente",
+        "endpoint": "/widgets/currentWorkout/:userId",
+        "method": "get",
+        "description": "Recupera i dati della scheda corrente dell'utente.",
+        "isMocked": false
+      },
+      {
+        "name": "ultimiAllenamentiSvolti",
+        "endpoint": "/widgets/lastTrainingsDone/:userId",
+        "method": "get",
+        "description": "Recupera i dati degli ultimi allenamenti svolti dell'utente.",
+        "isMocked": false
+      }
     ]
   }
 
