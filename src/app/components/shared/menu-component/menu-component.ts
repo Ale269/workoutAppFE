@@ -2,6 +2,7 @@
 import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Router } from "@angular/router";
+import {AuthService} from "../../../core/services/auth.service";
 
 @Component({
   selector: "app-menu-component",
@@ -12,7 +13,9 @@ import { Router } from "@angular/router";
 export class MenuComponent {
   isMenuOpen = false;
 
-  constructor(private router: Router) {}
+  constructor(
+      private router: Router,
+      private authService: AuthService) {}
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -60,5 +63,9 @@ export class MenuComponent {
       // Aggiungi qui la navigazione per Allenamenti svolti se necessario
       // this.router.navigate(['/allenamenti-svolti']);
     }, 100);
+  }
+
+  callLogout(): void {
+    this.authService.logout();
   }
 }
