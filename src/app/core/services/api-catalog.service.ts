@@ -126,6 +126,7 @@ export class ApiCatalogService {
           //da fixare - la baseUrl viene caricata piu tardi, e la url finale viene composta male
           //forzato per ora con host statico
           let baseUrl2 = "http://localhost:8090/api" + endpointObject?.endpoint;
+          // let baseUrl2 = "http://gmarra.it:3333/api" + endpointObject?.endpoint;
 
           console.log("BASEURL ENDPOINT: ", baseUrl2);
 
