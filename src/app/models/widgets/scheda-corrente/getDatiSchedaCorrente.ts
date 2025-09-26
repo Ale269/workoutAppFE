@@ -1,11 +1,12 @@
 import { BaseResponseModel } from "../../base-response/base-response";
 
 export interface GetDatiSchedaCorrenteRequestModel {
-  idUser: number;
+  userId: number;
 }
 
 export interface GetDatiSchedaCorrenteResponseModel
   extends BaseResponseModel {
+  idScheda: number;
   titoloScheda: string;
   descrizioneAllenamentoPrecedente: string;
   descrizioneProssimoAllenamento: string;

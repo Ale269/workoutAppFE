@@ -25,7 +25,7 @@ export class ProssimoAllenamento implements OnInit {
     return new Promise((resolve, reject) => {
       try {
         const request: GetDatiProssimoAllenamentoRequestModel = {
-          idUser: idUtente,
+          userId: idUtente,
         };
 
         this.widgetsService.getDatiProssimoAllenamento(request).subscribe({

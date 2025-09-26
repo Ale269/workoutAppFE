@@ -25,7 +25,7 @@ export class UltimiAllenamentiSvolti {
     return new Promise((resolve, reject) => {
       try {
         const request: GetDatiUltimiAllenamentiSvoltiRequestModel = {
-          idUser: idUtente,
+          userId: idUtente,
         };
 
         this.widgetsService.getDatiUltimiAllenamentiSvolti(request).subscribe({

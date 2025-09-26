@@ -28,7 +28,7 @@ export class SchedaCorrente {
     return new Promise((resolve, reject) => {
       try {
         const request: GetDatiSchedaCorrenteRequestModel = {
-          idUser: idUtente,
+          userId: idUtente,
         };
 
         this.widgetsService.getDatiSchedaCorrente(request).subscribe({
