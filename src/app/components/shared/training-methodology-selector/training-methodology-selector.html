@@ -13,8 +13,8 @@
   @if(hint){
   <mat-hint>{{ hint }}</mat-hint>
   } @if(control.invalid && control.touched){
-  <mat-error *ngIf="control.invalid && control.touched">
-    {{ getErrorMessage() }}
-  </mat-error>
+    <mat-error>
+      {{ getErrorMessage() }}
+    </mat-error>
   }
 </mat-form-field>

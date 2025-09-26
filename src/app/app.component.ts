@@ -12,9 +12,6 @@ import { ThemeService } from "./core/services/theme.service";
 import { environment } from "../environments/environment";
 import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
 import { AuthService } from "./core/services/auth.service";
-// import { User } from "./core/models/user.model";
-
-import { LoginComponent } from "./components/login/login.component";
 import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { ApiCatalogService } from "./core/services/api-catalog.service";
 import { filter, Subject, take, takeUntil } from "rxjs";
@@ -32,7 +29,6 @@ import { SpinnerComponent } from "./components/shared/spinner/spinner";
   imports: [
     RouterOutlet, 
     MenuComponent, 
-    LoginComponent, 
     GenericModal, 
     SpinnerComponent,
     CommonModule

@@ -4,11 +4,11 @@
       <div class="back-icon-trigger" (click)="goBack()"></div>
       <img src="assets/recollect/svg/google-arrow.svg" />
     </div>
-    <h1 class="text-title">{{scheda?.nomeScheda}}</h1>
+    <h1 class="text-title">{{scheda.nomeScheda}}</h1>
   </div>
 
   <div class="lista-template-schede-container">
-    @for (allenamento of scheda?.listaAllenamenti; track allenamento.id; let i =
+    @for (allenamento of scheda.listaAllenamenti; track allenamento.id; let i =
     $index) {
     <div class="section-title-container template-scheda">
       <div class="nome-allenamento">
