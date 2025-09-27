@@ -15,6 +15,7 @@ import { CreateOrEditWorkoutExecution } from "../create-or-edit-workout-executio
 import { AuthService } from "src/app/core/services/auth.service";
 import { SchedaCorrente } from "../widgets/scheda-corrente/scheda-corrente";
 import { UltimiAllenamentiSvolti } from "../widgets/ultimi-allenamenti-svolti/ultimi-allenamenti-svolti";
+import { UltimeSchedeSvolte } from "../widgets/ultime-schede-svolte/ultime-schede-svolte";
 
 @Component({
   selector: "app-home",
@@ -26,6 +27,7 @@ import { UltimiAllenamentiSvolti } from "../widgets/ultimi-allenamenti-svolti/ul
     ProssimoAllenamento,
     SchedaCorrente,
     UltimiAllenamentiSvolti,
+    UltimeSchedeSvolte
   ],
   templateUrl: "./home-component.html",
   styleUrls: ["./home-component.scss"],
@@ -35,6 +37,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
   @ViewChild(SchedaCorrente) SchedaCorrente!: SchedaCorrente;
   @ViewChild(UltimiAllenamentiSvolti)
   UltimiAllenamentiSvolti!: UltimiAllenamentiSvolti;
+  @ViewChild(UltimeSchedeSvolte)
+  UltimeSchedeSvolte!: UltimeSchedeSvolte;
 
   private currentSpinnerId: string | null = null;
 
@@ -90,8 +94,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
         {
           successMessage: "Caricamento completato",
           errorMessage: "Errore nel processo di caricamento",
-          resultDuration: 500,
-          minSpinnerDuration: 500,
+          resultDuration: 250,
+          minSpinnerDuration: 250,
         }
       );
 
@@ -118,13 +122,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.UltimiAllenamentiSvolti.getDatiUltimiAllenamentiSvoltiWidget(
           idUser
         ).catch((error) => {
-          this.errorHandlerService.handleError(error, "Widget SchedaCorrente");
+          this.errorHandlerService.handleError(error, "Widget UltimiAllenamentiSvolti");
+          return null;
+        }),
+        this.UltimeSchedeSvolte.getDatiUltimeSchedeSvolteWidget(
+          idUser
+        ).catch((error) => {
+          this.errorHandlerService.handleError(error, "Widget UltimeSchedeSvolte");
           return null;
         }),
 
         // Altri widget...
         // this.altroWidget.getDatiWidget().catch(...)
-      ]);
+      ])
 
       // Controlla quali widget sono andati in errore
       results.forEach((result, index) => {

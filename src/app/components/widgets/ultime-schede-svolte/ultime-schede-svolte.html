@@ -1,0 +1,48 @@
+<div class="content">
+  <div class="widget-title">
+    <div class="section-widget-title-container">
+      <h1 class="text-title">Ultime <br />schede svolte</h1>
+    </div>
+    <div class="icon-container">
+      <img src="assets/recollect/images/storico-schede-icon.png" />
+    </div>
+  </div>
+  @if(datiRecuperati){ @for (ultimoShcede of
+  this.ultimeSchedeSvolteDTO; track ultimoShcede.id; let i =
+  $index) {
+  <div class="widget-data">
+    <div class="descrizione-scheda-container">
+      <h3 class="text-white">
+        {{ultimoShcede.descrizioneScheda}}
+      </h3>
+    </div>
+    <div class="giorno-data-scheda-container">
+      <h3 class="text-grey">
+        Periodo attività di {{ultimoShcede.giorniDurataPeriodoAttivita}} giorni
+      </h3>
+      <h3 class="text-grey">
+       Attivata il {{ ultimoShcede.dataUltimaAttivazione| date: "dd/MM/yyyy" }}
+      </h3>
+    </div>
+  </div>
+  } @empty {
+  <div class="widget-data">
+    <h3 class="text-white">Nessun dato trovato</h3>
+  </div>
+  }
+  @if(this.ultimeSchedeSvolteDTO.length > 0){
+    <div class="widget-button">
+      <button class="text-shape-button">
+        <span>Apri schede</span>
+        <div class="text-shape-button-icon-container">
+          <img src="assets/recollect/svg/google-arrow.svg" />
+        </div>
+      </button>
+    </div>
+  }
+  } @else{
+  <div class="widget-data">
+    <h3 class="text-white">Nessun dato trovato</h3>
+  </div>
+  }
+</div>

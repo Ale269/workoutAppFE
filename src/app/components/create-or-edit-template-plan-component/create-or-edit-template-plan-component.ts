@@ -116,8 +116,8 @@ export class CreateOrEditTemplatePlanComponent
         {
           successMessage: "Inizializzazione completata",
           errorMessage: "Errore nel processo di inizializzazione",
-          resultDuration: 500,
-          minSpinnerDuration: 500,
+          resultDuration: 250,
+          minSpinnerDuration: 250,
         }
       );
 

@@ -7,9 +7,11 @@ import {
   filter,
   take,
   switchMap,
+  of,
+  EMPTY
 } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
-import { environment } from "../../../environments/environment"; // Importa l'oggetto environment
+import { catchError, tap, shareReplay } from "rxjs/operators";
+import { environment } from "../../../environments/environment";
 import { ApiCatalog } from "src/app/models/api-catalog/api-catalog.model";
 
 @Injectable({
@@ -17,65 +19,74 @@ import { ApiCatalog } from "src/app/models/api-catalog/api-catalog.model";
 })
 export class ApiCatalogService {
   private apiCatalogSubject = new BehaviorSubject<ApiCatalog | null>(null);
-  public apiCatalog$ = this.apiCatalogSubject.asObservable(); // Observable pubblico per accedere al catalogo
+  public apiCatalog$ = this.apiCatalogSubject.asObservable();
   public baseUrl: string = "";
   private isInitialized: boolean = false;
+  
+  // Observable che rappresenta lo stato di inizializzazione
+  private initializationPromise: Observable<ApiCatalog> | null = null;
 
   constructor(private http: HttpClient) {
-    this.loadApiCatalog(); // Carica il catalogo all'inizializzazione del servizio
+    //loadApiCatalog sarà chiamato on-demand
   }
 
-  private loadApiCatalog(): void {
-    const catalogPath = environment.apiCatalogPath; // Ottieni il percorso dall'ambiente corrente
+  
+  private ensureInitialized(): Observable<ApiCatalog> {
+    // Se già inizializzato, restituisci il catalog corrente
+    if (this.isInitialized && this.apiCatalogSubject.value) {
+      return of(this.apiCatalogSubject.value);
+    }
+
+    // Se l'inizializzazione è già in corso, restituisci la stessa Promise
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+    // Avvia l'inizializzazione
+    console.log(`🚀 Avvio inizializzazione ApiCatalogService...`);
+    
+    const catalogPath = environment.apiCatalogPath;
     console.log(`LOADAPI - Caricamento API Catalog da: ${catalogPath}`);
 
-    this.http
-      .get<ApiCatalog>(catalogPath)
-      .pipe(
-        tap((catalog) => {
-          this.apiCatalogSubject.next(catalog);
-          console.log("LOADAPICATALOG - Catalog caricato con successo:", catalog);
-          this.initializeBaseUrl(catalog);
-          this.isInitialized = true;
-          console.log("LOADAPICATALOG - Inizializzato BaseUrl:", this.baseUrl);
-        }),
-        catchError((error) => {
-          console.error(
-            `Errore durante il caricamento dell'API Catalog da ${catalogPath}:`,
-            error
-          );
-          this.apiCatalogSubject.next(null); // Imposta a null in caso di errore
-          return throwError(
-            () => new Error("Impossibile caricare il catalogo API.")
-          );
-        })
-      )
-      .subscribe();
+    this.initializationPromise = this.http.get<ApiCatalog>(catalogPath).pipe(
+      tap((catalog) => {
+        console.log("✅ LOADAPICATALOG - Catalog caricato con successo:", catalog);
+        this.apiCatalogSubject.next(catalog);
+        this.initializeBaseUrl(catalog);
+        this.isInitialized = true;
+        console.log("✅ LOADAPICATALOG - Inizializzato BaseUrl:", this.baseUrl);
+      }),
+      catchError((error) => {
+        console.error(`❌ Errore durante il caricamento dell'API Catalog da ${catalogPath}:`, error);
+        this.apiCatalogSubject.next(null);
+        this.initializationPromise = null; // Reset per permettere retry
+        this.isInitialized = false;
+        return throwError(() => new Error("Impossibile caricare il catalogo API."));
+      }),
+      shareReplay(1) // Cache il risultato per chiamate multiple simultanee
+    );
+
+    return this.initializationPromise;
   }
 
-  // Metodo per ottenere un endpoint specifico (opzionale, ma utile)
+  /**
+   * Metodo pubblico per forzare l'inizializzazione
+   * Utile per pre-caricare il servizio
+   */
+  public initialize(): Observable<ApiCatalog> {
+    return this.ensureInitialized();
+  }
+
   getEndpoint(catalog: any, apiName: string, nameKey: string): any {
     const apiCall = catalog.apis[apiName];
     if (!apiCall) {
       return undefined;
     }
-
-    return apiCall.find((x : { name: string; }) => x.name === nameKey);
-
-    // for (const apiObject of apiCall) {
-    //   if (apiObject.name === nameKey) {
-    //     return apiObject;
-    //   }
-    // }
-    // return undefined;
+    return apiCall.find((x: { name: string }) => x.name === nameKey);
   }
 
-  initializeBaseUrl(catalog: ApiCatalog) {
-    let url =
-      catalog.defaults.protocol +
-      "://" +
-      catalog.defaults.host +
-      catalog.defaults.baseUrl;
+  private initializeBaseUrl(catalog: ApiCatalog) {
+    let url = catalog.defaults.protocol + "://" + catalog.defaults.host + catalog.defaults.baseUrl;
     this.baseUrl = url;
     console.log("BASEURL: ", url);
   }
@@ -91,11 +102,7 @@ export class ApiCatalogService {
   }
 
   /**
-   * Esegue una chiamata API, gestendo automaticamente i mock se configurati.
-   * @param endpointKey La chiave dell'endpoint nel catalogo (es. 'products.allUserWorkout').
-   * @param pathParams Parametri dinamici per l'URL (es. { id: 123 } per products.getById).
-   * @param body Il corpo della richiesta per POST/PUT.
-   * @returns Un Observable con la risposta dell'API o del mock.
+   * Esegue una chiamata API, garantendo che il servizio sia inizializzato
    */
   executeWhenReady(
     apiName: string,
@@ -104,82 +111,70 @@ export class ApiCatalogService {
     body?: any
   ): Observable<any> {
 
-    return this.apiCatalog$.pipe(
-        filter(catalog => !!catalog && this.isInitialized), // Attendi init
-        take(1),
-        switchMap(catalog => {
+    // Prima assicurati che il servizio sia inizializzato
+    return this.ensureInitialized().pipe(
+      tap((catalog) => {
+      }),
+      switchMap((catalog) => {
+        const endpointObject = this.getEndpoint(catalog, apiName, nameKey);
 
-          //const endpointObject = this.getEndpointFromCatalog(catalog, apiName, nameKey);
-          const endpointObject = this.getEndpoint(catalog, apiName, nameKey);
+        if (!endpointObject) {
+          return throwError(() => new Error(`Endpoint non trovato per '${nameKey}'`));
+        }
 
-          //console.log("PARAMS: ", apiName,nameKey,pathParams,body)
-          //console.log("ENDPOINT ", endpointObject);
+        if (this.baseUrl === "") {
+          return throwError(() => new Error(`executeWhenReady -> Base Url non valorizzato. Impossibile procedere.`));
+        }
 
-          if (!endpointObject) {
-            return throwError(() => new Error(`Endpoint non trovato per '${nameKey}'`));
-          }
+        let fullUrl = this.baseUrl + endpointObject?.endpoint;
+        console.log("BASEURL ENDPOINT: ", fullUrl);
 
-          if (this.baseUrl === ""){
-            return throwError(() => new Error(`executeWhenReady -> Base Url non valorizzato. Impossibile procedere.`));
-          }
+        // Se l'endpoint è mockato e siamo in un ambiente di sviluppo/test
+        if (endpointObject.isMocked && !environment.production) {
+          var fullMockPath = `/assets/recollect/mock/${apiName}/`;
 
-          let fullUrl = this.baseUrl + endpointObject?.endpoint;
-         
-
-          console.log("BASEURL ENDPOINT: ", fullUrl);
-
-          // Se l'endpoint è mockato e siamo in un ambiente di sviluppo/test
-          if (endpointObject.isMocked && !environment.production) {
-            // Assicurati di mockare solo fuori dalla produzione
-
-            // Ricorda che 'assets' è la radice quando Angular serve i file
-            var fullMockPath = `/assets/recollect/mock/${apiName}/`; // '/assets/recollect' + '/api-mock/products/get-all.json'
-
-            // Gestione dei parametri dinamici per URL mockati (es. products/get-by-id/:id)
-            if (pathParams && Object.keys(pathParams).length > 0) {
-              for (const key in pathParams) {
-                if (pathParams.hasOwnProperty(key)) {
-                  // Esempio semplice: aggiungi l'ID alla fine del percorso base
-                  fullMockPath = `${fullMockPath}${nameKey}/${pathParams[key]}/${endpointObject.method}.json`;
-                }
+          // Gestione dei parametri dinamici per URL mockati
+          if (pathParams && Object.keys(pathParams).length > 0) {
+            for (const key in pathParams) {
+              if (pathParams.hasOwnProperty(key)) {
+                fullMockPath = `${fullMockPath}${nameKey}/${pathParams[key]}/${endpointObject.method}.json`;
               }
-            } else if (!pathParams) {
-              //non contengo parametri opzionali, vado di url diretta
-              fullMockPath = `${fullMockPath}${nameKey}/${endpointObject.method}.json`;
-            } else if (nameKey.includes("/id") && !pathParams) {
-              // Fallback per getById se non viene fornito un ID, potremmo usare un mock di default
-              //mockUrl = `${mockUrl}default.json`;
-              console.warn("NON HAI PASSATO I PARAMETRI");
-            } else {
-              console.warn("ERRORE SCONOSCIUTO");
             }
-            console.log(`MOCKED URL FINAL: ${fullMockPath}`);
-            return this.http.get(fullMockPath);
+          } else if (!pathParams) {
+            fullMockPath = `${fullMockPath}${nameKey}/${endpointObject.method}.json`;
+          } else if (nameKey.includes("/id") && !pathParams) {
+            console.warn("NON HAI PASSATO I PARAMETRI");
           } else {
-            // Altrimenti, esegui la vera chiamata API
-
-            // Sostituzione dei parametri nell'URL reale (es. /products/:id)
-            if (pathParams) {
-              for (const key in pathParams) {
-                if (pathParams.hasOwnProperty(key)) {
-                  //prende l oggetto tipo api/workout/:{workoutId} nel file api.json e lo sostituisce
-                  // con pathprams vero -> api/workout/1
-                  console.log("PATH PARAm KEY: ", key);
-                  console.log("PATH PARAMS value: ", pathParams[key]);
-                  console.log("PATH PARAMS: ", pathParams);
-                  fullUrl = fullUrl.replace(`:${key}`, pathParams[key]);
-                }
+            console.warn("ERRORE SCONOSCIUTO");
+          }
+          
+          console.log(`MOCKED URL FINAL: ${fullMockPath}`);
+          return this.http.get(fullMockPath);
+        } else {
+          // Chiamata API reale
+          if (pathParams) {
+            for (const key in pathParams) {
+              if (pathParams.hasOwnProperty(key)) {
+                console.log("PATH PARAM KEY: ", key);
+                console.log("PATH PARAMS value: ", pathParams[key]);
+                fullUrl = fullUrl.replace(`:${key}`, pathParams[key]);
               }
             }
-            console.log("ENDPOINT FINALE: ",endpointObject)
-            console.log("BODY FINALE: ",body)
-            console.log(`FACCIO CHIAMATA VERA per ${fullUrl}`);
-            var request = this.http.request(endpointObject.method, fullUrl, {body: body});
-            
-            console.log("REQUEST: ", request);
-            return request;
           }
-        })
+          
+          console.log("ENDPOINT FINALE: ", endpointObject);
+          console.log("BODY FINALE: ", body);
+          console.log(`FACCIO CHIAMATA VERA per ${fullUrl}`);
+          
+          const request = this.http.request(endpointObject.method, fullUrl, { body: body });
+          console.log("REQUEST: ", request);
+          return request;
+        }
+      }),
+      catchError((error) => {
+        console.error("❌ Errore in executeWhenReady:", error);
+        return throwError(() => error);
+      })
     );
   }
 }

@@ -1,4 +1,4 @@
-// spinner.component.ts
+// spinner.component.ts - Versione con timing configurabili
 import {
   Component,
   Input,
@@ -50,11 +50,18 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (!this.isInitialized) return;
+    // Se c'è un risultato ma non siamo ancora inizializzati, salvalo per dopo
+    if (!this.isInitialized && changes['config'] && this.config.result != null && this.config.showFinalResult) {
+      this.pendingResult = this.config.result;
+      return;
+    }
+
+    if (!this.isInitialized) {
+      return;
+    }
 
     if (changes['config'] && this.config.result != null && this.config.showFinalResult) {
       if (!this.isSpinnerVisible) {
-        // Se lo spinner non è ancora visibile, salva il risultato per dopo
         this.pendingResult = this.config.result;
       } else {
         this.handleResultChange();
@@ -65,27 +72,50 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
   private resetAndShow() {
     this.showResult = false;
     this.finalResult = null;
-    this.pendingResult = null;
+    // NON resettare pendingResult - potrebbe essere già stato impostato
     this.spinnerStartTime = Date.now();
-    this.isSpinnerVisible = false;
+    
+    // Calcola il delay di visibilità basato sulla configurazione
+    // Usa il 10% del minSpinnerDuration, con un minimo di 50ms e massimo di 200ms
+    const minDuration = this.config.minSpinnerDuration || 800;
+    const visibilityDelay = Math.max(50, Math.min(200, minDuration * 0.1));
 
-    // Assicurati che lo spinner sia visibile per un tempo minimo
-    setTimeout(() => {
+    // Imposta subito lo spinner come visibile se il delay è molto piccolo
+    if (visibilityDelay <= 100) {
       this.isSpinnerVisible = true;
       
-      // Se c'è un risultato in attesa, gestiscilo ora
+      // Se c'è un risultato in attesa, gestiscilo subito
       if (this.pendingResult != null) {
         this.handlePendingResult();
       }
 
-      if (this.messageElement && this.config.message) {
-        gsap.fromTo(
-          this.messageElement.nativeElement,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.3 }
-        );
-      }
-    }, 100);
+      this.animateMessageEntry();
+    } else {
+      // Per delay più lunghi, usa il timeout
+      this.isSpinnerVisible = false;
+      setTimeout(() => {
+        this.isSpinnerVisible = true;
+        
+        if (this.pendingResult != null) {
+          this.handlePendingResult();
+        }
+
+        this.animateMessageEntry();
+      }, visibilityDelay);
+    }
+  }
+
+  private animateMessageEntry() {
+    if (this.messageElement && this.config.message) {
+      // Durata animazione proporzionale alla configurazione
+      const animationDuration = Math.max(0.2, Math.min(0.5, (this.config.minSpinnerDuration || 800) / 1600));
+      
+      gsap.fromTo(
+        this.messageElement.nativeElement,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: animationDuration }
+      );
+    }
   }
 
   private handlePendingResult() {
@@ -101,12 +131,10 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
     const remainingTime = Math.max(0, minDuration - elapsedTime);
 
     if (remainingTime > 0) {
-      // Lo spinner non è stato visibile abbastanza a lungo, aspetta
       setTimeout(() => {
         this.showFinalResultAnimation();
       }, remainingTime);
     } else {
-      // È passato abbastanza tempo, mostra subito il risultato
       this.showFinalResultAnimation();
     }
   }
@@ -116,6 +144,10 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
       return;
     }
 
+    // Durate delle animazioni proporzionali alla configurazione
+    const minDuration = this.config.minSpinnerDuration || 800;
+    const baseAnimationSpeed = Math.max(0.2, Math.min(0.4, minDuration / 2000)); // Più veloce per spinner brevi
+    
     const tl = gsap.timeline({
       onComplete: () => {
         const duration = this.config.resultDuration || 2000;
@@ -125,59 +157,63 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
       },
     });
 
-    // Fase 1: Anima l'uscita dello spinner e del messaggio corrente
+    // Fase 1: Anima l'uscita dello spinner (più veloce per timing brevi)
     tl.to(this.spinnerElement.nativeElement, {
       scale: 0,
       opacity: 0,
-      duration: 0.3,
+      duration: baseAnimationSpeed,
       ease: "power2.in",
     }).to(
       this.messageElement.nativeElement,
       {
         opacity: 0,
         y: -10,
-        duration: 0.2,
+        duration: baseAnimationSpeed * 0.7,
       },
       "<"
     );
 
-    // Fase 2: Cambia lo stato dopo l'uscita
+    // Fase 2: Cambia lo stato
     tl.call(() => {
       this.showResult = true;
       this.finalResult = this.config.result;
     });
 
-    // Fase 3: Anima l'entrata dell'icona del risultato
+    // Fase 3: Anima l'entrata del risultato (più veloce per timing brevi)
     tl.fromTo(
       this.resultElement.nativeElement,
       { opacity: 0, scale: 0.5 },
       {
         opacity: 1,
         scale: 1,
-        duration: 0.5,
+        duration: baseAnimationSpeed * 1.5,
         ease: "back.out(1.7)",
       }
     );
 
-    // Fase 4: Anima l'entrata del nuovo messaggio
+    // Fase 4: Anima l'entrata del messaggio
     tl.fromTo(
       this.messageElement.nativeElement,
       { opacity: 0, y: 10 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.3,
+        duration: baseAnimationSpeed,
       },
-      "-=0.4"
+      "-=0.3"
     );
   }
 
   private hideSpinner() {
     if (!this.spinnerOverlay) return;
 
+    // Animazione di uscita più veloce per timing brevi
+    const minDuration = this.config.minSpinnerDuration || 800;
+    const exitDuration = Math.max(0.2, Math.min(0.4, minDuration / 2000));
+
     gsap.to(this.spinnerOverlay.nativeElement, {
       opacity: 0,
-      duration: 0.3,
+      duration: exitDuration,
       onComplete: () => {
         this.showResult = false;
         this.finalResult = null;
@@ -198,7 +234,6 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
   }
 
   getCurrentMessage(): string {
-    // Mostra il messaggio di risultato SOLO se showResult è true (cioè dopo l'animazione)
     if (this.showResult && this.finalResult) {
       switch (this.finalResult) {
         case SpinnerResult.SUCCESS:
@@ -213,7 +248,6 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
           return this.config.message;
       }
     }
-    // Altrimenti mostra sempre il messaggio di caricamento
     return this.config.message;
   }
 

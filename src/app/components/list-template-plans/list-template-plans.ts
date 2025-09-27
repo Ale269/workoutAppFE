@@ -46,8 +46,8 @@ export class ListTemplatePlans implements OnInit {
         {
           successMessage: "Dati recuperati con successo",
           errorMessage: "Errore nel recupero dei dati",
-          resultDuration: 500,
-          minSpinnerDuration: 500,
+          resultDuration: 250,
+          minSpinnerDuration: 250,
         }
       );
 

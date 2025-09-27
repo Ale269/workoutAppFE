@@ -47,8 +47,8 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       {
         successMessage: "Dati recuperati con successo",
         errorMessage: "Errore nel recupero dei dati",
-        resultDuration: 500,
-        minSpinnerDuration: 500,
+        resultDuration: 250,
+        minSpinnerDuration: 250,
       }
     );
 
@@ -119,8 +119,8 @@ initializeWorkout() {
         {
           successMessage: "Dati recuperati con successo",
           errorMessage: "Errore nel recupero dei dati",
-          resultDuration: 500,
-          minSpinnerDuration: 500,
+          resultDuration: 250,
+          minSpinnerDuration: 250,
         }
       );
 

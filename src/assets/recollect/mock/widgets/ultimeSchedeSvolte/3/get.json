@@ -1,0 +1,27 @@
+{
+  "id": "abcdef12-3456-7890-abcd-ef1234567890",
+  "errore": {
+    "error": false,
+    "errorMessage": ""
+  },
+  "ultimeSchedeSvolteDTO": [
+    {
+      "id": 1,
+      "descrizioneScheda": "Scheda forza - 5x5 su base squat e panca",
+      "dataUltimaAttivazione": "2024-09-10T08:00:00.000Z",
+      "giorniDurataPeriodoAttivita": 60
+    },
+    {
+      "id": 2,
+      "descrizioneScheda": "Scheda ipertrofia - Upper/Lower split",
+      "dataUltimaAttivazione": "2024-07-22T17:30:00.000Z",
+      "giorniDurataPeriodoAttivita": 45
+    },
+    {
+      "id": 3,
+      "descrizioneScheda": "Scheda full body - Circuito ad alta intensità",
+      "dataUltimaAttivazione": "2024-06-05T19:15:00.000Z",
+      "giorniDurataPeriodoAttivita": 30
+    }
+  ]
+}

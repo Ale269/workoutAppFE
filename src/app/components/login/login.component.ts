@@ -92,8 +92,8 @@ export class LoginComponent implements OnInit {
         {
           successMessage: "Registrazione completata con successo",
           errorMessage: "Errore durante la registrazione",
-          resultDuration: 1000,
-          minSpinnerDuration: 500,
+          resultDuration: 250,
+          minSpinnerDuration: 250,
         }
       );
 
@@ -156,8 +156,8 @@ export class LoginComponent implements OnInit {
         {
           successMessage: "Accesso effettuato con successo",
           errorMessage: "Errore durante l'accesso",
-          resultDuration: 1000,
-          minSpinnerDuration: 500,
+          resultDuration: 250,
+          minSpinnerDuration: 250,
         }
       );
 

@@ -5,6 +5,7 @@ import { Observable } from "rxjs";
 import { GetDatiProssimoAllenamentoRequestModel, GetDatiProssimoAllenamentoResponseModel } from "src/app/models/widgets/prossimo-allenamento/getDatiProssimoAllenamento";
 import { GetDatiSchedaCorrenteRequestModel, GetDatiSchedaCorrenteResponseModel } from "src/app/models/widgets/scheda-corrente/getDatiSchedaCorrente";
 import { GetDatiUltimiAllenamentiSvoltiRequestModel, GetDatiUltimiAllenamentiSvoltiResponseModel } from "src/app/models/widgets/ultimi-allenamenti-svolti/getDatiUltimiAllenamentiSvolti";
+import { GetDatiUltimeSchedeSvolteRequestModel, GetDatiUltimeSchedeSvolteResponseModel } from "src/app/models/widgets/ultime-schede-svolte/GetDatiUltimeSchedeSvolte";
 
 @Injectable({
   providedIn: "root",
@@ -41,6 +42,16 @@ export class WidgetsService {
     return this.apiCatalogService.executeApiCall(
       "widgets",
       "ultimiAllenamentiSvolti",
+      request,
+      null
+    );
+  }
+  getDatiUltimeSchedeSvolte(
+    request: GetDatiUltimeSchedeSvolteRequestModel
+  ): Observable<GetDatiUltimeSchedeSvolteResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "widgets",
+      "ultimeSchedeSvolte",
       request,
       null
     );

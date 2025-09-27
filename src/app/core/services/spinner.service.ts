@@ -1,4 +1,4 @@
-// spinner.service.ts
+// spinner.service.ts - Versione migliorata
 import { Injectable, signal } from '@angular/core';
 
 export enum SpinnerResult {
@@ -19,6 +19,7 @@ export interface SpinnerConfig {
   showFinalResult?: boolean;
   resultDuration?: number;
   minSpinnerDuration?: number;
+  startTime?: number; // Nuovo campo per tracciare quando inizia
 }
 
 @Injectable({
@@ -48,7 +49,8 @@ export class SpinnerService {
     const fullConfig: SpinnerConfig = {
       ...this.defaultConfig,
       ...config,
-      id
+      id,
+      startTime: Date.now() // Salva quando inizia lo spinner
     };
 
     // Rimuovi eventuali spinner esistenti con lo stesso ID
@@ -148,6 +150,85 @@ export class SpinnerService {
     return this.update(id, { result });
   }
 
+  // NUOVI METODI CON GESTIONE AUTOMATICA DEI TIMING
+
+  /**
+   * Imposta il successo rispettando automaticamente il minSpinnerDuration
+   */
+  setSuccessSmart(id: string, message?: string): Promise<boolean> {
+    return this.setResultSmart(id, SpinnerResult.SUCCESS, message);
+  }
+
+  /**
+   * Imposta l'errore rispettando automaticamente il minSpinnerDuration
+   */
+  setErrorSmart(id: string, message?: string): Promise<boolean> {
+    return this.setResultSmart(id, SpinnerResult.ERROR, message);
+  }
+
+  /**
+   * Imposta il warning rispettando automaticamente il minSpinnerDuration
+   */
+  setWarningSmart(id: string, message?: string): Promise<boolean> {
+    return this.setResultSmart(id, SpinnerResult.WARNING, message);
+  }
+
+  /**
+   * Imposta l'info rispettando automaticamente il minSpinnerDuration
+   */
+  setInfoSmart(id: string, message?: string): Promise<boolean> {
+    return this.setResultSmart(id, SpinnerResult.INFO, message);
+  }
+
+  /**
+   * Metodo privato che gestisce il timing automaticamente
+   */
+  private setResultSmart(id: string, result: SpinnerResult, message?: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const spinner = this.getSpinner(id);
+      if (!spinner) {
+        resolve(false);
+        return;
+      }
+
+      const elapsedTime = Date.now() - (spinner.startTime || 0);
+      const minDuration = spinner.minSpinnerDuration || 800;
+      const waitTime = Math.max(0, minDuration - elapsedTime);
+
+      const updateSpinner = () => {
+        const updates: Partial<SpinnerConfig> = { result };
+        
+        // Aggiungi il messaggio personalizzato se fornito
+        switch (result) {
+          case SpinnerResult.SUCCESS:
+            if (message) updates.successMessage = message;
+            break;
+          case SpinnerResult.ERROR:
+            if (message) updates.errorMessage = message;
+            break;
+          case SpinnerResult.WARNING:
+            if (message) updates.warningMessage = message;
+            break;
+          case SpinnerResult.INFO:
+            if (message) updates.infoMessage = message;
+            break;
+        }
+
+        const success = this.update(id, updates);
+        resolve(success);
+      };
+
+      if (waitTime > 0) {
+        // Aspetta il tempo rimanente prima di impostare il risultato
+        setTimeout(updateSpinner, waitTime);
+      } else {
+        // Imposta immediatamente il risultato
+        updateSpinner();
+      }
+    });
+  }
+
+  // Metodi legacy (mantieni per retrocompatibilità)
   setSuccess(id: string, message?: string): boolean {
     const updates: Partial<SpinnerConfig> = { result: SpinnerResult.SUCCESS };
     if (message) updates.successMessage = message;
