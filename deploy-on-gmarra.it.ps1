@@ -2,7 +2,7 @@
 param(
     [string]$Server = "ubuntu@80.225.91.63",
     [string]$AppName = "gymshark-frontend",
-    [string]$Port = "4444"
+    [string]$Port = "4202"
 )
 
 Write-Host "1. Building Angular app..." -ForegroundColor Green

@@ -1,7 +1,7 @@
 {
   "defaults": {
     "protocol": "http",
-    "host": "gmarra.it:3333",
+    "host": "gmarra.it:8090",
     "baseUrl": "/api",
     "security": "none",
     "mocked": false
