@@ -19,10 +19,7 @@ export class ApiCatalogService {
   private apiCatalogSubject = new BehaviorSubject<ApiCatalog | null>(null);
   public apiCatalog$ = this.apiCatalogSubject.asObservable(); // Observable pubblico per accedere al catalogo
   public baseUrl: string = "";
-
-  // Aggiungiamo un BehaviorSubject per segnalare quando il ProductService è pronto ad eseguire chiamate
-  public isReadySubject = new BehaviorSubject<boolean>(false);
-  public isReady$ = this.isReadySubject.asObservable(); // Observable pubblico
+  private isInitialized: boolean = false;
 
   constructor(private http: HttpClient) {
     this.loadApiCatalog(); // Carica il catalogo all'inizializzazione del servizio
@@ -37,8 +34,10 @@ export class ApiCatalogService {
       .pipe(
         tap((catalog) => {
           this.apiCatalogSubject.next(catalog);
-          console.log("LOADAPI - Catalog caricato con successo:", catalog);
-          this.getDefaults(catalog);
+          console.log("LOADAPICATALOG - Catalog caricato con successo:", catalog);
+          this.initializeBaseUrl(catalog);
+          this.isInitialized = true;
+          console.log("LOADAPICATALOG - Inizializzato BaseUrl:", this.baseUrl);
         }),
         catchError((error) => {
           console.error(
@@ -56,22 +55,22 @@ export class ApiCatalogService {
 
   // Metodo per ottenere un endpoint specifico (opzionale, ma utile)
   getEndpoint(catalog: any, apiName: string, nameKey: string): any {
-    //const catalog: any = this.apiCatalogSubject.getValue();
-
-
     const apiCall = catalog.apis[apiName];
     if (!apiCall) {
       return undefined;
     }
-    for (const apiObject of apiCall) {
-      if (apiObject.name === nameKey) {
-        return apiObject;
-      }
-    }
-    return undefined;
+
+    return apiCall.find((x : { name: string; }) => x.name === nameKey);
+
+    // for (const apiObject of apiCall) {
+    //   if (apiObject.name === nameKey) {
+    //     return apiObject;
+    //   }
+    // }
+    // return undefined;
   }
 
-  getDefaults(catalog: ApiCatalog) {
+  initializeBaseUrl(catalog: ApiCatalog) {
     let url =
       catalog.defaults.protocol +
       "://" +
@@ -106,9 +105,8 @@ export class ApiCatalogService {
   ): Observable<any> {
 
     return this.apiCatalog$.pipe(
-        filter(catalog => !!catalog),
+        filter(catalog => !!catalog && this.isInitialized), // Attendi init
         take(1),
-
         switchMap(catalog => {
 
           //const endpointObject = this.getEndpointFromCatalog(catalog, apiName, nameKey);
@@ -121,14 +119,14 @@ export class ApiCatalogService {
             return throwError(() => new Error(`Endpoint non trovato per '${nameKey}'`));
           }
 
-          let baseUrl = this.baseUrl + endpointObject?.endpoint;
-          //TODO
-          //da fixare - la baseUrl viene caricata piu tardi, e la url finale viene composta male
-          //forzato per ora con host statico
-          let baseUrl2 = "http://localhost:8090/api" + endpointObject?.endpoint;
-          // let baseUrl2 = "http://gmarra.it:3333/api" + endpointObject?.endpoint;
+          if (this.baseUrl === ""){
+            return throwError(() => new Error(`executeWhenReady -> Base Url non valorizzato. Impossibile procedere.`));
+          }
 
-          console.log("BASEURL ENDPOINT: ", baseUrl2);
+          let fullUrl = this.baseUrl + endpointObject?.endpoint;
+         
+
+          console.log("BASEURL ENDPOINT: ", fullUrl);
 
           // Se l'endpoint è mockato e siamo in un ambiente di sviluppo/test
           if (endpointObject.isMocked && !environment.production) {
@@ -169,15 +167,15 @@ export class ApiCatalogService {
                   console.log("PATH PARAm KEY: ", key);
                   console.log("PATH PARAMS value: ", pathParams[key]);
                   console.log("PATH PARAMS: ", pathParams);
-                  baseUrl2 = baseUrl2.replace(`:${key}`, pathParams[key]);
+                  fullUrl = fullUrl.replace(`:${key}`, pathParams[key]);
                 }
               }
             }
             console.log("ENDPOINT FINALE: ",endpointObject)
             console.log("BODY FINALE: ",body)
-            console.log(`FACCIO CHIAMATA VERA per ${baseUrl2}`);
-            var request = this.http.request(endpointObject.method, baseUrl2, {body: body});
-            //var request = this.http.post(baseUrl2, body);
+            console.log(`FACCIO CHIAMATA VERA per ${fullUrl}`);
+            var request = this.http.request(endpointObject.method, fullUrl, {body: body});
+            
             console.log("REQUEST: ", request);
             return request;
           }
