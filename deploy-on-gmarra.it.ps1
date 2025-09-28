@@ -52,7 +52,7 @@ server {
 # Crea deploy script per il server
 @"
 #!/bin/bash
-docker build -t $AppName`:latest .
+docker build --no-cache -t $AppName`:latest .
 docker stop $AppName-container 2>/dev/null || true
 docker rm $AppName-container 2>/dev/null || true
 docker run -d --name $AppName-container -p ${Port}:${Port} --restart unless-stopped $AppName`:latest
