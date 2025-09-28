@@ -1,4 +1,4 @@
-import { enableProdMode, ErrorHandler } from '@angular/core';
+import { enableProdMode, ErrorHandler, inject } from '@angular/core';
 import { environment } from './environments/environment';
 import {bootstrapApplication, BrowserModule} from '@angular/platform-browser'; // Importa bootstrapApplication
 import { AppComponent } from './app/app.component'; // Importa il tuo AppComponent
@@ -12,6 +12,9 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { importProvidersFrom } from '@angular/core'; // Per importare moduli tradizionali come TranslateModule
 import { GlobalErrorHandler } from './app/core/handler/global-error-handler';
+import { provideAppInitializer } from '@angular/core';
+import { ApiCatalogService } from './app/core/services/api-catalog.service';
+import { firstValueFrom } from 'rxjs';
 
 
 // Funzione per il loader di TranslateModule
@@ -55,6 +58,21 @@ bootstrapApplication(AppComponent, {
         // {
         //     provide: ErrorHandler,
         //     useClass: GlobalErrorHandler
-        // }
+        // },
+
+        // provideAppInitializer per caricare le configurazioni prima dell'avvio dell'app
+        provideAppInitializer(() => {
+            console.log('🚀 provideAppInitializer: Avvio inizializzazione ApiCatalogService...');
+            const apiCatalogService = inject(ApiCatalogService);
+            return firstValueFrom(apiCatalogService.loadApiCatalog())
+                .then(result => {
+                    console.log('✅ provideAppInitializer: Inizializzazione completata con successo');
+                    return result;
+                })
+                .catch(error => {
+                    console.error('❌ provideAppInitializer: Errore durante inizializzazione:', error);
+                    throw error;
+                });
+        })
     ]
 }).catch(err => console.error(err));

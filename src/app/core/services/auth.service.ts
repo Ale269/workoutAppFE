@@ -43,7 +43,6 @@ export class AuthService {
          localStorage.setItem('user', JSON.stringify(user));
 
          console.log("LOG SET USER: ", user);
-         console.log("LOG SET token: ", token);
          this.authStateSubject.next({
              isAuthenticated: true,
              user: user,
