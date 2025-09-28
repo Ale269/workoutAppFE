@@ -1,0 +1,28 @@
+<div class="error-page">
+  <div class="error-container">
+    <!-- Header -->
+    <div class="error-header">
+      <h1 class="text-title">Errore Critico</h1>
+    </div>
+
+    <!-- Descrizione -->
+    <div class="error-description">
+      <p class="main-message text-white">{{ getMainMessage() }}</p>
+      <p class="sub-message text-white">{{ getSubMessage() }}</p>
+    </div>
+
+    <!-- Azioni -->
+    <div class="error-actions">
+      <div class="floating-static-button-container">
+        <button type="submit" class="floating-static-button" (click)="reloadApp()">
+          <span>Ricarica applicazione</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Info supporto -->
+    <div class="error-info text-grey">
+      <p>Se il problema persiste, contatta il supporto tecnico</p>
+    </div>
+  </div>
+</div>

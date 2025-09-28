@@ -71,7 +71,7 @@ bootstrapApplication(AppComponent, {
                 })
                 .catch(error => {
                     console.error('❌ provideAppInitializer: Errore durante inizializzazione:', error);
-                    throw error;
+                    return null;
                 });
         })
     ]

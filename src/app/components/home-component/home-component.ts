@@ -94,8 +94,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
         {
           successMessage: "Caricamento completato",
           errorMessage: "Errore nel processo di caricamento",
-          resultDuration: 250,
-          minSpinnerDuration: 250,
+          resultDuration: 300,
+          minSpinnerDuration: 300,
         }
       );
 

@@ -6,6 +6,7 @@ import { UserProfile } from "./components/user-profile/user-profile"; // Se il t
 import { ListTemplatePlans } from "./components/list-template-plans/list-template-plans";
 import { ViewTemplatePlan } from "./components/view-template-plan/view-template-plan";
 import { CreateOrEditTemplatePlanComponent } from "./components/create-or-edit-template-plan-component/create-or-edit-template-plan-component";
+import { ErrorPage } from "./components/error-page/error-page";
 
 export const routes: Routes = [
   {
@@ -45,6 +46,11 @@ export const routes: Routes = [
   {
     path: "le-mie-schede/modifica-scheda",
     component: CreateOrEditTemplatePlanComponent,
+    canActivate: [AuthGuard],
+  }, 
+  {
+    path: "error",
+    component: ErrorPage,
     canActivate: [AuthGuard],
   },
   { path: "**", redirectTo: "login" },

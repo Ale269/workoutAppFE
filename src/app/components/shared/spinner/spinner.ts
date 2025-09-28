@@ -1,4 +1,4 @@
-// spinner.component.ts - Versione con timing configurabili
+// spinner.component.ts - Versione con fix per le icone
 import {
   Component,
   Input,
@@ -9,6 +9,8 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  ChangeDetectorRef,
+  NgZone,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { gsap } from "gsap";
@@ -37,7 +39,11 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
   private pendingResult: SpinnerResult | null | undefined = null;
   private isSpinnerVisible = false;
 
-  constructor(private spinnerService: SpinnerService) {}
+  constructor(
+    private spinnerService: SpinnerService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
+  ) {}
 
   ngAfterViewInit() {
     this.isInitialized = true;
@@ -72,26 +78,20 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
   private resetAndShow() {
     this.showResult = false;
     this.finalResult = null;
-    // NON resettare pendingResult - potrebbe essere già stato impostato
     this.spinnerStartTime = Date.now();
     
-    // Calcola il delay di visibilità basato sulla configurazione
-    // Usa il 10% del minSpinnerDuration, con un minimo di 50ms e massimo di 200ms
     const minDuration = this.config.minSpinnerDuration || 800;
     const visibilityDelay = Math.max(50, Math.min(200, minDuration * 0.1));
 
-    // Imposta subito lo spinner come visibile se il delay è molto piccolo
     if (visibilityDelay <= 100) {
       this.isSpinnerVisible = true;
       
-      // Se c'è un risultato in attesa, gestiscilo subito
       if (this.pendingResult != null) {
         this.handlePendingResult();
       }
 
       this.animateMessageEntry();
     } else {
-      // Per delay più lunghi, usa il timeout
       this.isSpinnerVisible = false;
       setTimeout(() => {
         this.isSpinnerVisible = true;
@@ -107,7 +107,6 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
 
   private animateMessageEntry() {
     if (this.messageElement && this.config.message) {
-      // Durata animazione proporzionale alla configurazione
       const animationDuration = Math.max(0.2, Math.min(0.5, (this.config.minSpinnerDuration || 800) / 1600));
       
       gsap.fromTo(
@@ -140,13 +139,12 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
   }
 
   private showFinalResultAnimation() {
-    if (!this.spinnerElement || !this.resultElement || !this.messageElement) {
+    if (!this.spinnerElement || !this.messageElement) {
       return;
     }
 
-    // Durate delle animazioni proporzionali alla configurazione
     const minDuration = this.config.minSpinnerDuration || 800;
-    const baseAnimationSpeed = Math.max(0.2, Math.min(0.4, minDuration / 2000)); // Più veloce per spinner brevi
+    const baseAnimationSpeed = Math.max(0.2, Math.min(0.4, minDuration / 2000));
     
     const tl = gsap.timeline({
       onComplete: () => {
@@ -157,7 +155,7 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
       },
     });
 
-    // Fase 1: Anima l'uscita dello spinner (più veloce per timing brevi)
+    // Fase 1: Anima l'uscita dello spinner
     tl.to(this.spinnerElement.nativeElement, {
       scale: 0,
       opacity: 0,
@@ -173,41 +171,61 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
       "<"
     );
 
-    // Fase 2: Cambia lo stato
+    // Fase 2: Cambia lo stato DENTRO NgZone per garantire il change detection
     tl.call(() => {
-      this.showResult = true;
-      this.finalResult = this.config.result;
+      this.ngZone.run(() => {
+        this.showResult = true;
+        this.finalResult = this.config.result;
+        
+        console.log("🔄 Cambio stato spinner:", {
+          showResult: this.showResult,
+          finalResult: this.finalResult,
+          resultIcon: this.getResultIcon()
+        });
+        
+        // Forza il change detection
+        this.cdr.detectChanges();
+      });
     });
 
-    // Fase 3: Anima l'entrata del risultato (più veloce per timing brevi)
-    tl.fromTo(
-      this.resultElement.nativeElement,
-      { opacity: 0, scale: 0.5 },
-      {
-        opacity: 1,
-        scale: 1,
-        duration: baseAnimationSpeed * 1.5,
-        ease: "back.out(1.7)",
+    // Fase 3: Piccolo delay per il cambio DOM + animazione del risultato
+    tl.to({}, { 
+      duration: baseAnimationSpeed * 0.2,
+      onComplete: () => {
+        // Ora che il DOM è aggiornato, anima il risultato se l'elemento esiste
+        if (this.resultElement) {
+          gsap.fromTo(
+            this.resultElement.nativeElement,
+            { opacity: 0, scale: 0.5 },
+            {
+              opacity: 1,
+              scale: 1,
+              duration: baseAnimationSpeed * 1.5,
+              ease: "back.out(1.7)",
+            }
+          );
+        }
+        
+        // Anima anche il messaggio
+        if (this.messageElement) {
+          gsap.fromTo(
+            this.messageElement.nativeElement,
+            { opacity: 0, y: 10 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: baseAnimationSpeed,
+              delay: baseAnimationSpeed * 0.3
+            }
+          );
+        }
       }
-    );
-
-    // Fase 4: Anima l'entrata del messaggio
-    tl.fromTo(
-      this.messageElement.nativeElement,
-      { opacity: 0, y: 10 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: baseAnimationSpeed,
-      },
-      "-=0.3"
-    );
+    });
   }
 
   private hideSpinner() {
     if (!this.spinnerOverlay) return;
 
-    // Animazione di uscita più veloce per timing brevi
     const minDuration = this.config.minSpinnerDuration || 800;
     const exitDuration = Math.max(0.2, Math.min(0.4, minDuration / 2000));
 
@@ -215,20 +233,21 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
       opacity: 0,
       duration: exitDuration,
       onComplete: () => {
-        this.showResult = false;
-        this.finalResult = null;
-        this.isSpinnerVisible = false;
-        this.spinnerStartTime = undefined;
-        
-        // Rimuovi lo spinner dal servizio
-        this.spinnerService.hide(this.config.id);
-        
-        // Emetti l'evento di completamento
-        this.completed.emit(this.config.id);
+        this.ngZone.run(() => {
+          this.showResult = false;
+          this.finalResult = null;
+          this.isSpinnerVisible = false;
+          this.spinnerStartTime = undefined;
+          
+          this.spinnerService.hide(this.config.id);
+          this.completed.emit(this.config.id);
 
-        if (this.resultTimer) {
-          window.clearTimeout(this.resultTimer);
-        }
+          if (this.resultTimer) {
+            window.clearTimeout(this.resultTimer);
+          }
+          
+          this.cdr.detectChanges();
+        });
       },
     });
   }
@@ -253,18 +272,31 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
 
   getResultIcon(): string {
     const resultToCheck = this.finalResult || this.config.result;
-    switch (resultToCheck) {
-      case SpinnerResult.SUCCESS:
-        return "assets/recollect/svg/google-check.svg";
-      case SpinnerResult.ERROR:
-        return "assets/recollect/svg/google-close-icon.svg";
-      case SpinnerResult.WARNING:
-        return "assets/recollect/svg/google-warning.svg";
-      case SpinnerResult.INFO:
-        return "assets/recollect/svg/google-info.svg";
-      default:
-        return "?";
-    }
+    
+    const iconPath = (() => {
+      switch (resultToCheck) {
+        case SpinnerResult.SUCCESS:
+          return "assets/recollect/svg/google-check.svg";
+        case SpinnerResult.ERROR:
+          return "assets/recollect/svg/google-close-icon.svg";
+        case SpinnerResult.WARNING:
+          return "assets/recollect/svg/google-warning.svg";
+        case SpinnerResult.INFO:
+          return "assets/recollect/svg/google-info.svg";
+        default:
+          return "";
+      }
+    })();
+    
+    console.log("🎯 getResultIcon called:", {
+      finalResult: this.finalResult,
+      configResult: this.config.result,
+      resultToCheck,
+      iconPath,
+      showResult: this.showResult
+    });
+    
+    return iconPath;
   }
 
   public hide() {

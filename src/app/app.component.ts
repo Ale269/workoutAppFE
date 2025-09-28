@@ -1,20 +1,8 @@
-// app.component.ts
-import {
-  Component,
-  ElementRef,
-  Inject,
-  OnInit,
-  PLATFORM_ID,
-  ViewChild,
-} from "@angular/core";
-import { TranslateService } from "@ngx-translate/core";
-import { ThemeService } from "./core/services/theme.service";
-import { environment } from "../environments/environment";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
-import { AuthService } from "./core/services/auth.service";
-import { CommonModule, isPlatformBrowser } from "@angular/common";
-import { ApiCatalogService } from "./core/services/api-catalog.service";
-import { filter, Subject, take, takeUntil } from "rxjs";
+import { CommonModule } from "@angular/common";
+import { ErrorHandlerService } from "./core/services/error-handler.service";
+import { filter, Subject, takeUntil } from "rxjs";
 import { MenuComponent } from "./components/shared/menu-component/menu-component";
 import { GenericModal } from "./components/shared/generic-modal/generic-modal";
 import { ModalService } from "./core/services/modal.service";
@@ -27,61 +15,47 @@ import { SpinnerComponent } from "./components/shared/spinner/spinner";
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
   imports: [
-    RouterOutlet, 
-    MenuComponent, 
-    GenericModal, 
+    RouterOutlet,
+    MenuComponent,
+    GenericModal,
     SpinnerComponent,
-    CommonModule
+    CommonModule,
   ],
 })
-export class AppComponent implements OnInit {
-  currentTheme = "light-theme";
-  // currentUser: User | null = null;
+export class AppComponent implements OnInit, OnDestroy {
   public MenuIsVisible: boolean = false;
-  
+  public hasCriticalErrors: boolean = false;
+  public initializationComplete: boolean = false;
+
   private destroy$ = new Subject<void>();
 
   constructor(
-    private translate: TranslateService,
-    private themeService: ThemeService,
-    private authService: AuthService,
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private apiCatalogService: ApiCatalogService,
+    private errorHandler: ErrorHandlerService,
     public modalService: ModalService,
     public spinnerService: SpinnerService
   ) {
-    // Configura lingue supportate
-    // this.translate.addLangs(["en", "it", "es"]);
-    // this.translate.setDefaultLang("en");
-    
-    // // Rileva lingua del browser
-    // const browserLang = this.translate.getBrowserLang();
-    // const lang = browserLang?.match(/en|it|es/) ? browserLang : "en";
-    // if (lang != null) {
-    //   this.translate.use(lang);
-    // }
-
+    // Setup routing events
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
         takeUntil(this.destroy$)
       )
       .subscribe((event: NavigationEnd) => {
-        this.updateMenuVisibility(event.urlAfterRedirects);
+        if (!this.hasCriticalErrors) {
+          this.updateMenuVisibility(event.urlAfterRedirects);
+        }
       });
-
-    // Controlla anche la rotta iniziale
-    this.updateMenuVisibility(this.router.url);
   }
 
   ngOnInit(): void {
-    // this.themeService.currentTheme$.subscribe((theme) => {
-    //   this.currentTheme = theme;
-    // });
-    // this.authService.authState$.subscribe((authState) => {
-    //   this.currentUser = authState.user;
-    // });
+    console.log("🚀 AppComponent: Controllo inizializzazione...");
+
+    // Controlla errori critici
+    this.checkForCriticalErrors();
+
+    // Monitor errori in tempo reale
+    this.setupErrorMonitoring();
   }
 
   ngOnDestroy(): void {
@@ -89,26 +63,116 @@ export class AppComponent implements OnInit {
     this.destroy$.complete();
   }
 
-  //   onThemeToggle(): void {
-  //     this.themeService.toggleTheme();
-  //   }
+  private checkForCriticalErrors(): void {
+    this.hasCriticalErrors = this.errorHandler.hasCriticalErrors();
+
+    if (this.hasCriticalErrors) {
+      console.error("🔥 Errori critici rilevati");
+      this.handleCriticalErrorState();
+    } else {
+      this.initializationComplete = true;
+      this.updateMenuVisibility(this.router.url);
+      console.log("✅ Inizializzazione completata");
+    }
+  }
+
+  private setupErrorMonitoring(): void {
+    // Monitor nuovi errori critici
+    this.errorHandler.onError((error) => {
+      if (error.isCritical && !this.hasCriticalErrors) {
+        console.error("🔥 Nuovo errore critico:", error);
+        this.hasCriticalErrors = true;
+        this.handleCriticalErrorState();
+      }
+    });
+  }
+
+  private handleCriticalErrorState(): void {
+    console.error("🚨 Gestione errore critico...");
+    this.MenuIsVisible = false;
+
+    // Redirect alla pagina errore
+    setTimeout(() => {
+      this.router.navigate(["/error"], {}).catch(() => {
+        this.showFallbackError();
+      });
+    }, 100);
+  }
+
+  private showFallbackError(): void {
+    if (typeof document !== "undefined") {
+      document.body.innerHTML = `
+        <div style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          background: #f5f5f5;
+          font-family: Arial, sans-serif;
+          text-align: center;
+          padding: 20px;
+        ">
+          <div style="
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+          ">
+            <h1 style="color: #dc3545; margin-bottom: 20px;">⚠️ Errore Critico</h1>
+            <p style="color: #666; margin-bottom: 20px;">
+              L'applicazione ha riscontrato un errore critico.
+            </p>
+            <button 
+              onclick="window.location.reload()" 
+              style="
+                background: #007bff;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+              "
+            >
+              Ricarica Pagina
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  }
 
   private updateMenuVisibility(url: string): void {
+    if (this.hasCriticalErrors) {
+      this.MenuIsVisible = false;
+      return;
+    }
+
     const routesWithoutMenu = [
       "/login",
-      "/auth/login",
       "/signin",
       "/register",
-      "/auth/register",
       "/forgot-password",
       "/reset-password",
+      "/error",
     ];
 
-    this.MenuIsVisible = !routesWithoutMenu.includes(url.toLowerCase());
+    this.MenuIsVisible = !routesWithoutMenu.some((route) =>
+      url.toLowerCase().includes(route)
+    );
   }
 
   onSpinnerCompleted(spinnerId: string): void {
-    // Gestisci il completamento dello spinner se necessario
     console.log(`Spinner ${spinnerId} completato`);
+  }
+
+  // Getter per template
+  public get shouldShowApp(): boolean {
+    return this.initializationComplete && !this.hasCriticalErrors;
+  }
+
+  public get isLoading(): boolean {
+    return !this.initializationComplete && !this.hasCriticalErrors;
   }
 }

@@ -3,22 +3,23 @@
   <div class="spinner-container">
     <!-- Spinner rotante -->
     @if(!showResult) {
-    <div class="spinner" #spinnerElement></div>
+      <div class="spinner" #spinnerElement></div>
     }
 
-    <!-- Risultato finale -->
-    <div
-      class="result-icon"
-      #resultElement
-      [class]="'result-' + (finalResult || config.result)"
-      [style.display]="showResult ? 'flex' : 'none'"
-    >
-      <img [src]="getResultIcon()" alt="Result icon" />
-    </div>
+    <!-- Risultato finale - SOLO quando showResult è true -->
+    @if(showResult && finalResult) {
+      <div
+        class="result-icon"
+        #resultElement
+        [class]="'result-icon result-' + finalResult"
+      >
+        <img [src]="getResultIcon()" [alt]="'Result: ' + finalResult" />
+      </div>
+    }
 
     <!-- Messaggio -->
     @if(getCurrentMessage()) {
-    <p class="spinner-text" #messageElement>{{ getCurrentMessage() }}</p>
+      <p class="spinner-text" #messageElement>{{ getCurrentMessage() }}</p>
     }
   </div>
 </div>
