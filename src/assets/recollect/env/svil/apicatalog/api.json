@@ -79,6 +79,13 @@
         "method": "get",
         "description": "Recupera i dati degli ultimi allenamenti svolti dell'utente.",
         "isMocked": false
+      },
+      {
+        "name": "ultimeSchedeSvolte",
+        "endpoint": "/widgets/lastWorkoutsDone/:userId",
+        "method": "get",
+        "description": "Recupera i dati delle ultime schede svolte dell'utente.",
+        "isMocked": false
       }
     ]
   }

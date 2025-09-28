@@ -82,10 +82,10 @@
       }, 
       {
         "name": "ultimeSchedeSvolte",
-        "endpoint": "/widgets/lastPlansDone/:userId",
+        "endpoint": "/widgets/lastWorkoutsDone/:userId",
         "method": "get",
         "description": "Recupera i dati delle ultime schede svolte dell'utente.",
-        "isMocked": true
+        "isMocked": false
       }
     ]
   }
