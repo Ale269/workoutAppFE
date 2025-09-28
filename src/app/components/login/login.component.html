@@ -19,12 +19,12 @@
             placeholder="username"
             autocomplete="username"
             [class.mat-form-field-invalid]="
-              loginForm.form.controls['username']?.invalid &&
-              loginForm.form.controls['username']?.touched
+              loginForm.form.controls['username'].invalid &&
+              loginForm.form.controls['username'].touched
             "
           />
-          @if (loginForm.form.controls["username"]?.hasError('required') &&
-          loginForm.form.controls["username"]?.touched) {
+          @if (loginForm.form.controls["username"].hasError('required') &&
+          loginForm.form.controls["username"].touched) {
           <mat-error>Campo obbligatorio</mat-error>
           }
         </mat-form-field>
@@ -38,8 +38,8 @@
             placeholder="La tua password"
             autocomplete="current-password"
             [class.mat-form-field-invalid]="
-              loginForm.form.controls['password']?.invalid &&
-              loginForm.form.controls['password']?.touched
+              loginForm.form.controls['password'].invalid &&
+              loginForm.form.controls['password'].touched
             "
           />
 
@@ -57,11 +57,11 @@
             }}</mat-icon>
           </button>
 
-          @if (loginForm.form.controls["password"]?.hasError('required') &&
-          loginForm.form.controls["password"]?.touched) {
+          @if (loginForm.form.controls["password"].hasError('required') &&
+          loginForm.form.controls["password"].touched) {
           <mat-error>Password è richiesta</mat-error>
-          } @else if (loginForm.form.controls["password"]?.hasError('minlength')
-          && loginForm.form.controls["password"]?.touched) {
+          } @else if (loginForm.form.controls["password"].hasError('minlength')
+          && loginForm.form.controls["password"].touched) {
           <mat-error>Password deve essere di almeno 6 caratteri</mat-error>
           }
         </mat-form-field>

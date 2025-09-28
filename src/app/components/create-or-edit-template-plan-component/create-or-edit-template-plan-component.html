@@ -16,7 +16,7 @@
           placeholder="Nome scheda" />
 
         @if
-        (createOrEditTemplatePlanService.formScheda.form.controls['nomeScheda']?.hasError('required'))
+        (createOrEditTemplatePlanService.formScheda.form.controls['nomeScheda'].hasError('required'))
         {
         <mat-error>Nome scheda obbligatorio</mat-error>
         }
