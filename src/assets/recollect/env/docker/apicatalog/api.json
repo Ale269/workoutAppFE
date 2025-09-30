@@ -56,6 +56,13 @@
         "method": "post",
         "description": "Salva i dati del template scheda di un utente.",
         "isMocked": false
+      },
+      {
+        "name": "deleteTemplateScheda",
+        "endpoint": "/workout/delete/:workoutId",
+        "method": "post",
+        "description": "Elimina i dati del template scheda di un utente.",
+        "isMocked": false
       }
     ],
     "widgets": [

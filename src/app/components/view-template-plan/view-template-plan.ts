@@ -13,6 +13,10 @@ import {
   GetDatiTemplateSchedaRequestModel,
   GetDatiTemplateSchedaResponseModel,
 } from "src/app/models/view-modifica-scheda/getDatiTemplateScheda";
+import {
+  DeleteDatiTemplateSchedaRequestModel,
+  DeleteDatiTemplateSchedaResponseModel
+} from "../../models/view-modifica-scheda/deleteDatiTemplateScheda";
 
 @Component({
   selector: "app-view-template-plan",
@@ -151,4 +155,74 @@ export class ViewTemplatePlan {
       );
     }
   }
+
+  eliminaScheda() {
+
+    try {
+      // Mostra lo spinner di inizializzazione
+      this.currentSpinnerId = this.spinnerService.showWithResult(
+          "Elimino dati scheda",
+          {
+            successMessage: "Scheda eliminata con successo",
+            errorMessage: "Errore nell'eliminare la scheda",
+            resultDuration: 250,
+            minSpinnerDuration: 250,
+          }
+      );
+
+      if (this.idScheda !== null && this.idScheda > 0) {
+        const request: DeleteDatiTemplateSchedaRequestModel = {
+          workoutId: this.idScheda,
+        };
+
+        this.workoutService.deleteTemplateScheda(request).subscribe({
+          next: (response: DeleteDatiTemplateSchedaResponseModel) => {
+            if (!response.errore?.error) {
+
+              if (this.currentSpinnerId) {
+                this.spinnerService.setSuccess(this.currentSpinnerId);
+              }
+              this.goBack()
+
+            } else {
+              if (this.currentSpinnerId) {
+                this.spinnerService.setError(this.currentSpinnerId);
+              }
+              this.errorHandlerService.handleError(
+                  response.errore.error,
+                  "ViewTemplatePlan.getListaTemplateSchede"
+              );
+            }
+          },
+          error: (error) => {
+            if (this.currentSpinnerId) {
+              this.spinnerService.setError(this.currentSpinnerId);
+            }
+            this.errorHandlerService.handleError(
+                error,
+                "ViewTemplatePlan.getListaTemplateSchede"
+            );
+          },
+        });
+      } else {
+        if (this.currentSpinnerId) {
+          this.spinnerService.setError(this.currentSpinnerId);
+        }
+        this.errorHandlerService.handleError(
+            "Nessuna scheda trovata: ",
+            "ViewTemplatePlan.getListaTemplateSchede"
+        );
+      }
+    } catch (error) {
+      if (this.currentSpinnerId) {
+        this.spinnerService.setError(this.currentSpinnerId);
+      }
+      this.errorHandlerService.handleError(
+          error,
+          "ViewTemplatePlan.getListaTemplateSchede"
+      );
+    }
+
+  }
+
 }
