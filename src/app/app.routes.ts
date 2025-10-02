@@ -7,11 +7,12 @@ import { ListTemplatePlans } from "./components/list-template-plans/list-templat
 import { ViewTemplatePlan } from "./components/view-template-plan/view-template-plan";
 import { CreateOrEditTemplatePlanComponent } from "./components/create-or-edit-template-plan-component/create-or-edit-template-plan-component";
 import { ErrorPage } from "./components/error-page/error-page";
+import { NoAuthGuard } from "./core/guards/no-auth.guard";
 
 export const routes: Routes = [
   {
     path: "",
-    redirectTo: "login",
+    redirectTo: "home",
     pathMatch: "full",
   },
   {
@@ -22,6 +23,7 @@ export const routes: Routes = [
   {
     path: "login",
     component: LoginComponent,
+    canActivate:[NoAuthGuard]
   },
   {
     path: "profilo/:userid", // Rotta per la pagina del profilo
@@ -53,5 +55,5 @@ export const routes: Routes = [
     component: ErrorPage,
     canActivate: [AuthGuard],
   },
-  { path: "**", redirectTo: "login" },
+  { path: "**", redirectTo: "home" },
 ];
