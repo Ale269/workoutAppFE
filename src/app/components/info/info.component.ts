@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AppInfoService } from '../../core/services/app-info.service';
 
 @Component({
   selector: 'app-info',
@@ -8,16 +9,17 @@ import { CommonModule } from '@angular/common';
   templateUrl: './info.component.html',
   styleUrls: ['./info.component.scss']
 })
-export class InfoComponent {
-  appVersion = '1.0.0';
-  appName = 'gymshark-frontend';
-  buildDate = new Date().toLocaleDateString('it-IT', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+export class InfoComponent implements OnInit {
+  appVersion = '';
+  appName = '';
+  buildDate = '';
 
-  constructor() {}
+  constructor(private appInfoService: AppInfoService) {}
+
+  ngOnInit(): void {
+    const appInfo = this.appInfoService.getAppInfo();
+    this.appVersion = appInfo.version;
+    this.appName = appInfo.name;
+    this.buildDate = appInfo.buildDate;
+  }
 }

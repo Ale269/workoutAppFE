@@ -6,7 +6,7 @@ param(
 )
 
 Write-Host "1. Building Angular app..." -ForegroundColor Green
-ng build --configuration production
+npm build 
 
 Write-Host "2. Preparing deploy package..." -ForegroundColor Green
 if (Test-Path "deploy-package") { Remove-Item -Recurse -Force "deploy-package" }

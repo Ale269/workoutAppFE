@@ -1,13 +1,14 @@
 {
   "name": "gymshark-frontend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port=4202",
-    "build": "ng build",
+    "start": "npm run generate-app-info && ng serve --port=4202",
+    "build": "npm run generate-app-info && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "generate-app-info": "node scripts/generate-app-info.js"
   },
   "private": true,
   "dependencies": {
