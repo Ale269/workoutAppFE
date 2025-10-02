@@ -8,6 +8,7 @@ import { ViewTemplatePlan } from "./components/view-template-plan/view-template-
 import { CreateOrEditTemplatePlanComponent } from "./components/create-or-edit-template-plan-component/create-or-edit-template-plan-component";
 import { ErrorPage } from "./components/error-page/error-page";
 import { NoAuthGuard } from "./core/guards/no-auth.guard";
+import { InfoComponent } from "./components/info/info.component";
 
 export const routes: Routes = [
   {
@@ -54,6 +55,11 @@ export const routes: Routes = [
     path: "error",
     component: ErrorPage,
     canActivate: [AuthGuard],
+  },
+  {
+    path: "info",
+    component: InfoComponent,
+    canActivate: [AuthGuard]
   },
   { path: "**", redirectTo: "home" },
 ];
