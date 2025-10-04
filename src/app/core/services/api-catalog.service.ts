@@ -208,8 +208,17 @@ export class ApiCatalogService {
         fullUrl = fullUrl.replace(`:${key}`, String(value));
       }
     }
-    
-    return this.http.request<T>(endpointObject.method, fullUrl, { body }).pipe(
+    //essenziale per permettere invio cookie http
+    const options = {
+      body,
+      withCredentials: true
+    }
+
+    return this.http.request<T>(
+        endpointObject.method,
+        fullUrl,
+        options
+        ).pipe(
       catchError((error) => {
         
         // Determina se l'errore HTTP è critico
