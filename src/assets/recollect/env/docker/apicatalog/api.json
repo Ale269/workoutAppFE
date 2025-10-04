@@ -94,6 +94,15 @@
         "description": "Recupera i dati delle ultime schede svolte dell'utente.",
         "isMocked": false
       }
+    ],
+    "info": [
+      {
+        "name": "server",
+        "endpoint": "/status",
+        "method": "get",
+        "description": "Recupera le info di servizio del server.",
+        "isMocked": false
+      }
     ]
   }
 
