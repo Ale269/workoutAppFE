@@ -9,6 +9,7 @@ import { CreateOrEditTemplatePlanComponent } from "./components/create-or-edit-t
 import { ErrorPage } from "./components/error-page/error-page";
 import { NoAuthGuard } from "./core/guards/no-auth.guard";
 import { InfoComponent } from "./components/info/info.component";
+import {InfoBackEnd} from "./components/info-back-end/info-back-end";
 
 export const routes: Routes = [
   {
@@ -59,6 +60,11 @@ export const routes: Routes = [
   {
     path: "info",
     component: InfoComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: "info-server",
+    component: InfoBackEnd,
     canActivate: [AuthGuard]
   },
   { path: "**", redirectTo: "home" },

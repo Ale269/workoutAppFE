@@ -1,12 +1,18 @@
 import { Injectable } from '@angular/core';
 import { APP_INFO } from '../config/app-info.config';
+import {ApiCatalogService} from "./api-catalog.service";
+import {Observable} from "rxjs";
+import {LoginResponseModel} from "../../models/auth/login-model";
+import {ServerInfoModel} from "../../models/server-info/server-info-model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppInfoService {
 
-  constructor() { }
+  constructor(
+      private apiCatalogService: ApiCatalogService,
+  ) { }
 
   getAppVersion(): string {
     return APP_INFO.version;
@@ -32,5 +38,9 @@ export class AppInfoService {
       name: this.getAppName(),
       buildDate: this.getBuildDate()
     };
+  }
+
+  getServerInfo(): Observable<ServerInfoModel>{
+    return this.apiCatalogService.executeApiCall('info','server', undefined, undefined);
   }
 }

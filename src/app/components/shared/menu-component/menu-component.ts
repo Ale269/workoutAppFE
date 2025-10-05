@@ -72,6 +72,13 @@ export class MenuComponent {
     }, 100);
   }
 
+  navigateToInfoServer() {
+    this.closeMenu();
+    setTimeout(() => {
+      this.router.navigate(['/info-server']);
+    }, 100);
+  }
+
   callLogout(): void {
     this.authService.logout();
   }
