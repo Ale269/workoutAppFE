@@ -6,7 +6,7 @@ param(
 )
 
 Write-Host "1. Building Angular app..." -ForegroundColor Green
-npm build 
+npm run build 
 
 Write-Host "2. Preparing deploy package..." -ForegroundColor Green
 if (Test-Path "deploy-package") { Remove-Item -Recurse -Force "deploy-package" }
@@ -55,7 +55,7 @@ server {
 docker build --no-cache -t $AppName`:latest .
 docker stop $AppName-container 2>/dev/null || true
 docker rm $AppName-container 2>/dev/null || true
-docker run -d --name $AppName-container -p ${Port}:${Port} --restart unless-stopped $AppName`:latest
+docker run -d --name $AppName-container --network gmarra-net -p ${Port}:${Port} --restart unless-stopped $AppName`:latest
 echo "Deploy completato!"
 "@ | Out-File -FilePath "deploy-package\deploy.sh" -Encoding UTF8
 

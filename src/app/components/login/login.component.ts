@@ -18,6 +18,7 @@ import { SpinnerService } from "src/app/core/services/spinner.service"; // Aggiu
 import { LoginForm } from "./login-form";
 import { LoginRequestModel } from "src/app/models/auth/login-model";
 import { SignupRequestModel } from "src/app/models/auth/signup-model";
+import { APP_INFO } from "src/app/core/config/app-info.config";
 
 @Component({
   selector: "app-login",
@@ -46,6 +47,7 @@ export class LoginComponent implements OnInit {
   // Aggiungi proprietà per gestire gli spinner ID
   private loginSpinnerId: string | null = null;
   private registerSpinnerId: string | null = null;
+public app_info = APP_INFO;
 
   constructor(
     private authService: AuthService,
