@@ -170,15 +170,14 @@ public app_info = APP_INFO;
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
-
           console.log("RESPONSE LOGIN: ",response)
           //imposto lo stato autenticato user
           this.authService.setAuthState(
-              response.jwtToken,
               {
                 usedId:response.usedId,
                 username: response.username,
-              }
+              },
+              response.jwtToken
           );
 
           this.isLoading = false;
@@ -189,8 +188,6 @@ public app_info = APP_INFO;
           setTimeout(() => {
             this.router.navigate(["/home"]);
           }, 1000); // Attende che lo spinner mostri il successo
-
-
         },
         error: (error) => {
           this.isLoading = false;

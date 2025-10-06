@@ -19,6 +19,12 @@
         "endpoint": "/auth/register",
         "method": "post",
         "isMocked": false
+      },
+      {
+        "name": "checkUserAuthentication",
+        "endpoint": "/auth/checkUserStatus",
+        "method": "get",
+        "isMocked": false
       }
     ],
     "workout": [

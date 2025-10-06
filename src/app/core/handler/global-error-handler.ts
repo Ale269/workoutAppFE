@@ -1,11 +1,14 @@
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import {AuthService} from "../services/auth.service";
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
   
-  constructor(private injector: Injector) {}
+  constructor(
+      private injector: Injector,
+      private authService: AuthService) {}
 
   handleError(error: any): void {
     // Ottieni il router in modo lazy per evitare dipendenze circolari
@@ -18,7 +21,8 @@ export class GlobalErrorHandler implements ErrorHandler {
       this.handleHttpError(error, router);
     } else {
       // Gestisci errori JavaScript/TypeScript
-      this.handleClientError(error, router);
+      // al momemento disattivato per poter catturare errori solo http (se 401 navigate to login)
+      //this.handleClientError(error, router);
     }
   }
 
@@ -34,8 +38,7 @@ export class GlobalErrorHandler implements ErrorHandler {
         break;
       case 401:
         errorMessage = 'Non autorizzato. Effettua il login.';
-        // Reindirizza alla pagina di login
-        router.navigate(['/login']);
+        this.authService.logout();
         break;
       case 403:
         errorMessage = 'Accesso negato';
