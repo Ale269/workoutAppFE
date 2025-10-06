@@ -5,7 +5,7 @@
       "label": "Serve Angular App",
       "type": "shell",
       "command": "ng",
-      "args": ["serve", "--port", "4200"],
+      "args": ["serve", "--port", "4202"],
       "options": {
         "cwd": "${workspaceFolder}"
       },
