@@ -36,6 +36,10 @@ bootstrapApplication(AppComponent, {
         provideHttpClient(withInterceptors([AuthInterceptor])), // Fornisce HttpClient e l'interceptor
         provideAnimationsAsync(), // Fornisce BrowserAnimationsModule
         provideRouter(routes), // Fornisce il router con le tue rotte
+        provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+            }),
 
         // Se hai un AuthGuard, forniscilo qui
         // AuthGuard (se è un servizio fornibile con provideIn: 'root' o un provideFunction)

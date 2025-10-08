@@ -33,6 +33,23 @@ server {
 
     location / {
         try_files `$uri `$uri/ /index.html;
+
+        # Headers per iOS PWA
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header X-Content-Type-Options "nosniff";
+    }
+
+    # Service Worker - no cache
+    location ~ (ngsw-worker\.js|ngsw\.json|safety-worker\.js|worker-basic\.min\.js)$ {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        expires 0;
+    }
+
+    # Manifest - correct Content-Type
+    location = /manifest.json {
+        add_header Content-Type "application/manifest+json";
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        expires 0;
     }
 
     location ~* \.(json|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|js|css)`$ {
@@ -40,6 +57,7 @@ server {
         add_header Cache-Control "public, immutable";
         add_header Access-Control-Allow-Origin "*";
     }
+
 
     gzip on;
     gzip_types text/css application/javascript application/json text/plain image/svg+xml;

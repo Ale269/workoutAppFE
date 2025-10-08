@@ -10,7 +10,7 @@
           "assets/recollect/icons/favicon.ico",
           "/index.csr.html",
           "/index.html",
-          "assets/recollect/manifest.webmanifest",
+          "assets/recollect/manifest.json",
           "/*.css",
           "/*.js"
         ]
@@ -22,6 +22,7 @@
       "updateMode": "prefetch",
       "resources": {
         "files": [
+          "/assets/**",
           "/**/*.(svg|cur|jpg|jpeg|png|ico|json|apng|webp|avif|gif|otf|ttf|woff|woff2)"
         ]
       }
