@@ -18,6 +18,7 @@ import { SpinnerService } from "src/app/core/services/spinner.service"; // Aggiu
 import { LoginForm } from "./login-form";
 import { LoginRequestModel } from "src/app/models/auth/login-model";
 import { SignupRequestModel } from "src/app/models/auth/signup-model";
+import { APP_INFO } from "src/app/core/config/app-info.config";
 
 @Component({
   selector: "app-login",
@@ -46,6 +47,7 @@ export class LoginComponent implements OnInit {
   // Aggiungi proprietà per gestire gli spinner ID
   private loginSpinnerId: string | null = null;
   private registerSpinnerId: string | null = null;
+public app_info = APP_INFO;
 
   constructor(
     private authService: AuthService,
@@ -62,10 +64,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //Redirect se già autenticato
-    if (this.authService.isAuthenticated()) {
-       this.router.navigate(["/home"]);
-    }
+
   }
 
   togglePasswordVisibility(): void {
@@ -171,15 +170,14 @@ export class LoginComponent implements OnInit {
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
-
           console.log("RESPONSE LOGIN: ",response)
           //imposto lo stato autenticato user
           this.authService.setAuthState(
-              response.jwtToken,
               {
                 usedId:response.usedId,
                 username: response.username,
-              }
+              },
+              response.jwtToken
           );
 
           this.isLoading = false;
@@ -190,8 +188,6 @@ export class LoginComponent implements OnInit {
           setTimeout(() => {
             this.router.navigate(["/home"]);
           }, 1000); // Attende che lo spinner mostri il successo
-
-
         },
         error: (error) => {
           this.isLoading = false;

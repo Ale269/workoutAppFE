@@ -7,6 +7,8 @@ import { LoginRequestModel, LoginResponseModel } from 'src/app/models/auth/login
 import { SignupRequestModel, SignupResponseModel } from 'src/app/models/auth/signup-model';
 import {AuthStateModel} from "../../models/user/auth-state-model";
 import {UserModel} from "../../models/user/user-model";
+import {ErrorHandlerService} from "./error-handler.service";
+import {SpinnerService} from "./spinner.service";
 
 @Injectable({
     providedIn: 'root'
@@ -20,16 +22,24 @@ export class AuthService {
          token: null
      });
 
+    private currentSpinnerId: string | null = null;
     public authState$ = this.authStateSubject.asObservable();
 
     constructor(
         private router: Router,
-        private apiCatalogService: ApiCatalogService) {
+        private apiCatalogService: ApiCatalogService,
+        private errorHandlerService: ErrorHandlerService,
+        private spinnerService: SpinnerService,) {
+        //bisogna fare chiamata api per recuperare user e allora siamo apposto
         this.loadAuthState();
     }
 
+    signup(credentials: SignupRequestModel): Observable<SignupResponseModel> {
+        console.log('User registered:', credentials);
+        return this.apiCatalogService.executeApiCall('auth','register', undefined, credentials);
+    }
+
     login(credentials: LoginRequestModel): Observable<LoginResponseModel> {
-        //return this.autheticateUser(credentials)
         return this.apiCatalogService.executeApiCall('auth','login', undefined, credentials);
     }
 
@@ -38,11 +48,16 @@ export class AuthService {
          this.router.navigate(['/login']);
     }
 
-    setAuthState(token: string, user: UserModel): void {
-         localStorage.setItem('token', token);
-         localStorage.setItem('user', JSON.stringify(user));
+    checkUserAuthentication(): Observable<any> {
+        return this.apiCatalogService.executeApiCall('auth','checkUserAuthentication', undefined, undefined);
+    }
 
-         console.log("LOG SET USER: ", user);
+    setAuthState(user: UserModel, token: string): void {
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', token);
+
+        console.log("LOG SET USER: ", user);
+        console.log("LOG SET TOKEN: ", token);
          this.authStateSubject.next({
              isAuthenticated: true,
              user: user,
@@ -80,15 +95,8 @@ export class AuthService {
          }
     }
 
-    signup(credentials: SignupRequestModel): Observable<SignupResponseModel> {
-        // Simula la registrazione di un utente
-        // In un'app reale, dovresti inviare una richiesta al server per registrare l'utente
-        console.log('User registered:', credentials);
-        return this.apiCatalogService.executeApiCall('auth','register', undefined, credentials);
-    }
-
     isAuthenticated(): boolean {
-         return this.authStateSubject.value.isAuthenticated;
+         return this.getCurrentUser() != null && this.getToken() != null;
     }
 
     getCurrentUser(): UserModel | null {
@@ -97,9 +105,5 @@ export class AuthService {
 
     getToken(): string | null {
          return this.authStateSubject.value.token;
-    }
-
-    autheticateUser(credentials: SignupRequestModel): Observable<any> {
-        return this.apiCatalogService.executeApiCall('auth','login', undefined, credentials);
     }
 }

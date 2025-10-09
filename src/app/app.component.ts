@@ -8,6 +8,8 @@ import { GenericModal } from "./components/shared/generic-modal/generic-modal";
 import { ModalService } from "./core/services/modal.service";
 import { SpinnerService } from "./core/services/spinner.service";
 import { SpinnerComponent } from "./components/shared/spinner/spinner";
+import { UpdateBannerComponent } from "./components/shared/update-banner/update-banner.component";
+import { OfflineIndicatorComponent } from "./components/shared/offline-indicator/offline-indicator.component";
 import { BottomSheetService } from "./components/shared/bottom-sheet/bottom-sheet-service";
 import { BottomSheetWrapperComponent } from "./components/shared/bottom-sheet/bottom-sheet";
 
@@ -22,6 +24,8 @@ import { BottomSheetWrapperComponent } from "./components/shared/bottom-sheet/bo
     GenericModal,
     SpinnerComponent,
     CommonModule,
+    UpdateBannerComponent,
+    OfflineIndicatorComponent,
     BottomSheetWrapperComponent
   ],
 })

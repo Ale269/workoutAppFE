@@ -6,7 +6,7 @@ param(
 )
 
 Write-Host "1. Building Angular app..." -ForegroundColor Green
-ng build --configuration production
+npm run build 
 
 Write-Host "2. Preparing deploy package..." -ForegroundColor Green
 if (Test-Path "deploy-package") { Remove-Item -Recurse -Force "deploy-package" }
@@ -33,6 +33,23 @@ server {
 
     location / {
         try_files `$uri `$uri/ /index.html;
+
+        # Headers per iOS PWA
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header X-Content-Type-Options "nosniff";
+    }
+
+    # Service Worker - no cache
+    location ~ (ngsw-worker\.js|ngsw\.json|safety-worker\.js|worker-basic\.min\.js)$ {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        expires 0;
+    }
+
+    # Manifest - correct Content-Type
+    location = /manifest.json {
+        add_header Content-Type "application/manifest+json";
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        expires 0;
     }
 
     location ~* \.(json|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|js|css)`$ {
@@ -40,6 +57,7 @@ server {
         add_header Cache-Control "public, immutable";
         add_header Access-Control-Allow-Origin "*";
     }
+
 
     gzip on;
     gzip_types text/css application/javascript application/json text/plain image/svg+xml;
@@ -55,7 +73,7 @@ server {
 docker build --no-cache -t $AppName`:latest .
 docker stop $AppName-container 2>/dev/null || true
 docker rm $AppName-container 2>/dev/null || true
-docker run -d --name $AppName-container -p ${Port}:${Port} --restart unless-stopped $AppName`:latest
+docker run -d --name $AppName-container --network gmarra-net -p ${Port}:${Port} --restart unless-stopped $AppName`:latest
 echo "Deploy completato!"
 "@ | Out-File -FilePath "deploy-package\deploy.sh" -Encoding UTF8
 

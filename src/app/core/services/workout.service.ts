@@ -15,6 +15,10 @@ import {
   SaveDatiTemplateSchedaRequestModel,
   SaveDatiTemplateSchedaResponseModel,
 } from "src/app/models/view-modifica-scheda/saveDatiTemplateScheda";
+import {
+  DeleteDatiTemplateSchedaRequestModel,
+  DeleteDatiTemplateSchedaResponseModel
+} from "../../models/view-modifica-scheda/deleteDatiTemplateScheda";
 
 @Injectable({
   providedIn: "root",
@@ -68,4 +72,19 @@ export class WorkoutService {
       request
     );
   }
+
+
+  deleteTemplateScheda(
+      request: DeleteDatiTemplateSchedaRequestModel
+  ): Observable<DeleteDatiTemplateSchedaResponseModel> {
+
+    return this.apiCatalogService.executeApiCall(
+        "workout",
+        "deleteTemplateScheda",
+        request,
+        undefined
+    )
+
+  }
+
 }

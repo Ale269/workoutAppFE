@@ -12,9 +12,10 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { importProvidersFrom } from '@angular/core'; // Per importare moduli tradizionali come TranslateModule
 import { GlobalErrorHandler } from './app/core/handler/global-error-handler';
-import { provideAppInitializer } from '@angular/core';
+import { provideAppInitializer, isDevMode } from '@angular/core';
 import { ApiCatalogService } from './app/core/services/api-catalog.service';
 import { firstValueFrom } from 'rxjs';
+import { provideServiceWorker } from '@angular/service-worker';
 
 
 // Funzione per il loader di TranslateModule
@@ -35,6 +36,10 @@ bootstrapApplication(AppComponent, {
         provideHttpClient(withInterceptors([AuthInterceptor])), // Fornisce HttpClient e l'interceptor
         provideAnimationsAsync(), // Fornisce BrowserAnimationsModule
         provideRouter(routes), // Fornisce il router con le tue rotte
+        provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+            }),
 
         // Se hai un AuthGuard, forniscilo qui
         // AuthGuard (se è un servizio fornibile con provideIn: 'root' o un provideFunction)
@@ -73,6 +78,9 @@ bootstrapApplication(AppComponent, {
                     console.error('❌ provideAppInitializer: Errore durante inizializzazione:', error);
                     return null;
                 });
-        })
+        }), provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          })
     ]
 }).catch(err => console.error(err));
