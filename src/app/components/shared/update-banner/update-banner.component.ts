@@ -15,10 +15,10 @@ import { SwUpdateService } from '../../../core/services/sw-update.service';
   styles: [`
     .update-banner {
       position: fixed;
-      top: 0;
+      bottom: 0;
       left: 0;
       right: 0;
-      background: #1976d2;
+      background: #002b28;
       color: white;
       padding: 12px;
       display: flex;
@@ -30,7 +30,7 @@ import { SwUpdateService } from '../../../core/services/sw-update.service';
     
     button {
       background: white;
-      color: #1976d2;
+      color: #002b28;
       border: none;
       padding: 8px 16px;
       border-radius: 4px;
