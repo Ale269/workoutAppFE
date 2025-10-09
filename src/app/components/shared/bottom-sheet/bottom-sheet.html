@@ -1,0 +1,13 @@
+<div #backdrop class="bottom-sheet-backdrop" (click)="onBackdropClick()"></div>
+
+<div #container class="bottom-sheet-container" [ngClass]="instance.cssClass">
+  @if(instance.dismissible){
+  <div class="bottom-sheet-handle">
+    <div class="handle-bar"></div>
+  </div>
+  }
+  <div class="bottom-sheet-content">
+    <ng-container #dynamicComponent></ng-container>
+  </div>
+</div>
+

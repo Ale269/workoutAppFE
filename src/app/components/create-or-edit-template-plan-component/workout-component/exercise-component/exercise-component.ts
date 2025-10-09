@@ -22,6 +22,8 @@ import { AllenamentoForm } from "../../workout-form";
 import { Subject, takeUntil } from "rxjs";
 import { TrainingMethodologySelectorComponent } from "src/app/components/shared/training-methodology-selector/training-methodology-selector";
 import { ExerciseIconColorPipe } from "../../../../core/pipes/exercise-icon-color";
+import { BottomSheetService } from "src/app/components/shared/bottom-sheet/bottom-sheet-service";
+import { ProssimoAllenamento } from "src/app/components/widgets/prossimo-allenamento/prossimo-allenamento";
 
 @Component({
   selector: "app-exercise-component",
@@ -60,7 +62,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   constructor(
     private errorHandlerService: ErrorHandlerService,
     private modalService: ModalService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private bottomSheetService: BottomSheetService
   ) {}
 
   ngOnInit(): void {
@@ -202,5 +205,20 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         "ExerciseComponent.deleteExercise"
       );
     }
+  }
+
+   async openSheet() {
+    const ref = await this.bottomSheetService.open({
+      component: ProssimoAllenamento,
+      data: { title: 'Esempio Bottom Sheet' }
+    });
+
+    ref.onWillDismiss().then(result => {
+      console.log('Will dismiss:', result);
+    });
+
+    ref.onDidDismiss().then(result => {
+      console.log('Did dismiss:', result);
+    });
   }
 }

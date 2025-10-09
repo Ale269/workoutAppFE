@@ -1,0 +1,54 @@
+    :host {
+      display: contents;
+    }
+
+    .bottom-sheet-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #000;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      cursor: pointer;
+    }
+
+    .bottom-sheet-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #000;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.3);
+      z-index: 1001;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      opacity: 0;
+    }
+
+    .bottom-sheet-handle {
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      cursor: grab;
+    }
+
+    .handle-bar {
+      width: 36px;
+      height: 4px;
+      background-color: #333;
+      border-radius: 2px;
+    }
+
+    .bottom-sheet-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }

@@ -8,6 +8,8 @@ import { GenericModal } from "./components/shared/generic-modal/generic-modal";
 import { ModalService } from "./core/services/modal.service";
 import { SpinnerService } from "./core/services/spinner.service";
 import { SpinnerComponent } from "./components/shared/spinner/spinner";
+import { BottomSheetService } from "./components/shared/bottom-sheet/bottom-sheet-service";
+import { BottomSheetWrapperComponent } from "./components/shared/bottom-sheet/bottom-sheet";
 
 @Component({
   selector: "app-root",
@@ -20,6 +22,7 @@ import { SpinnerComponent } from "./components/shared/spinner/spinner";
     GenericModal,
     SpinnerComponent,
     CommonModule,
+    BottomSheetWrapperComponent
   ],
 })
 export class AppComponent implements OnInit, OnDestroy {
@@ -33,7 +36,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private errorHandler: ErrorHandlerService,
     public modalService: ModalService,
-    public spinnerService: SpinnerService
+    public spinnerService: SpinnerService,
+    public bottomSheetService: BottomSheetService
   ) {
     // Setup routing events
     this.router.events

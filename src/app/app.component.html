@@ -29,10 +29,12 @@
 
   <!-- Spinner Service -->
   @for (spinner of spinnerService.spinners(); track spinner.id) {
-  <app-spinner
-    [config]="spinner"
-    (completed)="onSpinnerCompleted($event)"
-  >
+  <app-spinner [config]="spinner" (completed)="onSpinnerCompleted($event)">
   </app-spinner>
+  } 
+  
+  <!-- Bottom Sheets -->
+  @for (sheet of bottomSheetService.activeBottomSheets(); track sheet.id) {
+  <app-bottom-sheet-wrapper [instance]="sheet"></app-bottom-sheet-wrapper>
   }
 </div>
