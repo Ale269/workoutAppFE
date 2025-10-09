@@ -1,0 +1,52 @@
+.workout-list-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 32px 16px 0 16px;
+}
+
+.filter-container {
+  padding-bottom: 40px;
+}
+
+.scroller {
+  flex: 1;
+  overflow-y: scroll;
+}
+
+.exercise-type-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exercise-container {
+  display: flex;
+  padding: 16px;
+  border: 1px solid #212121;
+  border-radius: 16px;
+  gap: 16px;
+
+  .circle-icon {
+    border: 1px solid #fff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .icon-container img {
+    width: 40px;
+  }
+
+  .data-exercise-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: center;
+  }
+}
+
