@@ -1,4 +1,5 @@
 @use "@angular/material" as mat;
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
 
 @include mat.core(
 
@@ -403,7 +404,7 @@ mat-tab-header {
   .mat-mdc-tab-labels span {
     font-family: "poppins";
     font-weight: 700;
-    font-size: 20px;
+    font-size: 14px;
     color: #858585 !important;
   }
 
@@ -419,10 +420,12 @@ mat-tab-header {
   }
 
   .mdc-tab--active span {
-    color: #00ffe1 !important;
+    color: #fff !important;
   }
 
   .mat-mdc-tab-header {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
     scroll-behavior: auto !important;
     scroll-snap-type: none !important;
   }
@@ -437,6 +440,9 @@ mat-tab-header {
 }
 
 mat-tab-header {
+  padding-left: 40px !important;
+  padding-right: 40px !important;
+
   .mat-mdc-tab-label-container {
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch;
@@ -461,11 +467,12 @@ mat-tab-header {
   }
 
   .mat-mdc-tab-header {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
     scroll-behavior: auto !important;
     scroll-snap-type: none !important;
   }
 
-  // Il resto delle tue regole...
   .mat-mdc-tab-labels span {
     font-family: "poppins";
     font-weight: 700;
@@ -484,7 +491,7 @@ mat-tab-header {
   }
 
   .mdc-tab--active span {
-    color: #00ffe1 !important;
+    color: #fff !important;
   }
 }
 

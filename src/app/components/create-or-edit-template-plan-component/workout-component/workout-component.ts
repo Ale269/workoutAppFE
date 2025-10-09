@@ -182,16 +182,16 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     }
   }
  
-  addWorkout() {
-    try {
-      this.onAddWorkout.emit();
-    } catch (error) {
-      this.errorHandlerService.handleError(
-        error,
-        "WorkoutComponent.confirmAddWorkout"
-      );
-    }
-  }
+  // addWorkout() {
+  //   try {
+  //     this.onAddWorkout.emit();
+  //   } catch (error) {
+  //     this.errorHandlerService.handleError(
+  //       error,
+  //       "WorkoutComponent.confirmAddWorkout"
+  //     );
+  //   }
+  // }
 
   deleteWorkout() {
     try {

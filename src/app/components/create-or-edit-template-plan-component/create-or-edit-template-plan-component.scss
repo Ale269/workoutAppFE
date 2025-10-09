@@ -1,6 +1,7 @@
-.tab-container{
-    padding-top: 16px;
+.tab-container {
+  position: relative;
 }
+
 ::ng-deep .mat-mdc-option-active span {
   color: #fff !important;
 }
@@ -21,18 +22,55 @@ mat-form-field {
 .add-workout-modal-description {
   display: flex;
   flex-direction: column;
-  padding-bottom: 16px
+  padding-bottom: 16px;
 }
 
-.content{
-padding-bottom: 40px;
+.content {
+  padding-bottom: 40px;
 }
 
 .nome-scheda-container {
   padding-bottom: 16px;
 }
 
-
 .warning-icon {
   width: 40px;
 }
+
+.add-tab-container {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  z-index: 10;
+}
+
+.add-tab-container img {
+  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
+    hue-rotate(89deg) brightness(104%) contrast(102%);
+}
+
+.add-tab-trigger {
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 99;
+}
+
+.swipe-icon-container {
+  position: absolute;
+  top: 14px;
+  right: 0;
+  z-index: 10;
+}
+
+.swipe-icon-container img {
+  width: 18px;
+  filter: brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%)
+    hue-rotate(240deg) brightness(96%) contrast(88%);
+}
+
+

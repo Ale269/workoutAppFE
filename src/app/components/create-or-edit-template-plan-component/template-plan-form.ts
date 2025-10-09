@@ -51,7 +51,9 @@ export class SchedaForm {
 
     // Pulisce gli allenamenti esistenti
     this.listaAllenamentiForm = [];
-    const listaAllenamentiArray = this.form.controls["listaAllenamenti"] as FormArray<FormGroup<AllenamentoFormModel>>;
+    const listaAllenamentiArray = this.form.controls[
+      "listaAllenamenti"
+    ] as FormArray<FormGroup<AllenamentoFormModel>>;
     while (listaAllenamentiArray.length !== 0) {
       listaAllenamentiArray.removeAt(0);
     }
@@ -61,6 +63,9 @@ export class SchedaForm {
       schedaDTO.listaAllenamenti.forEach((allenamentoDTO) => {
         this.addAllenamentoForm(allenamentoDTO);
       });
+
+      // Aggiorna le posizioni disponibili
+      this.sanitizeWorkoutOrdering();
     }
   }
 

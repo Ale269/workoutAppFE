@@ -2,7 +2,6 @@
 import {
   AfterViewInit,
   Component,
-  Input,
   OnInit,
   ViewChild,
   OnDestroy,
@@ -10,35 +9,33 @@ import {
   ChangeDetectorRef,
 } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
-import { AccordionGroupComponent } from "../shared/accordion/accordion-group/accordion-group.component";
 import { CreateOrEditTemplatePlanService } from "./create-or-edit-template-plan-service";
 import {
   MatTabGroup,
   MatTabsModule,
-  MatTabChangeEvent,
 } from "@angular/material/tabs";
-import { CustomTabContainerComponent } from "../shared/tabs/custom-tab-container/custom-tab-container";
-import { CustomTabComponent } from "../shared/tabs/custom-tab-components/custom-tab-components";
+
 import { WorkoutComponent } from "./workout-component/workout-component";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import {
   MatLabel,
-  MatError,
   MatFormField,
   MatInput,
 } from "@angular/material/input";
-import { ExerciseComponent } from "./workout-component/exercise-component/exercise-component";
 import { Subscription } from "rxjs";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
 import {
   SpinnerService,
-  SpinnerResult,
 } from "src/app/core/services/spinner.service";
-import { ActivatedRoute, Router } from "@angular/router";
+import {  Router } from "@angular/router";
 import { SaveDatiTemplateSchedaRequestModel } from "src/app/models/view-modifica-scheda/saveDatiTemplateScheda";
 import { AuthService } from "src/app/core/services/auth.service";
+import { AccordionGroupComponent } from "../shared/accordion/accordion-group/accordion-group.component";
+import { AccordionComponent } from "../shared/accordion/accordion-element/accordion.component";
+import { AccordionHeaderComponent } from "../shared/accordion/accordion-element/accordion-header/accordion-header.component";
+import { AccordionBodyComponent } from "../shared/accordion/accordion-element/accordion-body/accordion-body.component";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -50,7 +47,11 @@ import { AuthService } from "src/app/core/services/auth.service";
     MatInput,
     MatFormFieldModule,
     MatTabsModule,
-  ],
+    AccordionGroupComponent,
+    AccordionComponent,
+    AccordionHeaderComponent,
+    AccordionBodyComponent
+],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",
 })
@@ -316,7 +317,7 @@ export class CreateOrEditTemplatePlanComponent
     }
   }
 
-  openAddWorkoutMdal() {
+  openAddWorkoutModal() {
     try {
       // Devo creare un form da bindare all'html dell'add e passarlo al modal
       this.initializeNewWorkoutControl();
@@ -453,7 +454,7 @@ export class CreateOrEditTemplatePlanComponent
 
   resetAll(datiScheda: SchedaDTO) {
     try {
-      this.selectedTabIndex = 1;
+      this.selectedTabIndex = 0;
       this.scheda = datiScheda;
       this.createOrEditTemplatePlanService.resetAll();
       this.createOrEditTemplatePlanService.initializeFormWithData(datiScheda);

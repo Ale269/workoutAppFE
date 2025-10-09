@@ -42,6 +42,9 @@ export class AllenamentoForm {
       allenamentoDTO.listaEsercizi.forEach((esercizioDTO) => {
         this.addEsercizioForm(esercizioDTO);
       });
+
+      // Riordino correttamente gli esercizi
+      this.sanitizeExerciseOrdering();
     }
   }
 
