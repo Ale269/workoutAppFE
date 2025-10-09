@@ -24,6 +24,7 @@ import { TrainingMethodologySelectorComponent } from "src/app/components/shared/
 import { ExerciseIconColorPipe } from "../../../../core/pipes/exercise-icon-color";
 import { BottomSheetService } from "src/app/components/shared/bottom-sheet/bottom-sheet-service";
 import { ProssimoAllenamento } from "src/app/components/widgets/prossimo-allenamento/prossimo-allenamento";
+import { WorkoutListSelector } from "src/app/components/shared/workout-list-selector/workout-list-selector";
 
 @Component({
   selector: "app-exercise-component",
@@ -209,7 +210,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
    async openSheet() {
     const ref = await this.bottomSheetService.open({
-      component: ProssimoAllenamento,
+      component: WorkoutListSelector,
       data: { title: 'Esempio Bottom Sheet' }
     });
 

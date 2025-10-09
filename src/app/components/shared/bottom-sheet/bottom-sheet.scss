@@ -1,54 +1,119 @@
-    :host {
-      display: contents;
-    }
+:host {
+  display: contents;
+}
 
-    .bottom-sheet-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #000;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(4px);
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      cursor: pointer;
-    }
+.bottom-sheet-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  // Usa rgba invece di background-color separato per far funzionare backdrop-filter
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  // Inizia con opacity 0 ma backdrop-filter attivo
+  opacity: 0;
+  // Usa pointer-events invece di visibility
+  pointer-events: none;
+  cursor: pointer;
+  // Forza l'accelerazione hardware
+  will-change: opacity;
+  transform: translateZ(0);
+}
 
-    .bottom-sheet-container {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: #000;
-      border-radius: 16px 16px 0 0;
-      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.3);
-      z-index: 1001;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      transform: translateY(100%);
-      opacity: 0;
-    }
+// Quando visibile, abilita pointer-events
+.bottom-sheet-backdrop.visible {
+  pointer-events: auto;
+}
 
-    .bottom-sheet-handle {
-      padding: 12px;
-      display: flex;
-      justify-content: center;
-      cursor: grab;
-    }
+.bottom-sheet-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #000;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.3);
+  z-index: 99999;
+  height: 110vh;
+  max-height: 110vh;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  transform: translateY(calc(100% + 20vh));
+  opacity: 1;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+  border: 1px solid #1c1c1c;
+}
 
-    .handle-bar {
-      width: 36px;
-      height: 4px;
-      background-color: #333;
-      border-radius: 2px;
-    }
+.bottom-sheet-handle {
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  flex-shrink: 0;
 
-    .bottom-sheet-content {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.handle-bar {
+  width: 36px;
+  height: 4px;
+  background-color: #333;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+
+  .bottom-sheet-handle:active & {
+    background-color: #555;
+  }
+}
+
+.bottom-sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(90vh - 40px);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+// Varianti di altezza
+.bottom-sheet-container.small {
+  height: 60vh;
+
+  .bottom-sheet-content {
+    max-height: calc(20vh - 40px);
+  }
+}
+
+.bottom-sheet-container.medium {
+  height: 80vh;
+
+  .bottom-sheet-content {
+    max-height: calc(40vh - 40px);
+  }
+}
+
+.bottom-sheet-container.large {
+  height: 110vh;
+
+  .bottom-sheet-content {
+    max-height: calc(70vh - 40px);
+  }
+}
+
+.bottom-sheet-container.full {
+  height: 120vh;
+  border-radius: 0;
+
+  .bottom-sheet-content {
+    max-height: calc(80vh - 40px);
+  }
+}

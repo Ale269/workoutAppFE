@@ -2,7 +2,7 @@
 
 <div #container class="bottom-sheet-container" [ngClass]="instance.cssClass">
   @if(instance.dismissible){
-  <div class="bottom-sheet-handle">
+  <div #handle class="bottom-sheet-handle">
     <div class="handle-bar"></div>
   </div>
   }
@@ -10,4 +10,3 @@
     <ng-container #dynamicComponent></ng-container>
   </div>
 </div>
-

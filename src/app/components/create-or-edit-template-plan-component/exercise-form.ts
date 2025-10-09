@@ -51,6 +51,8 @@ export class EsercizioForm {
       esercizioDTO.listaSerie.forEach((serieDTO) => {
         this.addSerieForm(serieDTO);
       });
+
+      this.sanitizeSeriesOrdering();
     }
   }
 

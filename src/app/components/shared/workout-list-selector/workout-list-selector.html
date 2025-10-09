@@ -1,0 +1,27 @@
+<div class="workout-list-container">
+  <div class="filter-container"></div>
+  <div class="scroller">
+    <div class="exercise-type-container">
+      @for (tipoEsercizio of exercisesView; track tipoEsercizio.id; let i =
+      $index) {
+      <div class="exercise-container">
+        <div class="icon-container">
+          <div
+            class="circle-icon"
+            [style.border-color]="tipoEsercizio.id | exerciseIconColor"
+          >
+            <img
+              [src]="tipoEsercizio.imgPath"
+              [alt]="'Icona esercizio ' + tipoEsercizio.id"
+              class="exercise-icon"
+            />
+          </div>
+        </div>
+        <div class="data-exercise-container">
+          <h3 class="text-white">{{tipoEsercizio.label}}</h3>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>
