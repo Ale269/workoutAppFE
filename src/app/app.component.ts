@@ -12,6 +12,7 @@ import { UpdateBannerComponent } from "./components/shared/update-banner/update-
 import { OfflineIndicatorComponent } from "./components/shared/offline-indicator/offline-indicator.component";
 import { BottomSheetService } from "./components/shared/bottom-sheet/bottom-sheet-service";
 import { BottomSheetWrapperComponent } from "./components/shared/bottom-sheet/bottom-sheet";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-root",
@@ -41,8 +42,12 @@ export class AppComponent implements OnInit, OnDestroy {
     private errorHandler: ErrorHandlerService,
     public modalService: ModalService,
     public spinnerService: SpinnerService,
-    public bottomSheetService: BottomSheetService
+    public bottomSheetService: BottomSheetService,
+    private translate: TranslateService
   ) {
+    // Inizializza TranslateService
+    this.translate.setDefaultLang('it');
+
     // Setup routing events
     this.router.events
       .pipe(
