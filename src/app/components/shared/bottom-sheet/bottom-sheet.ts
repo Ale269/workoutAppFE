@@ -54,6 +54,12 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    // Registra il callback per gestire la richiesta di chiusura
+    this.instance.onDismissRequested = (result) => {
+      console.log('🎬 Animation callback triggered with result:', result);
+      this.closeBottomSheet(result.data, result.role);
+    };
+    
     this.loadComponent();
     this.openBottomSheet();
     this.setupDraggable();
@@ -70,6 +76,9 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
     if (this.dynamicComponent && this.instance.component) {
       const controller = new BottomSheetController();
       controller.setBottomSheetId(this.instance.id);
+      controller.setBottomSheetService(this.bottomSheetService);
+
+      console.log('🟡 Created controller with ID:', this.instance.id);
 
       const componentInjector = Injector.create({
         providers: [
@@ -173,9 +182,10 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
       }, "-=0.2");
   }
 
-  private closeBottomSheet(data?: any): void {
+  private closeBottomSheet(data?: any, role?: string): void {
     if (this.isAnimating) return;
     
+    console.log('🔵 Starting close animation...');
     this.isAnimating = true;
     this.pendingClose = true;
 
@@ -183,20 +193,29 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
     
     const tl = gsap.timeline({
       onComplete: () => {
+        console.log('✅ Close animation completed, now dismissing...');
         this.isAnimating = false;
         this.pendingClose = false;
         document.body.style.overflow = "auto";
+        
         // Rimuovi pointer-events
         this.backdrop.nativeElement.classList.remove('visible');
-        this.bottomSheetService.dismiss(this.instance.id, data);
+        
+        // IMPORTANTE: Chiama dismiss DOPO che l'animazione è finita
+        // Usa setTimeout per assicurarti che l'animazione sia completamente finita
+        setTimeout(() => {
+          this.bottomSheetService.dismiss(this.instance.id, data, role);
+        }, 50);
       }
     });
 
+    // Anima prima il container verso il basso
     tl.to(this.container.nativeElement, {
       y: containerHeight,
       duration: 0.4,
       ease: "power2.in"
     })
+    // Poi dissolvi il backdrop
     .to(this.backdrop.nativeElement, {
       opacity: 0,
       duration: 0.3,
@@ -210,7 +229,7 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
     }
   }
 
-  async close(data?: any): Promise<void> {
-    this.closeBottomSheet(data);
+  async close(data?: any, role?: string): Promise<void> {
+    this.closeBottomSheet(data, role);
   }
 }

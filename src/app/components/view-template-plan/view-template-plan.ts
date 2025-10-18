@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, TemplateRef, ViewChild } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
@@ -15,8 +15,9 @@ import {
 } from "src/app/models/view-modifica-scheda/getDatiTemplateScheda";
 import {
   DeleteDatiTemplateSchedaRequestModel,
-  DeleteDatiTemplateSchedaResponseModel
+  DeleteDatiTemplateSchedaResponseModel,
 } from "../../models/view-modifica-scheda/deleteDatiTemplateScheda";
+import { ModalService } from "src/app/core/services/modal.service";
 
 @Component({
   selector: "app-view-template-plan",
@@ -31,6 +32,13 @@ import {
   styleUrl: "./view-template-plan.scss",
 })
 export class ViewTemplatePlan {
+  @ViewChild("headerDeleteTemplate") headerDeleteTemplate!: TemplateRef<any>;
+  @ViewChild("bodyDeleteTemplate") bodyDeleteTemplate!: TemplateRef<any>;
+  @ViewChild("footerCloseDeleteTemplate")
+  footerCloseDeleteTemplate!: TemplateRef<any>;
+  @ViewChild("footerConfirmDeleteTemplate")
+  footerConfirmDeleteTemplate!: TemplateRef<any>;
+
   public idScheda: number | null = 0;
   public scheda!: SchedaDTO;
   private currentSpinnerId: string | null = null;
@@ -40,7 +48,8 @@ export class ViewTemplatePlan {
     private spinnerService: SpinnerService,
     private activatedRouter: ActivatedRoute,
     private router: Router,
-    private workoutService: WorkoutService
+    private workoutService: WorkoutService,
+    private modalService: ModalService
   ) {
     try {
       this.idScheda = Number(this.activatedRouter.snapshot.paramMap.get("id"));
@@ -156,18 +165,35 @@ export class ViewTemplatePlan {
     }
   }
 
-  eliminaScheda() {
+  openDeleteScheda() {
+    try {
+      this.modalService.open({
+        warning: true,
+        headerTemplate: this.headerDeleteTemplate,
+        bodyTemplate: this.bodyDeleteTemplate,
+        footerCloseTemplate: this.footerCloseDeleteTemplate,
+        footerConfirmTemplate: this.footerConfirmDeleteTemplate,
+        onConfirm: () => this.eliminaScheda(),
+      });
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.modificaScheda"
+      );
+    }
+  }
 
+  eliminaScheda() {
     try {
       // Mostra lo spinner di inizializzazione
       this.currentSpinnerId = this.spinnerService.showWithResult(
-          "Elimino dati scheda",
-          {
-            successMessage: "Scheda eliminata con successo",
-            errorMessage: "Errore nell'eliminare la scheda",
-            resultDuration: 250,
-            minSpinnerDuration: 250,
-          }
+        "Elimino dati scheda",
+        {
+          successMessage: "Scheda eliminata con successo",
+          errorMessage: "Errore nell'eliminare la scheda",
+          resultDuration: 250,
+          minSpinnerDuration: 250,
+        }
       );
 
       if (this.idScheda !== null && this.idScheda > 0) {
@@ -178,19 +204,17 @@ export class ViewTemplatePlan {
         this.workoutService.deleteTemplateScheda(request).subscribe({
           next: (response: DeleteDatiTemplateSchedaResponseModel) => {
             if (!response.errore?.error) {
-
               if (this.currentSpinnerId) {
                 this.spinnerService.setSuccess(this.currentSpinnerId);
               }
-              this.goBack()
-
+              this.goBack();
             } else {
               if (this.currentSpinnerId) {
                 this.spinnerService.setError(this.currentSpinnerId);
               }
               this.errorHandlerService.handleError(
-                  response.errore.error,
-                  "ViewTemplatePlan.getListaTemplateSchede"
+                response.errore.error,
+                "ViewTemplatePlan.modificaScheda"
               );
             }
           },
@@ -199,8 +223,8 @@ export class ViewTemplatePlan {
               this.spinnerService.setError(this.currentSpinnerId);
             }
             this.errorHandlerService.handleError(
-                error,
-                "ViewTemplatePlan.getListaTemplateSchede"
+              error,
+              "ViewTemplatePlan.modificaScheda"
             );
           },
         });
@@ -209,8 +233,8 @@ export class ViewTemplatePlan {
           this.spinnerService.setError(this.currentSpinnerId);
         }
         this.errorHandlerService.handleError(
-            "Nessuna scheda trovata: ",
-            "ViewTemplatePlan.getListaTemplateSchede"
+          "Nessuna scheda trovata: ",
+          "ViewTemplatePlan.modificaScheda"
         );
       }
     } catch (error) {
@@ -218,11 +242,9 @@ export class ViewTemplatePlan {
         this.spinnerService.setError(this.currentSpinnerId);
       }
       this.errorHandlerService.handleError(
-          error,
-          "ViewTemplatePlan.getListaTemplateSchede"
+        error,
+        "ViewTemplatePlan.modificaScheda"
       );
     }
-
   }
-
 }

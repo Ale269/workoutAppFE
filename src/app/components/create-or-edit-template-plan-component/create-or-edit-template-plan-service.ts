@@ -9,6 +9,10 @@ import {
   SaveDatiTemplateSchedaResponseModel,
 } from "src/app/models/view-modifica-scheda/saveDatiTemplateScheda";
 import { P } from "@angular/cdk/platform.d-B3vREl3q";
+import {
+  DeleteDatiTemplateSchedaRequestModel,
+  DeleteDatiTemplateSchedaResponseModel,
+} from "src/app/models/view-modifica-scheda/deleteDatiTemplateScheda";
 
 @Injectable({
   providedIn: "root",
@@ -126,5 +130,30 @@ export class CreateOrEditTemplatePlanService {
     } catch (error) {
       throw new Error("CreateOrEditTemplatePlanService.resetAll: " + error);
     }
+  }
+
+  eliminaScheda(
+    request: DeleteDatiTemplateSchedaRequestModel
+  ): Promise<DeleteDatiTemplateSchedaResponseModel> {
+    return new Promise<DeleteDatiTemplateSchedaResponseModel>(
+      (resolve, reject) => {
+        try {
+          this.workoutService.deleteTemplateScheda(request).subscribe({
+            next: (response: DeleteDatiTemplateSchedaResponseModel) => {
+              if (!response.errore?.error) {
+                resolve(response);
+              } else {
+                reject(null);
+              }
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+        } catch (error) {
+          reject(error);
+        }
+      }
+    );
   }
 }

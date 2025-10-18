@@ -58,20 +58,56 @@
     } @empty {
     <h3 class="text-white">Dati non trovati</h3>
     }
-  </div>
 
-    <div class="floating-static-button-container">
-
-    <button class="text-shape-button-danger" (click)="eliminaScheda()">
+    <div class="delete-scheda-button-row">
+      <button class="text-shape-button-danger" (click)="openDeleteScheda()">
         <span>Elimina scheda</span>
         <div class="text-shape-button-icon-container-danger">
-            <img src="assets/recollect/svg/google-delete.svg" />
+          <img src="assets/recollect/svg/google-delete.svg" />
         </div>
-    </button>
+      </button>
+    </div>
+  </div>
 
+  <div class="floating-static-button-container">
     <button class="floating-static-button" (click)="modificaScheda()">
       <span>Modifica scheda</span>
     </button>
-
   </div>
 </div>
+
+<ng-template #headerDeleteTemplate>
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
+</ng-template>
+
+<!-- Template per il body -->
+<ng-template #bodyDeleteTemplate>
+  <h3 class="text-white">
+    Sei sicuro di voler eliminare questo template scheda?
+  </h3>
+  <h3 class="text-white">Questa azione non può essere annullata.</h3>
+</ng-template>
+
+<!-- Template per il bottone di chiusura -->
+<ng-template #footerCloseDeleteTemplate>
+  <button class="text-shape-button-cancel">
+    <span>Annulla</span>
+    <div class="text-shape-button-icon-container-cancel">
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<!-- Template per il bottone di conferma -->
+<ng-template #footerConfirmDeleteTemplate>
+  <button class="text-shape-button-danger">
+    <span>Elimina</span>
+    <div class="text-shape-button-icon-container-danger">
+      <img src="assets/recollect/svg/google-delete.svg" />
+    </div>
+  </button>
+</ng-template>

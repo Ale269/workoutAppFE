@@ -47,14 +47,16 @@ export class BottomSheetService {
       cssClass: config.cssClass,
       closeResolve,
       willDismissResolve,
-      didDismissResolve
+      didDismissResolve,
+      // Callback per il wrapper per gestire l'animazione
+      onDismissRequested: undefined
     };
 
     this.bottomSheets.update(sheets => [...sheets, instance]);
 
     const ref: BottomSheetRef<R> = {
       id,
-      close: (data?: R) => this.dismiss(id, data),
+      close: (data?: R) => this.requestDismiss(id, data),
       onWillDismiss: () => willDismissPromise,
       onDidDismiss: () => didDismissPromise
     };
@@ -63,24 +65,61 @@ export class BottomSheetService {
   }
 
   /**
-   * Chiude un Bottom Sheet specifico tramite ID
+   * Richiede la chiusura di un Bottom Sheet (con animazione)
    */
-  async dismiss<T = any>(id: string, data?: T, role?: string): Promise<boolean> {
+  public async requestDismiss<T = any>(id: string, data?: T, role?: string): Promise<boolean> {
+    console.log('🟣 [9] Service.requestDismiss chiamato per ID:', id);
+    
     const instance = this.bottomSheets().find(sheet => sheet.id === id);
     
     if (!instance) {
+      console.warn('⚠️ [10] Bottom sheet NON trovato:', id);
+      console.warn('⚠️ Bottom sheets disponibili:', this.bottomSheets().map(s => s.id));
       return false;
     }
+
+    console.log('🟣 [11] Instance trovata:', instance.id);
 
     const result: BottomSheetDismissResult<T> = { data, role };
 
     // Trigger willDismiss
     if (instance.willDismissResolve) {
+      console.log('🟣 [12] Triggering willDismiss');
       instance.willDismissResolve(result);
     }
 
-    // Rimuovi dalla lista
+    // Chiama il callback del wrapper per far partire l'animazione
+    if (instance.onDismissRequested) {
+      console.log('🟣 [13] Triggering onDismissRequested callback');
+      instance.onDismissRequested(result);
+    } else {
+      console.warn('⚠️ [14] onDismissRequested callback NON definito!');
+    }
+
+    return true;
+  }
+
+  /**
+   * Chiude effettivamente il Bottom Sheet (chiamato dal wrapper dopo l'animazione)
+   */
+  async dismiss<T = any>(id: string, data?: T, role?: string): Promise<boolean> {
+    console.log('🟣 [15] Service.dismiss EFFETTIVO chiamato per ID:', id);
+    
+    const instance = this.bottomSheets().find(sheet => sheet.id === id);
+    
+    if (!instance) {
+      console.warn('⚠️ [16] Instance non trovata in dismiss effettivo');
+      return false;
+    }
+
+    console.log('🟣 [17] Rimuovendo bottom sheet dal DOM');
+
+    const result: BottomSheetDismissResult<T> = { data, role };
+
+    // Rimuovi dalla lista (questo rimuove il componente dal DOM)
     this.bottomSheets.update(sheets => sheets.filter(sheet => sheet.id !== id));
+    
+    console.log('🟣 [18] Bottom sheet rimosso, triggering didDismiss');
 
     // Trigger didDismiss dopo la rimozione
     if (instance.didDismissResolve) {
@@ -92,6 +131,7 @@ export class BottomSheetService {
       instance.closeResolve(result);
     }
 
+    console.log('🟣 [19] Dismiss completato');
     return true;
   }
 
@@ -105,7 +145,7 @@ export class BottomSheetService {
     }
 
     const topSheet = sheets[sheets.length - 1];
-    return this.dismiss(topSheet.id, data, role);
+    return this.requestDismiss(topSheet.id, data, role);
   }
 
   /**
@@ -114,7 +154,7 @@ export class BottomSheetService {
   async dismissAll(): Promise<void> {
     const sheets = [...this.bottomSheets()];
     for (const sheet of sheets) {
-      await this.dismiss(sheet.id);
+      await this.requestDismiss(sheet.id);
     }
   }
 

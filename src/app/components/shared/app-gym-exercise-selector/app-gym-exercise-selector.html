@@ -1,17 +1,28 @@
-<mat-form-field appearance="outline">
+<!-- app-gym-exercise-selector.html -->
+<mat-form-field appearance="outline" [style.width]="width">
   <mat-label>{{ label }}</mat-label>
-  <mat-select [formControl]="control" [multiple]="multiple">
-    @for (exercise of exercises; track exercise.id) {
-    <mat-option [value]="exercise.id">
-      <div class="custom-option">
-        <span>{{ exercise.label }}</span>
-      </div>
-    </mat-option>
-    }
-  </mat-select>
+  
+  <!-- Input readonly che simula una select -->
+  <input 
+    matInput
+    [value]="displayValue"
+    [placeholder]="label"
+    readonly
+    (click)="openSheet($event)"
+    style="cursor: pointer;"
+    [class.error]="control.invalid && control.touched"
+  />
+  
+  <!-- Icona freccia per simulare la select -->
+  <mat-icon matSuffix style="cursor: pointer;" (click)="openSheet($event)">
+    expand_more
+  </mat-icon>
+  
   @if(hint){
-  <mat-hint>{{ hint }}</mat-hint>
-  } @if(control.invalid && control.touched){
+    <mat-hint>{{ hint }}</mat-hint>
+  } 
+  
+  @if(control.invalid && control.touched){
     <mat-error>
       {{ getErrorMessage() }}
     </mat-error>

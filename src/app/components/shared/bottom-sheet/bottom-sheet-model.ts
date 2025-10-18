@@ -30,4 +30,5 @@ export interface BottomSheetInstance {
   closeResolve?: (result: BottomSheetDismissResult) => void;
   willDismissResolve?: (result: BottomSheetDismissResult) => void;
   didDismissResolve?: (result: BottomSheetDismissResult) => void;
+  onDismissRequested?: (result: BottomSheetDismissResult) => void; // <-- AGGIUNGI QUESTO
 }

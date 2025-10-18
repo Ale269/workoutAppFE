@@ -13,6 +13,7 @@ import { OfflineIndicatorComponent } from "./components/shared/offline-indicator
 import { BottomSheetService } from "./components/shared/bottom-sheet/bottom-sheet-service";
 import { BottomSheetWrapperComponent } from "./components/shared/bottom-sheet/bottom-sheet";
 import { TranslateService } from "@ngx-translate/core";
+import { effect } from "@angular/core";
 
 @Component({
   selector: "app-root",
@@ -59,6 +60,14 @@ export class AppComponent implements OnInit, OnDestroy {
           this.updateMenuVisibility(event.urlAfterRedirects);
         }
       });
+
+    // Monitor modali e bottom sheets per bloccare lo scroll
+    effect(() => {
+      const hasActiveModal = this.modalService.modals().length > 0;
+      const hasActiveBottomSheet = this.bottomSheetService.activeBottomSheets().length > 0;
+      
+      this.toggleBodyScroll(hasActiveModal || hasActiveBottomSheet);
+    });
   }
 
   ngOnInit(): void {
@@ -72,8 +81,21 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Ripristina lo scroll quando il componente viene distrutto
+    this.toggleBodyScroll(false);
+    
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private toggleBodyScroll(disable: boolean): void {
+    if (typeof document !== 'undefined') {
+      if (disable) {
+        document.body.classList.add('no-scroll');
+      } else {
+        document.body.classList.remove('no-scroll');
+      }
+    }
   }
 
   private checkForCriticalErrors(): void {

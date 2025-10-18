@@ -10,32 +10,25 @@ import {
 } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { CreateOrEditTemplatePlanService } from "./create-or-edit-template-plan-service";
-import {
-  MatTabGroup,
-  MatTabsModule,
-} from "@angular/material/tabs";
+import { MatTabGroup, MatTabsModule } from "@angular/material/tabs";
 
 import { WorkoutComponent } from "./workout-component/workout-component";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
-import {
-  MatLabel,
-  MatFormField,
-  MatInput,
-} from "@angular/material/input";
+import { MatLabel, MatFormField, MatInput } from "@angular/material/input";
 import { Subscription } from "rxjs";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
-import {
-  SpinnerService,
-} from "src/app/core/services/spinner.service";
-import {  Router } from "@angular/router";
+import { SpinnerService } from "src/app/core/services/spinner.service";
+import { Router } from "@angular/router";
 import { SaveDatiTemplateSchedaRequestModel } from "src/app/models/view-modifica-scheda/saveDatiTemplateScheda";
 import { AuthService } from "src/app/core/services/auth.service";
 import { AccordionGroupComponent } from "../shared/accordion/accordion-group/accordion-group.component";
 import { AccordionComponent } from "../shared/accordion/accordion-element/accordion.component";
 import { AccordionHeaderComponent } from "../shared/accordion/accordion-element/accordion-header/accordion-header.component";
 import { AccordionBodyComponent } from "../shared/accordion/accordion-element/accordion-body/accordion-body.component";
+import { WorkoutService } from "src/app/core/services/workout.service";
+import { DeleteDatiTemplateSchedaRequestModel } from "src/app/models/view-modifica-scheda/deleteDatiTemplateScheda";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -50,8 +43,8 @@ import { AccordionBodyComponent } from "../shared/accordion/accordion-element/ac
     AccordionGroupComponent,
     AccordionComponent,
     AccordionHeaderComponent,
-    AccordionBodyComponent
-],
+    AccordionBodyComponent,
+  ],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",
 })
@@ -74,6 +67,13 @@ export class CreateOrEditTemplatePlanComponent
   @ViewChild("footerConfirmGoBack")
   footerConfirmGoBack!: TemplateRef<any>;
 
+  @ViewChild("headerDeleteTemplate") headerDeleteTemplate!: TemplateRef<any>;
+  @ViewChild("bodyDeleteTemplate") bodyDeleteTemplate!: TemplateRef<any>;
+  @ViewChild("footerCloseDeleteTemplate")
+  footerCloseDeleteTemplate!: TemplateRef<any>;
+  @ViewChild("footerConfirmDeleteTemplate")
+  footerConfirmDeleteTemplate!: TemplateRef<any>;
+
   public selectedTabIndex: number = 0;
   public scheda: SchedaDTO | null = null;
 
@@ -92,7 +92,8 @@ export class CreateOrEditTemplatePlanComponent
     private spinnerService: SpinnerService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private workoutService: WorkoutService
   ) {
     try {
       const navigation = this.router.getCurrentNavigation();
@@ -296,7 +297,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
-        "WorkoutComponent.deleteExercise"
+        "CreateOrEditTemplatePlanComponent.deleteExercise"
       );
     }
   }
@@ -333,7 +334,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
-        "ExerciseComponent.openDeleteModal"
+        "CreateOrEditTemplatePlanComponent.openDeleteModal"
       );
     }
   }
@@ -391,7 +392,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
-        "WorkoutComponent.confirmAddWorkout"
+        "CreateOrEditTemplatePlanComponent.confirmAddWorkout"
       );
     }
   }
@@ -438,17 +439,22 @@ export class CreateOrEditTemplatePlanComponent
             }
             this.errorHandlerService.handleError(
               error,
-              "WorkoutComponent.SavePlan"
+              "CreateOrEditTemplatePlanComponent.SavePlan"
             );
           });
       } else {
-        throw new Error("WorkoutComponent.SavePlan: " + "nessun user trovato");
+        throw new Error(
+          "CreateOrEditTemplatePlanComponent.SavePlan: " + "nessun user trovato"
+        );
       }
     } catch (error) {
       if (this.saveSpinnerId) {
         this.spinnerService.setError(this.saveSpinnerId);
       }
-      this.errorHandlerService.handleError(error, "WorkoutComponent.SavePlan");
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanComponent.SavePlan"
+      );
     }
   }
 
@@ -460,7 +466,10 @@ export class CreateOrEditTemplatePlanComponent
       this.createOrEditTemplatePlanService.initializeFormWithData(datiScheda);
       this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.handleError(error, "WorkoutComponent.resetAll");
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanComponent.resetAll"
+      );
     }
   }
 
@@ -495,7 +504,84 @@ export class CreateOrEditTemplatePlanComponent
         }
       }
     } catch (error) {
-      this.errorHandlerService.handleError(error, "ViewTemplatePlan.goBack");
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanComponent.goBack"
+      );
+    }
+  }
+  openDeleteScheda() {
+    try {
+      this.modalService.open({
+        warning: true,
+        headerTemplate: this.headerDeleteTemplate,
+        bodyTemplate: this.bodyDeleteTemplate,
+        footerCloseTemplate: this.footerCloseDeleteTemplate,
+        footerConfirmTemplate: this.footerConfirmDeleteTemplate,
+        onConfirm: () => this.eliminaScheda(),
+      });
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "ViewTemplatePlan.openDeleteScheda"
+      );
+    }
+  }
+
+  eliminaScheda() {
+    try {
+      if (
+        this.createOrEditTemplatePlanService.formScheda.form.controls["id"]
+          .value !== null &&
+        this.createOrEditTemplatePlanService.formScheda.form.controls["id"]
+          .value > 0
+      ) {
+        // Mostra lo spinner di inizializzazione
+        this.currentSpinnerId = this.spinnerService.showWithResult(
+          "Elimino dati scheda",
+          {
+            successMessage: "Scheda eliminata con successo",
+            errorMessage: "Errore nell'eliminare la scheda",
+            resultDuration: 250,
+            minSpinnerDuration: 250,
+          }
+        );
+
+        const request: DeleteDatiTemplateSchedaRequestModel = {
+          workoutId:
+            this.createOrEditTemplatePlanService.formScheda.form.controls["id"]
+              .value,
+        };
+
+        this.createOrEditTemplatePlanService
+          .eliminaScheda(request)
+          .then((objResponse) => {
+            if (this.currentSpinnerId) {
+              this.spinnerService.setSuccess(this.currentSpinnerId);
+            }
+            // Naviga alla lista dei template
+            this.router.navigate(["/le-mie-schede"])
+          })
+          .catch((objError) => {
+            if (this.currentSpinnerId) {
+              this.spinnerService.setError(this.currentSpinnerId);
+            }
+            this.errorHandlerService.handleError(
+              objError,
+              "CreateOrEditTemplatePlanComponent.getListaTemplateSchede"
+            );
+          });
+      } else {
+        this.router.navigate(["/le-mie-schede"]);
+      }
+    } catch (error) {
+      if (this.currentSpinnerId) {
+        this.spinnerService.setError(this.currentSpinnerId);
+      }
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanComponent.getListaTemplateSchede"
+      );
     }
   }
 }

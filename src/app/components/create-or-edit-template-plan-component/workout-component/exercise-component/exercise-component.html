@@ -56,8 +56,6 @@
       </app-training-methodology-selector>
     </div>
 
-    <button (click)="openSheet()">Apri Bottom Sheet</button>
-
     @for (serieForm of this.formEsercizio.listaSerieForm; track
     serieForm.form.controls['identifier'].value) {
     <app-set-component
