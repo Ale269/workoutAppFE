@@ -1,10 +1,15 @@
+.lista-template-schede-container {
+  display: flex;
+  flex-flow: column;
+  gap: 8px;
+}
+
 .template-scheda {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border-bottom: 1px solid #212121;
-  padding-bottom: 16px;
-  padding-top: 16px;
+  padding: 16px;
+  border: 1px solid #212121;
+  border-radius: 16px;
+  gap: 16px;
 }
 
 .template-scheda:first-of-type {

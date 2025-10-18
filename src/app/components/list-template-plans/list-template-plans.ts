@@ -11,15 +11,24 @@ import {
   GetListaTemplatesSchedaResponseModel,
 } from "src/app/models/lista-template-schede/get-lista-templates-schede";
 import { Router } from "@angular/router";
+import { ReactiveFormsModule } from "@angular/forms";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 
 @Component({
   selector: "app-list-template-plans",
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
   templateUrl: "./list-template-plans.html",
   styleUrl: "./list-template-plans.scss",
 })
 export class ListTemplatePlans implements OnInit {
   public listaSchede: SchedaListaDTO[] = [];
+
   private currentSpinnerId: string | null = null;
 
   constructor(
@@ -124,7 +133,7 @@ export class ListTemplatePlans implements OnInit {
 
   createNewScheda() {
     try {
-      this.router.navigate(["/le-mie-schede/modifica-scheda" ]);
+      this.router.navigate(["/le-mie-schede/modifica-scheda"]);
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
