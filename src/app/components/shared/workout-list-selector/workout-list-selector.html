@@ -3,11 +3,32 @@
     <h1 class="text-title">Nuova scheda</h1>
   </div>
   <div class="filter-container">
-
+    <form [formGroup]="formFiltri.form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Cerca esercizio</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="descrizione"
+          placeholder="Descrizione esercizio"
+        />
+        @if (formFiltri.form.controls?.['descrizione']?.value) {
+        <button
+          class="cancel-input-button"
+          matSuffix
+          mat-icon-button
+          (click)="formFiltri.form.controls?.['descrizione']?.setValue('')"
+          type="button"
+        >
+          <img src="assets/recollect/svg/google-close-icon.svg" />
+        </button>
+        }
+      </mat-form-field>
+    </form>
   </div>
   <div class="scroller">
     <div class="exercise-type-container">
-      @for (tipoEsercizio of exercisesView; track tipoEsercizio.id; let i =
+      @for (tipoEsercizio of filteredExercises; track tipoEsercizio.id; let i =
       $index) {
       <div class="exercise-container" (click)="selectExercise(tipoEsercizio)">
         <div class="icon-container">
