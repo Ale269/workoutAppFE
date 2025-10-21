@@ -16,6 +16,26 @@
         {{this.createOrEditWorkoutExecutionService.AllenamentoForm.form.controls['nomeAllenamento'].value}}
       </h3>
     </div>
+    <div class="date-row">
+      <form
+        [formGroup]="createOrEditWorkoutExecutionService.AllenamentoForm.form"
+      >
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Scegli una data</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="dataEsecuzione"
+          />
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </form>
+    </div>
   </div>
   <div class="exercise-data">
     @for (esercizioForm of
@@ -37,6 +57,17 @@
     </button>
   </div>
 
+  @if(this.idAllenamento){
+  <div class="floating-static-button-container">
+    <button
+      class="floating-static-button"
+      [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
+      (click)="registraAllenamento()"
+    >
+      <span>Salva</span>
+    </button>
+  </div>
+  }@else {
   <div class="floating-double-buttons-container">
     <app-multi-option-button
       [options]="buttonOptions"
@@ -53,9 +84,9 @@
       </button>
     </app-multi-option-button>
   </div>
-  }@else {
+  } }@else {
   <h3 class="text-white">Nessun allenamento aggiunto</h3>
-  } }@else{ 
+  } }@else{
   <h3 class="text-white">Nessun dato recuperato</h3>
   }
 </div>

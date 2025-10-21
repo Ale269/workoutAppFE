@@ -1,7 +1,9 @@
 import { Injectable } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { WorkoutService } from "../../core/services/workout.service";
-import { AllenamentoForm } from "../create-or-edit-template-plan-component/workout-form";
+import { AllenamentoDTO as AllenamentoFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/allenamentodto";
+import { EsercizioDTO as EsercizioFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/eserciziodto";
+import { SerieDTO as SerieFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/seriedto";
 import {
   GetDatiTemplateNuovoAllenamentoRequestModel,
   GetDatiTemplateNuovoAllenamentoResponseModel,
@@ -11,6 +13,8 @@ import {
   GetDatiAllenamentoRequestModel,
   GetDatiAllenamentoResponseModel,
 } from "src/app/models/esecuzione-allenamento/get-dati-allenamento";
+import { AllenamentoForm } from "../create-or-edit-template-plan-component/workout-form";
+import { RegistraAllenamentoRequestModel } from "src/app/models/esecuzione-allenamento/registra-allenaneto";
 
 @Injectable({
   providedIn: "root",
@@ -32,7 +36,7 @@ export class CreateOrEditWorkoutExecutionService {
           next: (response: GetDatiAllenamentoResponseModel) => {
             if (!response.errore?.error) {
               if (response.allenamentoCorrente) {
-                this.InitializeEditAllenamento(response.allenamentoCorrente);
+                this.InitializeAllenamento(response.allenamentoCorrente);
               }
               resolve(response);
             } else {
@@ -63,7 +67,7 @@ export class CreateOrEditWorkoutExecutionService {
               ) => {
                 if (!response.errore?.error) {
                   if (response.allenamentoCorrente) {
-                    this.InitializeNuovoAllenamento(
+                    this.InitializeAllenamento(
                       response.allenamentoCorrente
                     );
                   }
@@ -87,9 +91,12 @@ export class CreateOrEditWorkoutExecutionService {
    * Inizializza un nuovo allenamento partendo da un template
    * @param idTemplateAllenamento ID del template da cui creare il nuovo allenamento
    */
-  InitializeNuovoAllenamento(allenamento: AllenamentoDTO) {
+  InitializeAllenamento(allenamento: AllenamentoDTO) {
     try {
-      this.AllenamentoForm = new AllenamentoForm(0, allenamento);
+      const allenamentoFormDTO: AllenamentoFormDTO =
+        this.getAllenamentoFormDTOFromAllenamentoDTO(allenamento);
+
+      this.AllenamentoForm = new AllenamentoForm(0, allenamentoFormDTO);
     } catch (error) {
       throw new Error(
         "CreateOrEditWorkoutExecutionService.InitializeNuovoAllenamento: " +
@@ -98,21 +105,50 @@ export class CreateOrEditWorkoutExecutionService {
     }
   }
 
-  /**
-   * Inizializza un allenamento esistente in modalità modifica
-   */
-  InitializeEditAllenamento(allenamento: AllenamentoDTO) {
+  getAllenamentoFormDTOFromAllenamentoDTO(
+    allenamento: AllenamentoDTO
+  ): AllenamentoFormDTO {
     try {
-      this.AllenamentoForm = new AllenamentoForm(0, allenamento);
+      const allenamentoFormDTO: AllenamentoFormDTO = {
+        id: 0,
+        dataEsecuzione: null,
+        idTemplate: allenamento.id,
+        listaEsercizi: [],
+        nomeAllenamento: allenamento.nomeAllenamento,
+        ordinamento: allenamento.ordinamento,
+      };
+
+      allenamento.listaEsercizi.forEach((esercizio) => {
+        const esercizioFormDTO: EsercizioFormDTO = {
+          id: 0,
+          idTemplate: esercizio.id,
+          idIconaEsercizio: esercizio.idIconaEsercizio,
+          idMetodologia: esercizio.idMetodologia,
+          idTipoEsercizio: esercizio.idTipoEsercizio,
+          ordinamento: esercizio.ordinamento,
+          listaSerie: [],
+        };
+        allenamentoFormDTO.listaEsercizi.push(esercizioFormDTO);
+
+        esercizio.listaSerie.forEach((serie) => {
+          const serieFormDTO: SerieFormDTO = {
+            carico: serie.carico,
+            id: 0,
+            idTemplate: serie.id,
+            ordinamento: serie.ordinamento,
+            ripetizioni: serie.ripetizioni,
+          };
+          esercizioFormDTO.listaSerie.push(serieFormDTO);
+        });
+      });
+
+      return allenamentoFormDTO;
     } catch (error) {
-      throw new Error(
-        "CreateOrEditWorkoutExecutionService.InitializeEditAllenamento: " +
-          error
-      );
+      throw new Error("CreateOrEditWorkoutExecutionService.getAllenamentoFormDTOFromAllenamentoDTO: " + error);
     }
   }
 
-  async registraAllenamento(savePlanRequest: AllenamentoDTO): Promise<void> {
+  async registraAllenamento(savePlanRequest: RegistraAllenamentoRequestModel): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         // Chiamata al backend per salvare l'allenamento

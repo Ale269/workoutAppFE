@@ -14,13 +14,17 @@ import {
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { gsap } from "gsap";
-import { SpinnerConfig, SpinnerResult, SpinnerService } from "src/app/core/services/spinner.service";
+import {
+  SpinnerConfig,
+  SpinnerResult,
+  SpinnerService,
+} from "src/app/core/services/spinner.service";
 
 @Component({
   selector: "app-spinner",
   imports: [CommonModule],
   templateUrl: "./spinner.html",
-  styleUrls: ['./spinner.scss']
+  styleUrls: ["./spinner.scss"],
 })
 export class SpinnerComponent implements OnChanges, AfterViewInit {
   @ViewChild("spinnerElement", { static: false }) spinnerElement?: ElementRef;
@@ -48,7 +52,7 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
   ngAfterViewInit() {
     this.isInitialized = true;
     this.resetAndShow();
-    
+
     // Se c'è già un risultato in attesa, gestiscilo
     if (this.config.result != null && this.config.showFinalResult) {
       this.handlePendingResult();
@@ -57,7 +61,12 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges) {
     // Se c'è un risultato ma non siamo ancora inizializzati, salvalo per dopo
-    if (!this.isInitialized && changes['config'] && this.config.result != null && this.config.showFinalResult) {
+    if (
+      !this.isInitialized &&
+      changes["config"] &&
+      this.config.result != null &&
+      this.config.showFinalResult
+    ) {
       this.pendingResult = this.config.result;
       return;
     }
@@ -66,7 +75,11 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
       return;
     }
 
-    if (changes['config'] && this.config.result != null && this.config.showFinalResult) {
+    if (
+      changes["config"] &&
+      this.config.result != null &&
+      this.config.showFinalResult
+    ) {
       if (!this.isSpinnerVisible) {
         this.pendingResult = this.config.result;
       } else {
@@ -79,13 +92,13 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
     this.showResult = false;
     this.finalResult = null;
     this.spinnerStartTime = Date.now();
-    
+
     const minDuration = this.config.minSpinnerDuration || 800;
     const visibilityDelay = Math.max(50, Math.min(200, minDuration * 0.1));
 
     if (visibilityDelay <= 100) {
       this.isSpinnerVisible = true;
-      
+
       if (this.pendingResult != null) {
         this.handlePendingResult();
       }
@@ -95,7 +108,7 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
       this.isSpinnerVisible = false;
       setTimeout(() => {
         this.isSpinnerVisible = true;
-        
+
         if (this.pendingResult != null) {
           this.handlePendingResult();
         }
@@ -107,8 +120,11 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
 
   private animateMessageEntry() {
     if (this.messageElement && this.config.message) {
-      const animationDuration = Math.max(0.2, Math.min(0.5, (this.config.minSpinnerDuration || 800) / 1600));
-      
+      const animationDuration = Math.max(
+        0.2,
+        Math.min(0.5, (this.config.minSpinnerDuration || 800) / 1600)
+      );
+
       gsap.fromTo(
         this.messageElement.nativeElement,
         { opacity: 0, y: 10 },
@@ -119,13 +135,15 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
 
   private handlePendingResult() {
     if (this.pendingResult == null) return;
-    
+
     this.handleResultChange();
     this.pendingResult = null;
   }
 
   private handleResultChange() {
-    const elapsedTime = this.spinnerStartTime ? Date.now() - this.spinnerStartTime : 0;
+    const elapsedTime = this.spinnerStartTime
+      ? Date.now() - this.spinnerStartTime
+      : 0;
     const minDuration = this.config.minSpinnerDuration || 800;
     const remainingTime = Math.max(0, minDuration - elapsedTime);
 
@@ -145,7 +163,7 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
 
     const minDuration = this.config.minSpinnerDuration || 800;
     const baseAnimationSpeed = Math.max(0.2, Math.min(0.4, minDuration / 2000));
-    
+
     const tl = gsap.timeline({
       onComplete: () => {
         const duration = this.config.resultDuration || 2000;
@@ -176,51 +194,48 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
       this.ngZone.run(() => {
         this.showResult = true;
         this.finalResult = this.config.result;
-        
-        console.log("🔄 Cambio stato spinner:", {
-          showResult: this.showResult,
-          finalResult: this.finalResult,
-          resultIcon: this.getResultIcon()
-        });
-        
+
         // Forza il change detection
         this.cdr.detectChanges();
       });
     });
 
     // Fase 3: Piccolo delay per il cambio DOM + animazione del risultato
-    tl.to({}, { 
-      duration: baseAnimationSpeed * 0.2,
-      onComplete: () => {
-        // Ora che il DOM è aggiornato, anima il risultato se l'elemento esiste
-        if (this.resultElement) {
-          gsap.fromTo(
-            this.resultElement.nativeElement,
-            { opacity: 0, scale: 0.5 },
-            {
-              opacity: 1,
-              scale: 1,
-              duration: baseAnimationSpeed * 1.5,
-              ease: "back.out(1.7)",
-            }
-          );
-        }
-        
-        // Anima anche il messaggio
-        if (this.messageElement) {
-          gsap.fromTo(
-            this.messageElement.nativeElement,
-            { opacity: 0, y: 10 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: baseAnimationSpeed,
-              delay: baseAnimationSpeed * 0.3
-            }
-          );
-        }
+    tl.to(
+      {},
+      {
+        duration: baseAnimationSpeed * 0.2,
+        onComplete: () => {
+          // Ora che il DOM è aggiornato, anima il risultato se l'elemento esiste
+          if (this.resultElement) {
+            gsap.fromTo(
+              this.resultElement.nativeElement,
+              { opacity: 0, scale: 0.5 },
+              {
+                opacity: 1,
+                scale: 1,
+                duration: baseAnimationSpeed * 1.5,
+                ease: "back.out(1.7)",
+              }
+            );
+          }
+
+          // Anima anche il messaggio
+          if (this.messageElement) {
+            gsap.fromTo(
+              this.messageElement.nativeElement,
+              { opacity: 0, y: 10 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: baseAnimationSpeed,
+                delay: baseAnimationSpeed * 0.3,
+              }
+            );
+          }
+        },
       }
-    });
+    );
   }
 
   private hideSpinner() {
@@ -238,14 +253,14 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
           this.finalResult = null;
           this.isSpinnerVisible = false;
           this.spinnerStartTime = undefined;
-          
+
           this.spinnerService.hide(this.config.id);
           this.completed.emit(this.config.id);
 
           if (this.resultTimer) {
             window.clearTimeout(this.resultTimer);
           }
-          
+
           this.cdr.detectChanges();
         });
       },
@@ -256,13 +271,20 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
     if (this.showResult && this.finalResult) {
       switch (this.finalResult) {
         case SpinnerResult.SUCCESS:
-          return this.config.successMessage || "Operazione completata con successo";
+          return (
+            this.config.successMessage || "Operazione completata con successo"
+          );
         case SpinnerResult.ERROR:
           return this.config.errorMessage || "Operazione fallita";
         case SpinnerResult.WARNING:
-          return this.config.warningMessage || "Attenzione: operazione completata con avvisi";
+          return (
+            this.config.warningMessage ||
+            "Attenzione: operazione completata con avvisi"
+          );
         case SpinnerResult.INFO:
-          return this.config.infoMessage || "Informazione: operazione completata";
+          return (
+            this.config.infoMessage || "Informazione: operazione completata"
+          );
         default:
           return this.config.message;
       }
@@ -272,7 +294,7 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
 
   getResultIcon(): string {
     const resultToCheck = this.finalResult || this.config.result;
-    
+
     const iconPath = (() => {
       switch (resultToCheck) {
         case SpinnerResult.SUCCESS:
@@ -287,15 +309,7 @@ export class SpinnerComponent implements OnChanges, AfterViewInit {
           return "";
       }
     })();
-    
-    console.log("🎯 getResultIcon called:", {
-      finalResult: this.finalResult,
-      configResult: this.config.result,
-      resultToCheck,
-      iconPath,
-      showResult: this.showResult
-    });
-    
+
     return iconPath;
   }
 

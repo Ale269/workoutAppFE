@@ -390,6 +390,28 @@ body.no-scroll {
   );
 }
 
+:root {
+  @include mat.datepicker-overrides(
+    (
+      calendar-body-label-text-color: #fff,
+      calendar-container-background-color: #000,
+      calendar-container-text-color: #fff,
+      calendar-date-outline-color: #212112,
+      calendar-date-text-color: #fff,
+      toggle-icon-color: #00ffe1,
+      calendar-header-divider-color: #212112,
+      calendar-navigation-button-icon-color: #00ffe1,
+      calendar-header-text-color: #fff,
+      calendar-period-button-icon-color: #00ffe1,
+      calendar-period-button-text-color: #00ffe1,
+      calendar-date-today-outline-color: #212112,
+      calendar-date-selected-state-text-color: #000,
+      calendar-date-selected-state-background-color: #fff,
+      calendar-date-focus-state-background-color: #212112
+    )
+  );
+}
+
 // Sovrascrittura comportamento defaul mat tab
 mat-tab-header {
   .mat-mdc-tab-label-container {

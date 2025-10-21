@@ -18,6 +18,10 @@ import { AllenamentoDTO as AllenamentoFormDTO } from "src/app/models/create-or-e
 import { AllenamentoDTO } from "src/app/models/esecuzione-allenamento/allenamentodto";
 import { EsercizioDTO } from "src/app/models/esecuzione-allenamento/eserciziodto";
 import { SerieDTO } from "src/app/models/esecuzione-allenamento/seriedto";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { RegistraAllenamentoRequestModel } from "src/app/models/esecuzione-allenamento/registra-allenaneto";
+import { MatNativeDateModule } from '@angular/material/core'; // <<-- provides DateAdapter
+import { MatInput } from "@angular/material/input";
 
 @Component({
   selector: "app-create-or-edit-workout-execution",
@@ -27,6 +31,9 @@ import { SerieDTO } from "src/app/models/esecuzione-allenamento/seriedto";
     MatTabsModule,
     ExerciseComponent,
     MultiOptionButton,
+    MatInput,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   templateUrl: "./create-or-edit-workout-execution.html",
   styleUrl: "./create-or-edit-workout-execution.scss",
@@ -125,6 +132,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           .GetDatiAllenamento(request)
           .then((response) => {
             if (!response.errore?.error) {
+              this.allenamentoDataLoaded = true;
               if (this.initSpinnerId) {
                 this.spinnerService.setSuccess(this.initSpinnerId);
               }
@@ -313,27 +321,36 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       const allenamentoDaSalvare: AllenamentoDTO | null =
         this.ConvertAllenamentoFormDTOToAllenamentoDTO(allenamentoForm);
 
-      if (allenamentoDaSalvare) {
-        this.createOrEditWorkoutExecutionService
-          .registraAllenamento(allenamentoDaSalvare)
-          .then((response) => {
-            if (this.saveSpinnerId) {
-              this.spinnerService.setSuccess(this.saveSpinnerId);
-            }
-            this.router.navigate(["/home"]);
-          })
-          .catch((error) => {
-            if (this.saveSpinnerId) {
-              this.spinnerService.setError(
-                this.saveSpinnerId,
-                "Errore nella fase di salvataggio"
+      if (allenamentoDaSalvare != null) {
+        const registraAllenamentoRequest: RegistraAllenamentoRequestModel = {
+          dataSvolgimento:
+            this.createOrEditWorkoutExecutionService.AllenamentoForm.form
+              .controls["dataAllenamento"].value,
+          AllenamentoDTO: allenamentoDaSalvare,
+        };
+
+        if (allenamentoDaSalvare) {
+          this.createOrEditWorkoutExecutionService
+            .registraAllenamento(registraAllenamentoRequest)
+            .then((response) => {
+              if (this.saveSpinnerId) {
+                this.spinnerService.setSuccess(this.saveSpinnerId);
+              }
+              this.router.navigate(["/home"]);
+            })
+            .catch((error) => {
+              if (this.saveSpinnerId) {
+                this.spinnerService.setError(
+                  this.saveSpinnerId,
+                  "Errore nella fase di salvataggio"
+                );
+              }
+              this.errorHandlerService.handleError(
+                error,
+                "WorkoutComponent.registraAllenamento"
               );
-            }
-            this.errorHandlerService.handleError(
-              error,
-              "WorkoutComponent.registraAllenamento"
-            );
-          });
+            });
+        }
       }
     } catch (error) {
       if (this.saveSpinnerId) {

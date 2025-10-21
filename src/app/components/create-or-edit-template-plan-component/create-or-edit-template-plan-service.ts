@@ -51,6 +51,7 @@ export class CreateOrEditTemplatePlanService {
       schedaDTO.listaAllenamenti.forEach((allenamento) => {
         const allenamentoFormDTO: AllenamentoFormDTO = {
           id: 0,
+          dataEsecuzione: null,
           idTemplate: allenamento.id,
           listaEsercizi: [],
           nomeAllenamento: allenamento.nomeAllenamento,
@@ -85,7 +86,7 @@ export class CreateOrEditTemplatePlanService {
 
       return schedaFormDTO;
     } catch (error) {
-      throw new Error("CreateOrEditTemplatePlanService.AddWorkout: " + error);
+      throw new Error("CreateOrEditTemplatePlanService.getSchedaFormDTOFromSchedaDTO: " + error);
     }
   }
 
@@ -112,6 +113,7 @@ export class CreateOrEditTemplatePlanService {
       const nuovoAllenamentoDTO: AllenamentoFormDTO = {
         id: 0,
         idTemplate: 0,
+        dataEsecuzione: null,
         nomeAllenamento: nomeAllenamento || `Giorno ${nextOrdinamento}`,
         ordinamento: nextOrdinamento,
         listaEsercizi: [], // Lista vuota per un nuovo allenamento

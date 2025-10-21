@@ -32,6 +32,7 @@ export class SchedaForm {
     const primoAllenamentoDTO: AllenamentoDTO = {
       id: 0,
       idTemplate: 0,
+      dataEsecuzione: null,
       nomeAllenamento: "Giorno 1",
       ordinamento: 1,
       listaEsercizi: [], // o altri campi necessari per AllenamentoDTO
