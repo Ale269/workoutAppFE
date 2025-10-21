@@ -1,11 +1,12 @@
 import { FormArray, FormControl, FormGroup } from "@angular/forms";
 import { SerieForm, SerieFormModel } from "./exercise-set-form";
-import { EsercizioDTO } from "src/app/models/view-modifica-scheda/eserciziodto";
-import { SerieDTO } from "src/app/models/view-modifica-scheda/seriedto";
+import { EsercizioDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/eserciziodto";
+import { SerieDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/seriedto";
 
 export interface EsercizioFormModel {
   identifier: FormControl<number | null>;
   id: FormControl<number | null>;
+  idTemplate: FormControl<number | null>;
   idTipoEsercizio: FormControl<number | null>;
   idIconaEsercizio: FormControl<number | null>;
   idMetodologia: FormControl<number | null>;
@@ -29,6 +30,9 @@ export class EsercizioForm {
       identifier: new FormControl<number | null>(identifier),
       id: new FormControl<number | null>(
         esercizioDTO?.id || null
+      ),
+      idTemplate: new FormControl<number | null>(
+        esercizioDTO?.idTemplate || null
       ),
       idTipoEsercizio: new FormControl<number | null>(
         esercizioDTO?.idTipoEsercizio || null
@@ -170,6 +174,7 @@ export class EsercizioForm {
     try {
       let esercizioDaSalvare: EsercizioDTO = {
         id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
+        idTemplate: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
         idIconaEsercizio: this.form.controls["idIconaEsercizio"].value
           ? this.form.controls["idIconaEsercizio"].value
           : 0,

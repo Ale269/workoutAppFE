@@ -1,5 +1,5 @@
 
 export interface altriAllenamentiSelectDTO {
-  id: number;
+  idTemplate: number;
   description: string;
 }

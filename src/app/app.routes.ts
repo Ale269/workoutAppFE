@@ -9,7 +9,8 @@ import { CreateOrEditTemplatePlanComponent } from "./components/create-or-edit-t
 import { ErrorPage } from "./components/error-page/error-page";
 import { NoAuthGuard } from "./core/guards/no-auth.guard";
 import { InfoComponent } from "./components/info/info.component";
-import {InfoBackEnd} from "./components/info-back-end/info-back-end";
+import { InfoBackEnd } from "./components/info-back-end/info-back-end";
+import { CreateOrEditWorkoutExecution } from "./components/create-or-edit-workout-execution/create-or-edit-workout-execution";
 
 export const routes: Routes = [
   {
@@ -25,7 +26,7 @@ export const routes: Routes = [
   {
     path: "login",
     component: LoginComponent,
-    canActivate:[NoAuthGuard]
+    canActivate: [NoAuthGuard],
   },
   {
     path: "profilo/:userid", // Rotta per la pagina del profilo
@@ -51,7 +52,12 @@ export const routes: Routes = [
     path: "le-mie-schede/modifica-scheda",
     component: CreateOrEditTemplatePlanComponent,
     canActivate: [AuthGuard],
-  }, 
+  },
+  {
+    path: "registra-allenamento/:id",
+    component: CreateOrEditWorkoutExecution,
+    canActivate: [AuthGuard],
+  },
   {
     path: "error",
     component: ErrorPage,
@@ -60,12 +66,12 @@ export const routes: Routes = [
   {
     path: "info",
     component: InfoComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: "info-server",
     component: InfoBackEnd,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   { path: "**", redirectTo: "home" },
 ];

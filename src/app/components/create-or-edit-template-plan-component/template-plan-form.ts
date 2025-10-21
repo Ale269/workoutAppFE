@@ -1,10 +1,11 @@
 import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
 import { AllenamentoForm, AllenamentoFormModel } from "./workout-form";
-import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
-import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentodto";
+import { AllenamentoDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/allenamentodto";
+import { SchedaDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/schedadto";
 
 interface SchedaFormModel {
   id: FormControl<number | null>;
+  idTemplate: FormControl<number | null>;
   nomeScheda: FormControl<string | null>;
   listaAllenamenti: FormArray<FormGroup<AllenamentoFormModel>>;
 }
@@ -20,6 +21,7 @@ export class SchedaForm {
     // Inizializza il form con valori di default
     this.form = new FormGroup<SchedaFormModel>({
       id: new FormControl<number | null>(null),
+      idTemplate: new FormControl<number | null>(null),
       nomeScheda: new FormControl<string | null>("Scheda allenamento", [
         Validators.required,
       ]),
@@ -29,6 +31,7 @@ export class SchedaForm {
     // Crea un DTO temporaneo per il primo allenamento
     const primoAllenamentoDTO: AllenamentoDTO = {
       id: 0,
+      idTemplate: 0,
       nomeAllenamento: "Giorno 1",
       ordinamento: 1,
       listaEsercizi: [], // o altri campi necessari per AllenamentoDTO
@@ -46,6 +49,7 @@ export class SchedaForm {
     // Aggiorna i campi base
     this.form.patchValue({
       id: schedaDTO.id,
+      idTemplate: schedaDTO.idTemplate,
       nomeScheda: schedaDTO.nomeScheda,
     });
 
@@ -256,6 +260,7 @@ export class SchedaForm {
       // Raccolgo i dati della scheda
       let schedaDaSalvare: SchedaDTO = {
         id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
+        idTemplate: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
         nomeScheda: this.form.controls["nomeScheda"].value
           ? this.form.controls["nomeScheda"].value
           : "",

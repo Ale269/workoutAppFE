@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { ApiCatalogService } from "./api-catalog.service";
 import { Router } from "@angular/router";
 import { Observable } from "rxjs";
-import { SchedaDTO } from "../../models/view-modifica-scheda/schedadto";
 import {
   GetListaTemplatesSchedaRequestModel,
   GetListaTemplatesSchedaResponseModel,
@@ -19,6 +18,8 @@ import {
   DeleteDatiTemplateSchedaRequestModel,
   DeleteDatiTemplateSchedaResponseModel
 } from "../../models/view-modifica-scheda/deleteDatiTemplateScheda";
+import { GetDatiAllenamentoRequestModel, GetDatiAllenamentoResponseModel } from "src/app/models/esecuzione-allenamento/get-dati-allenamento";
+import { GetDatiTemplateNuovoAllenamentoRequestModel, GetDatiTemplateNuovoAllenamentoResponseModel } from "src/app/models/esecuzione-allenamento/get-dati-template-nuovo-allenamento";
 
 @Injectable({
   providedIn: "root",
@@ -83,6 +84,29 @@ export class WorkoutService {
         "deleteTemplateScheda",
         request,
         undefined
+    )
+  }
+  
+  getDatiAllenamento(
+      request: GetDatiAllenamentoRequestModel
+  ): Observable<GetDatiAllenamentoResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+        "workout",
+        "getDatiAllenamento",
+        request,
+        null
+    )
+  }
+
+  getDatiTemplateNuovoAllenamento(
+      request: GetDatiTemplateNuovoAllenamentoRequestModel
+  ): Observable<GetDatiTemplateNuovoAllenamentoResponseModel> {
+
+    return this.apiCatalogService.executeApiCall(
+        "workout",
+        "getDatiTemplateNuovoAllenamento",
+        request,
+        null
     )
 
   }

@@ -69,6 +69,20 @@
         "method": "post",
         "description": "Elimina i dati del template scheda di un utente.",
         "isMocked": false
+      },
+      {
+        "name": "getDatiAllenamento",
+        "endpoint": "/workout/getDatiAllenamento/:idAllenamento",
+        "method": "get",
+        "description": "Recupera i dati di un allebnamento di un utente.",
+        "isMocked": true
+      },
+      {
+        "name": "getDatiTemplateNuovoAllenamento",
+        "endpoint": "/workout/getDatiTemplateNuovoAllenamento/:idTemplateAllenamento",
+        "method": "get",
+        "description": "Recupera i dati del template allenamento di un utente.",
+        "isMocked": true
       }
     ],
     "widgets": [
@@ -92,7 +106,7 @@
         "method": "get",
         "description": "Recupera i dati degli ultimi allenamenti svolti dell'utente.",
         "isMocked": false
-      }, 
+      },
       {
         "name": "ultimeSchedeSvolte",
         "endpoint": "/widgets/lastWorkoutsDone/:userId",
@@ -111,5 +125,4 @@
       }
     ]
   }
-
 }

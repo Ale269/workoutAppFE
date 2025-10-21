@@ -1,0 +1,104 @@
+{
+  "esito": "OK",
+  "messaggio": "Template allenamento recuperato con successo",
+  "allenamentoCorrente": {
+    "idTemplate": 201,
+    "nomeAllenamento": "Push Day",
+    "ordinamento": 1,
+    "listaEsercizi": [
+      {
+        "idTemplate": 1,
+        "idTipoEsercizio": 1,
+        "idIconaEsercizio": 10,
+        "idMetodologia": 1,
+        "ordinamento": 1,
+        "listaSerie": [
+          {
+            "idTemplate": 1,
+            "ripetizioni": 8,
+            "carico": 80,
+            "ordinamento": 1
+          },
+          {
+            "idTemplate": 2,
+            "ripetizioni": 8,
+            "carico": 80,
+            "ordinamento": 2
+          },
+          {
+            "idTemplate": 3,
+            "ripetizioni": 6,
+            "carico": 85,
+            "ordinamento": 3
+          }
+        ]
+      },
+      {
+        "idTemplate": 2,
+        "idTipoEsercizio": 2,
+        "idIconaEsercizio": 20,
+        "idMetodologia": 1,
+        "ordinamento": 2,
+        "listaSerie": [
+          {
+            "idTemplate": 4,
+            "ripetizioni": 10,
+            "carico": 50,
+            "ordinamento": 1
+          },
+          {
+            "idTemplate": 5,
+            "ripetizioni": 8,
+            "carico": 55,
+            "ordinamento": 2
+          }
+        ]
+      },
+      {
+        "idTemplate": 3,
+        "idTipoEsercizio": 5,
+        "idIconaEsercizio": 50,
+        "idMetodologia": 2,
+        "ordinamento": 3,
+        "listaSerie": [
+          {
+            "idTemplate": 6,
+            "ripetizioni": 12,
+            "carico": 30,
+            "ordinamento": 1
+          },
+          {
+            "idTemplate": 7,
+            "ripetizioni": 12,
+            "carico": 30,
+            "ordinamento": 2
+          },
+          {
+            "idTemplate": 8,
+            "ripetizioni": 10,
+            "carico": 32.5,
+            "ordinamento": 3
+          }
+        ]
+      }
+    ]
+  },
+  "opzioniAltriAllenamenti": [
+    {
+      "idTemplate": 202,
+      "description": "Pull Day"
+    },
+    {
+      "idTemplate": 203,
+      "description": "Leg Day"
+    },
+    {
+      "idTemplate": 204,
+      "description": "Full Body"
+    },
+    {
+      "idTemplate": 205,
+      "description": "Upper Body"
+    }
+  ]
+}

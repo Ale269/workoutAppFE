@@ -1,4 +1,6 @@
 import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { WidgetsService } from "src/app/core/services/widgets.service";
 import {
   GetDatiProssimoAllenamentoRequestModel,
@@ -13,11 +15,16 @@ import {
 })
 export class ProssimoAllenamento implements OnInit {
   public datiRecuperati: boolean = false;
+  public idTemplateAllenamento: number | null = null;
   public descrizioneAllenamentoCorrente: string | null = null;
   public numeroGiornoAllenamentoCorrente: number | null = null;
   public numeroGiornoAllenamentiTotali: number | null = null;
 
-  constructor(private widgetsService: WidgetsService) {}
+  constructor(
+    private widgetsService: WidgetsService,
+    private errorHandlerService: ErrorHandlerService,
+    private router: Router
+  ) {}
 
   ngOnInit() {}
 
@@ -31,6 +38,7 @@ export class ProssimoAllenamento implements OnInit {
         this.widgetsService.getDatiProssimoAllenamento(request).subscribe({
           next: (response: GetDatiProssimoAllenamentoResponseModel) => {
             if (!response.errore?.error) {
+              this.idTemplateAllenamento = response.idAllenamento;
               this.descrizioneAllenamentoCorrente =
                 response.descrizioneAllenamentoCorrente;
               this.numeroGiornoAllenamentoCorrente =
@@ -51,5 +59,22 @@ export class ProssimoAllenamento implements OnInit {
         reject(error);
       }
     });
+  }
+
+  NavigaARegistraAllenamento() {
+    try {
+      this.router.navigate(["/registra-allenamento/", 0], {
+        state: {
+           idAllenamento: 0,
+           idTemplateAllenamento: 1
+          //  idTemplateAllenamento: this.idTemplateAllenamento
+          },
+      });
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "ProssimoAllenamento.NavigaARegistraAllenamento"
+      );
+    }
   }
 }

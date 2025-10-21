@@ -2,17 +2,21 @@ import { Injectable } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SchedaForm } from "./template-plan-form";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
+import { SchedaDTO as SchedaFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/schedadto";
 import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentodto";
+import { AllenamentoDTO as AllenamentoFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/allenamentodto";
+import { EsercizioDTO as EsercizioFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/eserciziodto";
+import { SerieDTO as SerieFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/seriedto";
 import { WorkoutService } from "../../core/services/workout.service";
 import {
   SaveDatiTemplateSchedaRequestModel,
   SaveDatiTemplateSchedaResponseModel,
 } from "src/app/models/view-modifica-scheda/saveDatiTemplateScheda";
-import { P } from "@angular/cdk/platform.d-B3vREl3q";
 import {
   DeleteDatiTemplateSchedaRequestModel,
   DeleteDatiTemplateSchedaResponseModel,
 } from "src/app/models/view-modifica-scheda/deleteDatiTemplateScheda";
+
 
 @Injectable({
   providedIn: "root",
@@ -28,9 +32,60 @@ export class CreateOrEditTemplatePlanService {
   initializeFormWithData(scheda: SchedaDTO): void {
     try {
       this.formScheda = new SchedaForm();
-      this.formScheda.updateForm(scheda);
+      const schedaFormDTO : SchedaFormDTO= this.getSchedaFormDTOFromSchedaDTO(scheda);
+      this.formScheda.updateForm(schedaFormDTO);
     } catch (error) {
       throw new Error(`initializeFormWithData: ${error}`);
+    }
+  }
+
+  getSchedaFormDTOFromSchedaDTO(schedaDTO: SchedaDTO): SchedaFormDTO {
+    try {
+      const schedaFormDTO: SchedaFormDTO = {
+        id: 0,
+        idTemplate: schedaDTO.id,
+        listaAllenamenti: [],
+        nomeScheda: schedaDTO.nomeScheda,
+      };
+
+      schedaDTO.listaAllenamenti.forEach((allenamento) => {
+        const allenamentoFormDTO: AllenamentoFormDTO = {
+          id: 0,
+          idTemplate: allenamento.id,
+          listaEsercizi: [],
+          nomeAllenamento: allenamento.nomeAllenamento,
+          ordinamento: allenamento.ordinamento,
+        };
+        schedaFormDTO.listaAllenamenti.push(allenamentoFormDTO);
+
+        allenamento.listaEsercizi.forEach((esercizio) => {
+          const esercizioFormDTO: EsercizioFormDTO = {
+            id: 0,
+            idTemplate: esercizio.id,
+            idIconaEsercizio: esercizio.idIconaEsercizio,
+            idMetodologia: esercizio.idMetodologia,
+            idTipoEsercizio: esercizio.idTipoEsercizio,
+            ordinamento: esercizio.ordinamento,
+            listaSerie: [],
+          };
+          allenamentoFormDTO.listaEsercizi.push(esercizioFormDTO);
+
+          esercizio.listaSerie.forEach((serie) => {
+            const serieFormDTO: SerieFormDTO = {
+              carico: serie.carico,
+              id: 0,
+              idTemplate: serie.id,
+              ordinamento: serie.ordinamento,
+              ripetizioni: serie.ripetizioni,
+            };
+            esercizioFormDTO.listaSerie.push(serieFormDTO);
+          });
+        });
+      });
+
+      return schedaFormDTO;
+    } catch (error) {
+      throw new Error("CreateOrEditTemplatePlanService.AddWorkout: " + error);
     }
   }
 
@@ -54,8 +109,9 @@ export class CreateOrEditTemplatePlanService {
       const nextOrdinamento = this.formScheda.listaAllenamentiForm.length + 1;
 
       // Crea un AllenamentoDTO con il nome e l'ordinamento
-      const nuovoAllenamentoDTO: AllenamentoDTO = {
+      const nuovoAllenamentoDTO: AllenamentoFormDTO = {
         id: 0,
+        idTemplate: 0,
         nomeAllenamento: nomeAllenamento || `Giorno ${nextOrdinamento}`,
         ordinamento: nextOrdinamento,
         listaEsercizi: [], // Lista vuota per un nuovo allenamento

@@ -1,9 +1,10 @@
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { SerieDTO } from "src/app/models/view-modifica-scheda/seriedto";
+import { SerieDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/seriedto";
 
 export interface SerieFormModel {
   identifier: FormControl<number | null>;
   id: FormControl<number | null>;
+  idTemplate: FormControl<number | null>;
   ordinamento: FormControl<number | null>; // NUOVO CAMPO
   ripetizioni: FormControl<number | null>;
   carico: FormControl<number | null>;
@@ -31,6 +32,7 @@ export class SerieForm {
     this.form = new FormGroup<SerieFormModel>({
       identifier: new FormControl<number | null>(identifier),
       id: new FormControl<number | null>(serieDTO?.id || null),
+      idTemplate: new FormControl<number | null>(serieDTO?.idTemplate || null),
       ordinamento: new FormControl<number | null>(
         serieDTO?.ordinamento || null
       ), // NUOVO CAMPO
@@ -48,6 +50,7 @@ export class SerieForm {
     try {
       return {
         id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
+        idTemplate: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
         carico: this.form.controls["carico"].value
           ? this.form.controls["carico"].value
           : 0,
