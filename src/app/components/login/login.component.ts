@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
   // Aggiungi proprietà per gestire gli spinner ID
   private loginSpinnerId: string | null = null;
   private registerSpinnerId: string | null = null;
-public app_info = APP_INFO;
+  public app_info = APP_INFO;
 
   constructor(
     private authService: AuthService,
@@ -63,9 +63,7 @@ public app_info = APP_INFO;
     }
   }
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;
@@ -79,7 +77,7 @@ public app_info = APP_INFO;
   onRegister() {
     try {
       console.log("ON CLICK REGISTER");
-      
+
       if (!this.loginForm.form.valid) {
         this.markFormGroupTouched();
         return;
@@ -108,35 +106,39 @@ public app_info = APP_INFO;
       this.authService.signup(credentials).subscribe({
         next: (response) => {
           this.isLoading = false;
-          
+
           if (this.registerSpinnerId) {
             this.spinnerService.setSuccess(this.registerSpinnerId);
           }
-          
+
           // Implementa la logica dopo registrazione riuscita
           // this.router.navigate(['/home']);
         },
         error: (error) => {
           this.isLoading = false;
-          
+
           if (this.registerSpinnerId) {
             this.spinnerService.setError(
               this.registerSpinnerId,
               error.error?.message || "Errore durante la registrazione"
             );
           }
-          
-          this.errorMessage = error.error?.message || "Errore durante la registrazione";
-          this.errorHandlerService.handleError(error, "LoginComponent.onRegister");
+
+          this.errorMessage =
+            error.error?.message || "Errore durante la registrazione";
+          this.errorHandlerService.handleError(
+            error,
+            "LoginComponent.onRegister"
+          );
         },
       });
     } catch (error) {
       this.isLoading = false;
-      
+
       if (this.registerSpinnerId) {
         this.spinnerService.setError(this.registerSpinnerId);
       }
-      
+
       this.errorHandlerService.handleError(error, "LoginComponent.onRegister");
     }
   }
@@ -144,7 +146,7 @@ public app_info = APP_INFO;
   onLogin() {
     try {
       console.log("Login form submitted:", this.loginForm);
-      
+
       if (!this.loginForm.form.valid) {
         this.markFormGroupTouched();
         return;
@@ -154,6 +156,7 @@ public app_info = APP_INFO;
       this.loginSpinnerId = this.spinnerService.showWithResult(
         "Accesso in corso...",
         {
+          forceShow: true,
           successMessage: "Accesso effettuato con successo",
           errorMessage: "Errore durante l'accesso",
           resultDuration: 250,
@@ -171,14 +174,14 @@ public app_info = APP_INFO;
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
-          console.log("RESPONSE LOGIN: ",response)
+          console.log("RESPONSE LOGIN: ", response);
           //imposto lo stato autenticato user
           this.authService.setAuthState(
-              {
-                usedId:response.usedId,
-                username: response.username,
-              },
-              response.jwtToken
+            {
+              usedId: response.usedId,
+              username: response.username,
+            },
+            response.jwtToken
           );
 
           this.isLoading = false;
@@ -192,10 +195,10 @@ public app_info = APP_INFO;
         },
         error: (error) => {
           this.isLoading = false;
-          
+
           // Determina il messaggio di errore appropriato
           let errorMsg = "Errore durante il login";
-          
+
           if (error.status === 401) {
             errorMsg = "Credenziali non valide";
           } else if (error.status === 404) {
@@ -203,36 +206,34 @@ public app_info = APP_INFO;
           } else if (error.error?.message) {
             errorMsg = error.error.message;
           }
-          
+
           if (this.loginSpinnerId) {
             this.spinnerService.setError(this.loginSpinnerId, errorMsg);
           }
-          
+
           this.errorMessage = errorMsg;
-          
+
           // NON navigare su /home in caso di errore
           this.errorHandlerService.handleError(error, "LoginComponent.onLogin");
         },
       });
     } catch (error) {
       this.isLoading = false;
-      
+
       if (this.loginSpinnerId) {
         this.spinnerService.setError(this.loginSpinnerId);
       }
-      
+
       this.errorHandlerService.handleError(error, "LoginComponent.onLogin");
     }
   }
 
-
   private markFormGroupTouched(): void {
-    Object.keys(this.loginForm.form.controls).forEach(key => {
+    Object.keys(this.loginForm.form.controls).forEach((key) => {
       const control = this.loginForm.form.get(key);
       control?.markAsTouched();
     });
   }
-
 
   ngOnDestroy(): void {
     if (this.loginSpinnerId) {

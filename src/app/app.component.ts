@@ -1,5 +1,19 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ElementRef,
+  AfterViewInit,
+  ViewChild,
+} from "@angular/core";
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
+  RouterOutlet,
+} from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { ErrorHandlerService } from "./core/services/error-handler.service";
 import { filter, Subject, takeUntil } from "rxjs";
@@ -14,6 +28,8 @@ import { BottomSheetService } from "./components/shared/bottom-sheet/bottom-shee
 import { BottomSheetWrapperComponent } from "./components/shared/bottom-sheet/bottom-sheet";
 import { TranslateService } from "@ngx-translate/core";
 import { effect } from "@angular/core";
+import { gsap } from "gsap";
+import { AnimationService } from "./core/services/page-animation-service";
 
 @Component({
   selector: "app-root",
@@ -28,13 +44,16 @@ import { effect } from "@angular/core";
     CommonModule,
     UpdateBannerComponent,
     OfflineIndicatorComponent,
-    BottomSheetWrapperComponent
+    BottomSheetWrapperComponent,
   ],
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   public MenuIsVisible: boolean = false;
   public hasCriticalErrors: boolean = false;
   public initializationComplete: boolean = false;
+
+  @ViewChild("mainContent") mainContentRef: ElementRef | undefined;
+  private mainContent: HTMLElement | null = null;
 
   private destroy$ = new Subject<void>();
 
@@ -44,28 +63,34 @@ export class AppComponent implements OnInit, OnDestroy {
     public modalService: ModalService,
     public spinnerService: SpinnerService,
     public bottomSheetService: BottomSheetService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private animationService: AnimationService
   ) {
     // Inizializza TranslateService
-    this.translate.setDefaultLang('it');
+    this.translate.setDefaultLang("it");
 
     // Setup routing events
     this.router.events
       .pipe(
-        filter((event) => event instanceof NavigationEnd),
+        filter(
+          (event) =>
+            event instanceof NavigationStart ||
+            event instanceof NavigationEnd ||
+            event instanceof NavigationCancel ||
+            event instanceof NavigationError
+        ),
         takeUntil(this.destroy$)
       )
-      .subscribe((event: NavigationEnd) => {
-        if (!this.hasCriticalErrors) {
-          this.updateMenuVisibility(event.urlAfterRedirects);
-        }
+      .subscribe((event) => {
+        this.animationService.playFadeIn();
       });
 
     // Monitor modali e bottom sheets per bloccare lo scroll
     effect(() => {
       const hasActiveModal = this.modalService.modals().length > 0;
-      const hasActiveBottomSheet = this.bottomSheetService.activeBottomSheets().length > 0;
-      
+      const hasActiveBottomSheet =
+        this.bottomSheetService.activeBottomSheets().length > 0;
+
       this.toggleBodyScroll(hasActiveModal || hasActiveBottomSheet);
     });
   }
@@ -80,20 +105,29 @@ export class AppComponent implements OnInit, OnDestroy {
     this.setupErrorMonitoring();
   }
 
+  ngAfterViewInit(): void {
+    if (this.mainContentRef) {
+      this.mainContent = this.mainContentRef.nativeElement;
+      this.animationService.setMainElement(this.mainContent);
+      // assicurati stato iniziale
+      gsap.set(this.mainContent, { autoAlpha: 1 });
+    }
+  }
+
   ngOnDestroy(): void {
     // Ripristina lo scroll quando il componente viene distrutto
     this.toggleBodyScroll(false);
-    
+
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   private toggleBodyScroll(disable: boolean): void {
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       if (disable) {
-        document.body.classList.add('no-scroll');
+        document.body.classList.add("no-scroll");
       } else {
-        document.body.classList.remove('no-scroll');
+        document.body.classList.remove("no-scroll");
       }
     }
   }
@@ -209,5 +243,38 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public get isLoading(): boolean {
     return !this.initializationComplete && !this.hasCriticalErrors;
+  }
+
+  private playFadeOut(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.mainContent) {
+        resolve();
+        return;
+      }
+
+      const el = this.mainContentRef?.nativeElement;
+
+      gsap.to(el, {
+        autoAlpha: 0, // opacity + visibility
+        ease: "power1.in",
+        onComplete: () => {
+          resolve();
+        },
+      } as gsap.TweenVars);
+    });
+  }
+
+  private playFadeIn(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.mainContent) {
+        resolve();
+        return;
+      }
+      gsap.to(this.mainContent, {
+        autoAlpha: 1,
+        duration: 0.3,
+        ease: "power1.out",
+      });
+    });
   }
 }

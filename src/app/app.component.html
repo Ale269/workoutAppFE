@@ -4,7 +4,7 @@
   <app-menu-component></app-menu-component>
   }
 
-  <div class="main-content-wrapper">
+  <div class="main-content-wrapper" #mainContent> 
     <app-update-banner></app-update-banner>
     <app-offline-indicator></app-offline-indicator>
     <router-outlet></router-outlet>
@@ -33,8 +33,8 @@
   @for (spinner of spinnerService.spinners(); track spinner.id) {
   <app-spinner [config]="spinner" (completed)="onSpinnerCompleted($event)">
   </app-spinner>
-  } 
-  
+  }
+
   <!-- Bottom Sheets -->
   @for (sheet of bottomSheetService.activeBottomSheets(); track sheet.id) {
   <app-bottom-sheet-wrapper [instance]="sheet"></app-bottom-sheet-wrapper>

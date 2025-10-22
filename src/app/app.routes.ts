@@ -13,82 +13,98 @@ import { InfoBackEnd } from "./components/info-back-end/info-back-end";
 import { CreateOrEditWorkoutExecution } from "./components/create-or-edit-workout-execution/create-or-edit-workout-execution";
 import { ListExecutedWorkouts } from "./components/list-executed-workouts/list-executed-workouts";
 import { ViewDataExecutedWorkout } from "./components/view-data-executed-workout/view-data-executed-workout";
+import { FadeGuard } from "./core/guards/page-animation-guards";
 
 export const routes: Routes = [
   {
     path: "",
     redirectTo: "home",
     pathMatch: "full",
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "home",
     component: HomeComponent,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "login",
     component: LoginComponent,
     canActivate: [NoAuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "profilo/:userid", // Rotta per la pagina del profilo
     component: UserProfile,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "le-mie-schede", // Rotta per la pagina del profilo
     component: ListTemplatePlans,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "le-mie-schede/visualizza-scheda/:id", // Rotta per la pagina del profilo
     component: ViewTemplatePlan,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "le-mie-schede/modifica-scheda/:id",
     component: CreateOrEditTemplatePlanComponent,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "le-mie-schede/modifica-scheda",
     component: CreateOrEditTemplatePlanComponent,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "registra-allenamento/:id",
     component: CreateOrEditWorkoutExecution,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   }, 
   {
     path: "allenamenti-svolti",
     component: ListExecutedWorkouts,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "allenamenti-svolti/visualizza-allenamento/:id",
     component: ViewDataExecutedWorkout,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "allenamenti-svolti/modifica-allenamento/:id",
     component: CreateOrEditWorkoutExecution,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   }, 
   {
     path: "error",
     component: ErrorPage,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "info",
     component: InfoComponent,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   {
     path: "info-server",
     component: InfoBackEnd,
     canActivate: [AuthGuard],
+    canDeactivate: [FadeGuard] 
   },
   { path: "**", redirectTo: "home" },
 ];
