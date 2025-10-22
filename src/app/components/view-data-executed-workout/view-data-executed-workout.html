@@ -5,19 +5,21 @@
       <div class="back-icon-trigger" (click)="goBack()"></div>
       <img src="assets/recollect/svg/google-arrow.svg" />
     </div>
-    <h1 class="text-title">{{scheda.nomeScheda}}</h1>
+    <h1 class="text-title">{{allenamento.nomeAllenamento}}</h1>
   </div>
 
-  <div class="lista-template-schede-container">
-    @for (allenamento of scheda.listaAllenamenti; track allenamento.id; let i =
-    $index) {
-    <div class="section-title-container template-scheda">
-      <div class="nome-allenamento">
-        <h3 class="text-title">{{ allenamento?.nomeAllenamento }}</h3>
-      </div>
-      <div class="dati-allenamento-container">
-        @for(esercizio of allenamento?.listaEsercizi; track esercizio.id; let i
-        = $index) {
+  <div class="nome-scheda-data-esecuzione-container">
+    <h3 class="text-title">{{ allenamento.nomeScheda }}</h3>
+    <h3 class="text-white">
+      {{ allenamento.dataEsecuzione | date: "dd/MM/yyyy" }}
+    </h3>
+  </div>
+
+  <accordion-group>
+    @for (esercizio of allenamento.listaEsercizi; track esercizio.id; let i =
+    $index){
+    <accordion>
+      <accordion-header>
         <div class="esercizio-container">
           <div class="icon-esercizio-container">
             <div
@@ -51,40 +53,55 @@
             </div>
           </div>
         </div>
-        } @empty {
-        <h3 class="text-white">Dati non trovati</h3>
-        }
-      </div>
-    </div>
-    } @empty {
-    <h3 class="text-white">Dati non trovati</h3>
-    }
-
-    <div class="delete-scheda-button-row">
-      <button class="text-shape-button-danger" (click)="openDeleteScheda()">
-        <span>Elimina scheda</span>
-        <div class="text-shape-button-icon-container-danger">
-          <img src="assets/recollect/svg/google-delete.svg" />
+      </accordion-header>
+      <accordion-body>
+        <div class="exercise-serie-list-container">
+          @for (serie of esercizio.listaSerie; track serie.id; let i = $index){
+          <div class="exercise-data-serie-container">
+            <div class="serie-numerator-container">
+              <h3 class="text-grey">Serie {{serie.ordinamento}}</h3>
+            </div>
+            <div class="serie-data-container">
+              <div class="ripetizioni-container">
+                <h3 class="text-grey">Ripetizioni</h3>
+                <h3 class="text-white">{{serie.ripetizioni}}</h3>
+              </div>
+              <div class="carico-container">
+                <h3 class="text-grey">Carico</h3>
+                <h3 class="text-white">{{serie.carico}}</h3>
+              </div>
+            </div>
+          </div>
+          }
         </div>
-      </button>
-    </div>
+      </accordion-body>
+    </accordion>
+    }
+  </accordion-group>
+
+  <div class="delete-scheda-button-row">
+    <button class="text-shape-button-danger" (click)="openDeleteScheda()">
+      <span>Elimina allenamento</span>
+      <div class="text-shape-button-icon-container-danger">
+        <img src="assets/recollect/svg/google-delete.svg" />
+      </div>
+    </button>
   </div>
 
   <div class="floating-static-button-container">
-    <button class="floating-static-button" (click)="modificaScheda()">
-      <span>Modifica scheda</span>
+    <button class="floating-static-button" (click)="modificaAllenamento()">
+      <span>Modifica allenamento </span>
     </button>
   </div>
 </div>
-
-} @else if(this.loadingProgression === LoadingProgressionEnum.none ||
-this.loadingProgression === LoadingProgressionEnum.loading){
-<h3 class="text-white">Caricamento in corso</h3>
-} @else if(this.loadingProgression === LoadingProgressionEnum.failed){
-<h3 class="text-white">Caricamento fallito</h3>
+} @else if(this.loadingProgression === LoadingProgressionEnum.loading ||
+this.loadingProgression === LoadingProgressionEnum.none){
+<h3 class="text-white">Ricerca in corso</h3>
+} @else if(this.loadingProgression === LoadingProgressionEnum.failed) {
+<h3 class="text-white">Allenamento non trovato</h3>
 }
 
-<ng-template #headerDeleteTemplate>
+<ng-template #headerDeleteWorkout>
   <img
     src="assets/recollect/images/icona-stop-modifica.png"
     alt="Attenzione"
@@ -93,15 +110,13 @@ this.loadingProgression === LoadingProgressionEnum.loading){
 </ng-template>
 
 <!-- Template per il body -->
-<ng-template #bodyDeleteTemplate>
-  <h3 class="text-white">
-    Sei sicuro di voler eliminare questo template scheda?
-  </h3>
+<ng-template #bodyDeleteWorkout>
+  <h3 class="text-white">Sei sicuro di voler eliminare questo allenamento?</h3>
   <h3 class="text-white">Questa azione non può essere annullata.</h3>
 </ng-template>
 
 <!-- Template per il bottone di chiusura -->
-<ng-template #footerCloseDeleteTemplate>
+<ng-template #footerCloseDeleteWorkout>
   <button class="text-shape-button-cancel">
     <span>Annulla</span>
     <div class="text-shape-button-icon-container-cancel">
@@ -111,7 +126,7 @@ this.loadingProgression === LoadingProgressionEnum.loading){
 </ng-template>
 
 <!-- Template per il bottone di conferma -->
-<ng-template #footerConfirmDeleteTemplate>
+<ng-template #footerConfirmDeleteWorkout>
   <button class="text-shape-button-danger">
     <span>Elimina</span>
     <div class="text-shape-button-icon-container-danger">

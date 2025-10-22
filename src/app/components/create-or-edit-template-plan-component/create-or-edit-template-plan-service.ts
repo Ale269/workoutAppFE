@@ -17,7 +17,6 @@ import {
   DeleteDatiTemplateSchedaResponseModel,
 } from "src/app/models/view-modifica-scheda/deleteDatiTemplateScheda";
 
-
 @Injectable({
   providedIn: "root",
 })
@@ -32,8 +31,10 @@ export class CreateOrEditTemplatePlanService {
   initializeFormWithData(scheda: SchedaDTO): void {
     try {
       this.formScheda = new SchedaForm();
-      const schedaFormDTO : SchedaFormDTO= this.getSchedaFormDTOFromSchedaDTO(scheda);
+      const schedaFormDTO: SchedaFormDTO =
+        this.getSchedaFormDTOFromSchedaDTO(scheda);
       this.formScheda.updateForm(schedaFormDTO);
+      this.formScheda.form.markAsPristine();
     } catch (error) {
       throw new Error(`initializeFormWithData: ${error}`);
     }
@@ -86,13 +87,17 @@ export class CreateOrEditTemplatePlanService {
 
       return schedaFormDTO;
     } catch (error) {
-      throw new Error("CreateOrEditTemplatePlanService.getSchedaFormDTOFromSchedaDTO: " + error);
+      throw new Error(
+        "CreateOrEditTemplatePlanService.getSchedaFormDTOFromSchedaDTO: " +
+          error
+      );
     }
   }
 
   initializeEmptyForm(): void {
     try {
       this.formScheda = new SchedaForm();
+      this.formScheda.form.markAsPristine();
     } catch (error) {
       throw new Error(`initializeEmptyForm: ${error}`);
     }

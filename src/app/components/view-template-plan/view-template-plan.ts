@@ -18,6 +18,7 @@ import {
   DeleteDatiTemplateSchedaResponseModel,
 } from "../../models/view-modifica-scheda/deleteDatiTemplateScheda";
 import { ModalService } from "src/app/core/services/modal.service";
+import { LoadingProgression } from "src/app/models/enums/loading-progression";
 
 @Component({
   selector: "app-view-template-plan",
@@ -42,6 +43,9 @@ export class ViewTemplatePlan {
   public idScheda: number | null = 0;
   public scheda!: SchedaDTO;
   private currentSpinnerId: string | null = null;
+
+  public LoadingProgressionEnum = LoadingProgression;
+  public loadingProgression: LoadingProgression = LoadingProgression.none;
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
@@ -82,6 +86,8 @@ export class ViewTemplatePlan {
         }
       );
 
+      this.loadingProgression = LoadingProgression.loading;
+
       if (this.idScheda !== null && this.idScheda > 0) {
         const request: GetDatiTemplateSchedaRequestModel = {
           workoutId: this.idScheda,
@@ -95,6 +101,7 @@ export class ViewTemplatePlan {
                 if (this.currentSpinnerId) {
                   this.spinnerService.setSuccess(this.currentSpinnerId);
                 }
+                this.loadingProgression = LoadingProgression.complete;
               } else {
                 if (this.currentSpinnerId) {
                   this.spinnerService.setError(this.currentSpinnerId);
@@ -103,6 +110,7 @@ export class ViewTemplatePlan {
                   response.errore.error,
                   "ViewTemplatePlan.getListaTemplateSchede"
                 );
+                this.loadingProgression = LoadingProgression.failed;
               }
             } else {
               if (this.currentSpinnerId) {
@@ -112,6 +120,7 @@ export class ViewTemplatePlan {
                 response.errore.error,
                 "ViewTemplatePlan.getListaTemplateSchede"
               );
+              this.loadingProgression = LoadingProgression.failed;
             }
           },
           error: (error) => {
@@ -122,6 +131,7 @@ export class ViewTemplatePlan {
               error,
               "ViewTemplatePlan.getListaTemplateSchede"
             );
+            this.loadingProgression = LoadingProgression.failed;
           },
         });
       } else {
@@ -132,6 +142,7 @@ export class ViewTemplatePlan {
           "Nessuna scheda trovata: ",
           "ViewTemplatePlan.getListaTemplateSchede"
         );
+        this.loadingProgression = LoadingProgression.failed;
       }
     } catch (error) {
       if (this.currentSpinnerId) {
@@ -141,6 +152,7 @@ export class ViewTemplatePlan {
         error,
         "ViewTemplatePlan.getListaTemplateSchede"
       );
+      this.loadingProgression = LoadingProgression.failed;
     }
   }
 

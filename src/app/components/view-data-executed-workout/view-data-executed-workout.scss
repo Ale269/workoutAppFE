@@ -1,0 +1,106 @@
+.content {
+  padding-bottom: 80px;
+}
+
+.icon-esercizio-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nome-scheda-data-esecuzione-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 32px;
+}
+
+.icon-esercizio-container img {
+  width: 40px;
+}
+
+.esercizio-container {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.dati-esercizio-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chips-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dati-chip-container {
+  color: #808080;
+  font-weight: 700;
+  font-family: "poppins";
+  font-size: 14px;
+  border: 1px solid #212121;
+  background-color: #0c0c0c;
+  border-radius: 4px 2px;
+  padding: 4px;
+}
+
+.circle-icon {
+  border: 1px solid #fff;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.delete-scheda-button-row {
+  padding-top: 32px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.warning-icon {
+  width: 40px;
+}
+
+.exercise-serie-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 0;
+}
+
+.exercise-data-serie-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 8px;
+  background-color: #0c0c0c;
+  border: 1px solid #212121;
+  padding: 16px;
+}
+
+.serie-data-container {
+  display: flex;
+  gap: 16px;
+}
+
+.ripetizioni-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.carico-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}

@@ -18,8 +18,9 @@ import {
   DeleteDatiTemplateSchedaRequestModel,
   DeleteDatiTemplateSchedaResponseModel
 } from "../../models/view-modifica-scheda/deleteDatiTemplateScheda";
-import { GetDatiAllenamentoRequestModel, GetDatiAllenamentoResponseModel } from "src/app/models/esecuzione-allenamento/get-dati-allenamento";
-import { GetDatiTemplateNuovoAllenamentoRequestModel, GetDatiTemplateNuovoAllenamentoResponseModel } from "src/app/models/esecuzione-allenamento/get-dati-template-nuovo-allenamento";
+import { GetListaAllenamentiSvoltiRequestModel, GetListaAllenamentiSvoltiResponseModel } from "src/app/models/lista-allenamenti-svolti/get-lista-templates-schede";
+import { GetDatiAllenamentoRequestModel, GetDatiAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
+import { GetDatiTemplateNuovoAllenamentoRequestModel, GetDatiTemplateNuovoAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-template-nuovo-allenamento";
 
 @Injectable({
   providedIn: "root",
@@ -109,6 +110,17 @@ export class WorkoutService {
         null
     )
 
+  }
+
+   getListaAllenamentiSvolti(
+    request: GetListaAllenamentiSvoltiRequestModel
+  ): Observable<GetListaAllenamentiSvoltiResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "workout",
+      "getAllenamentiSvolti",
+      request,
+      null
+    );
   }
 
 }

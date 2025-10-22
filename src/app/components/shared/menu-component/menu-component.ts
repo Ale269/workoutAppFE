@@ -60,8 +60,7 @@ export class MenuComponent {
   navigateToAllenamentiSvolti() {
     this.closeMenu();
     setTimeout(() => {
-      // Aggiungi qui la navigazione per Allenamenti svolti se necessario
-      // this.router.navigate(['/allenamenti-svolti']);
+      this.router.navigate(['/allenamenti-svolti']);
     }, 100);
   }
 

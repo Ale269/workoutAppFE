@@ -83,6 +83,13 @@
         "method": "get",
         "description": "Recupera i dati del template allenamento di un utente.",
         "isMocked": true
+      },
+      {
+        "name": "getAllenamentiSvolti",
+        "endpoint": "/workout/getAllenamentiSvolti/:userId",
+        "method": "get",
+        "description": "Recupera i dati degli allenamenti svolti di un utente.",
+        "isMocked": true
       }
     ],
     "widgets": [

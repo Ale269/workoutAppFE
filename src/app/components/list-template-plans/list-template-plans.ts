@@ -1,7 +1,7 @@
 // list-template-plans.component.ts
 import { Component, OnInit } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
-import { SchedaListaDTO } from "src/app/models/lista-template-schede/seriedto";
+import { SchedaListaDTO } from "src/app/models/lista-template-schede/schedalistadto";
 import { CommonModule } from "@angular/common";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { WorkoutService } from "src/app/core/services/workout.service";

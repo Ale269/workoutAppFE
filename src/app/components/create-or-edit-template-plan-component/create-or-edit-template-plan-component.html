@@ -1,4 +1,5 @@
 <!-- create-or-edit-template-plan-component.html -->
+@if(this.loadingProgression === LoadingProgressionEnum.complete){
 <div class="content">
   <div class="section-title-container close-icon-title-container">
     <div class="close-icon-section-container">
@@ -110,6 +111,12 @@
     </button>
   </div>
 </div>
+}@else if(this.loadingProgression === LoadingProgressionEnum.none ||
+this.loadingProgression === LoadingProgressionEnum.loading) {
+<h3 class="text-white">Caricamento in corso</h3>
+} @else if( this.loadingProgression === LoadingProgressionEnum.failed) {
+<h3 class="text-white">Caricamento fallito</h3>
+}
 
 <!-- Template per il body del modale -->
 <ng-template #bodyAddWorkout>

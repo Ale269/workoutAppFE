@@ -2,14 +2,17 @@
   "esito": "OK",
   "messaggio": "Allenamento recuperato con successo",
   "allenamentoCorrente": {
-    "id": 501,
+    "id": 1,
+    "idTemplate": 1201,
     "nomeAllenamento": "Push Day - Esecuzione del 19/10/2025",
+    "nomeScheda": "Upper/Lower Strength",
+    "dataEsecuzione": "2025-10-19T10:30:00Z",
     "ordinamento": 1,
     "listaEsercizi": [
       {
         "id": 1,
-        "idTipoEsercizio": 1,
-        "idIconaEsercizio": 10,
+        "idTipoEsercizio": 2,
+        "idIconaEsercizio": 1,
         "idMetodologia": 1,
         "ordinamento": 1,
         "listaSerie": [
@@ -36,7 +39,7 @@
       {
         "id": 2,
         "idTipoEsercizio": 2,
-        "idIconaEsercizio": 20,
+        "idIconaEsercizio": 1,
         "idMetodologia": 1,
         "ordinamento": 2,
         "listaSerie": [
@@ -62,8 +65,8 @@
       },
       {
         "id": 3,
-        "idTipoEsercizio": 5,
-        "idIconaEsercizio": 50,
+        "idTipoEsercizio": 1,
+        "idIconaEsercizio": 1,
         "idMetodologia": 2,
         "ordinamento": 3,
         "listaSerie": [

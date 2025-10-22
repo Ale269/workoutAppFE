@@ -1,5 +1,5 @@
 import { BaseResponseModel } from "../base-response/base-response";
-import { SchedaListaDTO } from "./seriedto";
+import { SchedaListaDTO } from "./schedalistadto";
 
 export interface GetListaTemplatesSchedaRequestModel {
   userId: number;

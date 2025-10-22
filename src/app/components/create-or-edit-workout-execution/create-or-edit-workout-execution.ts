@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { CreateOrEditWorkoutExecutionService } from "./create-or-edit-workout-execution-service";
@@ -11,17 +17,18 @@ import {
   MultiOptionButton,
 } from "../shared/multi-option-button/multi-option-button";
 import { Router } from "@angular/router";
-import { altriAllenamentiSelectDTO } from "src/app/models/esecuzione-allenamento/altri-allenamenti-select-dto";
-import { GetDatiAllenamentoRequestModel } from "src/app/models/esecuzione-allenamento/get-dati-allenamento";
-import { GetDatiTemplateNuovoAllenamentoRequestModel } from "src/app/models/esecuzione-allenamento/get-dati-template-nuovo-allenamento";
 import { AllenamentoDTO as AllenamentoFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/allenamentodto";
-import { AllenamentoDTO } from "src/app/models/esecuzione-allenamento/allenamentodto";
-import { EsercizioDTO } from "src/app/models/esecuzione-allenamento/eserciziodto";
-import { SerieDTO } from "src/app/models/esecuzione-allenamento/seriedto";
+import { AllenamentoDTO } from "src/app/models/view-modifica-allenamento-svolto/allenamentodto";
+import { EsercizioDTO } from "src/app/models/view-modifica-allenamento-svolto/eserciziodto";
+import { SerieDTO } from "src/app/models/view-modifica-allenamento-svolto/seriedto";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import { RegistraAllenamentoRequestModel } from "src/app/models/esecuzione-allenamento/registra-allenaneto";
-import { MatNativeDateModule } from '@angular/material/core'; // <<-- provides DateAdapter
+import { RegistraAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/registra-allenaneto";
+import { MatNativeDateModule } from "@angular/material/core"; // <<-- provides DateAdapter
 import { MatInput } from "@angular/material/input";
+import { GetDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
+import { GetDatiTemplateNuovoAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-template-nuovo-allenamento";
+import { ModalService } from "src/app/core/services/modal.service";
+import { LoadingProgression } from "src/app/models/enums/loading-progression";
 
 @Component({
   selector: "app-create-or-edit-workout-execution",
@@ -33,12 +40,19 @@ import { MatInput } from "@angular/material/input";
     MultiOptionButton,
     MatInput,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
   ],
   templateUrl: "./create-or-edit-workout-execution.html",
   styleUrl: "./create-or-edit-workout-execution.scss",
 })
 export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
+  @ViewChild("headerGoBack") headerGoBack!: TemplateRef<any>;
+  @ViewChild("bodyGoBack") bodyGoBack!: TemplateRef<any>;
+  @ViewChild("footerCloseGoBack")
+  footerCloseGoBack!: TemplateRef<any>;
+  @ViewChild("footerConfirmGoBack")
+  footerConfirmGoBack!: TemplateRef<any>;
+
   private initSpinnerId: string | null = null;
   private saveSpinnerId: string | null = null;
 
@@ -46,8 +60,11 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   public idTemplateAllenamento: number = 0;
   public idAllenamento: number = 0;
+  public allenamentoDTO: AllenamentoDTO | null = null;
+  public createOrEdit: createOrEdit | null = null;
 
-  public allenamentoDataLoaded: boolean = false;
+  public LoadingProgressionEnum = LoadingProgression;
+  public loadingProgression: LoadingProgression = LoadingProgression.none;
 
   // Definisci le opzioni del pulsante
   public buttonOptions: buttonOption[] = [];
@@ -56,13 +73,16 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     private errorHandlerService: ErrorHandlerService,
     private spinnerService: SpinnerService,
     public createOrEditWorkoutExecutionService: CreateOrEditWorkoutExecutionService,
-    private router: Router
+    private router: Router,
+    private modalService: ModalService
   ) {
     try {
       const navigation = this.router.getCurrentNavigation();
       const state = navigation?.extras.state as {
         idTemplateAllenamento: number;
         idAllenamento: number;
+        createOrEdit: createOrEdit;
+        allenamentoDTO: AllenamentoDTO;
       };
 
       if (state?.idTemplateAllenamento) {
@@ -71,6 +91,14 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
       if (state?.idAllenamento) {
         this.idAllenamento = state.idAllenamento;
+      }
+
+      if (state?.allenamentoDTO) {
+        this.allenamentoDTO = state.allenamentoDTO;
+      }
+
+      if (state?.createOrEdit) {
+        this.createOrEdit = state.createOrEdit;
       }
     } catch (error) {
       this.errorHandlerService.handleError(
@@ -94,19 +122,58 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   // Nuovo metodo unificato nel component
   initializeWorkout() {
     try {
-      // Se sto registrando un nuovo allenamento
-      if (this.idAllenamento) {
-        this.getDatiAllenamento();
-      }
-      // sto editando un allenamento
-      else {
-        this.getDatiTemplateNuovoAllenamento();
+      this.loadingProgression = LoadingProgression.loading;
+
+      switch (this.createOrEdit) {
+        case createOrEdit.create:
+          this.getDatiTemplateNuovoAllenamento();
+          break;
+        case createOrEdit.edit:
+          if (this.allenamentoDTO) {
+            try {
+              this.initSpinnerId = this.spinnerService.showWithResult(
+                "Recupero dati allenamento",
+                {
+                  successMessage: "Dati recuperati con successo",
+                  errorMessage: "Errore nel recupero dei dati",
+                  resultDuration: 250,
+                  minSpinnerDuration: 250,
+                }
+              );
+
+              this.createOrEditWorkoutExecutionService.InitializeAllenamento(
+                this.allenamentoDTO
+              );
+
+              this.loadingProgression = LoadingProgression.complete;
+
+              if (this.initSpinnerId) {
+                this.spinnerService.setSuccess(this.initSpinnerId);
+              }
+            } catch (error) {
+              if (this.initSpinnerId) {
+                this.spinnerService.setError(this.initSpinnerId);
+              }
+              this.errorHandlerService.handleError(
+                error,
+                "CreateOrEditWorkoutExecution.getDatiAllenamento"
+              );
+              this.loadingProgression = LoadingProgression.failed;
+            }
+          } else if (this.idAllenamento) {
+            this.getDatiAllenamento();
+          } else {
+            this.loadingProgression = LoadingProgression.failed;
+            throw new Error("Nessun allenamento fornito");
+          }
+          break;
       }
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
         "CreateOrEditWorkoutExecution.initializeWorkout"
       );
+      this.loadingProgression = LoadingProgression.failed;
     }
   }
 
@@ -132,10 +199,10 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           .GetDatiAllenamento(request)
           .then((response) => {
             if (!response.errore?.error) {
-              this.allenamentoDataLoaded = true;
               if (this.initSpinnerId) {
                 this.spinnerService.setSuccess(this.initSpinnerId);
               }
+              this.loadingProgression = LoadingProgression.complete;
             } else {
               if (this.initSpinnerId) {
                 this.spinnerService.setError(this.initSpinnerId);
@@ -144,16 +211,15 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                 response.errore.error,
                 "CreateOrEditWorkoutExecution.getDatiAllenamento"
               );
+              this.loadingProgression = LoadingProgression.failed;
             }
           })
           .catch((error) => {
             if (this.initSpinnerId) {
               this.spinnerService.setError(this.initSpinnerId);
             }
-            this.errorHandlerService.handleError(
-              error,
-              "CreateOrEditWorkoutExecution.getDatiAllenamento"
-            );
+            this.loadingProgression = LoadingProgression.failed;
+            throw new Error(error);
           });
       } else {
         if (this.initSpinnerId) {
@@ -163,6 +229,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           "nessun id allenamento trovato",
           "CreateOrEditWorkoutExecution.getDatiAllenamento"
         );
+        this.loadingProgression = LoadingProgression.failed;
       }
     } catch (error) {
       if (this.initSpinnerId) {
@@ -172,6 +239,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         error,
         "CreateOrEditWorkoutExecution.getDatiAllenamento"
       );
+      this.loadingProgression = LoadingProgression.failed;
     }
   }
 
@@ -200,7 +268,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           .GetDatiTemplateNuovoAllenamento(request)
           .then((response) => {
             if (!response.errore?.error) {
-              this.allenamentoDataLoaded = true;
+              this.loadingProgression = LoadingProgression.complete;
               this.buttonOptions = response.opzioniAltriAllenamenti.map((o) => {
                 return { description: o.description, optionId: o.idTemplate };
               });
@@ -215,6 +283,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                 response.errore.error,
                 "CreateOrEditWorkoutExecution.getDatiTemplateNuovoAllenamento"
               );
+              this.loadingProgression = LoadingProgression.failed;
             }
           })
           .catch((error) => {
@@ -225,6 +294,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
               error,
               "CreateOrEditWorkoutExecution.getDatiTemplateNuovoAllenamento"
             );
+            this.loadingProgression = LoadingProgression.failed;
           });
       } else {
         if (this.initSpinnerId) {
@@ -234,6 +304,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           "nessun id allenamento trovato",
           "CreateOrEditWorkoutExecution.getDatiTemplateNuovoAllenamento"
         );
+        this.loadingProgression = LoadingProgression.failed;
       }
     } catch (error) {
       if (this.initSpinnerId) {
@@ -243,6 +314,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         error,
         "CreateOrEditWorkoutExecution.getDatiAllenamento"
       );
+      this.loadingProgression = LoadingProgression.failed;
     }
   }
 
@@ -282,24 +354,9 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   }
 
   onOptionSelected(optionId: number) {
-    console.log("Opzione selezionata:", optionId);
-    this.allenamentoDataLoaded = false;
-    // this.idTemplateAllenamento = optionId;
     this.idTemplateAllenamento = 2;
     this.createOrEditWorkoutExecutionService.resetData();
     this.initializeWorkout();
-  }
-
-  private handleOption1() {
-    // Logica per l'opzione 1
-  }
-
-  private handleOption2() {
-    // Logica per l'opzione 2
-  }
-
-  private handleOption3() {
-    // Logica per l'opzione 3
   }
 
   registraAllenamento() {
@@ -347,7 +404,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
               }
               this.errorHandlerService.handleError(
                 error,
-                "WorkoutComponent.registraAllenamento"
+                "CreateOrEditWorkoutExecution.registraAllenamento"
               );
             });
         }
@@ -358,7 +415,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       }
       this.errorHandlerService.handleError(
         error,
-        "WorkoutComponent.registraAllenamento"
+        "CreateOrEditWorkoutExecution.registraAllenamento"
       );
     }
   }
@@ -370,6 +427,8 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       const allenamentoDTO: AllenamentoDTO = {
         id: allenamentoForm.id,
         idTemplate: allenamentoForm.idTemplate,
+        dataEsecuzione: allenamentoForm.dataEsecuzione,
+        nomeScheda: null,
         listaEsercizi: [],
         nomeAllenamento: allenamentoForm.nomeAllenamento,
         ordinamento: allenamentoForm.ordinamento,
@@ -405,9 +464,76 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
-        "WorkoutComponent.ConvertAllenamentoFormDTOToAllenamentoDTO"
+        "CreateOrEditWorkoutExecution.ConvertAllenamentoFormDTOToAllenamentoDTO"
       );
       return null;
     }
   }
+
+  goBack() {
+    try {
+      if (this.createOrEditWorkoutExecutionService.AllenamentoForm.form.dirty) {
+        this.modalService.open({
+          warning: true,
+          headerTemplate: this.headerGoBack,
+          bodyTemplate: this.bodyGoBack,
+          footerCloseTemplate: this.footerCloseGoBack,
+          footerConfirmTemplate: this.footerConfirmGoBack,
+          onConfirm: () => {
+            switch (this.createOrEdit) {
+              case createOrEdit.create:
+                this.router.navigate(["/home"]);
+                break;
+              case createOrEdit.edit:
+                if (this.allenamentoDTO) {
+                  this.router.navigate([
+                    "/allenamenti-svolti/visualizza-allenamento",
+                    this.allenamentoDTO.id,
+                  ]);
+                } else if (this.idAllenamento) {
+                  this.router.navigate([
+                    "/allenamenti-svolti/visualizza-allenamento",
+                    this.idAllenamento,
+                  ]);
+                } else {
+                  throw new Error("Nessun allenamento fornito");
+                }
+                break;
+            }
+          },
+        });
+      } else {
+        switch (this.createOrEdit) {
+          case createOrEdit.create:
+            this.router.navigate(["/home"]);
+            break;
+          case createOrEdit.edit:
+            if (this.allenamentoDTO) {
+              this.router.navigate([
+                "/allenamenti-svolti/visualizza-allenamento",
+                this.allenamentoDTO.id,
+              ]);
+            } else if (this.idAllenamento) {
+              this.router.navigate([
+                "/allenamenti-svolti/visualizza-allenamento",
+                this.idAllenamento,
+              ]);
+            } else {
+              throw new Error("Nessun allenamento fornito");
+            }
+            break;
+        }
+      }
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditWorkoutExecution.goBack"
+      );
+    }
+  }
+}
+
+export enum createOrEdit {
+  create = 1,
+  edit = 2,
 }

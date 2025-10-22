@@ -11,6 +11,8 @@ import { NoAuthGuard } from "./core/guards/no-auth.guard";
 import { InfoComponent } from "./components/info/info.component";
 import { InfoBackEnd } from "./components/info-back-end/info-back-end";
 import { CreateOrEditWorkoutExecution } from "./components/create-or-edit-workout-execution/create-or-edit-workout-execution";
+import { ListExecutedWorkouts } from "./components/list-executed-workouts/list-executed-workouts";
+import { ViewDataExecutedWorkout } from "./components/view-data-executed-workout/view-data-executed-workout";
 
 export const routes: Routes = [
   {
@@ -57,7 +59,22 @@ export const routes: Routes = [
     path: "registra-allenamento/:id",
     component: CreateOrEditWorkoutExecution,
     canActivate: [AuthGuard],
+  }, 
+  {
+    path: "allenamenti-svolti",
+    component: ListExecutedWorkouts,
+    canActivate: [AuthGuard],
   },
+  {
+    path: "allenamenti-svolti/visualizza-allenamento/:id",
+    component: ViewDataExecutedWorkout,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: "allenamenti-svolti/modifica-allenamento/:id",
+    component: CreateOrEditWorkoutExecution,
+    canActivate: [AuthGuard],
+  }, 
   {
     path: "error",
     component: ErrorPage,

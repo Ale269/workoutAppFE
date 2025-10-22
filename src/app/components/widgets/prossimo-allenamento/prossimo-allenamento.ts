@@ -6,6 +6,7 @@ import {
   GetDatiProssimoAllenamentoRequestModel,
   GetDatiProssimoAllenamentoResponseModel,
 } from "src/app/models/widgets/prossimo-allenamento/getDatiProssimoAllenamento";
+import { createOrEdit } from "../../create-or-edit-workout-execution/create-or-edit-workout-execution";
 
 @Component({
   selector: "app-prossimo-allenamento",
@@ -19,6 +20,8 @@ export class ProssimoAllenamento implements OnInit {
   public descrizioneAllenamentoCorrente: string | null = null;
   public numeroGiornoAllenamentoCorrente: number | null = null;
   public numeroGiornoAllenamentiTotali: number | null = null;
+
+  public giorniArray: number[] = [];
 
   constructor(
     private widgetsService: WidgetsService,
@@ -46,6 +49,10 @@ export class ProssimoAllenamento implements OnInit {
               this.numeroGiornoAllenamentiTotali =
                 response.numeroGiornoAllenamentiTotali;
               this.datiRecuperati = true;
+
+              for (let i = 1; i <= this.numeroGiornoAllenamentiTotali; i++) {
+                this.giorniArray.push(i);
+              }
               resolve(null);
             } else {
               reject(response.errore.error);
@@ -63,12 +70,13 @@ export class ProssimoAllenamento implements OnInit {
 
   NavigaARegistraAllenamento() {
     try {
-      this.router.navigate(["/registra-allenamento/", 0], {
+      this.router.navigate(["/registra-allenamento/", 1], {
         state: {
-           idAllenamento: 1,
-           idTemplateAllenamento: 0
+          idAllenamento: 0,
+          idTemplateAllenamento: 1,
+          createOrEdit: createOrEdit.create,
           //  idTemplateAllenamento: this.idTemplateAllenamento
-          },
+        },
       });
     } catch (error) {
       this.errorHandlerService.handleError(

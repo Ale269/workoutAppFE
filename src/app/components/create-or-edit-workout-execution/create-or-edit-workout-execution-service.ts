@@ -7,14 +7,14 @@ import { SerieDTO as SerieFormDTO } from "src/app/models/create-or-edit-template
 import {
   GetDatiTemplateNuovoAllenamentoRequestModel,
   GetDatiTemplateNuovoAllenamentoResponseModel,
-} from "src/app/models/esecuzione-allenamento/get-dati-template-nuovo-allenamento";
-import { AllenamentoDTO } from "src/app/models/esecuzione-allenamento/allenamentodto";
+} from "src/app/models/view-modifica-allenamento-svolto/get-dati-template-nuovo-allenamento";
+import { AllenamentoDTO } from "src/app/models/view-modifica-allenamento-svolto/allenamentodto";
 import {
   GetDatiAllenamentoRequestModel,
   GetDatiAllenamentoResponseModel,
-} from "src/app/models/esecuzione-allenamento/get-dati-allenamento";
+} from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
 import { AllenamentoForm } from "../create-or-edit-template-plan-component/workout-form";
-import { RegistraAllenamentoRequestModel } from "src/app/models/esecuzione-allenamento/registra-allenaneto";
+import { RegistraAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/registra-allenaneto";
 
 @Injectable({
   providedIn: "root",
@@ -67,9 +67,7 @@ export class CreateOrEditWorkoutExecutionService {
               ) => {
                 if (!response.errore?.error) {
                   if (response.allenamentoCorrente) {
-                    this.InitializeAllenamento(
-                      response.allenamentoCorrente
-                    );
+                    this.InitializeAllenamento(response.allenamentoCorrente);
                   }
                   resolve(response);
                 } else {
@@ -97,6 +95,7 @@ export class CreateOrEditWorkoutExecutionService {
         this.getAllenamentoFormDTOFromAllenamentoDTO(allenamento);
 
       this.AllenamentoForm = new AllenamentoForm(0, allenamentoFormDTO);
+      this.AllenamentoForm.form.markAsPristine();
     } catch (error) {
       throw new Error(
         "CreateOrEditWorkoutExecutionService.InitializeNuovoAllenamento: " +
@@ -111,7 +110,7 @@ export class CreateOrEditWorkoutExecutionService {
     try {
       const allenamentoFormDTO: AllenamentoFormDTO = {
         id: 0,
-        dataEsecuzione: null,
+        dataEsecuzione: allenamento.dataEsecuzione,
         idTemplate: allenamento.id,
         listaEsercizi: [],
         nomeAllenamento: allenamento.nomeAllenamento,
@@ -144,11 +143,16 @@ export class CreateOrEditWorkoutExecutionService {
 
       return allenamentoFormDTO;
     } catch (error) {
-      throw new Error("CreateOrEditWorkoutExecutionService.getAllenamentoFormDTOFromAllenamentoDTO: " + error);
+      throw new Error(
+        "CreateOrEditWorkoutExecutionService.getAllenamentoFormDTOFromAllenamentoDTO: " +
+          error
+      );
     }
   }
 
-  async registraAllenamento(savePlanRequest: RegistraAllenamentoRequestModel): Promise<void> {
+  async registraAllenamento(
+    savePlanRequest: RegistraAllenamentoRequestModel
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         // Chiamata al backend per salvare l'allenamento

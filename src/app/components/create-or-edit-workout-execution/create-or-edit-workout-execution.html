@@ -1,14 +1,15 @@
 <!-- create-or-edit-template-plan-component.html -->
+
+@if(this.loadingProgression === LoadingProgressionEnum.complete){
 <div class="content">
   <div class="section-title-container close-icon-title-container">
     <div class="close-icon-section-container">
-      <div class="close-icon-trigger"></div>
+      <div class="close-icon-trigger" (click)="goBack()"></div>
       <img src="assets/recollect/svg/google-close-icon.svg" />
     </div>
     <h1 class="text-title">Registra allenamento</h1>
   </div>
 
-  @if(this.allenamentoDataLoaded){
   @if(this.createOrEditWorkoutExecutionService.AllenamentoForm.form){
   <div class="workout-data">
     <div class="section-title-container">
@@ -86,7 +87,46 @@
   </div>
   } }@else {
   <h3 class="text-white">Nessun allenamento aggiunto</h3>
-  } }@else{
-  <h3 class="text-white">Nessun dato recuperato</h3>
   }
 </div>
+
+} @else if(this.loadingProgression === LoadingProgressionEnum.none ||
+this.loadingProgression === LoadingProgressionEnum.loading){
+<h3 class="text-white">Caricamento in corso</h3>
+} @else if(this.loadingProgression === LoadingProgressionEnum.failed){
+<h3 class="text-white">Caricamento fallito</h3>
+}
+
+<ng-template #headerGoBack>
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
+</ng-template>
+
+<!-- Template per il body -->
+<ng-template #bodyGoBack>
+  <h3 class="text-white">Sei sicuro di voler annullare la modifica?</h3>
+  <h3 class="text-white">I dati non salvati andranno persi.</h3>
+</ng-template>
+
+<!-- Template per il bottone di chiusura -->
+<ng-template #footerCloseGoBack>
+  <button class="text-shape-button-cancel">
+    <span>Annulla</span>
+    <div class="text-shape-button-icon-container-cancel">
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<!-- Template per il bottone di conferma -->
+<ng-template #footerConfirmGoBack>
+  <button class="text-shape-button-danger">
+    <span>Conferma</span>
+    <div class="text-shape-button-icon-container-danger">
+      <img src="assets/recollect/svg/google-delete.svg" />
+    </div>
+  </button>
+</ng-template>

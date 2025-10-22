@@ -9,7 +9,6 @@ import {
   ViewChild,
 } from "@angular/core";
 import { gsap } from "gsap";
-import { altriAllenamentiSelectDTO } from "src/app/models/esecuzione-allenamento/altri-allenamenti-select-dto";
 
 @Component({
   selector: "app-multi-option-button",

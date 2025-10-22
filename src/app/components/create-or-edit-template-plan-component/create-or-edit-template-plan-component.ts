@@ -29,6 +29,7 @@ import { AccordionHeaderComponent } from "../shared/accordion/accordion-element/
 import { AccordionBodyComponent } from "../shared/accordion/accordion-element/accordion-body/accordion-body.component";
 import { WorkoutService } from "src/app/core/services/workout.service";
 import { DeleteDatiTemplateSchedaRequestModel } from "src/app/models/view-modifica-scheda/deleteDatiTemplateScheda";
+import { LoadingProgression } from "src/app/models/enums/loading-progression";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -77,6 +78,9 @@ export class CreateOrEditTemplatePlanComponent
   public selectedTabIndex: number = 0;
   public scheda: SchedaDTO | null = null;
 
+  public LoadingProgressionEnum = LoadingProgression;
+  public loadingProgression: LoadingProgression = LoadingProgression.none;
+
   private selectedIndexSubscription?: Subscription;
   private initSpinnerId: string | null = null;
   private saveSpinnerId: string | null = null;
@@ -123,15 +127,20 @@ export class CreateOrEditTemplatePlanComponent
         }
       );
 
+      this.loadingProgression = LoadingProgression.loading;
+
       if (this.scheda) {
         this.createOrEditTemplatePlanService.initializeFormWithData(
           this.scheda
         );
+
         setTimeout(() => {
           if (this.currentSpinnerId) {
             this.spinnerService.setSuccess(this.currentSpinnerId);
           }
         }, 100);
+
+        this.loadingProgression = LoadingProgression.complete;
       } else {
         this.createOrEditTemplatePlanService.initializeEmptyForm();
 
@@ -140,6 +149,8 @@ export class CreateOrEditTemplatePlanComponent
             this.spinnerService.setSuccess(this.currentSpinnerId);
           }
         }, 100);
+
+        this.loadingProgression = LoadingProgression.complete;
       }
     } catch (error) {
       setTimeout(() => {
@@ -152,6 +163,8 @@ export class CreateOrEditTemplatePlanComponent
         error,
         "CreateOrEditTemplatePlanComponent.ngOnInit"
       );
+
+      this.loadingProgression = LoadingProgression.failed;
     }
   }
 
@@ -560,7 +573,7 @@ export class CreateOrEditTemplatePlanComponent
               this.spinnerService.setSuccess(this.currentSpinnerId);
             }
             // Naviga alla lista dei template
-            this.router.navigate(["/le-mie-schede"])
+            this.router.navigate(["/le-mie-schede"]);
           })
           .catch((objError) => {
             if (this.currentSpinnerId) {

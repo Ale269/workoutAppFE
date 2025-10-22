@@ -15,15 +15,14 @@
         <span>{{this.numeroGiornoAllenamentiTotali}}</span>
       </h3>
     </div>
-    <div class="nome-graphic-visualizer-container">
+     <div class="nome-graphic-visualizer-container">
       <div class="nome-allenamento-container">
         <h3 class="text-white">{{this.descrizioneAllenamentoCorrente}}</h3>
       </div>
       <div class="visualizer-allenamento-container">
-        <div></div>
-        <div></div>
-        <div class="current-day-visualizer"></div>
-        <div></div>
+        @for (giorno of giorniArray; track giorno) {
+          <div [class.current-day-visualizer]="giorno === this.numeroGiornoAllenamentoCorrente"></div>
+        }
       </div>
     </div>
   </div>
