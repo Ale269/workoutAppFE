@@ -416,6 +416,7 @@ export class CreateOrEditTemplatePlanComponent
       this.saveSpinnerId = this.spinnerService.showWithResult(
         "Salvataggio in corso",
         {
+          forceShow: true,
           successMessage: "Salvataggio completato con successo",
           errorMessage: "Errore durante il salvataggio",
           resultDuration: 500,
@@ -553,6 +554,7 @@ export class CreateOrEditTemplatePlanComponent
         this.currentSpinnerId = this.spinnerService.showWithResult(
           "Elimino dati scheda",
           {
+            forceShow: true,
             successMessage: "Scheda eliminata con successo",
             errorMessage: "Errore nell'eliminare la scheda",
             resultDuration: 250,

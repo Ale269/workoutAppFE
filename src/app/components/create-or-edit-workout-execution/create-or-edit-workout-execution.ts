@@ -373,6 +373,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       this.saveSpinnerId = this.spinnerService.showWithResult(
         "Salvataggio in corso",
         {
+          forceShow: true,
           successMessage: "Salvataggio completato con successo",
           errorMessage: "Errore durante il salvataggio",
           resultDuration: 500,
@@ -534,6 +535,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         this.initSpinnerId = this.spinnerService.showWithResult(
           "Elimino dati allenamento",
           {
+            forceShow: true,
             successMessage: "Allenamento eliminato con successo",
             errorMessage: "Errore nell'eliminare la scheda",
             resultDuration: 250,

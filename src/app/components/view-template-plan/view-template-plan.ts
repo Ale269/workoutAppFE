@@ -201,6 +201,7 @@ export class ViewTemplatePlan {
       this.currentSpinnerId = this.spinnerService.showWithResult(
         "Elimino dati scheda",
         {
+          forceShow: true,
           successMessage: "Scheda eliminata con successo",
           errorMessage: "Errore nell'eliminare la scheda",
           resultDuration: 250,

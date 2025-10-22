@@ -223,6 +223,7 @@ export class ViewDataExecutedWorkout {
       this.currentSpinnerId = this.spinnerService.showWithResult(
         "Elimino dati allenamento",
         {
+          forceShow: true,
           successMessage: "allenamento eliminato con successo",
           errorMessage: "Errore nell'eliminare la scheda",
           resultDuration: 250,

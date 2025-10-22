@@ -20,6 +20,7 @@ export interface SpinnerConfig {
   resultDuration?: number;
   minSpinnerDuration?: number;
   startTime?: number; // Nuovo campo per tracciare quando inizia
+  forceShow?: boolean;
 }
 
 @Injectable({
@@ -134,6 +135,7 @@ export class SpinnerService {
     warningMessage?: string;
     infoMessage?: string;
     resultDuration?: number;
+    forceShow?: true;
     minSpinnerDuration?: number;
   }): string {
     return this.show({

@@ -89,6 +89,7 @@ public app_info = APP_INFO;
       this.registerSpinnerId = this.spinnerService.showWithResult(
         "Registrazione in corso...",
         {
+          forceShow: true,
           successMessage: "Registrazione completata con successo",
           errorMessage: "Errore durante la registrazione",
           resultDuration: 250,

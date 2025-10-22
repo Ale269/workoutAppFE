@@ -50,7 +50,7 @@ export class SpinnerComponent implements OnChanges, AfterViewInit, OnDestroy {
   private overlayAnimationComplete = false; // Flag per sapere se l'overlay è completamente visibile
 
   private readonly INITIAL_DELAY = 250;
-  private readonly OVERLAY_ANIMATION_DURATION = 100;
+  private readonly OVERLAY_ANIMATION_DURATION = 150;
 
   constructor(
     private spinnerService: SpinnerService,
@@ -171,11 +171,39 @@ export class SpinnerComponent implements OnChanges, AfterViewInit, OnDestroy {
       }
 
       // Se c'è già un risultato pending, significa che l'operazione è completata
-      // durante il delay - chiudi direttamente senza mostrare nulla
-      // (showFinalResult ha senso solo se lo spinner è effettivamente apparso)
+      // durante il delay. Decidi se mostrare il risultato o chiudere direttamente:
+      // - Se forceShow è true: mostra sempre il risultato
+      // - Se il risultato non è success: mostra sempre il risultato (error/warning/info)
+      // - Altrimenti: chiudi direttamente
       if (this.pendingResult != null) {
-        console.log('[Spinner] Risultato già disponibile durante delay, chiudo direttamente');
-        this.hideOverlay();
+        console.log('[Spinner] Risultato già disponibile durante delay', {
+          result: this.pendingResult,
+          forceShow: this.config.forceShow,
+          showFinalResult: this.config.showFinalResult
+        });
+        
+        const shouldShowResult = 
+          this.config.forceShow || 
+          (this.pendingResult !== SpinnerResult.SUCCESS && this.config.showFinalResult);
+        
+        if (shouldShowResult) {
+          console.log('[Spinner] Mostro risultato finale (forceShow o non-success)');
+          this.ngZone.run(() => {
+            this.shouldShowSpinner = true; // Necessario per mostrare il messaggio
+            this.showResult = true;
+            this.finalResult = this.pendingResult;
+            this.pendingResult = null;
+            this.cdr.detectChanges();
+            
+            // Anima l'entrata del risultato
+            setTimeout(() => {
+              this.animateResultEntry();
+            }, 0);
+          });
+        } else {
+          console.log('[Spinner] Risultato success rapido, chiudo direttamente');
+          this.hideOverlay();
+        }
         return;
       }
 
@@ -309,6 +337,47 @@ export class SpinnerComponent implements OnChanges, AfterViewInit, OnDestroy {
         { opacity: 1, y: 0, duration: animationDuration }
       );
     }
+  }
+
+  private animateResultEntry() {
+    console.log('[Spinner] AnimateResultEntry (entrata diretta del risultato)');
+    
+    const minDuration = this.config.minSpinnerDuration || 800;
+    const baseAnimationSpeed = Math.max(0.2, Math.min(0.4, minDuration / 2000));
+
+    // Anima l'entrata del risultato e del messaggio
+    if (this.resultElement) {
+      gsap.fromTo(
+        this.resultElement.nativeElement,
+        { opacity: 0, scale: 0.5 },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: baseAnimationSpeed * 1.5,
+          ease: "back.out(1.7)",
+        }
+      );
+    }
+
+    if (this.messageElement) {
+      gsap.fromTo(
+        this.messageElement.nativeElement,
+        { opacity: 0, y: 10 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: baseAnimationSpeed,
+          delay: baseAnimationSpeed * 0.3,
+        }
+      );
+    }
+
+    // Dopo aver mostrato il risultato, aspetta e poi nascondi
+    const duration = this.config.resultDuration || 2000;
+    console.log('[Spinner] Risultato mostrato, aspetto', duration, 'ms');
+    this.resultTimer = window.setTimeout(() => {
+      this.hideSpinner();
+    }, duration);
   }
 
   private handlePendingResult() {
