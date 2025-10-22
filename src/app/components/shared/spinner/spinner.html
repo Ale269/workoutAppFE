@@ -1,12 +1,12 @@
 @if(config.id) {
 <div class="spinner-overlay" #spinnerOverlay>
   <div class="spinner-container">
-    <!-- Spinner rotante -->
-    @if(!showResult) {
+    <!-- Spinner rotante - appare solo dopo il delay -->
+    @if(shouldShowSpinner && !showResult) {
       <div class="spinner" #spinnerElement></div>
     }
 
-    <!-- Risultato finale - SOLO quando showResult è true -->
+    <!-- Risultato finale -->
     @if(showResult && finalResult) {
       <div
         class="result-icon"
@@ -17,8 +17,8 @@
       </div>
     }
 
-    <!-- Messaggio -->
-    @if(getCurrentMessage()) {
+    <!-- Messaggio - appare solo con lo spinner -->
+    @if(getCurrentMessage() && shouldShowSpinner) {
       <p class="spinner-text" #messageElement>{{ getCurrentMessage() }}</p>
     }
   </div>

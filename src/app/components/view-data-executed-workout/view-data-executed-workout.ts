@@ -21,6 +21,7 @@ import { AllenamentoDTO } from "src/app/models/view-modifica-allenamento-svolto/
 import { CommonModule } from "@angular/common";
 import { createOrEdit } from "../create-or-edit-workout-execution/create-or-edit-workout-execution";
 import { LoadingProgression } from "src/app/models/enums/loading-progression";
+import { DeleteDatiAllenamentoRequestModel, DeleteDatiAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
 
 @Component({
   selector: "app-view-data-executed-workout",
@@ -198,7 +199,7 @@ export class ViewDataExecutedWorkout {
     }
   }
 
-  openDeleteScheda() {
+  openDeleteAllenamento() {
     try {
       this.modalService.open({
         warning: true,
@@ -206,7 +207,7 @@ export class ViewDataExecutedWorkout {
         bodyTemplate: this.bodyDeleteWorkout,
         footerCloseTemplate: this.footerCloseDeleteWorkout,
         footerConfirmTemplate: this.footerConfirmDeleteWorkout,
-        onConfirm: () => this.eliminaScheda(),
+        onConfirm: () => this.eliminaAllenamento(),
       });
     } catch (error) {
       this.errorHandlerService.handleError(
@@ -216,65 +217,65 @@ export class ViewDataExecutedWorkout {
     }
   }
 
-  eliminaScheda() {
+  eliminaAllenamento() {
     try {
       // Mostra lo spinner di inizializzazione
-      // this.currentSpinnerId = this.spinnerService.showWithResult(
-      //   "Elimino dati scheda",
-      //   {
-      //     successMessage: "Scheda eliminata con successo",
-      //     errorMessage: "Errore nell'eliminare la scheda",
-      //     resultDuration: 250,
-      //     minSpinnerDuration: 250,
-      //   }
-      // );
-      // if (this.idScheda !== null && this.idScheda > 0) {
-      //   const request: DeleteDatiTemplateSchedaRequestModel = {
-      //     workoutId: this.idScheda,
-      //   };
-      //   this.workoutService.deleteTemplateScheda(request).subscribe({
-      //     next: (response: DeleteDatiTemplateSchedaResponseModel) => {
-      //       if (!response.errore?.error) {
-      //         if (this.currentSpinnerId) {
-      //           this.spinnerService.setSuccess(this.currentSpinnerId);
-      //         }
-      //         this.goBack();
-      //       } else {
-      //         if (this.currentSpinnerId) {
-      //           this.spinnerService.setError(this.currentSpinnerId);
-      //         }
-      //         this.errorHandlerService.handleError(
-      //           response.errore.error,
-      //           "ViewDataExecutedWorkout.modificaScheda"
-      //         );
-      //       }
-      //     },
-      //     error: (error) => {
-      //       if (this.currentSpinnerId) {
-      //         this.spinnerService.setError(this.currentSpinnerId);
-      //       }
-      //       this.errorHandlerService.handleError(
-      //         error,
-      //         "ViewDataExecutedWorkout.modificaScheda"
-      //       );
-      //     },
-      //   });
-      // } else {
-      //   if (this.currentSpinnerId) {
-      //     this.spinnerService.setError(this.currentSpinnerId);
-      //   }
-      //   this.errorHandlerService.handleError(
-      //     "Nessuna scheda trovata: ",
-      //     "ViewDataExecutedWorkout.modificaScheda"
-      //   );
-      // }
+      this.currentSpinnerId = this.spinnerService.showWithResult(
+        "Elimino dati allenamento",
+        {
+          successMessage: "allenamento eliminato con successo",
+          errorMessage: "Errore nell'eliminare la scheda",
+          resultDuration: 250,
+          minSpinnerDuration: 250,
+        }
+      );
+      if (this.idAllenamento !== null && this.idAllenamento > 0 ) {
+        const request: DeleteDatiAllenamentoRequestModel = {
+          allenamentoId: this.idAllenamento,
+        };
+        this.workoutService.deleteDatiAllenamentoSvolto(request).subscribe({
+          next: (response: DeleteDatiAllenamentoResponseModel) => {
+            if (!response.errore?.error) {
+              if (this.currentSpinnerId) {
+                this.spinnerService.setSuccess(this.currentSpinnerId);
+              }
+              this.goBack();
+            } else {
+              if (this.currentSpinnerId) {
+                this.spinnerService.setError(this.currentSpinnerId);
+              }
+              this.errorHandlerService.handleError(
+                response.errore.error,
+                "ViewDataExecutedWorkout.eliminaAllenamento"
+              );
+            }
+          },
+          error: (error) => {
+            if (this.currentSpinnerId) {
+              this.spinnerService.setError(this.currentSpinnerId);
+            }
+            this.errorHandlerService.handleError(
+              error,
+              "ViewDataExecutedWorkout.eliminaAllenamento"
+            );
+          },
+        });
+      } else {
+        if (this.currentSpinnerId) {
+          this.spinnerService.setError(this.currentSpinnerId);
+        }
+        this.errorHandlerService.handleError(
+          "Nessuna scheda trovata: ",
+          "ViewDataExecutedWorkout.eliminaAllenamento"
+        );
+      }
     } catch (error) {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
       this.errorHandlerService.handleError(
         error,
-        "ViewDataExecutedWorkout.modificaScheda"
+        "ViewDataExecutedWorkout.eliminaAllenamento"
       );
     }
   }

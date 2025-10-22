@@ -15,6 +15,10 @@ import {
 } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
 import { AllenamentoForm } from "../create-or-edit-template-plan-component/workout-form";
 import { RegistraAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/registra-allenaneto";
+import {
+  DeleteDatiAllenamentoRequestModel,
+  DeleteDatiAllenamentoResponseModel,
+} from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
 
 @Injectable({
   providedIn: "root",
@@ -166,6 +170,31 @@ export class CreateOrEditWorkoutExecutionService {
         reject(error);
       }
     });
+  }
+
+  eliminaAllenamento(
+    request: DeleteDatiAllenamentoRequestModel
+  ): Promise<DeleteDatiAllenamentoResponseModel> {
+    return new Promise<DeleteDatiAllenamentoResponseModel>(
+      (resolve, reject) => {
+        try {
+          this.workoutService.deleteDatiAllenamentoSvolto(request).subscribe({
+            next: (response: DeleteDatiAllenamentoResponseModel) => {
+              if (!response.errore?.error) {
+                resolve(response);
+              } else {
+                reject(null);
+              }
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+        } catch (error) {
+          reject(error);
+        }
+      }
+    );
   }
 
   resetData() {

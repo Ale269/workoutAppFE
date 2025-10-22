@@ -21,6 +21,7 @@ import {
 import { GetListaAllenamentiSvoltiRequestModel, GetListaAllenamentiSvoltiResponseModel } from "src/app/models/lista-allenamenti-svolti/get-lista-templates-schede";
 import { GetDatiAllenamentoRequestModel, GetDatiAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
 import { GetDatiTemplateNuovoAllenamentoRequestModel, GetDatiTemplateNuovoAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-template-nuovo-allenamento";
+import { DeleteDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
 
 @Injectable({
   providedIn: "root",
@@ -120,6 +121,16 @@ export class WorkoutService {
       "getAllenamentiSvolti",
       request,
       null
+    );
+  }
+   deleteDatiAllenamentoSvolto(
+    request: DeleteDatiAllenamentoRequestModel
+  ): Observable<GetDatiAllenamentoResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "workout",
+      "deleteDatiAllenamentoSvolto",
+      request,
+      undefined
     );
   }
 

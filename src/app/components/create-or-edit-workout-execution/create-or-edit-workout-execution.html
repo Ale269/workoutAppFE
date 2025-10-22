@@ -57,6 +57,14 @@
       </div>
     </button>
   </div>
+  <div class="delete-allenamento-button-row">
+    <button class="text-shape-button-danger" (click)="openDeleteAllenamento()">
+      <span>Elimina allenamento</span>
+      <div class="text-shape-button-icon-container-danger">
+        <img src="assets/recollect/svg/google-delete.svg" />
+      </div>
+    </button>
+  </div>
 
   @if(this.idAllenamento){
   <div class="floating-static-button-container">
@@ -125,6 +133,42 @@ this.loadingProgression === LoadingProgressionEnum.loading){
 <ng-template #footerConfirmGoBack>
   <button class="text-shape-button-danger">
     <span>Conferma</span>
+    <div class="text-shape-button-icon-container-danger">
+      <img src="assets/recollect/svg/google-delete.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<ng-template #headerDeleteTemplate>
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
+</ng-template>
+
+<!-- Template per il body -->
+<ng-template #bodyDeleteTemplate>
+  <h3 class="text-white">
+    Sei sicuro di voler eliminare questo template scheda?
+  </h3>
+  <h3 class="text-white">Questa azione non può essere annullata.</h3>
+</ng-template>
+
+<!-- Template per il bottone di chiusura -->
+<ng-template #footerCloseDeleteTemplate>
+  <button class="text-shape-button-cancel">
+    <span>Annulla</span>
+    <div class="text-shape-button-icon-container-cancel">
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<!-- Template per il bottone di conferma -->
+<ng-template #footerConfirmDeleteTemplate>
+  <button class="text-shape-button-danger">
+    <span>Elimina</span>
     <div class="text-shape-button-icon-container-danger">
       <img src="assets/recollect/svg/google-delete.svg" />
     </div>

@@ -90,6 +90,13 @@
         "method": "get",
         "description": "Recupera i dati degli allenamenti svolti di un utente.",
         "isMocked": true
+      },
+      {
+        "name": "deleteDatiAllenamentoSvolto",
+        "endpoint": "/workout/deleteDatiAllenamentoSvolto/:workoutId",
+        "method": "post",
+        "description": "Elimina i dati dell'allenamento di un utente.",
+        "isMocked": true
       }
     ],
     "widgets": [

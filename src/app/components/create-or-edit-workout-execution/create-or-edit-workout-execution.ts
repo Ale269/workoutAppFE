@@ -29,6 +29,7 @@ import { GetDatiAllenamentoRequestModel } from "src/app/models/view-modifica-all
 import { GetDatiTemplateNuovoAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-template-nuovo-allenamento";
 import { ModalService } from "src/app/core/services/modal.service";
 import { LoadingProgression } from "src/app/models/enums/loading-progression";
+import { DeleteDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
 
 @Component({
   selector: "app-create-or-edit-workout-execution",
@@ -52,6 +53,13 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   footerCloseGoBack!: TemplateRef<any>;
   @ViewChild("footerConfirmGoBack")
   footerConfirmGoBack!: TemplateRef<any>;
+
+  @ViewChild("headerDeleteTemplate") headerDeleteTemplate!: TemplateRef<any>;
+  @ViewChild("bodyDeleteTemplate") bodyDeleteTemplate!: TemplateRef<any>;
+  @ViewChild("footerCloseDeleteTemplate")
+  footerCloseDeleteTemplate!: TemplateRef<any>;
+  @ViewChild("footerConfirmDeleteTemplate")
+  footerConfirmDeleteTemplate!: TemplateRef<any>;
 
   private initSpinnerId: string | null = null;
   private saveSpinnerId: string | null = null;
@@ -480,55 +488,134 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           footerCloseTemplate: this.footerCloseGoBack,
           footerConfirmTemplate: this.footerConfirmGoBack,
           onConfirm: () => {
-            switch (this.createOrEdit) {
-              case createOrEdit.create:
-                this.router.navigate(["/home"]);
-                break;
-              case createOrEdit.edit:
-                if (this.allenamentoDTO) {
-                  this.router.navigate([
-                    "/allenamenti-svolti/visualizza-allenamento",
-                    this.allenamentoDTO.id,
-                  ]);
-                } else if (this.idAllenamento) {
-                  this.router.navigate([
-                    "/allenamenti-svolti/visualizza-allenamento",
-                    this.idAllenamento,
-                  ]);
-                } else {
-                  throw new Error("Nessun allenamento fornito");
-                }
-                break;
-            }
+            this.PerformBackNavigate();
           },
         });
       } else {
-        switch (this.createOrEdit) {
-          case createOrEdit.create:
-            this.router.navigate(["/home"]);
-            break;
-          case createOrEdit.edit:
-            if (this.allenamentoDTO) {
-              this.router.navigate([
-                "/allenamenti-svolti/visualizza-allenamento",
-                this.allenamentoDTO.id,
-              ]);
-            } else if (this.idAllenamento) {
-              this.router.navigate([
-                "/allenamenti-svolti/visualizza-allenamento",
-                this.idAllenamento,
-              ]);
-            } else {
-              throw new Error("Nessun allenamento fornito");
-            }
-            break;
-        }
+        this.PerformBackNavigate();
       }
     } catch (error) {
       this.errorHandlerService.handleError(
         error,
         "CreateOrEditWorkoutExecution.goBack"
       );
+    }
+  }
+
+  openDeleteAllenamento() {
+    try {
+      this.modalService.open({
+        warning: true,
+        headerTemplate: this.headerDeleteTemplate,
+        bodyTemplate: this.bodyDeleteTemplate,
+        footerCloseTemplate: this.footerCloseDeleteTemplate,
+        footerConfirmTemplate: this.footerConfirmDeleteTemplate,
+        onConfirm: () => this.eliminaAllenamento(),
+      });
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "ViewTemplatePlan.openDeleteScheda"
+      );
+    }
+  }
+
+  eliminaAllenamento() {
+    try {
+      if (
+        this.createOrEditWorkoutExecutionService.AllenamentoForm.form.controls[
+          "id"
+        ].value !== null &&
+        this.createOrEditWorkoutExecutionService.AllenamentoForm.form.controls[
+          "id"
+        ].value > 0
+      ) {
+        // Mostra lo spinner di inizializzazione
+        this.initSpinnerId = this.spinnerService.showWithResult(
+          "Elimino dati allenamento",
+          {
+            successMessage: "Allenamento eliminato con successo",
+            errorMessage: "Errore nell'eliminare la scheda",
+            resultDuration: 250,
+            minSpinnerDuration: 250,
+          }
+        );
+
+        const request: DeleteDatiAllenamentoRequestModel = {
+          allenamentoId:
+            this.createOrEditWorkoutExecutionService.AllenamentoForm.form
+              .controls["id"].value,
+        };
+
+        this.createOrEditWorkoutExecutionService
+          .eliminaAllenamento(request)
+          .then((objResponse) => {
+            if (this.initSpinnerId) {
+              this.spinnerService.setSuccess(this.initSpinnerId);
+            }
+            this.PerformDeleteNavigate();
+          })
+          .catch((objError) => {
+            if (this.initSpinnerId) {
+              this.spinnerService.setError(this.initSpinnerId);
+            }
+            this.errorHandlerService.handleError(
+              objError,
+              "CreateOrEditWorkoutExecution.getListaTemplateSchede"
+            );
+          });
+      } else {
+        this.PerformDeleteNavigate();
+      }
+    } catch (error) {
+      if (this.initSpinnerId) {
+        this.spinnerService.setError(this.initSpinnerId);
+      }
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditWorkoutExecution.getListaTemplateSchede"
+      );
+    }
+  }
+
+  PerformBackNavigate() {
+    try {
+      switch (this.createOrEdit) {
+        case createOrEdit.create:
+          this.router.navigate(["/home"]);
+          break;
+        case createOrEdit.edit:
+          if (this.allenamentoDTO) {
+            this.router.navigate([
+              "/allenamenti-svolti/visualizza-allenamento",
+              this.allenamentoDTO.id,
+            ]);
+          } else if (this.idAllenamento) {
+            this.router.navigate([
+              "/allenamenti-svolti/visualizza-allenamento",
+              this.idAllenamento,
+            ]);
+          } else {
+            throw new Error("Nessun allenamento fornito");
+          }
+          break;
+      }
+    } catch (error) {
+      throw new Error("CreateOrEditWorkoutExecution.PerformNavigate: " + error);
+    }
+  }
+  PerformDeleteNavigate() {
+    try {
+      switch (this.createOrEdit) {
+        case createOrEdit.create:
+          this.router.navigate(["/home"]);
+          break;
+        case createOrEdit.edit:
+          this.router.navigate(["/allenamenti-svolti/"]);
+          break;
+      }
+    } catch (error) {
+      throw new Error("CreateOrEditWorkoutExecution.PerformNavigate: " + error);
     }
   }
 }
