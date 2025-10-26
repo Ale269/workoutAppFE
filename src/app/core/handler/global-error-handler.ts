@@ -38,7 +38,7 @@ export class GlobalErrorHandler implements ErrorHandler {
         break;
       case 401:
         errorMessage = 'Non autorizzato. Effettua il login.';
-        this.authService.logout();
+        // Il logout viene gestito dall'AuthInterceptor
         break;
       case 403:
         errorMessage = 'Accesso negato';
