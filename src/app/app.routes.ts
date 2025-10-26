@@ -91,7 +91,6 @@ export const routes: Routes = [
   {
     path: "error",
     component: ErrorPage,
-    canActivate: [AuthGuard],
     canDeactivate: [FadeGuard] 
   },
   {

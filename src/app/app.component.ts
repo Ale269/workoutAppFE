@@ -83,6 +83,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       )
       .subscribe((event) => {
         this.animationService.playFadeIn();
+
+        // Aggiorna la visibilità del menu quando la navigazione è completata
+        if (event instanceof NavigationEnd) {
+          this.updateMenuVisibility(event.urlAfterRedirects || event.url);
+        }
       });
 
     // Monitor modali e bottom sheets per bloccare lo scroll
@@ -134,15 +139,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private checkForCriticalErrors(): void {
     this.hasCriticalErrors = this.errorHandler.hasCriticalErrors();
-
+    console.log("Inizializzazione avviata", this.hasCriticalErrors);
     if (this.hasCriticalErrors) {
       console.error("🔥 Errori critici rilevati");
       this.handleCriticalErrorState();
     } else {
       this.initializationComplete = true;
-      this.updateMenuVisibility(this.router.url);
       console.log("✅ Inizializzazione completata");
     }
+
   }
 
   private setupErrorMonitoring(): void {
