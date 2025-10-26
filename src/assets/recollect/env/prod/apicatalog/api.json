@@ -69,6 +69,50 @@
         "method": "post",
         "description": "Elimina i dati del template scheda di un utente.",
         "isMocked": false
+      },
+      {
+        "name": "getDatiAllenamento",
+        "endpoint": "/workout/getDatiAllenamento/:idAllenamento",
+        "method": "get",
+        "description": "Recupera i dati di un allebnamento di un utente.",
+        "isMocked": true
+      },
+      {
+        "name": "getDatiTemplateNuovoAllenamento",
+        "endpoint": "/workout/nextTraining/:idTemplateAllenamento",
+        "method": "get",
+        "description": "Recupera i dati del template allenamento di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "getAllenamentiSvolti",
+        "endpoint": "/workout/lastTrainingsDone/:userId",
+        "method": "get",
+        "description": "Recupera i dati degli allenamenti svolti di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "deleteDatiAllenamentoSvolto",
+        "endpoint": "/workout/deleteDatiAllenamentoSvolto/:workoutId",
+        "method": "post",
+        "description": "Elimina i dati dell'allenamento di un utente.",
+        "isMocked": true
+      },
+      {
+        "name": "registraNuovoAllenamento",
+        "endpoint": "/training/registerNewTraining",
+        "method": "post",
+        "description": "Registra i dati del nuovo allenamento nello storico.",
+        "isMocked": false
+      }
+    ],
+    "training": [
+      {
+        "name": "registraNuovoAllenamento",
+        "endpoint": "/training/registerNewTraining",
+        "method": "post",
+        "description": "Registra i dati del nuovo allenamento nello storico.",
+        "isMocked": false
       }
     ],
     "widgets": [
