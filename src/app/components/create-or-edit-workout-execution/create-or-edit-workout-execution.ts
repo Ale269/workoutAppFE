@@ -391,7 +391,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         const registraAllenamentoRequest: RegistraAllenamentoRequestModel = {
           dataSvolgimento:
             this.createOrEditWorkoutExecutionService.AllenamentoForm.form
-              .controls["dataAllenamento"].value,
+              .controls["dataEsecuzione"].value,
           AllenamentoDTO: allenamentoDaSalvare,
         };
 

@@ -159,13 +159,20 @@ export class CreateOrEditWorkoutExecutionService {
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        // Chiamata al backend per salvare l'allenamento
-        console.log("Registrazione allenamento:", savePlanRequest);
-
-        // Simula salvataggio
-        setTimeout(() => {
-          resolve();
-        }, 500);
+        console.log("REGISTRO NUOVO ALLENAMENTO:  ", savePlanRequest)
+        this.workoutService.registraNuovoAllenamento(savePlanRequest).subscribe({
+          next: (response: any) => {
+            if (!response.errore?.error) {
+              console.log("RESPONSE: ", response)
+              resolve(response);
+            } else {
+              reject(null);
+            }
+          },
+          error: (error) => {
+            reject(error);
+          },
+        });
       } catch (error) {
         reject(error);
       }

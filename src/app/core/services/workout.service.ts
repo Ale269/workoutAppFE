@@ -22,6 +22,10 @@ import { GetListaAllenamentiSvoltiRequestModel, GetListaAllenamentiSvoltiRespons
 import { GetDatiAllenamentoRequestModel, GetDatiAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
 import { GetDatiTemplateNuovoAllenamentoRequestModel, GetDatiTemplateNuovoAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-template-nuovo-allenamento";
 import { DeleteDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
+import {
+  RegistraAllenamentoRequestModel,
+  RegistraAllenamentoResponseModel
+} from "../../models/view-modifica-allenamento-svolto/registra-allenaneto";
 
 @Injectable({
   providedIn: "root",
@@ -133,5 +137,19 @@ export class WorkoutService {
       undefined
     );
   }
+
+
+  registraNuovoAllenamento(
+      request: RegistraAllenamentoRequestModel
+  ): Observable<RegistraAllenamentoResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+        "workout",
+        "registraNuovoAllenamento",
+        undefined,
+        request
+    );
+  }
+
+
 
 }
