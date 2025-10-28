@@ -44,7 +44,7 @@
       },
       {
         "name": "getTemplatesSchede",
-        "endpoint": "/preview/templateScheda/:userId",
+        "endpoint": "/workout/templates/:userId",
         "method": "get",
         "description": "Recupera tutti i template schede di un utente.",
         "isMocked": false

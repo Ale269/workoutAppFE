@@ -97,7 +97,7 @@ export class WorkoutService {
       request: GetDatiAllenamentoRequestModel
   ): Observable<GetDatiAllenamentoResponseModel> {
     return this.apiCatalogService.executeApiCall(
-        "workout",
+        "training",
         "getDatiAllenamento",
         request,
         null
@@ -109,7 +109,7 @@ export class WorkoutService {
   ): Observable<GetDatiTemplateNuovoAllenamentoResponseModel> {
 
     return this.apiCatalogService.executeApiCall(
-        "workout",
+        "training",
         "getDatiTemplateNuovoAllenamento",
         request,
         null
@@ -121,7 +121,7 @@ export class WorkoutService {
     request: GetListaAllenamentiSvoltiRequestModel
   ): Observable<GetListaAllenamentiSvoltiResponseModel> {
     return this.apiCatalogService.executeApiCall(
-      "workout",
+      "training",
       "getAllenamentiSvolti",
       request,
       null
@@ -131,7 +131,7 @@ export class WorkoutService {
     request: DeleteDatiAllenamentoRequestModel
   ): Observable<GetDatiAllenamentoResponseModel> {
     return this.apiCatalogService.executeApiCall(
-      "workout",
+      "training",
       "deleteDatiAllenamentoSvolto",
       request,
       undefined
@@ -143,7 +143,7 @@ export class WorkoutService {
       request: RegistraAllenamentoRequestModel
   ): Observable<RegistraAllenamentoResponseModel> {
     return this.apiCatalogService.executeApiCall(
-        "workout",
+        "training",
         "registraNuovoAllenamento",
         undefined,
         request
