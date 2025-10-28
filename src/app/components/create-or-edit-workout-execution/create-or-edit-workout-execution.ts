@@ -392,7 +392,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           dataSvolgimento:
             this.createOrEditWorkoutExecutionService.AllenamentoForm.form
               .controls["dataEsecuzione"].value,
-          AllenamentoDTO: allenamentoDaSalvare,
+          allenamentoDTO: allenamentoDaSalvare,
         };
 
         if (allenamentoDaSalvare) {
@@ -434,7 +434,9 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   ): AllenamentoDTO | null {
     try {
       const allenamentoDTO: AllenamentoDTO = {
-        id: allenamentoForm.id,
+        id: allenamentoForm.idTemplate,
+        //TODO usare unica sintassi, evitare idTemplate, meglio usare solita nomenclatura
+        //come allenamentoId, schedaId, ecc...
         idTemplate: allenamentoForm.idTemplate,
         dataEsecuzione: allenamentoForm.dataEsecuzione,
         nomeScheda: null,
