@@ -1,9 +1,9 @@
 {
   "name": "gymshark-frontend",
-  "version": "1.0.19",
+  "version": "1.0.26",
   "scripts": {
     "ng": "ng",
-    "start": "npm run generate-app-info && ng serve --port=4202",
+    "start": "ng serve --port=4202",
     "build": "npm run generate-app-info && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

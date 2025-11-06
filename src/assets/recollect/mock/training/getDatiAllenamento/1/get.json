@@ -1,0 +1,95 @@
+{
+  "esito": "OK",
+  "messaggio": "Allenamento recuperato con successo",
+  "allenamentoCorrente": {
+    "id": 1,
+    "idTemplate": 1201,
+    "nomeAllenamento": "Push Day - Esecuzione del 19/10/2025",
+    "nomeScheda": "Upper/Lower Strength",
+    "dataEsecuzione": "2025-10-19T10:30:00Z",
+    "ordinamento": 1,
+    "listaEsercizi": [
+      {
+        "id": 1,
+        "idTipoEsercizio": 2,
+        "idIconaEsercizio": 1,
+        "idMetodologia": 1,
+        "ordinamento": 1,
+        "listaSerie": [
+          {
+            "id": 1,
+            "ripetizioni": 8,
+            "carico": 80,
+            "ordinamento": 1
+          },
+          {
+            "id": 2,
+            "ripetizioni": 8,
+            "carico": 82.5,
+            "ordinamento": 2
+          },
+          {
+            "id": 3,
+            "ripetizioni": 6,
+            "carico": 85,
+            "ordinamento": 3
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "idTipoEsercizio": 2,
+        "idIconaEsercizio": 1,
+        "idMetodologia": 1,
+        "ordinamento": 2,
+        "listaSerie": [
+          {
+            "id": 4,
+            "ripetizioni": 10,
+            "carico": 50,
+            "ordinamento": 1
+          },
+          {
+            "id": 5,
+            "ripetizioni": 8,
+            "carico": 55,
+            "ordinamento": 2
+          },
+          {
+            "id": 6,
+            "ripetizioni": 8,
+            "carico": 55,
+            "ordinamento": 3
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "idTipoEsercizio": 1,
+        "idIconaEsercizio": 1,
+        "idMetodologia": 2,
+        "ordinamento": 3,
+        "listaSerie": [
+          {
+            "id": 7,
+            "ripetizioni": 12,
+            "carico": 30,
+            "ordinamento": 1
+          },
+          {
+            "id": 8,
+            "ripetizioni": 10,
+            "carico": 32.5,
+            "ordinamento": 2
+          },
+          {
+            "id": 9,
+            "ripetizioni": 10,
+            "carico": 32.5,
+            "ordinamento": 3
+          }
+        ]
+      }
+    ]
+  }
+}

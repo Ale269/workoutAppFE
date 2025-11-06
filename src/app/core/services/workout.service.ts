@@ -22,6 +22,10 @@ import { GetListaAllenamentiSvoltiRequestModel, GetListaAllenamentiSvoltiRespons
 import { GetDatiAllenamentoRequestModel, GetDatiAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
 import { GetDatiTemplateNuovoAllenamentoRequestModel, GetDatiTemplateNuovoAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-template-nuovo-allenamento";
 import { DeleteDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
+import {
+  RegistraAllenamentoRequestModel,
+  RegistraAllenamentoResponseModel
+} from "../../models/view-modifica-allenamento-svolto/registra-allenaneto";
 
 @Injectable({
   providedIn: "root",
@@ -93,7 +97,7 @@ export class WorkoutService {
       request: GetDatiAllenamentoRequestModel
   ): Observable<GetDatiAllenamentoResponseModel> {
     return this.apiCatalogService.executeApiCall(
-        "workout",
+        "training",
         "getDatiAllenamento",
         request,
         null
@@ -105,7 +109,7 @@ export class WorkoutService {
   ): Observable<GetDatiTemplateNuovoAllenamentoResponseModel> {
 
     return this.apiCatalogService.executeApiCall(
-        "workout",
+        "training",
         "getDatiTemplateNuovoAllenamento",
         request,
         null
@@ -117,7 +121,7 @@ export class WorkoutService {
     request: GetListaAllenamentiSvoltiRequestModel
   ): Observable<GetListaAllenamentiSvoltiResponseModel> {
     return this.apiCatalogService.executeApiCall(
-      "workout",
+      "training",
       "getAllenamentiSvolti",
       request,
       null
@@ -127,11 +131,25 @@ export class WorkoutService {
     request: DeleteDatiAllenamentoRequestModel
   ): Observable<GetDatiAllenamentoResponseModel> {
     return this.apiCatalogService.executeApiCall(
-      "workout",
+      "training",
       "deleteDatiAllenamentoSvolto",
       request,
       undefined
     );
   }
+
+
+  registraNuovoAllenamento(
+      request: RegistraAllenamentoRequestModel
+  ): Observable<RegistraAllenamentoResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+        "training",
+        "registraNuovoAllenamento",
+        undefined,
+        request
+    );
+  }
+
+
 
 }

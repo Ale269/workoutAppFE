@@ -44,7 +44,7 @@
       },
       {
         "name": "getTemplatesSchede",
-        "endpoint": "/preview/templateScheda/:userId",
+        "endpoint": "/workout/templates/:userId",
         "method": "get",
         "description": "Recupera tutti i template schede di un utente.",
         "isMocked": false
@@ -68,6 +68,43 @@
         "endpoint": "/workout/delete/:workoutId",
         "method": "post",
         "description": "Elimina i dati del template scheda di un utente.",
+        "isMocked": false
+      }
+    ],
+    "training": [
+      {
+        "name": "getDatiAllenamento",
+        "endpoint": "/training/history/:idAllenamento",
+        "method": "get",
+        "description": "Recupera i dati di un allebnamento di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "getDatiTemplateNuovoAllenamento",
+        "endpoint": "/training/next/:idTemplateAllenamento",
+        "method": "get",
+        "description": "Recupera i dati del template allenamento di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "getAllenamentiSvolti",
+        "endpoint": "/training/allHistory/:userId",
+        "method": "get",
+        "description": "Recupera i dati degli allenamenti svolti di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "deleteDatiAllenamentoSvolto",
+        "endpoint": "/training/history/delete/:allenamentoId",
+        "method": "post",
+        "description": "Elimina i dati dell'allenamento di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "registraNuovoAllenamento",
+        "endpoint": "/training/registerNewTraining",
+        "method": "post",
+        "description": "Registra i dati del nuovo allenamento nello storico.",
         "isMocked": false
       }
     ],
