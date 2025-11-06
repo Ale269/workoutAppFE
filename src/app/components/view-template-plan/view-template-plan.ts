@@ -19,6 +19,7 @@ import {
 } from "../../models/view-modifica-scheda/deleteDatiTemplateScheda";
 import { ModalService } from "src/app/core/services/modal.service";
 import { LoadingProgression } from "src/app/models/enums/loading-progression";
+import { Switch } from "../shared/switch/switch";
 
 @Component({
   selector: "app-view-template-plan",
@@ -28,6 +29,7 @@ import { LoadingProgression } from "src/app/models/enums/loading-progression";
     ExerciseNamePipe,
     ExerciseIconPipe,
     ExerciseIconColorPipe,
+    Switch
   ],
   templateUrl: "./view-template-plan.html",
   styleUrl: "./view-template-plan.scss",
