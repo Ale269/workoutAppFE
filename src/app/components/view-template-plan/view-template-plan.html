@@ -8,7 +8,9 @@
     <h1 class="text-title">{{scheda.nomeScheda}}</h1>
   </div>
 
-
+  <div class="container-switch">
+    <app-switch #IsActiveSwitch [Descrizione]="'Scheda attiva'" (stateChange)="onAttivazioneStateChange($event)"></app-switch>
+  </div>
 
   <div class="lista-template-schede-container">
     @for (allenamento of scheda.listaAllenamenti; track allenamento.id; let i =

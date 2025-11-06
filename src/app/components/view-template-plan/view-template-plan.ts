@@ -20,6 +20,10 @@ import {
 import { ModalService } from "src/app/core/services/modal.service";
 import { LoadingProgression } from "src/app/models/enums/loading-progression";
 import { Switch } from "../shared/switch/switch";
+import {
+  AttivaSchedaRequestModel,
+  AttivaSchedaResponseModel,
+} from "src/app/models/view-modifica-scheda/attivaScheda";
 
 @Component({
   selector: "app-view-template-plan",
@@ -29,12 +33,13 @@ import { Switch } from "../shared/switch/switch";
     ExerciseNamePipe,
     ExerciseIconPipe,
     ExerciseIconColorPipe,
-    Switch
+    Switch,
   ],
   templateUrl: "./view-template-plan.html",
   styleUrl: "./view-template-plan.scss",
 })
 export class ViewTemplatePlan {
+  @ViewChild("IsActiveSwitch") Switch!: Switch;
   @ViewChild("headerDeleteTemplate") headerDeleteTemplate!: TemplateRef<any>;
   @ViewChild("bodyDeleteTemplate") bodyDeleteTemplate!: TemplateRef<any>;
   @ViewChild("footerCloseDeleteTemplate")
@@ -259,6 +264,89 @@ export class ViewTemplatePlan {
       this.errorHandlerService.handleError(
         error,
         "ViewTemplatePlan.modificaScheda"
+      );
+    }
+  }
+
+  onAttivazioneStateChange(newState: boolean) {
+    try {
+      this.cambiaStatoAttivazioneScheda(newState);
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "WorkoutComponent.OnAttivazioneStateChange"
+      );
+    }
+  }
+
+  cambiaStatoAttivazioneScheda(newState: boolean) {
+    try {
+      // Mostra lo spinner
+      this.currentSpinnerId = this.spinnerService.showWithResult(
+        newState ? "Attivazione scheda" : "Disattivazione scheda",
+        {
+          forceShow: true,
+          successMessage: newState
+            ? "Scheda attivata con successo"
+            : "Scheda disattivata con successo",
+          errorMessage: newState
+            ? "Errore nell'attivazione della scheda"
+            : "Errore nella disattivazione della scheda",
+          resultDuration: 250,
+          minSpinnerDuration: 250,
+        }
+      );
+
+      if (this.idScheda !== null && this.idScheda > 0) {
+        const request: AttivaSchedaRequestModel = {
+          idScheda: this.idScheda,
+        };
+
+        this.workoutService.attivaScheda(request).subscribe({
+          next: (response: AttivaSchedaResponseModel) => {
+            if (!response.errore?.error) {
+              if (this.currentSpinnerId) {
+                this.spinnerService.setSuccess(this.currentSpinnerId);
+              }
+            } else {
+              this.Switch.setValue(false);
+              if (this.currentSpinnerId) {
+                this.spinnerService.setError(this.currentSpinnerId);
+              }
+              this.errorHandlerService.handleError(
+                response.errore.error,
+                "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
+              );
+            }
+          },
+          error: (error) => {
+            this.Switch.setValue(false);
+            if (this.currentSpinnerId) {
+              this.spinnerService.setError(this.currentSpinnerId);
+            }
+            this.errorHandlerService.handleError(
+              error,
+              "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
+            );
+          },
+        });
+      } else {
+        this.Switch.setValue(false);
+        if (this.currentSpinnerId) {
+          this.spinnerService.setError(this.currentSpinnerId);
+        }
+        this.errorHandlerService.handleError(
+          "Nessuna scheda trovata: ",
+          "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
+        );
+      }
+    } catch (error) {
+      if (this.currentSpinnerId) {
+        this.spinnerService.setError(this.currentSpinnerId);
+      }
+      this.errorHandlerService.handleError(
+        error,
+        "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
       );
     }
   }

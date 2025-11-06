@@ -5,6 +5,7 @@ import { SchedaDTO } from "src/app/models/create-or-edit-template-or-entity-form
 
 interface SchedaFormModel {
   id: FormControl<number | null>;
+  isActive: FormControl<boolean | null>;
   idTemplate: FormControl<number | null>;
   nomeScheda: FormControl<string | null>;
   listaAllenamenti: FormArray<FormGroup<AllenamentoFormModel>>;
@@ -22,6 +23,7 @@ export class SchedaForm {
     this.form = new FormGroup<SchedaFormModel>({
       id: new FormControl<number | null>(null),
       idTemplate: new FormControl<number | null>(null),
+      isActive: new FormControl<boolean | null>(false),
       nomeScheda: new FormControl<string | null>("Scheda allenamento", [
         Validators.required,
       ]),
@@ -242,6 +244,10 @@ export class SchedaForm {
     }
   }
 
+  public toggleActiveState(newValue: boolean): void {
+    this.form.controls['isActive'].setValue(!newValue);
+  }
+
   public resetForm(): void {
     this.form.reset();
     this.listaAllenamentiForm = [];
@@ -261,7 +267,9 @@ export class SchedaForm {
       // Raccolgo i dati della scheda
       let schedaDaSalvare: SchedaDTO = {
         id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
-        idTemplate: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
+        idTemplate: this.form.controls["idTemplate"].value
+          ? this.form.controls["idTemplate"].value
+          : 0,
         nomeScheda: this.form.controls["nomeScheda"].value
           ? this.form.controls["nomeScheda"].value
           : "",

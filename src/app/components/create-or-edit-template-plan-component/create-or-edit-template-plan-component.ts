@@ -30,6 +30,7 @@ import { AccordionBodyComponent } from "../shared/accordion/accordion-element/ac
 import { WorkoutService } from "src/app/core/services/workout.service";
 import { DeleteDatiTemplateSchedaRequestModel } from "src/app/models/view-modifica-scheda/deleteDatiTemplateScheda";
 import { LoadingProgression } from "src/app/models/enums/loading-progression";
+import { Switch } from "../shared/switch/switch";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -45,6 +46,7 @@ import { LoadingProgression } from "src/app/models/enums/loading-progression";
     AccordionComponent,
     AccordionHeaderComponent,
     AccordionBodyComponent,
+    Switch,
   ],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",
@@ -406,6 +408,17 @@ export class CreateOrEditTemplatePlanComponent
       this.errorHandlerService.handleError(
         error,
         "CreateOrEditTemplatePlanComponent.confirmAddWorkout"
+      );
+    }
+  }
+
+   onAttivazioneStateChange(newState: boolean) {
+    try {
+      this.createOrEditTemplatePlanService.formScheda.toggleActiveState(newState);
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "CreateOrEditTemplatePlanComponent.OnAttivazioneStateChange"
       );
     }
   }

@@ -9,6 +9,10 @@
     <h1 class="text-title">Nuova scheda</h1>
   </div>
 
+  <div class="container-switch">
+    <app-switch #IsActiveSwitch [Descrizione]="'Scheda attiva'" (stateChange)="onAttivazioneStateChange($event)"></app-switch>
+  </div>
+
   <accordion-group>
     <accordion>
       <accordion-header>

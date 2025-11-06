@@ -26,6 +26,7 @@ import {
   RegistraAllenamentoRequestModel,
   RegistraAllenamentoResponseModel
 } from "../../models/view-modifica-allenamento-svolto/registra-allenaneto";
+import { AttivaSchedaRequestModel, AttivaSchedaResponseModel } from "src/app/models/view-modifica-scheda/attivaScheda";
 
 @Injectable({
   providedIn: "root",
@@ -150,6 +151,16 @@ export class WorkoutService {
     );
   }
 
-
+  
+  attivaScheda(
+      request: AttivaSchedaRequestModel
+  ): Observable<AttivaSchedaResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+        "workout",
+        "attivaShceda",
+        undefined,
+        request
+    );
+  }
 
 }
