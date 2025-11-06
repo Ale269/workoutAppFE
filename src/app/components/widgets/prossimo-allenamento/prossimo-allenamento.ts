@@ -72,7 +72,7 @@ export class ProssimoAllenamento implements OnInit {
     try {
       this.router.navigate(["/registra-allenamento/", this.idTemplateAllenamento], {
         state: {
-          idAllenamento: this.idTemplateAllenamento,
+          idAllenamento: null,
           idTemplateAllenamento: this.idTemplateAllenamento,
           createOrEdit: createOrEdit.create,
           //  idTemplateAllenamento: this.idTemplateAllenamento

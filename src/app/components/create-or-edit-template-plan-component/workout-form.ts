@@ -25,7 +25,7 @@ export class AllenamentoForm {
       identifier: new FormControl<number | null>(identifier),
       id: new FormControl<number | null>(allenamentoDTO?.id || null),
       idTemplate: new FormControl<number | null>(allenamentoDTO?.idTemplate || null),
-      dataEsecuzione: new FormControl<Date | null>(allenamentoDTO?.dataEsecuzione || null),
+      dataEsecuzione: new FormControl<Date | null>(allenamentoDTO?.dataEsecuzione || new Date()),
 
       nomeAllenamento: new FormControl<string | null>(
         allenamentoDTO?.nomeAllenamento || null

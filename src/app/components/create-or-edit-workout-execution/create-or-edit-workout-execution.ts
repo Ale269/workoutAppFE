@@ -278,7 +278,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
             if (!response.errore?.error) {
               this.loadingProgression = LoadingProgression.complete;
               this.buttonOptions = response.opzioniAltriAllenamenti.map((o) => {
-                return { description: o.description, optionId: o.idTemplate };
+                return { description: o.description, optionId: o.id };
               });
               if (this.initSpinnerId) {
                 this.spinnerService.setSuccess(this.initSpinnerId);
@@ -362,7 +362,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   }
 
   onOptionSelected(optionId: number) {
-    this.idTemplateAllenamento = 2;
+    this.idTemplateAllenamento = optionId;
     this.createOrEditWorkoutExecutionService.resetData();
     this.initializeWorkout();
   }
