@@ -452,7 +452,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           idIconaEsercizio: esercizioForm.idIconaEsercizio,
           idMetodologia: esercizioForm.idMetodologia,
           idTipoEsercizio: esercizioForm.idTipoEsercizio,
-          listaSerie: esercizioForm.listaSerie,
+          listaSerie: [],
           ordinamento: esercizioForm.ordinamento,
         };
 
