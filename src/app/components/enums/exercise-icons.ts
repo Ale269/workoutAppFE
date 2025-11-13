@@ -7,9 +7,10 @@ export enum ExerciseIcons {
   DORSALI = 2,
   PETTO = 3,
   SPALLE = 4,
-  GAMBE = 5,
-  CORE = 6,
-  CARDIO = 7
+  QUADRICIPITI = 5,
+  FEMORALI = 6,
+  CORE = 8,
+  CARDIO = 9
 }
 
 // Mappa per i path delle icone
@@ -19,7 +20,8 @@ export const ExerciseIconPaths: Record<ExerciseIcons, string> = {
   [ExerciseIcons.DORSALI]: 'assets/recollect/images/dorsali-icon.png',
   [ExerciseIcons.PETTO]: 'assets/recollect/images/petto-icon.png',
   [ExerciseIcons.SPALLE]: 'assets/recollect/images/spalle-icon.png',
-  [ExerciseIcons.GAMBE]: 'assets/recollect/images/gambe-icon.png',
+  [ExerciseIcons.QUADRICIPITI]: 'assets/recollect/images/quadricipiti-icon.png',
+  [ExerciseIcons.FEMORALI]: 'assets/recollect/images/femorali-icon.png',
   [ExerciseIcons.CORE]: 'assets/recollect/images/core-icon.png',
   [ExerciseIcons.CARDIO]: 'assets/recollect/images/cardio-icon.png'
 };
@@ -31,7 +33,8 @@ export const ExerciseIconLabels: Record<ExerciseIcons, string> = {
   [ExerciseIcons.DORSALI]: 'Dorsali',
   [ExerciseIcons.PETTO]: 'Petto',
   [ExerciseIcons.SPALLE]: 'Spalle',
-  [ExerciseIcons.GAMBE]: 'Gambe',
+  [ExerciseIcons.QUADRICIPITI]: 'Quadricipiti',
+  [ExerciseIcons.FEMORALI]: 'Femorali',
   [ExerciseIcons.CORE]: 'Core',
   [ExerciseIcons.CARDIO]: 'Cardio'
 };
@@ -52,7 +55,7 @@ export const ExerciseToIconMapping: Record<GymExercises, ExerciseIcons> = {
   [GymExercises.PEC_DECK]: ExerciseIcons.PETTO,
   [GymExercises.PUSH_UP_LARGHI]: ExerciseIcons.PETTO,
   [GymExercises.PULLOVER_MANUBRIO]: ExerciseIcons.PETTO,
-  [GymExercises.DIP_PARALLELE]: ExerciseIcons.PETTO, // Dip sono un esercizio per il petto e tricipiti. Ho mantenuto il mapping originale del tuo esempio.
+  [GymExercises.DIP_PARALLELE]: ExerciseIcons.PETTO,
 
   // Esercizi per i dorsali
   [GymExercises.TRAZIONI_SBARRA]: ExerciseIcons.DORSALI,
@@ -62,7 +65,6 @@ export const ExerciseToIconMapping: Record<GymExercises, ExerciseIcons> = {
   [GymExercises.REMATORE_MANUBRIO]: ExerciseIcons.DORSALI,
   [GymExercises.PULLEY_BASSO]: ExerciseIcons.DORSALI,
   [GymExercises.IPERESTENSIONI]: ExerciseIcons.DORSALI,
-  [GymExercises.GOOD_MORNING]: ExerciseIcons.DORSALI,
   [GymExercises.FARMERS_WALK]: ExerciseIcons.DORSALI,
 
   // Esercizi per le spalle
@@ -82,33 +84,38 @@ export const ExerciseToIconMapping: Record<GymExercises, ExerciseIcons> = {
   [GymExercises.CURL_PANCA_SCOTT]: ExerciseIcons.BICIPITI,
 
   // Esercizi per i tricipiti
-  // Non hai un'icona specifica per i tricipiti nel tuo FE, quindi li ho mappati alla stessa icona dei bicipiti come avevi nel tuo esempio
   [GymExercises.FRENCH_PRESS_MANUBRI]: ExerciseIcons.BICIPITI,
   [GymExercises.PUSHDOWN_CAVI]: ExerciseIcons.BICIPITI,
   [GymExercises.KICKBACK_MANUBRIO]: ExerciseIcons.BICIPITI,
   [GymExercises.SKULL_CRUSHER]: ExerciseIcons.BICIPITI,
 
   // Esercizi per avambracci
-  // Anche qui, non hai un'icona specifica, quindi li ho mappati ai bicipiti che sono un gruppo muscolare vicino.
   [GymExercises.CURL_AVAMBRACCI]: ExerciseIcons.BICIPITI,
   [GymExercises.REVERSE_CURL]: ExerciseIcons.BICIPITI,
 
-  // Esercizi per le gambe
-  [GymExercises.SQUAT_BILANCIERE]: ExerciseIcons.GAMBE,
-  [GymExercises.LEG_PRESS]: ExerciseIcons.GAMBE,
-  [GymExercises.LEG_EXTENSION]: ExerciseIcons.GAMBE,
-  [GymExercises.HACK_SQUAT]: ExerciseIcons.GAMBE,
-  [GymExercises.SQUAT_BULGARO]: ExerciseIcons.GAMBE,
-  [GymExercises.PISTOL_SQUAT]: ExerciseIcons.GAMBE,
-  [GymExercises.AFFONDI]: ExerciseIcons.GAMBE,
-  [GymExercises.LEG_CURL]: ExerciseIcons.GAMBE,
-  [GymExercises.HIP_THRUST]: ExerciseIcons.GAMBE,
-  [GymExercises.STACCO_RUMENO]: ExerciseIcons.GAMBE,
-  [GymExercises.GLUTE_BRIDGE]: ExerciseIcons.GAMBE,
-  [GymExercises.CABLE_PULL_THROUGH]: ExerciseIcons.GAMBE,
-  [GymExercises.CALF_RAISE_IN_PIEDI]: ExerciseIcons.GAMBE,
-  [GymExercises.CALF_RAISE_SEDUTO]: ExerciseIcons.GAMBE,
-  [GymExercises.BOX_JUMP]: ExerciseIcons.GAMBE,
+  // Esercizi per i quadricipiti
+  [GymExercises.SQUAT_BILANCIERE]: ExerciseIcons.QUADRICIPITI,
+  [GymExercises.LEG_PRESS]: ExerciseIcons.QUADRICIPITI,
+  [GymExercises.LEG_EXTENSION]: ExerciseIcons.QUADRICIPITI,
+  [GymExercises.HACK_SQUAT]: ExerciseIcons.QUADRICIPITI,
+  [GymExercises.SQUAT_BULGARO]: ExerciseIcons.QUADRICIPITI,
+  [GymExercises.PISTOL_SQUAT]: ExerciseIcons.QUADRICIPITI,
+  [GymExercises.AFFONDI]: ExerciseIcons.QUADRICIPITI,
+  [GymExercises.BOX_JUMP]: ExerciseIcons.QUADRICIPITI,
+
+  // Esercizi per i femorali
+  [GymExercises.LEG_CURL]: ExerciseIcons.FEMORALI,
+  [GymExercises.STACCO_RUMENO]: ExerciseIcons.FEMORALI,
+  [GymExercises.GOOD_MORNING]: ExerciseIcons.FEMORALI,
+
+  // Esercizi per glutei (mappati ai femorali essendo muscoli posteriori della gamba)
+  [GymExercises.HIP_THRUST]: ExerciseIcons.FEMORALI,
+  [GymExercises.GLUTE_BRIDGE]: ExerciseIcons.FEMORALI,
+  [GymExercises.CABLE_PULL_THROUGH]: ExerciseIcons.FEMORALI,
+
+  // Esercizi per polpacci (mappati ai quadricipiti essendo parte delle gambe)
+  [GymExercises.CALF_RAISE_IN_PIEDI]: ExerciseIcons.QUADRICIPITI,
+  [GymExercises.CALF_RAISE_SEDUTO]: ExerciseIcons.QUADRICIPITI,
 
   // Esercizi per il core
   [GymExercises.PLANK]: ExerciseIcons.CORE,
@@ -130,7 +137,7 @@ export const ExerciseToIconMapping: Record<GymExercises, ExerciseIcons> = {
   [GymExercises.JUMPING_JACKS]: ExerciseIcons.CARDIO,
   [GymExercises.MOUNTAIN_CLIMBERS]: ExerciseIcons.CARDIO,
   [GymExercises.BURPEES]: ExerciseIcons.CARDIO,
-  [GymExercises.KETTLEBELL_SWING]: ExerciseIcons.CARDIO // Lo Kettlebell Swing è un esercizio total body ma ha una forte componente cardio
+  [GymExercises.KETTLEBELL_SWING]: ExerciseIcons.CARDIO
 };
 
 // Utility functions
@@ -177,14 +184,15 @@ export function getExerciseIconsArray(): { id: number; label: string; path: stri
 }
 
 export const ExerciseIconColors: Record<ExerciseIcons, string> = {
-  [ExerciseIcons.DEFAULT]: '#6B7280',      // Grigio neutro
-  [ExerciseIcons.BICIPITI]: '#EF4444',     // Rosso per braccia
-  [ExerciseIcons.DORSALI]: '#10B981',      // Verde per schiena
-  [ExerciseIcons.PETTO]: '#F59E0B',        // Arancione per petto
-  [ExerciseIcons.SPALLE]: '#8B5CF6',       // Viola per spalle
-  [ExerciseIcons.GAMBE]: '#3B82F6',        // Blu per gambe
-  [ExerciseIcons.CORE]: '#F97316',         // Arancione scuro per core
-  [ExerciseIcons.CARDIO]: '#EC4899'        // Rosa per cardio
+  [ExerciseIcons.DEFAULT]: '#6B7280',        // Grigio neutro
+  [ExerciseIcons.BICIPITI]: '#EF4444',       // Rosso per braccia
+  [ExerciseIcons.DORSALI]: '#10B981',        // Verde per schiena
+  [ExerciseIcons.PETTO]: '#F59E0B',          // Arancione per petto
+  [ExerciseIcons.SPALLE]: '#8B5CF6',         // Viola per spalle
+  [ExerciseIcons.QUADRICIPITI]: '#3B82F6',   // Blu per quadricipiti
+  [ExerciseIcons.FEMORALI]: '#06B6D4',       // Cyan per femorali
+  [ExerciseIcons.CORE]: '#F97316',           // Arancione scuro per core
+  [ExerciseIcons.CARDIO]: '#EC4899'          // Rosa per cardio
 };
 
 // Funzione per ottenere il colore dell'icona
