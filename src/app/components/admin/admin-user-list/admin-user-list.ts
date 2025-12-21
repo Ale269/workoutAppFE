@@ -101,6 +101,14 @@ export class AdminUserListComponent implements OnInit {
     }
   }
 
+  createNewUser(): void {
+    try {
+      this.router.navigate(["/admin/users/create"]);
+    } catch (error) {
+      this.errorHandlerService.handleError(error, "AdminUserList.createNewUser");
+    }
+  }
+
   editUser(userId: number): void {
     try {
       this.router.navigate(["/admin/users/edit", userId]);

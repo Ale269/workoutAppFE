@@ -11,6 +11,23 @@ export interface UserDetailResponseModel extends BaseResponseModel {
   user: UserModel;
 }
 
+// Request per creazione utente
+export interface CreateUserRequestModel {
+  username?: string;
+  name?: string;
+  surname?: string;
+  email?: string;
+  location?: string;
+  role?: 'USER' | 'ADMIN';
+  enabled?: boolean;
+  password?: string; // Password per la creazione
+}
+
+// Response per creazione utente
+export interface CreateUserResponseModel extends BaseResponseModel {
+  user: UserModel;
+}
+
 // Request per aggiornamento utente
 export interface UpdateUserRequestModel {
   username?: string;

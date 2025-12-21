@@ -23,10 +23,70 @@
         }
       </mat-form-field>
 
+      <!-- Password (solo in creazione) -->
+      @if (!isEditMode) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          formControlName="password"
+          placeholder="Inserisci password"
+          required
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="'Mostra password'"
+        >
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (userForm.form.get('password')?.invalid &&
+        userForm.form.get('password')?.touched) {
+        <mat-error>{{ getErrorMessage('password') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Conferma Password</mat-label>
+        <input
+          matInput
+          [type]="hideConfirmPassword ? 'password' : 'text'"
+          formControlName="confirmPassword"
+          placeholder="Conferma password"
+          required
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="toggleConfirmPasswordVisibility()"
+          [attr.aria-label]="'Mostra conferma password'"
+        >
+          <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (userForm.form.get('confirmPassword')?.invalid &&
+        userForm.form.get('confirmPassword')?.touched) {
+        <mat-error>{{ getErrorMessage('confirmPassword') }}</mat-error>
+        }
+      </mat-form-field>
+      }
+
       <!-- Nome -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nome</mat-label>
-        <input matInput formControlName="name" placeholder="Inserisci nome" />
+        <input
+          matInput
+          formControlName="name"
+          placeholder="Inserisci nome"
+          required
+        />
+        @if (userForm.form.get('name')?.invalid &&
+        userForm.form.get('name')?.touched) {
+        <mat-error>{{ getErrorMessage('name') }}</mat-error>
+        }
       </mat-form-field>
 
       <!-- Cognome -->
@@ -36,7 +96,12 @@
           matInput
           formControlName="surname"
           placeholder="Inserisci cognome"
+          required
         />
+        @if (userForm.form.get('surname')?.invalid &&
+        userForm.form.get('surname')?.touched) {
+        <mat-error>{{ getErrorMessage('surname') }}</mat-error>
+        }
       </mat-form-field>
 
       <!-- Email -->
@@ -47,6 +112,7 @@
           type="email"
           formControlName="email"
           placeholder="email@esempio.it"
+          required
         />
         @if (userForm.form.get('email')?.invalid &&
         userForm.form.get('email')?.touched) {
@@ -54,14 +120,37 @@
         }
       </mat-form-field>
 
-      <!-- Localit\u00e0 -->
+      <!-- Conferma Email (solo in creazione) -->
+      @if (!isEditMode) {
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Localit\u00e0</mat-label>
+        <mat-label>Conferma Email</mat-label>
+        <input
+          matInput
+          type="email"
+          formControlName="confirmEmail"
+          placeholder="Conferma email"
+          required
+        />
+        @if (userForm.form.get('confirmEmail')?.invalid &&
+        userForm.form.get('confirmEmail')?.touched) {
+        <mat-error>{{ getErrorMessage('confirmEmail') }}</mat-error>
+        }
+      </mat-form-field>
+      }
+
+      <!-- Località -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Località</mat-label>
         <input
           matInput
           formControlName="location"
-          placeholder="Inserisci localit\u00e0"
+          placeholder="Inserisci località"
+          required
         />
+        @if (userForm.form.get('location')?.invalid &&
+        userForm.form.get('location')?.touched) {
+        <mat-error>{{ getErrorMessage('location') }}</mat-error>
+        }
       </mat-form-field>
 
       <!-- Ruolo -->

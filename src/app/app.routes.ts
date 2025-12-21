@@ -115,6 +115,12 @@ export const routes: Routes = [
     canDeactivate: [FadeGuard]
   },
   {
+    path: "admin/users/create",
+    component: AdminUserFormComponent,
+    canActivate: [AuthGuard, AdminGuard],
+    canDeactivate: [FadeGuard]
+  },
+  {
     path: "admin/users/edit/:id",
     component: AdminUserFormComponent,
     canActivate: [AuthGuard, AdminGuard],

@@ -163,6 +163,13 @@
         "isMocked": false
       },
       {
+        "name": "createUser",
+        "endpoint": "/user/create",
+        "method": "post",
+        "description": "Crea un nuovo utente (solo ADMIN).",
+        "isMocked": false
+      },
+      {
         "name": "updateUser",
         "endpoint": "/user/update/:userId",
         "method": "put",

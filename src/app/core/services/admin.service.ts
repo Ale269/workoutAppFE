@@ -4,6 +4,8 @@ import { Observable } from "rxjs";
 import {
   UserListResponseModel,
   UserDetailResponseModel,
+  CreateUserRequestModel,
+  CreateUserResponseModel,
   UpdateUserRequestModel,
   UpdateUserResponseModel,
   DeleteUserResponseModel,
@@ -38,6 +40,21 @@ export class AdminService {
       "getUserById",
       { userId },
       undefined
+    );
+  }
+
+  /**
+   * Crea un nuovo utente (solo ADMIN)
+   * @param userData - Dati del nuovo utente
+   */
+  createUser(
+    userData: CreateUserRequestModel
+  ): Observable<CreateUserResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "user",
+      "createUser",
+      undefined,
+      userData
     );
   }
 

@@ -2,6 +2,9 @@
 <div class="content">
   <div class="section-title-container">
     <h1 class="text-title">Gestione Utenti</h1>
+    <button mat-raised-button color="primary" (click)="createNewUser()" class="create-button">
+      <img src="assets/recollect/svg/google-add.svg"/>
+    </button>
   </div>
 
   <div class="user-list-container">
@@ -36,7 +39,7 @@
           (click)="editUser(user.id || user.userId)"
           title="Modifica utente"
         >
-          <img src="assets/recollect/svg/google-edit.svg" style="color: white;"/>
+          <img src="assets/recollect/svg/google-edit.svg"/>
         </button>
               
 
