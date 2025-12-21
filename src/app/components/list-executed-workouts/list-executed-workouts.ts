@@ -59,7 +59,7 @@ export class ListExecutedWorkouts {
 
       if (user) {
         const request: GetListaAllenamentiSvoltiRequestModel = {
-          userId: user.usedId,
+          userId: user.userId,
         };
 
         this.workoutService.getListaAllenamentiSvolti(request).subscribe({

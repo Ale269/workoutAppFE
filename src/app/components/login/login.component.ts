@@ -178,8 +178,12 @@ export class LoginComponent implements OnInit {
           //imposto lo stato autenticato user
           this.authService.setAuthState(
             {
-              usedId: response.usedId,
+              userId: response.userId,
               username: response.username,
+              role: response.role,
+              email: response.email,
+              name: response.name,
+              surname: response.surname,
             },
             response.jwtToken
           );

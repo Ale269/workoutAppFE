@@ -14,6 +14,9 @@ import { CreateOrEditWorkoutExecution } from "./components/create-or-edit-workou
 import { ListExecutedWorkouts } from "./components/list-executed-workouts/list-executed-workouts";
 import { ViewDataExecutedWorkout } from "./components/view-data-executed-workout/view-data-executed-workout";
 import { FadeGuard } from "./core/guards/page-animation-guards";
+import { AdminGuard } from "./core/guards/admin.guard";
+import { AdminUserListComponent } from "./components/admin/admin-user-list/admin-user-list";
+import { AdminUserFormComponent } from "./components/admin/admin-user-form/admin-user-form";
 
 export const routes: Routes = [
   {
@@ -103,7 +106,19 @@ export const routes: Routes = [
     path: "info-server",
     component: InfoBackEnd,
     canActivate: [AuthGuard],
-    canDeactivate: [FadeGuard] 
+    canDeactivate: [FadeGuard]
+  },
+  {
+    path: "admin/users",
+    component: AdminUserListComponent,
+    canActivate: [AuthGuard, AdminGuard],
+    canDeactivate: [FadeGuard]
+  },
+  {
+    path: "admin/users/edit/:id",
+    component: AdminUserFormComponent,
+    canActivate: [AuthGuard, AdminGuard],
+    canDeactivate: [FadeGuard]
   },
   { path: "**", redirectTo: "home" },
 ];

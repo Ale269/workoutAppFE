@@ -71,7 +71,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     try {
       const user = this.authService.getCurrentUser();
       if (user) {
-        await this.getWidgetsData(user.usedId);
+        await this.getWidgetsData(user.userId);
       } else {
         this.errorHandlerService.handleError(
           "nessun user trovato",

@@ -64,7 +64,7 @@ export class ListTemplatePlans implements OnInit {
 
       if (user) {
         const request: GetListaTemplatesSchedaRequestModel = {
-          userId: user.usedId,
+          userId: user.userId,
         };
 
         this.workoutService.getListaTemplatesScheda(request).subscribe({

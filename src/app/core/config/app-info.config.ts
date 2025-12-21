@@ -4,5 +4,5 @@
 export const APP_INFO = {
   version: '1.0.27',
   name: 'gymshark-frontend',
-  buildDate: '2025-12-03T16:05:43.348Z'
+  buildDate: '2025-12-14T23:41:35.102Z'
 };

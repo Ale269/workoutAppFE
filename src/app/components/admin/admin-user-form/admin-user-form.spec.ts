@@ -1,0 +1,22 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AdminUserFormComponent } from './admin-user-form';
+
+describe('AdminUserFormComponent', () => {
+  let component: AdminUserFormComponent;
+  let fixture: ComponentFixture<AdminUserFormComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [AdminUserFormComponent]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(AdminUserFormComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

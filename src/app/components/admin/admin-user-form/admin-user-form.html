@@ -1,0 +1,112 @@
+<!-- admin-user-form.html -->
+<div class="content">
+  <div class="section-title-container">
+    <h1 class="text-title">
+      {{ isEditMode ? 'Modifica Utente' : 'Nuovo Utente' }}
+    </h1>
+  </div>
+
+  <div class="form-container">
+    <form [formGroup]="userForm.form" (ngSubmit)="onSubmit()">
+      <!-- Username -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Username</mat-label>
+        <input
+          matInput
+          formControlName="username"
+          placeholder="Inserisci username"
+          required
+        />
+        @if (userForm.form.get('username')?.invalid &&
+        userForm.form.get('username')?.touched) {
+        <mat-error>{{ getErrorMessage('username') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Nome -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="name" placeholder="Inserisci nome" />
+      </mat-form-field>
+
+      <!-- Cognome -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Cognome</mat-label>
+        <input
+          matInput
+          formControlName="surname"
+          placeholder="Inserisci cognome"
+        />
+      </mat-form-field>
+
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          placeholder="email@esempio.it"
+        />
+        @if (userForm.form.get('email')?.invalid &&
+        userForm.form.get('email')?.touched) {
+        <mat-error>{{ getErrorMessage('email') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Localit\u00e0 -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Localit\u00e0</mat-label>
+        <input
+          matInput
+          formControlName="location"
+          placeholder="Inserisci localit\u00e0"
+        />
+      </mat-form-field>
+
+      <!-- Ruolo -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Ruolo</mat-label>
+        <mat-select formControlName="role" required>
+          @for (option of roleOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+        @if (userForm.form.get('role')?.invalid &&
+        userForm.form.get('role')?.touched) {
+        <mat-error>{{ getErrorMessage('role') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Stato Abilitato/Disabilitato -->
+      <div class="toggle-field">
+        <label class="toggle-label">Utente abilitato</label>
+        <mat-slide-toggle
+          formControlName="enabled"
+          color="primary"
+        ></mat-slide-toggle>
+      </div>
+
+      <!-- Pulsanti azioni -->
+      <div class="form-actions">
+        <button
+          mat-raised-button
+          type="button"
+          (click)="onCancel()"
+          class="cancel-button"
+        >
+          Annulla
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!userForm.form.valid"
+          class="submit-button"
+        >
+          {{ isEditMode ? 'Salva Modifiche' : 'Crea Utente' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

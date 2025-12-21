@@ -78,6 +78,18 @@ export class MenuComponent {
     }, 100);
   }
 
+  navigateToAdminUsers() {
+    this.closeMenu();
+    setTimeout(() => {
+      this.router.navigate(['/admin/users']);
+    }, 100);
+  }
+
+  isAdmin(): boolean {
+    const currentUser = this.authService.getCurrentUser();
+    return currentUser?.role === 'ADMIN';
+  }
+
   callLogout(): void {
     this.authService.logout();
   }

@@ -445,7 +445,7 @@ export class CreateOrEditTemplatePlanComponent
         const SaveDatiTemplateSchedaRequest: SaveDatiTemplateSchedaRequestModel =
           {
             schedaDTO: schedaDaSalvare,
-            userId: user.usedId,
+            userId: user.userId,
           };
 
         this.createOrEditTemplatePlanService

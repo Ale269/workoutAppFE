@@ -77,8 +77,8 @@
   opacity: 0;
   transform: translateY(30px);
   transition: all 0.4s ease-out;
-  
-  h2 {
+
+  h2, h3 {
     color: #fff;
     font-family: "poppins";
     font-weight: 600;
@@ -88,9 +88,20 @@
     padding: 10px 20px;
     border-radius: 8px;
     transition: background-color 0.2s ease-in-out;
-    
+
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &.admin-item h3 {
+    color: #ff5722;
+    font-weight: 700;
+    border: 1px solid rgba(255, 87, 34, 0.3);
+
+    &:hover {
+      background-color: rgba(255, 87, 34, 0.1);
+      border-color: rgba(255, 87, 34, 0.5);
     }
   }
 }
@@ -100,7 +111,7 @@
   .menu-item {
     opacity: 1;
     transform: translateY(0);
-    
+
     // Stagger animation - ogni voce appare con un piccolo ritardo
     &:nth-child(1) { transition-delay: 0.1s; }
     &:nth-child(2) { transition-delay: 0.15s; }
@@ -108,6 +119,8 @@
     &:nth-child(4) { transition-delay: 0.25s; }
     &:nth-child(5) { transition-delay: 0.3s; }
     &:nth-child(6) { transition-delay: 0.35s; }
+    &:nth-child(7) { transition-delay: 0.4s; }
+    &:nth-child(8) { transition-delay: 0.45s; }
   }
 }
 
