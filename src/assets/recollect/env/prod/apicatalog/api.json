@@ -146,6 +146,50 @@
         "description": "Recupera le info di servizio del server.",
         "isMocked": false
       }
+    ],
+    "user": [
+      {
+        "name": "getAllUsers",
+        "endpoint": "/user/get-all",
+        "method": "get",
+        "description": "Recupera la lista di tutti gli utenti (solo ADMIN).",
+        "isMocked": false
+      },
+      {
+        "name": "getUserById",
+        "endpoint": "/user/:userId",
+        "method": "get",
+        "description": "Recupera il dettaglio di un singolo utente.",
+        "isMocked": false
+      },
+      {
+        "name": "createUser",
+        "endpoint": "/user/create",
+        "method": "post",
+        "description": "Crea un nuovo utente (solo ADMIN).",
+        "isMocked": false
+      },
+      {
+        "name": "updateUser",
+        "endpoint": "/user/update/:userId",
+        "method": "put",
+        "description": "Aggiorna i dati di un utente (solo ADMIN).",
+        "isMocked": false
+      },
+      {
+        "name": "deleteUser",
+        "endpoint": "/user/delete/:userId",
+        "method": "delete",
+        "description": "Elimina un utente (solo ADMIN).",
+        "isMocked": false
+      },
+      {
+        "name": "toggleUserStatus",
+        "endpoint": "/user/toggle-status/:userId",
+        "method": "put",
+        "description": "Abilita o disabilita un utente (solo ADMIN).",
+        "isMocked": false
+      }
     ]
   }
 }
