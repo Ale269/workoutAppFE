@@ -41,7 +41,7 @@
           (click)="togglePasswordVisibility()"
           [attr.aria-label]="'Mostra password'"
         >
-          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        <img [src]="hidePassword ? 'assets/recollect/svg/google-eye.svg':'assets/recollect/svg/google-eye-off.svg' "/>
         </button>
         @if (userForm.form.get('password')?.invalid &&
         userForm.form.get('password')?.touched) {
@@ -65,7 +65,7 @@
           (click)="toggleConfirmPasswordVisibility()"
           [attr.aria-label]="'Mostra conferma password'"
         >
-          <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          <img [src]="hideConfirmPassword ? 'assets/recollect/svg/google-eye.svg':'assets/recollect/svg/google-eye-off.svg' "/>
         </button>
         @if (userForm.form.get('confirmPassword')?.invalid &&
         userForm.form.get('confirmPassword')?.touched) {
