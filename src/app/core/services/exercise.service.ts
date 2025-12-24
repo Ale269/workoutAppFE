@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ApiCatalogService } from "./api-catalog.service";
 import { Router } from "@angular/router";
-import { Observable } from "rxjs";
 import {ExerciseDTO} from "../../models/exercise/exercisedto";
 import {ExerciseResponseModel} from "../../models/exercise/exercise-model";
 
@@ -41,6 +40,15 @@ export class ExerciseService {
         }
       }
     )
+  }
+
+  getGymExercisesArray(): { id: number; label: string }[] {
+    // @ts-ignore
+    return this.getExercises()
+      .map(exercise => ({
+        id: exercise.id,
+        label: exercise.name
+      }));
   }
 
 }
