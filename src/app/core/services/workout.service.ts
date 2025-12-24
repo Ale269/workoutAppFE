@@ -157,8 +157,9 @@ export class WorkoutService {
   ): Observable<AttivaSchedaResponseModel> {
     return this.apiCatalogService.executeApiCall(
         "workout",
-        "attivaShceda",
-        undefined,
+        "enableWorkout",
+        //TODO da fixare poi, si passa da path params a body se mettiamo anche userID
+        request,
         request
     );
   }

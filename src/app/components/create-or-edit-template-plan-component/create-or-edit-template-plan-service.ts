@@ -146,7 +146,7 @@ export class CreateOrEditTemplatePlanService {
   ): Promise<SchedaDTO> {
     return new Promise<SchedaDTO>((resolve, reject) => {
       try {
-        if (request.schedaDTO.id) {
+        if (request.schedaDTO.id !== 0) {
           this.workoutService.editTemplateScheda(request).subscribe({
             next: (response: SaveDatiTemplateSchedaResponseModel) => {
               if (!response.errore?.error) {

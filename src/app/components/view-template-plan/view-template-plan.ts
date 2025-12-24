@@ -300,6 +300,9 @@ export class ViewTemplatePlan {
       if (this.idScheda !== null && this.idScheda > 0) {
         const request: AttivaSchedaRequestModel = {
           idScheda: this.idScheda,
+          //TODO
+          //mi serve anche idutente corrente per vedere quale scheda attiva ha
+          //idUser: ....
         };
 
         this.workoutService.attivaScheda(request).subscribe({

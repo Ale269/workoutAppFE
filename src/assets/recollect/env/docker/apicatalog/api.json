@@ -69,6 +69,13 @@
         "method": "post",
         "description": "Elimina i dati del template scheda di un utente.",
         "isMocked": false
+      },
+      {
+        "name": "enableWorkout",
+        "endpoint": "/workout/toggleStatusWorkout/:idScheda",
+        "method": "post",
+        "description": "Attiva/disattiva scheda di un utente.",
+        "isMocked": false
       }
     ],
     "widgets": [

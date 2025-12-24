@@ -266,7 +266,8 @@ export class SchedaForm {
     try {
       // Raccolgo i dati della scheda
       let schedaDaSalvare: SchedaDTO = {
-        id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
+        //TODO capire quale id passare, io a BE faccio query con scheda.id
+        id: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
         idTemplate: this.form.controls["idTemplate"].value
           ? this.form.controls["idTemplate"].value
           : 0,
