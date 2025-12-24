@@ -30,6 +30,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { effect } from "@angular/core";
 import { gsap } from "gsap";
 import { AnimationService } from "./core/services/page-animation-service";
+import {ExerciseService} from "./core/services/exercise.service";
 
 @Component({
   selector: "app-root",
@@ -64,7 +65,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     public spinnerService: SpinnerService,
     public bottomSheetService: BottomSheetService,
     private translate: TranslateService,
-    private animationService: AnimationService
+    private animationService: AnimationService,
+    private exerciseService: ExerciseService
   ) {
     // Inizializza TranslateService
     this.translate.setDefaultLang("it");
@@ -108,6 +110,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Monitor errori in tempo reale
     this.setupErrorMonitoring();
+    this.exerciseService.getAllExercise();
   }
 
   ngAfterViewInit(): void {

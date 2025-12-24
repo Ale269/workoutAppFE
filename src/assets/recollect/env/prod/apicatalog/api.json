@@ -27,6 +27,14 @@
         "isMocked": false
       }
     ],
+    "exercise": [
+      {
+        "name": "get-all",
+        "endpoint": "/exercise/get-all",
+        "method": "get",
+        "isMocked": false
+      }
+    ],
     "workout": [
       {
         "name": "singleUserWorkout",
