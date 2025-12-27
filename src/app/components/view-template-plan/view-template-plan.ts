@@ -327,6 +327,9 @@ export class ViewTemplatePlan {
               if (this.currentSpinnerId) {
                 this.spinnerService.setSuccess(this.currentSpinnerId);
               }
+
+              this.scheda.schedaAttiva =  this.Switch.isActiveInternal;
+
             } else {
               this.Switch.setValue(false);
               if (this.currentSpinnerId) {
