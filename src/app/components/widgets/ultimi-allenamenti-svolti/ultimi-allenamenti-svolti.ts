@@ -47,4 +47,8 @@ export class UltimiAllenamentiSvolti {
       }
     });
   }
+
+  mostraFunzionalitaInArrivo(): void {
+    alert('Funzionalità in arrivo');
+  }
 }

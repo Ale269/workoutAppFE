@@ -46,6 +46,7 @@ export class MenuComponent {
     setTimeout(() => {
       // Aggiungi qui la navigazione per Account se necessario
       // this.router.navigate(['/account']);
+          alert('Funzionalità in arrivo');
     }, 100);
   }
 
@@ -54,6 +55,7 @@ export class MenuComponent {
     setTimeout(() => {
       // Aggiungi qui la navigazione per Schede svolte se necessario
       // this.router.navigate(['/schede-svolte']);
+          alert('Funzionalità in arrivo');
     }, 100);
   }
 

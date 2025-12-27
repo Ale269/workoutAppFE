@@ -72,6 +72,7 @@ export class LoginComponent implements OnInit {
   onForgotPassword() {
     console.log("ON CLICK FORGOT PASSWORD");
     // Implementa la logica per recupero password
+        alert('Funzionalità in arrivo');
   }
 
   onRegister() {
