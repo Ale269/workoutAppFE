@@ -5,4 +5,5 @@ export interface SchedaDTO {
   idTemplate: number;
   nomeScheda: string;
   listaAllenamenti: AllenamentoDTO[];
+  schedaAttiva: boolean;
 }

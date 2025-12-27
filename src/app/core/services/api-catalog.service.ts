@@ -208,10 +208,21 @@ export class ApiCatalogService {
         fullUrl = fullUrl.replace(`:${key}`, String(value));
       }
     }
+
     //essenziale per permettere invio cookie http
-    const options = {
-      body,
-      withCredentials: true
+    var options = null;
+
+    if (nameKey==="exportWorkout" || nameKey === "getImportExcelGuide"){
+      options = {
+        body,
+        withCredentials: true,
+        responseType: 'blob' as 'json'
+      }
+    }else{
+      options = {
+        body,
+        withCredentials: true,
+      }
     }
 
     return this.http.request<T>(

@@ -10,7 +10,7 @@
   </div>
 
   <div class="container-switch">
-    <app-switch #IsActiveSwitch [Descrizione]="'Scheda attiva'" (stateChange)="onAttivazioneStateChange($event)"></app-switch>
+    <app-switch #IsActiveSwitch [Descrizione]="'Scheda attiva'" [IsActive]="this.scheda.schedaAttiva" (stateChange)="onAttivazioneStateChange($event)"></app-switch>
   </div>
 
   <accordion-group>
@@ -106,13 +106,19 @@
   </accordion-group>
 
   <div class="floating-static-button-container">
-    <button
-      class="floating-static-button"
-      [class.button-disabled]="!createOrEditTemplatePlanService.formScheda.form.valid"
-      (click)="savePlan()"
-    >
-      <span>Salva</span>
-    </button>
+      <div class="floating-actions-workout">
+        <button class="floating-static-button" (click)="savePlan(0)">
+          <span>Duplica scheda</span>
+        </button>
+
+        <button
+          class="floating-static-button"
+          [class.button-disabled]="!createOrEditTemplatePlanService.formScheda.form.valid"
+          (click)="savePlan(1)"
+        >
+          <span>Salva</span>
+        </button>
+      </div>
   </div>
 </div>
 }@else if(this.loadingProgression === LoadingProgressionEnum.none ||

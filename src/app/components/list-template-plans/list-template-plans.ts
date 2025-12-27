@@ -141,4 +141,33 @@ export class ListTemplatePlans implements OnInit {
       );
     }
   }
+
+  guidaImportScheda(){
+    this.workoutService.getGuidaImport().subscribe({
+			next: (response: any) => {
+
+				if (response instanceof Blob) {
+					const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+					const url = window.URL.createObjectURL(blob);
+					
+					const link = document.createElement('a');
+					link.href = url;
+					link.download = 'GuidaImportSchedaExcel.xlsx'; // Nome del file
+					link.click();
+					window.URL.revokeObjectURL(url);
+				}
+			},
+			error: (error: any) => {
+			
+			}
+		})
+  }
+
+  importScheda(){
+    this.workoutService.importaScheda();
+    
+  }
+
+
+
 }

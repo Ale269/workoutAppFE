@@ -47,6 +47,8 @@ export class CreateOrEditTemplatePlanService {
         idTemplate: schedaDTO.id,
         listaAllenamenti: [],
         nomeScheda: schedaDTO.nomeScheda,
+        schedaAttiva: schedaDTO.schedaAttiva,
+        
       };
 
       schedaDTO.listaAllenamenti.forEach((allenamento) => {
@@ -146,7 +148,7 @@ export class CreateOrEditTemplatePlanService {
   ): Promise<SchedaDTO> {
     return new Promise<SchedaDTO>((resolve, reject) => {
       try {
-        if (request.schedaDTO.id !== 0) {
+        if (request.schedaDTO.id !== -1) {
           this.workoutService.editTemplateScheda(request).subscribe({
             next: (response: SaveDatiTemplateSchedaResponseModel) => {
               if (!response.errore?.error) {

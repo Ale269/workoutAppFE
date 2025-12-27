@@ -71,3 +71,8 @@
   padding-bottom: 32px;
   width: 100%;
 }
+.floating-actions-workout{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

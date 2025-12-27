@@ -27,6 +27,7 @@ import {
   RegistraAllenamentoResponseModel
 } from "../../models/view-modifica-allenamento-svolto/registra-allenaneto";
 import { AttivaSchedaRequestModel, AttivaSchedaResponseModel } from "src/app/models/view-modifica-scheda/attivaScheda";
+import {DownloadSchedaRequestModel} from "../../models/view-modifica-scheda/downloadScheda";
 
 @Injectable({
   providedIn: "root",
@@ -158,9 +159,37 @@ export class WorkoutService {
     return this.apiCatalogService.executeApiCall(
         "workout",
         "enableWorkout",
-        //TODO da fixare poi, si passa da path params a body se mettiamo anche userID
-        request,
+        undefined,
         request
+    );
+  }
+
+  getGuidaImport(): Observable<AttivaSchedaResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "workout",
+      "getImportExcelGuide",
+      undefined,
+      undefined
+    );
+  }
+
+  importaScheda(): Observable<AttivaSchedaResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "workout",
+      "importWorkout",
+      undefined,
+      undefined
+    );
+  }
+
+  esportaScheda(
+    request: DownloadSchedaRequestModel
+  ): Observable<any> {
+    return this.apiCatalogService.executeApiCall(
+      "workout",
+      "exportWorkout",
+      request,
+      undefined
     );
   }
 
