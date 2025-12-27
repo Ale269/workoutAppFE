@@ -13,7 +13,7 @@ interface SchedaFormModel {
 
 export class SchedaForm {
   public listaAllenamentiForm: AllenamentoForm[] = [];
-  public identifier: number = 0;
+  public identifier: number = -1;
   public form: FormGroup;
 
   public availableWorkoutPositions: number[] = [];
@@ -54,6 +54,7 @@ export class SchedaForm {
       id: schedaDTO.id,
       idTemplate: schedaDTO.idTemplate,
       nomeScheda: schedaDTO.nomeScheda,
+      isActive: schedaDTO.schedaAttiva
     });
 
     // Pulisce gli allenamenti esistenti
@@ -245,7 +246,7 @@ export class SchedaForm {
   }
 
   public toggleActiveState(newValue: boolean): void {
-    this.form.controls['isActive'].setValue(!newValue);
+    this.form.controls['isActive'].setValue(newValue);
   }
 
   public resetForm(): void {
@@ -267,15 +268,11 @@ export class SchedaForm {
       // Raccolgo i dati della scheda
       let schedaDaSalvare: SchedaDTO = {
         //TODO capire quale id passare, io a BE faccio query con scheda.id
-        id: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
-        idTemplate: this.form.controls["idTemplate"].value
-          ? this.form.controls["idTemplate"].value
-          : 0,
-        nomeScheda: this.form.controls["nomeScheda"].value
-          ? this.form.controls["nomeScheda"].value
-          : "",
+        id: this.form.controls["idTemplate"].value || -1,
+        idTemplate: this.form.controls["idTemplate"].value || 0,
+        nomeScheda: this.form.controls["nomeScheda"].value || "",
         listaAllenamenti: [],
-        schedaAttiva: true,
+        schedaAttiva: this.form.controls['isActive'].value || false,
       };
 
       this.listaAllenamentiForm.forEach((allenamento) => {

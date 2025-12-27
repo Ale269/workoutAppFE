@@ -8,9 +8,9 @@
     </div>
     <h1 class="text-title">Nuova scheda</h1>
   </div>
-
+<form [formGroup]="createOrEditTemplatePlanService.formScheda.form">
   <div class="container-switch">
-    <app-switch #IsActiveSwitch [Descrizione]="'Scheda attiva'" [IsActive]="this.scheda.schedaAttiva" (stateChange)="onAttivazioneStateChange($event)"></app-switch>
+    <app-switch #IsActiveSwitch [Descrizione]="'Scheda attiva'" [IsActive]="scheda ? scheda.schedaAttiva : false" (stateChange)="onAttivazioneStateChange($event)"></app-switch>
   </div>
 
   <accordion-group>
@@ -20,7 +20,7 @@
       </accordion-header>
       <accordion-body>
         <div class="nome-scheda-container">
-          <form [formGroup]="createOrEditTemplatePlanService.formScheda.form">
+          
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Nome scheda </mat-label>
               <input
@@ -36,7 +36,7 @@
               <mat-error>Nome scheda obbligatorio</mat-error>
               }
             </mat-form-field>
-          </form>
+
           <div class="delete-scheda-button-row">
             <button
               class="text-shape-button-danger"
@@ -104,7 +104,7 @@
       </accordion-body>
     </accordion>
   </accordion-group>
-
+          </form>
   <div class="floating-static-button-container">
       <div class="floating-actions-workout">
         <button class="floating-static-button" (click)="savePlan(0)">

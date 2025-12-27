@@ -437,14 +437,14 @@ export class CreateOrEditTemplatePlanComponent
         }
       );
 
-      let schedaDaSalvare: SchedaDTO =
-        this.createOrEditTemplatePlanService.formScheda.getDatiSchedaDaSalvare();
+        this.scheda = this.createOrEditTemplatePlanService.formScheda.getDatiSchedaDaSalvare();
 
       const user = this.authService.getCurrentUser();
+      
       if (user) {
         const SaveDatiTemplateSchedaRequest: SaveDatiTemplateSchedaRequestModel =
           {
-            schedaDTO: schedaDaSalvare,
+            schedaDTO:  this.scheda,
             userId: user.userId,
           };
         
