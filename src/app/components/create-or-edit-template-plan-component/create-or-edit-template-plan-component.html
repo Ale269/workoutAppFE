@@ -6,7 +6,14 @@
       <div class="close-icon-trigger" (click)="goBack()"></div>
       <img src="assets/recollect/svg/google-close-icon.svg" />
     </div>
-    <h1 class="text-title">Nuova scheda</h1>
+
+    <h1 class="text-title">
+      @if(isNuovaScheda){
+        Nuova scheda
+      }@else {
+        Modifica scheda
+      }
+      </h1>
   </div>
 <form [formGroup]="createOrEditTemplatePlanService.formScheda.form">
   <div class="container-switch">
@@ -107,9 +114,11 @@
           </form>
   <div class="floating-static-button-container">
       <div class="floating-actions-workout">
-        <button class="floating-static-button" (click)="savePlan(0)">
-          <span>Duplica scheda</span>
-        </button>
+        @if(!isNuovaScheda){  
+          <button class="floating-static-button" (click)="savePlan(0)">
+            <span>Duplica scheda</span>
+          </button>
+        }
 
         <button
           class="floating-static-button"

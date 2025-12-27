@@ -80,6 +80,10 @@ export class CreateOrEditTemplatePlanComponent
   public selectedTabIndex: number = 0;
   public scheda!: SchedaDTO;
 
+  public get isNuovaScheda():boolean{
+    return !this.scheda || this.scheda.id == -1;
+  }
+
   public LoadingProgressionEnum = LoadingProgression;
   public loadingProgression: LoadingProgression = LoadingProgression.none;
 
