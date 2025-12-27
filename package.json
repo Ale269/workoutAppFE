@@ -1,6 +1,6 @@
 {
   "name": "gymshark-frontend",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port=4202",
