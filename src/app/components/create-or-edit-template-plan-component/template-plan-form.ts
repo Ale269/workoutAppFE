@@ -275,6 +275,7 @@ export class SchedaForm {
           ? this.form.controls["nomeScheda"].value
           : "",
         listaAllenamenti: [],
+        schedaAttiva: true,
       };
 
       this.listaAllenamentiForm.forEach((allenamento) => {

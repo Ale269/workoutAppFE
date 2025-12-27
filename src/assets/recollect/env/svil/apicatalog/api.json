@@ -77,6 +77,34 @@
         "method": "post",
         "description": "Elimina i dati del template scheda di un utente.",
         "isMocked": false
+      },
+      {
+        "name": "enableWorkout",
+        "endpoint": "/workout/toggleStatusWorkout",
+        "method": "post",
+        "description": "Attiva/disattiva scheda di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "getImportExcelGuide",
+        "endpoint": "/excel/importGuide/workout",
+        "method": "get",
+        "description": "Scarica la guida di come importare una scheda",
+        "isMocked": false
+      },
+      {
+        "name": "importWorkout",
+        "endpoint": "/excel/import/workout",
+        "method": "post",
+        "description": "Importa la scheda excel",
+        "isMocked": false
+      },
+      {
+        "name": "exportWorkout",
+        "endpoint": "/excel/export/workout/:idScheda",
+        "method": "get",
+        "description": "Download scheda di un utente",
+        "isMocked": false
       }
     ],
     "widgets": [

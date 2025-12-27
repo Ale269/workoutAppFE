@@ -78,7 +78,7 @@ export class CreateOrEditTemplatePlanComponent
   footerConfirmDeleteTemplate!: TemplateRef<any>;
 
   public selectedTabIndex: number = 0;
-  public scheda: SchedaDTO | null = null;
+  public scheda!: SchedaDTO;
 
   public LoadingProgressionEnum = LoadingProgression;
   public loadingProgression: LoadingProgression = LoadingProgression.none;
@@ -423,7 +423,7 @@ export class CreateOrEditTemplatePlanComponent
     }
   }
 
-  savePlan() {
+  savePlan(actionId: number) {
     try {
       // Mostra lo spinner di salvataggio
       this.saveSpinnerId = this.spinnerService.showWithResult(
@@ -447,7 +447,14 @@ export class CreateOrEditTemplatePlanComponent
             schedaDTO: schedaDaSalvare,
             userId: user.userId,
           };
-
+        
+        //ho messo un parametro actionId per distinguere duplicazione da salvataggio standard
+        //se passo 0 -> duplicazione e metto schedaDTO.id !== 0
+        //se passo 1 -> salvataggio standard non faccio nulla
+        if (actionId===0){
+          SaveDatiTemplateSchedaRequest.schedaDTO.id=-1;
+          SaveDatiTemplateSchedaRequest.schedaDTO.schedaAttiva=false;
+        }
         this.createOrEditTemplatePlanService
           .savePlan(SaveDatiTemplateSchedaRequest)
           .then((response) => {

@@ -1,4 +1,4 @@
-import { Component, TemplateRef, ViewChild } from "@angular/core";
+import {ChangeDetectorRef, Component, TemplateRef, ViewChild} from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
@@ -24,6 +24,16 @@ import {
   AttivaSchedaRequestModel,
   AttivaSchedaResponseModel,
 } from "src/app/models/view-modifica-scheda/attivaScheda";
+import {DownloadSchedaRequestModel} from "../../models/view-modifica-scheda/downloadScheda";
+import {
+  SaveDatiTemplateSchedaRequestModel,
+  SaveDatiTemplateSchedaResponseModel
+} from "../../models/view-modifica-scheda/saveDatiTemplateScheda";
+import {Observable} from "rxjs";
+import {
+  CreateOrEditTemplatePlanService
+} from "../create-or-edit-template-plan-component/create-or-edit-template-plan-service";
+import {AuthService} from "../../core/services/auth.service";
 
 @Component({
   selector: "app-view-template-plan",
@@ -49,8 +59,11 @@ export class ViewTemplatePlan {
 
   public idScheda: number | null = 0;
   public scheda!: SchedaDTO;
+  public selectedTabIndex: number = 0;
   private currentSpinnerId: string | null = null;
+  private saveSpinnerId: string | null = null;
 
+  
   public LoadingProgressionEnum = LoadingProgression;
   public loadingProgression: LoadingProgression = LoadingProgression.none;
 
@@ -60,7 +73,11 @@ export class ViewTemplatePlan {
     private activatedRouter: ActivatedRoute,
     private router: Router,
     private workoutService: WorkoutService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    
+    public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
   ) {
     try {
       this.idScheda = Number(this.activatedRouter.snapshot.paramMap.get("id"));
@@ -296,13 +313,12 @@ export class ViewTemplatePlan {
           minSpinnerDuration: 250,
         }
       );
-
-      if (this.idScheda !== null && this.idScheda > 0) {
+      const user = this.authService.getCurrentUser();
+      
+      if (this.idScheda !== null && this.idScheda > 0 && user) {
         const request: AttivaSchedaRequestModel = {
           idScheda: this.idScheda,
-          //TODO
-          //mi serve anche idutente corrente per vedere quale scheda attiva ha
-          //idUser: ....
+          userId: user.userId,
         };
 
         this.workoutService.attivaScheda(request).subscribe({
@@ -351,6 +367,34 @@ export class ViewTemplatePlan {
         error,
         "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
       );
+    }
+  }
+  
+  downloadSchedaExcel(){
+    
+    if (this.idScheda !== null && this.idScheda > 0) {
+      const request: DownloadSchedaRequestModel = {
+        idScheda: this.idScheda,
+      };
+      
+      this.workoutService.esportaScheda(request).subscribe({
+        next: (response: any) => {
+          
+          if (response instanceof Blob) {
+            const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+            const url = window.URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Scheda_Allenamento.xlsx'; // Nome del file
+            link.click();
+            window.URL.revokeObjectURL(url);
+          }
+        },
+        error: (error: any) => {
+        
+        }
+      })
     }
   }
 }
