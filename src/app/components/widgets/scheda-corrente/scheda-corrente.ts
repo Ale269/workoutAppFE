@@ -1,5 +1,7 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
+import { Router } from "@angular/router";
+import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { WidgetsService } from "src/app/core/services/widgets.service";
 import {
   GetDatiSchedaCorrenteRequestModel,
@@ -13,12 +15,16 @@ import {
   styleUrl: "./scheda-corrente.scss",
 })
 export class SchedaCorrente {
+  public idScheda: number = 0;
   public datiRecuperati: boolean = false;
   public titoloScheda: string | null = null;
   public descrizioneAllenamentoPrecedente: string | null = null;
   public descrizioneProssimoAllenamento: string | null = null;
   public dataInizio: Date | null = null;
   public numeroAllenamentiEffettuati: number | null = null;
+
+  private router = inject(Router);
+  private errorHandlerService = inject(ErrorHandlerService);
 
   constructor(private widgetsService: WidgetsService) {}
 
@@ -34,17 +40,11 @@ export class SchedaCorrente {
         this.widgetsService.getDatiSchedaCorrente(request).subscribe({
           next: (response: GetDatiSchedaCorrenteResponseModel) => {
             if (!response.errore?.error) {
-              this.titoloScheda = response.titoloScheda;
-              this.descrizioneAllenamentoPrecedente =
-                response.descrizioneAllenamentoPrecedente;
-              this.descrizioneProssimoAllenamento =
-                response.descrizioneProssimoAllenamento;
-              this.dataInizio = response.dataInizio;
-              this.numeroAllenamentiEffettuati =
-                response.numeroAllenamentiEffettuati;
-              this.datiRecuperati = true;
+              this.setDatiScheda(response);
+
               resolve(null);
             } else {
+              this.clear();
               reject(response.errore.error);
             }
           },
@@ -56,5 +56,37 @@ export class SchedaCorrente {
         reject(error);
       }
     });
+  }
+
+  setDatiScheda(response: GetDatiSchedaCorrenteResponseModel) {
+    this.idScheda = response.idScheda;
+    this.titoloScheda = response.titoloScheda;
+    this.descrizioneAllenamentoPrecedente =
+      response.descrizioneAllenamentoPrecedente;
+    this.descrizioneProssimoAllenamento =
+      response.descrizioneProssimoAllenamento;
+    this.dataInizio = response.dataInizio;
+    this.numeroAllenamentiEffettuati = response.numeroAllenamentiEffettuati;
+    this.datiRecuperati = true;
+  }
+
+  clear() {
+    this.titoloScheda = null;
+    this.descrizioneAllenamentoPrecedente = null;
+    this.descrizioneProssimoAllenamento = null;
+    this.dataInizio = null;
+    this.numeroAllenamentiEffettuati = null;
+    this.datiRecuperati = false;
+  }
+
+  visualizzaDatiScheda(idScheda: number) {
+    try {
+      this.router.navigate(["/le-mie-schede/visualizza-scheda", idScheda]);
+    } catch (error) {
+      this.errorHandlerService.handleError(
+        error,
+        "SchedaCorrente.VisualizzaDatiScheda"
+      );
+    }
   }
 }

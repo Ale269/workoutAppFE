@@ -10,15 +10,15 @@
   @if(datiRecuperati){
   <div class="widget-data">
     <h3 class="text-grey">Titolo</h3>
-    <h3 class="text-white">{{this.titoloScheda}}</h3>
+    <h3 class="text-white">{{titoloScheda}}</h3>
   </div>
   <div class="widget-data">
     <h3 class="text-grey">Allenamento precedente</h3>
-    <h3 class="text-white">{{this.descrizioneAllenamentoPrecedente}}</h3>
+    <h3 class="text-white">{{descrizioneAllenamentoPrecedente}}</h3>
   </div>
   <div class="widget-data">
     <h3 class="text-grey">Prossimo allenamento</h3>
-    <h3 class="text-white">{{this.descrizioneProssimoAllenamento}}</h3>
+    <h3 class="text-white">{{descrizioneProssimoAllenamento}}</h3>
   </div>
   <div class="widget-data">
     <h3 class="text-grey">Tipo scheda</h3>
@@ -26,15 +26,15 @@
   </div>
   <div class="widget-data">
     <h3 class="text-grey">Data inizio</h3>
-    <h3 class="text-white">{{ this.dataInizio | date: "dd/MM/yyyy" }}</h3>
+    <h3 class="text-white">{{dataInizio | date: "dd/MM/yyyy" }}</h3>
   </div>
   <div class="widget-data">
     <h3 class="text-grey">Allenamenti effettuati</h3>
-    <h3 class="text-white">{{this.numeroAllenamentiEffettuati}}</h3>
+    <h3 class="text-white">{{numeroAllenamentiEffettuati}}</h3>
   </div>
 
   <div class="widget-button">
-    <button class="text-shape-button">
+    <button class="text-shape-button"  (click)="visualizzaDatiScheda(idScheda)">
       <span>Apri scheda</span>
       <div class="text-shape-button-icon-container">
         <img src="assets/recollect/svg/google-arrow.svg" />
