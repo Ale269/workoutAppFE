@@ -44,7 +44,7 @@
   font-family: "poppins";
   font-size: 14px;
   border: 1px solid #212121;
-  background-color: #0c0c0c;
+  background-color: #020B0A;
   border-radius: 4px 2px;
   padding: 4px;
 }
@@ -81,8 +81,12 @@
   flex-direction: column;
   gap: 8px;
   border-radius: 8px;
-  background-color: #0c0c0c;
-  border: 1px solid #212121;
+  background: linear-gradient(#020b0a 0 0) padding-box,
+    linear-gradient(to bottom, #002c29 0%, #000 50%, #002c29 100%)
+      border-box;
+  box-sizing: border-box;
+
+  border: 1px solid transparent;
   padding: 16px;
 }
 
