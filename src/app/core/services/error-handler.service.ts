@@ -1,5 +1,6 @@
-import { Injectable } from "@angular/core";
+import { ErrorHandler, inject, Injectable } from "@angular/core";
 import { environment } from "../../../environments/environment";
+import { Router } from "@angular/router";
 
 export type AppError = {
   id: string;
@@ -19,42 +20,93 @@ export type AppError = {
 @Injectable({
   providedIn: "root",
 })
-export class ErrorHandlerService {
+export class ErrorHandlerService implements ErrorHandler {
   private errors: AppError[] = [];
   private readonly maxErrors = 100;
   private errorObservers: ((error: AppError) => void)[] = [];
+  private router = inject(Router);
 
   constructor() {}
 
+  // Angular lo chiama automaticamente per errori non gestiti
+   handleError(error: any): void {
+    console.error("🔥 GlobalErrorHandler catturato:", error);
+
+    const type = this.inferErrorType(error);
+    const isCritical = this.shouldBeCritical(error, type);
+
+    // Registra l'errore
+    this.pushError(error, {
+      type,
+      isCritical,
+      context: "Uncaught Error",
+    });
+
+    // Gli observer (come AppComponent) riceveranno la notifica
+    // e gestiranno il routing se necessario
+  }
+
+  // Helper per determinare il tipo di errore
+  private inferErrorType(error: any): string {
+    if (error?.status !== undefined) return "Http";
+    if (error?.message?.includes("Network")) return "Network";
+    if (error?.name === "ChunkLoadError") return "Critical";
+    return "Runtime";
+  }
+
+  // Determina se deve essere critico (più aggressivo per errori non gestiti)
+  private shouldBeCritical(error: any, type: string): boolean {
+    // Usa la tua logica esistente
+    const baseCritical = this.isCriticalError(error, type);
+
+    // Errori non gestiti sono potenzialmente più pericolosi
+    const criticalPatterns = [
+      /ChunkLoadError/i,
+      /Failed to fetch/i,
+      /Cannot read property.*undefined/i,
+      /undefined is not an object/i,
+    ];
+
+    const message = error?.message || "";
+    const matchesPattern = criticalPatterns.some((pattern) =>
+      pattern.test(message)
+    );
+
+    return baseCritical || matchesPattern;
+  }
+
   // Metodo principale per aggiungere errori
   pushError(
-    error: any, 
-    opts?: { 
-      type?: string; 
-      context?: string; 
+    error: any,
+    opts?: {
+      type?: string;
+      context?: string;
       isCritical?: boolean;
       metadata?: Record<string, any>;
     }
   ): string {
     const id = this.generateId();
     const timestamp = new Date().toISOString();
-    
+
     const appError: AppError = {
       id,
       timestamp,
       type: opts?.type ?? "Runtime",
       isCritical: opts?.isCritical ?? this.isCriticalError(error, opts?.type),
       context: opts?.context,
-      message: error?.message ?? (typeof error === "string" ? error : "Errore sconosciuto"),
+      message:
+        error?.message ??
+        (typeof error === "string" ? error : "Errore sconosciuto"),
       stack: error?.stack,
       url: typeof window !== "undefined" ? window.location.href : undefined,
-      userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+      userAgent:
+        typeof navigator !== "undefined" ? navigator.userAgent : undefined,
       resolved: false,
       metadata: opts?.metadata,
     };
 
     this.errors.unshift(appError);
-    
+
     if (this.errors.length > this.maxErrors) {
       this.errors = this.errors.slice(0, this.maxErrors);
     }
@@ -70,12 +122,16 @@ export class ErrorHandlerService {
   }
 
   // Helper per errori critici
-  pushCriticalError(error: any, context?: string, metadata?: Record<string, any>): string {
-    return this.pushError(error, { 
-      isCritical: true, 
-      context, 
+  pushCriticalError(
+    error: any,
+    context?: string,
+    metadata?: Record<string, any>
+  ): string {
+    return this.pushError(error, {
+      isCritical: true,
+      context,
       metadata,
-      type: 'Critical'
+      type: "Critical",
     });
   }
 
@@ -86,12 +142,12 @@ export class ErrorHandlerService {
 
   // Ottieni solo errori critici non risolti
   getCriticalErrors(): AppError[] {
-    return this.errors.filter(error => error.isCritical && !error.resolved);
+    return this.errors.filter((error) => error.isCritical && !error.resolved);
   }
 
   // Ottieni errori normali non risolti
   getNormalErrors(): AppError[] {
-    return this.errors.filter(error => !error.isCritical && !error.resolved);
+    return this.errors.filter((error) => !error.isCritical && !error.resolved);
   }
 
   // Verifica se ci sono errori critici
@@ -105,7 +161,7 @@ export class ErrorHandlerService {
 
   // Risolvi errore specifico
   resolveError(id: string): boolean {
-    const error = this.errors.find(e => e.id === id);
+    const error = this.errors.find((e) => e.id === id);
     if (error && !error.resolved) {
       error.resolved = true;
       error.resolvedAt = new Date().toISOString();
@@ -117,7 +173,7 @@ export class ErrorHandlerService {
   // Risolvi tutti gli errori
   resolveAllErrors(): void {
     const now = new Date().toISOString();
-    this.errors.forEach(error => {
+    this.errors.forEach((error) => {
       if (!error.resolved) {
         error.resolved = true;
         error.resolvedAt = now;
@@ -133,7 +189,7 @@ export class ErrorHandlerService {
   // Subscribe agli errori
   onError(callback: (error: AppError) => void): () => void {
     this.errorObservers.push(callback);
-    
+
     return () => {
       const index = this.errorObservers.indexOf(callback);
       if (index > -1) {
@@ -143,7 +199,7 @@ export class ErrorHandlerService {
   }
 
   // Helper per logging semplice
-  handleError(error: any, context?: string): void {
+  logError(error: any, context?: string): void {
     this.pushError(error, { type: "Runtime", context });
     this.notifyUser(error, context);
   }
@@ -151,45 +207,98 @@ export class ErrorHandlerService {
   // Determina se un errore è critico
   private isCriticalError(error: any, type?: string): boolean {
     // Errori sempre critici
-    if (type === 'Critical' || type === 'Initializing') return true;
-    
+    if (type === "Critical" || type === "Initializing") return true;
+
     // Errori di rete (status 0 = no connection)
-    if (type === 'Http' && error?.status === 0) return true;
-    
+    if (type === "Http" && error?.status === 0) return true;
+
     // Errori 5xx del server
-    if (type === 'Http' && error?.status >= 500) return true;
-    
+    if (type === "Http" && error?.status >= 500) return true;
+
     // Basato sul messaggio
-    const message = error?.message?.toLowerCase() || '';
-    if (message.includes('critical') || message.includes('fatal') || 
-        message.includes('initialization') || message.includes('catalog')) return true;
-    
+    const message = error?.message?.toLowerCase() || "";
+    if (
+      message.includes("critical") ||
+      message.includes("fatal") ||
+      message.includes("initialization") ||
+      message.includes("catalog")
+    )
+      return true;
+
     // Default: non critico
     return false;
   }
 
   private notifyObservers(error: AppError): void {
-    this.errorObservers.forEach(observer => {
+    this.errorObservers.forEach((observer) => {
       try {
         observer(error);
       } catch (e) {
-        console.error('Error in error observer:', e);
+        console.error("Error in error observer:", e);
       }
     });
   }
 
   private notifyUser(error: any, context?: string): void {
     if (!environment.production) {
-      console.log(`[notifyUser] ${context ?? "Errore"}: ${error?.message ?? error}`);
+      console.log(
+        `[notifyUser] ${context ?? "Errore"}: ${error?.message ?? error}`
+      );
     }
-    
+
     // Qui puoi integrare con servizi di notifica come:
     // - Angular Material Snackbar
-    // - Toast notifications  
+    // - Toast notifications
     // - Modal dialogs per errori critici
   }
 
   private generateId(): string {
-    return Math.random().toString(36).slice(2, 9) + "-" + Date.now().toString(36);
+    return (
+      Math.random().toString(36).slice(2, 9) + "-" + Date.now().toString(36)
+    );
+  }
+
+  private showFallbackError(): void {
+    if (typeof document !== "undefined") {
+      document.body.innerHTML = `
+        <div style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          background: #f5f5f5;
+          font-family: Arial, sans-serif;
+          text-align: center;
+          padding: 20px;
+        ">
+          <div style="
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+          ">
+            <h1 style="color: #dc3545; margin-bottom: 20px;">⚠️ Errore Critico</h1>
+            <p style="color: #666; margin-bottom: 20px;">
+              L'applicazione ha riscontrato un errore critico.
+            </p>
+            <button 
+              onclick="window.location.reload()" 
+              style="
+                background: #007bff;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+              "
+            >
+              Ricarica Pagina
+            </button>
+          </div>
+        </div>
+      `;
+    }
   }
 }

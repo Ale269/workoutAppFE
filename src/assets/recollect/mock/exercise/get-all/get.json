@@ -1,0 +1,50 @@
+{
+  "errore": {
+    "error": false,
+    "codice": 200,
+    "messaggio": "Dati recuperati con successo"
+  },
+  "exercises": [
+    {
+      "idTipoEsercizio": 1,
+      "nomeTipoEsercizio": "Panca Piana",
+      "idMuscoli": [1, 5],
+      "idIcona": 3
+    },
+    {
+      "idTipoEsercizio": 2,
+      "nomeTipoEsercizio": "Trazioni",
+      "idMuscoli": [2, 4],
+      "idIcona": 2
+    },
+    {
+      "idTipoEsercizio": 3,
+      "nomeTipoEsercizio": "Squat",
+      "idMuscoli": [6, 8, 7],
+      "idIcona": 5
+    },
+    {
+      "idTipoEsercizio": 4,
+      "nomeTipoEsercizio": "Military Press",
+      "idMuscoli": [3, 5],
+      "idIcona": 4
+    }
+  ],
+  "muscles": [
+    { "idMuscolo": 1, "nomeMuscolo": "Petto" },
+    { "idMuscolo": 2, "nomeMuscolo": "Dorsali" },
+    { "idMuscolo": 3, "nomeMuscolo": "Spalle" },
+    { "idMuscolo": 4, "nomeMuscolo": "Bicipiti" },
+    { "idMuscolo": 5, "nomeMuscolo": "Tricipiti" },
+    { "idMuscolo": 6, "nomeMuscolo": "Quadricipiti" },
+    { "idMuscolo": 7, "nomeMuscolo": "Femorali" },
+    { "idMuscolo": 8, "nomeMuscolo": "Glutei" }
+  ],
+  "icons": [
+    { "idIcona": 1, "nomeIcona": "Bicipiti", "coloreIcona": "#E11D48" },
+    { "idIcona": 2, "nomeIcona": "Dorsali", "coloreIcona": "#2563EB" },
+    { "idIcona": 3, "nomeIcona": "Petto", "coloreIcona": "#16A34A" },
+    { "idIcona": 4, "nomeIcona": "Spalle", "coloreIcona": "#D97706" },
+    { "idIcona": 5, "nomeIcona": "Gambe", "coloreIcona": "#7C3AED" }
+  ]
+}

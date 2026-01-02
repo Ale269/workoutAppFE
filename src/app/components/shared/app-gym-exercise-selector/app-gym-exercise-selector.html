@@ -13,11 +13,6 @@
     [class.error]="control.invalid && control.touched"
   />
   
-  <!-- Icona freccia per simulare la select -->
-  <mat-icon matSuffix style="cursor: pointer;" (click)="openSheet($event)">
-    expand_more
-  </mat-icon>
-  
   @if(hint){
     <mat-hint>{{ hint }}</mat-hint>
   } 

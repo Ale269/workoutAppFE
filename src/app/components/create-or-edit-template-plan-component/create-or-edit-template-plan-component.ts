@@ -113,7 +113,7 @@ export class CreateOrEditTemplatePlanComponent
         this.scheda = state.scheda;
       }
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditTemplatePlanComponent.constructor"
       );
@@ -165,7 +165,7 @@ export class CreateOrEditTemplatePlanComponent
         }
       }, 100);
 
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditTemplatePlanComponent.ngOnInit"
       );
@@ -314,7 +314,7 @@ export class CreateOrEditTemplatePlanComponent
       }, 100);
       this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditTemplatePlanComponent.deleteExercise"
       );
@@ -351,7 +351,7 @@ export class CreateOrEditTemplatePlanComponent
         onConfirm: () => this.addWorkout(),
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditTemplatePlanComponent.openDeleteModal"
       );
@@ -409,7 +409,7 @@ export class CreateOrEditTemplatePlanComponent
       }, 500);
       this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditTemplatePlanComponent.confirmAddWorkout"
       );
@@ -420,7 +420,7 @@ export class CreateOrEditTemplatePlanComponent
     try {
       this.createOrEditTemplatePlanService.formScheda.toggleActiveState(newState);
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditTemplatePlanComponent.OnAttivazioneStateChange"
       );
@@ -475,7 +475,7 @@ export class CreateOrEditTemplatePlanComponent
                 "Errore nella fase di salvataggio"
               );
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "CreateOrEditTemplatePlanComponent.SavePlan"
             );
@@ -489,7 +489,7 @@ export class CreateOrEditTemplatePlanComponent
       if (this.saveSpinnerId) {
         this.spinnerService.setError(this.saveSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditTemplatePlanComponent.SavePlan"
       );
@@ -504,7 +504,7 @@ export class CreateOrEditTemplatePlanComponent
       this.createOrEditTemplatePlanService.initializeFormWithData(datiScheda);
       this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditTemplatePlanComponent.resetAll"
       );
@@ -542,7 +542,7 @@ export class CreateOrEditTemplatePlanComponent
         }
       }
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditTemplatePlanComponent.goBack"
       );
@@ -559,7 +559,7 @@ export class CreateOrEditTemplatePlanComponent
         onConfirm: () => this.eliminaScheda(),
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewTemplatePlan.openDeleteScheda"
       );
@@ -605,7 +605,7 @@ export class CreateOrEditTemplatePlanComponent
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               objError,
               "CreateOrEditTemplatePlanComponent.getListaTemplateSchede"
             );
@@ -617,7 +617,7 @@ export class CreateOrEditTemplatePlanComponent
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditTemplatePlanComponent.getListaTemplateSchede"
       );

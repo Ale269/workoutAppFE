@@ -1,86 +1,74 @@
-import { enableProdMode, ErrorHandler, inject } from '@angular/core';
-import { environment } from './environments/environment';
-import {bootstrapApplication, BrowserModule} from '@angular/platform-browser'; // Importa bootstrapApplication
-import { AppComponent } from './app/app.component'; // Importa il tuo AppComponent
-import { provideHttpClient, withInterceptors } from '@angular/common/http'; // Per HttpClient e Interceptor
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'; // Per BrowserAnimationsModule
-import { provideRouter } from '@angular/router'; // Per AppRoutingModule e il routing
-import { routes } from './app/app.routes'; // Assicurati di avere un file app.routes.ts con le tue rotte
-import { AuthInterceptor } from './app/core/interceptors/auth.interceptor'; // Importa il tuo interceptor
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { HttpClient } from '@angular/common/http';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { importProvidersFrom } from '@angular/core'; // Per importare moduli tradizionali come TranslateModule
-import { GlobalErrorHandler } from './app/core/handler/global-error-handler';
-import { provideAppInitializer, isDevMode } from '@angular/core';
-import { ApiCatalogService } from './app/core/services/api-catalog.service';
-import { firstValueFrom } from 'rxjs';
-import { provideServiceWorker } from '@angular/service-worker';
-
+import { enableProdMode, ErrorHandler, inject } from "@angular/core";
+import { environment } from "./environments/environment";
+import { bootstrapApplication, BrowserModule } from "@angular/platform-browser"; // Importa bootstrapApplication
+import { AppComponent } from "./app/app.component"; // Importa il tuo AppComponent
+import { provideHttpClient, withInterceptors } from "@angular/common/http"; // Per HttpClient e Interceptor
+import { provideAnimationsAsync } from "@angular/platform-browser/animations/async"; // Per BrowserAnimationsModule
+import { provideRouter } from "@angular/router"; // Per AppRoutingModule e il routing
+import { routes } from "./app/app.routes"; // Assicurati di avere un file app.routes.ts con le tue rotte
+import { AuthInterceptor } from "./app/core/interceptors/auth.interceptor"; // Importa il tuo interceptor
+import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
+import { HttpClient } from "@angular/common/http";
+import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+import { importProvidersFrom } from "@angular/core"; // Per importare moduli tradizionali come TranslateModule
+import { provideAppInitializer, isDevMode } from "@angular/core";
+import { provideServiceWorker } from "@angular/service-worker";
+import { ErrorHandlerService } from "./app/core/services/error-handler.service";
+import {  initializeApp } from "./app-initializers-helper";
 
 // Funzione per il loader di TranslateModule
 export function HttpLoaderFactory(http: HttpClient) {
-    // *** QUI DEVI CAMBIARE IL PERCORSO ***
-    // Il percorso deve ora includere 'recollect/'
-    return new TranslateHttpLoader(http, './assets/recollect/i18n/', '.json');
+  // *** QUI DEVI CAMBIARE IL PERCORSO ***
+  // Il percorso deve ora includere 'recollect/'
+  return new TranslateHttpLoader(http, "./assets/recollect/i18n/", ".json");
 }
 
-
 if (environment.production) {
-    enableProdMode();
+  enableProdMode();
 }
 
 bootstrapApplication(AppComponent, {
-    providers: [
-        // Servizi forniti a livello di applicazione (equivalente di AppModule.providers)
-        provideHttpClient(withInterceptors([AuthInterceptor])), // Fornisce HttpClient e l'interceptor
-        provideAnimationsAsync(), // Fornisce BrowserAnimationsModule
-        provideRouter(routes), // Fornisce il router con le tue rotte
-        provideServiceWorker('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            registrationStrategy: 'registerWhenStable:30000'
-            }),
+  providers: [
+    // Servizi forniti a livello di applicazione (equivalente di AppModule.providers)
+    provideHttpClient(withInterceptors([AuthInterceptor])), // Fornisce HttpClient e l'interceptor
+    provideAnimationsAsync(), // Fornisce BrowserAnimationsModule
+    provideRouter(routes), // Fornisce il router con le tue rotte
+    provideServiceWorker("ngsw-worker.js", {
+      enabled: !isDevMode(),
+      registrationStrategy: "registerWhenStable:30000",
+    }),
 
-        // Se hai un AuthGuard, forniscilo qui
-        // AuthGuard (se è un servizio fornibile con provideIn: 'root' o un provideFunction)
-        // Se AuthGuard è un servizio tradizionale, assicurati che sia importato e fornito correttamente qui.
-        // Esempio: { provide: AuthGuard, useClass: AuthGuard }, o semplicemente AuthGuard se è provideIn: 'root'
-        // Se AuthGuard è un funzionale, è usato direttamente nelle rotte.
+    // Se hai un AuthGuard, forniscilo qui
+    // AuthGuard (se è un servizio fornibile con provideIn: 'root' o un provideFunction)
+    // Se AuthGuard è un servizio tradizionale, assicurati che sia importato e fornito correttamente qui.
+    // Esempio: { provide: AuthGuard, useClass: AuthGuard }, o semplicemente AuthGuard se è provideIn: 'root'
+    // Se AuthGuard è un funzionale, è usato direttamente nelle rotte.
 
-        // Internazionalizzazione (TranslateModule) - Questo richiede un importProvidersFrom perché TranslateModule
-        // è un NgModule tradizionale e non una funzione di "provide".
-        importProvidersFrom(
-            BrowserModule,
-            TranslateModule.forRoot({
-                loader: {
-                    provide: TranslateLoader,
-                    useFactory: HttpLoaderFactory,
-                    deps: [HttpClient]
-                }
-            })
-        ),
-        // Serve ma ora schianta troppa roba, da attivare quando il programma non schianta di continuo sistemare
-        // {
-        //     provide: ErrorHandler,
-        //     useClass: GlobalErrorHandler
-        // },
+    // Internazionalizzazione (TranslateModule) - Questo richiede un importProvidersFrom perché TranslateModule
+    // è un NgModule tradizionale e non una funzione di "provide".
+    importProvidersFrom(
+      BrowserModule,
+      TranslateModule.forRoot({
+        loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient],
+        },
+      })
+    ),
 
-        // provideAppInitializer per caricare le configurazioni prima dell'avvio dell'app
-        provideAppInitializer(() => {
-            console.log('🚀 provideAppInitializer: Avvio inizializzazione ApiCatalogService...');
-            const apiCatalogService = inject(ApiCatalogService);
-            return firstValueFrom(apiCatalogService.loadApiCatalog())
-                .then(result => {
-                    console.log('✅ provideAppInitializer: Inizializzazione completata con successo');
-                    return result;
-                })
-                .catch(error => {
-                    console.error('❌ provideAppInitializer: Errore durante inizializzazione:', error);
-                    return null;
-                });
-        }), provideServiceWorker('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            registrationStrategy: 'registerWhenStable:30000'
-          })
-    ]
-}).catch(err => console.error(err));
+    // Error handler globale implementato da servizio custom
+    {
+      provide: ErrorHandler,
+      useExisting: ErrorHandlerService,
+    },
+
+    // provideAppInitializer per caricare le configurazioni prima dell'avvio dell'app
+    provideAppInitializer(initializeApp()),
+    
+    provideServiceWorker("ngsw-worker.js", {
+      enabled: !isDevMode(),
+      registrationStrategy: "registerWhenStable:30000",
+    }),
+  ],
+}).catch((err) => console.error(err));

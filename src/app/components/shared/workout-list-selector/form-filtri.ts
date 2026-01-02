@@ -2,6 +2,7 @@ import { FormControl, FormGroup } from "@angular/forms";
 
 export interface FormFiltriModel {
   descrizione: FormControl<string | null>;
+  idMuscle: FormControl<number | null>;
 }
 
 export class FormFiltri {
@@ -10,6 +11,7 @@ export class FormFiltri {
   constructor() {
     this.form = new FormGroup<FormFiltriModel>({
       descrizione: new FormControl<string | null>(null),
+      idMuscle: new FormControl<number | null>(null),
     });
   }
 

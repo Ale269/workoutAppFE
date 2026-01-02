@@ -79,7 +79,7 @@ export class ProssimoAllenamento implements OnInit {
         },
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ProssimoAllenamento.NavigaARegistraAllenamento"
       );

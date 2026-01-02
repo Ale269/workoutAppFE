@@ -105,7 +105,7 @@ export class AccordionGroupComponent
       const child = document.getElementById("accordion_" + key)!;
       Scroller.scroll(0, child.offsetTop);
     } catch (error) {
-      this.errorHandlerService.handleError(error, "AccordionGroupComponent.ScrollToElement");
+      this.errorHandlerService.logError(error, "AccordionGroupComponent.ScrollToElement");
     }
   }
 }

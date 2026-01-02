@@ -82,7 +82,7 @@ export class ViewTemplatePlan {
     try {
       this.idScheda = Number(this.activatedRouter.snapshot.paramMap.get("id"));
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewTemplatePlan.constructor"
       );
@@ -93,7 +93,7 @@ export class ViewTemplatePlan {
     try {
       this.getDatiScheda();
     } catch (error) {
-      this.errorHandlerService.handleError(error, "ViewTemplatePlan.ngOnInit");
+      this.errorHandlerService.logError(error, "ViewTemplatePlan.ngOnInit");
     }
   }
 
@@ -130,7 +130,7 @@ export class ViewTemplatePlan {
                 if (this.currentSpinnerId) {
                   this.spinnerService.setError(this.currentSpinnerId);
                 }
-                this.errorHandlerService.handleError(
+                this.errorHandlerService.logError(
                   response.errore.error,
                   "ViewTemplatePlan.getListaTemplateSchede"
                 );
@@ -140,7 +140,7 @@ export class ViewTemplatePlan {
               if (this.currentSpinnerId) {
                 this.spinnerService.setError(this.currentSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 response.errore.error,
                 "ViewTemplatePlan.getListaTemplateSchede"
               );
@@ -151,7 +151,7 @@ export class ViewTemplatePlan {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "ViewTemplatePlan.getListaTemplateSchede"
             );
@@ -162,7 +162,7 @@ export class ViewTemplatePlan {
         if (this.currentSpinnerId) {
           this.spinnerService.setError(this.currentSpinnerId);
         }
-        this.errorHandlerService.handleError(
+        this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
           "ViewTemplatePlan.getListaTemplateSchede"
         );
@@ -172,7 +172,7 @@ export class ViewTemplatePlan {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewTemplatePlan.getListaTemplateSchede"
       );
@@ -184,7 +184,7 @@ export class ViewTemplatePlan {
     try {
       this.router.navigate(["/le-mie-schede"]);
     } catch (error) {
-      this.errorHandlerService.handleError(error, "ViewTemplatePlan.goBack");
+      this.errorHandlerService.logError(error, "ViewTemplatePlan.goBack");
     }
   }
 
@@ -194,7 +194,7 @@ export class ViewTemplatePlan {
         state: { scheda: this.scheda },
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewTemplatePlan.modificaScheda"
       );
@@ -212,7 +212,7 @@ export class ViewTemplatePlan {
         onConfirm: () => this.eliminaScheda(),
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "WorkoutComponent.modificaScheda"
       );
@@ -249,7 +249,7 @@ export class ViewTemplatePlan {
               if (this.currentSpinnerId) {
                 this.spinnerService.setError(this.currentSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 response.errore.error,
                 "ViewTemplatePlan.modificaScheda"
               );
@@ -259,7 +259,7 @@ export class ViewTemplatePlan {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "ViewTemplatePlan.modificaScheda"
             );
@@ -269,7 +269,7 @@ export class ViewTemplatePlan {
         if (this.currentSpinnerId) {
           this.spinnerService.setError(this.currentSpinnerId);
         }
-        this.errorHandlerService.handleError(
+        this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
           "ViewTemplatePlan.modificaScheda"
         );
@@ -278,7 +278,7 @@ export class ViewTemplatePlan {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewTemplatePlan.modificaScheda"
       );
@@ -289,7 +289,7 @@ export class ViewTemplatePlan {
     try {
       this.cambiaStatoAttivazioneScheda(newState);
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "WorkoutComponent.OnAttivazioneStateChange"
       );
@@ -335,7 +335,7 @@ export class ViewTemplatePlan {
               if (this.currentSpinnerId) {
                 this.spinnerService.setError(this.currentSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 response.errore.error,
                 "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
               );
@@ -346,7 +346,7 @@ export class ViewTemplatePlan {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
             );
@@ -357,7 +357,7 @@ export class ViewTemplatePlan {
         if (this.currentSpinnerId) {
           this.spinnerService.setError(this.currentSpinnerId);
         }
-        this.errorHandlerService.handleError(
+        this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
           "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
         );
@@ -366,7 +366,7 @@ export class ViewTemplatePlan {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
       );

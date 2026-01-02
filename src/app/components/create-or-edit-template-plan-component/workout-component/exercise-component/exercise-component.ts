@@ -14,7 +14,6 @@ import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { GymExerciseSelectorComponent } from "src/app/components/shared/app-gym-exercise-selector/app-gym-exercise-selector";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SetComponent } from "./set-component/set-component";
-import { getExerciseIconPathByExerciseId } from "src/app/components/enums/exercise-icons";
 import { ModalService } from "src/app/core/services/modal.service";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
@@ -23,8 +22,7 @@ import { Subject, takeUntil } from "rxjs";
 import { TrainingMethodologySelectorComponent } from "src/app/components/shared/training-methodology-selector/training-methodology-selector";
 import { ExerciseIconColorPipe } from "../../../../core/pipes/exercise-icon-color";
 import { BottomSheetService } from "src/app/components/shared/bottom-sheet/bottom-sheet-service";
-import { ProssimoAllenamento } from "src/app/components/widgets/prossimo-allenamento/prossimo-allenamento";
-import { ExerciseViewModel, WorkoutListSelector } from "src/app/components/shared/workout-list-selector/workout-list-selector";
+import { ExerciseService } from "src/app/core/services/exercise.service";
 
 @Component({
   selector: "app-exercise-component",
@@ -64,7 +62,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     private errorHandlerService: ErrorHandlerService,
     private modalService: ModalService,
     private cdr: ChangeDetectorRef,
-    private bottomSheetService: BottomSheetService
+    private bottomSheetService: BottomSheetService,
+    private exerciseService: ExerciseService 
   ) {}
 
   ngOnInit(): void {
@@ -100,7 +99,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
           this.updateExerciseIcon();
         });
     } catch (error) {
-      this.errorHandlerService.handleError(error, "ExerciseComponent.ngOnInit");
+      this.errorHandlerService.logError(error, "ExerciseComponent.ngOnInit");
     }
   }
 
@@ -112,11 +111,11 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   private updateExerciseIcon(): void {
     try {
       // Usa la nuova funzione che mappa IdTipoEsercizio -> Icona
-      this.exerciseIconPath = getExerciseIconPathByExerciseId(
+      this.exerciseIconPath = this.exerciseService.getExerciseIconPathByExerciseId(
         this.idTipoEsercizioControl.value
       );
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ExerciseComponent.updateExerciseIcon"
       );
@@ -135,7 +134,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         onClose: () => console.log("Modal closed"),
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ExerciseComponent.openDeleteModal"
       );
@@ -167,7 +166,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
       this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ExerciseComponent.changePosition"
       );
@@ -179,7 +178,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       this.formEsercizio.addSerieForm();
       this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.handleError(error, "ExerciseComponent.addSerie");
+      this.errorHandlerService.logError(error, "ExerciseComponent.addSerie");
     }
   }
 
@@ -188,7 +187,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       this.formEsercizio.deleteSerie(identifier);
       this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ExerciseComponent.deleteSerie"
       );
@@ -201,7 +200,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         this.formEsercizio.form.controls["identifier"].value
       );
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ExerciseComponent.deleteExercise"
       );

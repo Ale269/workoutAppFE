@@ -1,9 +1,17 @@
+export interface ExerciseTypeDTO {
+  idTipoEsercizio: number;
+  nomeTipoEsercizio: string;
+  idMuscoli: number[];
+  idIcona: number;
+}
 
+export interface MuscleGroupDTO {
+  idMuscolo: number;
+  nomeMuscolo: string;
+}
 
-export interface ExerciseDTO {
-  id_muscle:number;
-  id:number;
-  description:string;
-  icon_type:string;
-  name:string;
+export interface IconExerciseDTO {
+  idIcona: number;
+  nomeIcona: string;
+  coloreIcona: string; // Es: "#EF4444"
 }

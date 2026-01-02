@@ -55,7 +55,7 @@ export class AdminUserFormComponent implements OnInit {
     try {
       this.userForm = new AdminUserForm();
     } catch (error) {
-      this.errorHandlerService.handleError(error, "AdminUserForm.constructor");
+      this.errorHandlerService.logError(error, "AdminUserForm.constructor");
     }
   }
 
@@ -88,7 +88,7 @@ export class AdminUserFormComponent implements OnInit {
         }
       });
     } catch (error) {
-      this.errorHandlerService.handleError(error, "AdminUserForm.ngOnInit");
+      this.errorHandlerService.logError(error, "AdminUserForm.ngOnInit");
     }
   }
 
@@ -135,7 +135,7 @@ export class AdminUserFormComponent implements OnInit {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               response.errore?.error,
               "AdminUserForm.loadUserData"
             );
@@ -145,7 +145,7 @@ export class AdminUserFormComponent implements OnInit {
           if (this.currentSpinnerId) {
             this.spinnerService.setError(this.currentSpinnerId);
           }
-          this.errorHandlerService.handleError(
+          this.errorHandlerService.logError(
             error,
             "AdminUserForm.loadUserData"
           );
@@ -155,7 +155,7 @@ export class AdminUserFormComponent implements OnInit {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "AdminUserForm.loadUserData"
       );
@@ -178,7 +178,7 @@ export class AdminUserFormComponent implements OnInit {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(error, "AdminUserForm.onSubmit");
+      this.errorHandlerService.logError(error, "AdminUserForm.onSubmit");
     }
   }
 
@@ -219,7 +219,7 @@ export class AdminUserFormComponent implements OnInit {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               response.errore.error,
               "AdminUserForm.createUser"
             );
@@ -229,21 +229,21 @@ export class AdminUserFormComponent implements OnInit {
           if (this.currentSpinnerId) {
             this.spinnerService.setError(this.currentSpinnerId);
           }
-          this.errorHandlerService.handleError(error, "AdminUserForm.createUser");
+          this.errorHandlerService.logError(error, "AdminUserForm.createUser");
         },
       });
     } catch (error) {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(error, "AdminUserForm.createUser");
+      this.errorHandlerService.logError(error, "AdminUserForm.createUser");
     }
   }
 
   private updateUser(): void {
     try {
       if (!this.userId) {
-        this.errorHandlerService.handleError(
+        this.errorHandlerService.logError(
           new Error("ID utente non trovato"),
           "AdminUserForm.updateUser"
         );
@@ -284,7 +284,7 @@ export class AdminUserFormComponent implements OnInit {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               response.errore.error,
               "AdminUserForm.updateUser"
             );
@@ -294,14 +294,14 @@ export class AdminUserFormComponent implements OnInit {
           if (this.currentSpinnerId) {
             this.spinnerService.setError(this.currentSpinnerId);
           }
-          this.errorHandlerService.handleError(error, "AdminUserForm.updateUser");
+          this.errorHandlerService.logError(error, "AdminUserForm.updateUser");
         },
       });
     } catch (error) {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(error, "AdminUserForm.updateUser");
+      this.errorHandlerService.logError(error, "AdminUserForm.updateUser");
     }
   }
 

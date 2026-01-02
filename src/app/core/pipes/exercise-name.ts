@@ -1,17 +1,14 @@
-// exercise-name.pipe.ts
-import { Pipe, PipeTransform } from '@angular/core';
-import { GymExerciseLabels, GymExercises } from 'src/app/components/enums/gym-exercises';
+import { Pipe, PipeTransform, inject } from '@angular/core';
+import { ExerciseService } from '../services/exercise.service';
 
 @Pipe({
   name: 'exerciseName',
   standalone: true
 })
 export class ExerciseNamePipe implements PipeTransform {
+  private exerciseService = inject(ExerciseService);
+
   transform(exerciseId: number | null | undefined): string {
-    if (exerciseId == null) {
-      return 'Esercizio non specificato';
-    }
-    
-    return GymExerciseLabels[exerciseId as GymExercises] || 'Esercizio sconosciuto';
+    return this.exerciseService.getExerciseName(exerciseId);
   }
 }

@@ -37,7 +37,7 @@ export class AdminUserListComponent implements OnInit {
     try {
       this.loadAllUsers();
     } catch (error) {
-      this.errorHandlerService.handleError(error, "AdminUserList.ngOnInit");
+      this.errorHandlerService.logError(error, "AdminUserList.ngOnInit");
     }
   }
 
@@ -65,7 +65,7 @@ export class AdminUserListComponent implements OnInit {
               if (this.currentSpinnerId) {
                 this.spinnerService.setError(this.currentSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 response.errore?.error,
                 "AdminUserList.loadAllUsers"
               );
@@ -74,7 +74,7 @@ export class AdminUserListComponent implements OnInit {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               response.errore.error,
               "AdminUserList.loadAllUsers"
             );
@@ -84,7 +84,7 @@ export class AdminUserListComponent implements OnInit {
           if (this.currentSpinnerId) {
             this.spinnerService.setError(this.currentSpinnerId);
           }
-          this.errorHandlerService.handleError(
+          this.errorHandlerService.logError(
             error,
             "AdminUserList.loadAllUsers"
           );
@@ -94,7 +94,7 @@ export class AdminUserListComponent implements OnInit {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "AdminUserList.loadAllUsers"
       );
@@ -105,7 +105,7 @@ export class AdminUserListComponent implements OnInit {
     try {
       this.router.navigate(["/admin/users/create"]);
     } catch (error) {
-      this.errorHandlerService.handleError(error, "AdminUserList.createNewUser");
+      this.errorHandlerService.logError(error, "AdminUserList.createNewUser");
     }
   }
 
@@ -113,7 +113,7 @@ export class AdminUserListComponent implements OnInit {
     try {
       this.router.navigate(["/admin/users/edit", userId]);
     } catch (error) {
-      this.errorHandlerService.handleError(error, "AdminUserList.editUser");
+      this.errorHandlerService.logError(error, "AdminUserList.editUser");
     }
   }
 
@@ -141,7 +141,7 @@ export class AdminUserListComponent implements OnInit {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               response.errore.error,
               "AdminUserList.toggleUserStatus"
             );
@@ -151,7 +151,7 @@ export class AdminUserListComponent implements OnInit {
           if (this.currentSpinnerId) {
             this.spinnerService.setError(this.currentSpinnerId);
           }
-          this.errorHandlerService.handleError(
+          this.errorHandlerService.logError(
             error,
             "AdminUserList.toggleUserStatus"
           );
@@ -161,7 +161,7 @@ export class AdminUserListComponent implements OnInit {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "AdminUserList.toggleUserStatus"
       );
@@ -197,7 +197,7 @@ export class AdminUserListComponent implements OnInit {
               if (this.currentSpinnerId) {
                 this.spinnerService.setError(this.currentSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 response.errore.error,
                 "AdminUserList.deleteUser"
               );
@@ -207,7 +207,7 @@ export class AdminUserListComponent implements OnInit {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "AdminUserList.deleteUser"
             );
@@ -218,7 +218,7 @@ export class AdminUserListComponent implements OnInit {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(error, "AdminUserList.deleteUser");
+      this.errorHandlerService.logError(error, "AdminUserList.deleteUser");
     }
   }
 

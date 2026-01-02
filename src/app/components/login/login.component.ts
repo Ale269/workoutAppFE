@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit {
       this.loginForm = new LoginForm();
       console.log(this.loginForm);
     } catch (error) {
-      this.errorHandlerService.handleError(error, "LoginComponent.constructor");
+      this.errorHandlerService.logError(error, "LoginComponent.constructor");
     }
   }
 
@@ -127,7 +127,7 @@ export class LoginComponent implements OnInit {
 
           this.errorMessage =
             error.error?.message || "Errore durante la registrazione";
-          this.errorHandlerService.handleError(
+          this.errorHandlerService.logError(
             error,
             "LoginComponent.onRegister"
           );
@@ -140,7 +140,7 @@ export class LoginComponent implements OnInit {
         this.spinnerService.setError(this.registerSpinnerId);
       }
 
-      this.errorHandlerService.handleError(error, "LoginComponent.onRegister");
+      this.errorHandlerService.logError(error, "LoginComponent.onRegister");
     }
   }
 
@@ -219,7 +219,7 @@ export class LoginComponent implements OnInit {
           this.errorMessage = errorMsg;
 
           // NON navigare su /home in caso di errore
-          this.errorHandlerService.handleError(error, "LoginComponent.onLogin");
+          this.errorHandlerService.logError(error, "LoginComponent.onLogin");
         },
       });
     } catch (error) {
@@ -229,7 +229,7 @@ export class LoginComponent implements OnInit {
         this.spinnerService.setError(this.loginSpinnerId);
       }
 
-      this.errorHandlerService.handleError(error, "LoginComponent.onLogin");
+      this.errorHandlerService.logError(error, "LoginComponent.onLogin");
     }
   }
 

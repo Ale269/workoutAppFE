@@ -85,7 +85,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
           }
         });
     } catch (error) {
-      this.errorHandlerService.handleError(error, "WorkoutComponent.ngOnInit");
+      this.errorHandlerService.logError(error, "WorkoutComponent.ngOnInit");
     }
   }
 
@@ -103,7 +103,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         );
       }
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "WorkoutComponent.ifEmptySetPlaceholder"
       );
@@ -135,7 +135,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       
       this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "WorkoutComponent.changePosition"
       );
@@ -146,7 +146,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     try {
       this.formAllenamento.deleteEsercizio(identifier);
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "WorkoutComponent.deleteEexercise"
       );
@@ -157,7 +157,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       this.formAllenamento.addEsercizioForm(undefined);
       this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "WorkoutComponent.addNuovoEsercizio"
       );
@@ -175,7 +175,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         onConfirm: () => this.deleteWorkout(),
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "WorkoutComponent.openDeleteWorkout"
       );
@@ -199,7 +199,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         this.formAllenamento.form.controls["identifier"].value
       );
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "WorkoutComponent.deleteWorkout"
       );

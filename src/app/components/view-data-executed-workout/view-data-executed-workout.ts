@@ -21,7 +21,10 @@ import { AllenamentoDTO } from "src/app/models/view-modifica-allenamento-svolto/
 import { CommonModule } from "@angular/common";
 import { createOrEdit } from "../create-or-edit-workout-execution/create-or-edit-workout-execution";
 import { LoadingProgression } from "src/app/models/enums/loading-progression";
-import { DeleteDatiAllenamentoRequestModel, DeleteDatiAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
+import {
+  DeleteDatiAllenamentoRequestModel,
+  DeleteDatiAllenamentoResponseModel,
+} from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
 
 @Component({
   selector: "app-view-data-executed-workout",
@@ -68,7 +71,7 @@ export class ViewDataExecutedWorkout {
         this.activatedRouter.snapshot.paramMap.get("id")
       );
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewDataExecutedWorkout.constructor"
       );
@@ -79,7 +82,7 @@ export class ViewDataExecutedWorkout {
     try {
       this.getDatiAllenamento();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewDataExecutedWorkout.ngOnInit"
       );
@@ -119,7 +122,7 @@ export class ViewDataExecutedWorkout {
                 if (this.currentSpinnerId) {
                   this.spinnerService.setError(this.currentSpinnerId);
                 }
-                this.errorHandlerService.handleError(
+                this.errorHandlerService.logError(
                   response.errore.error,
                   "ViewDataExecutedWorkout.getDatiAllenamento"
                 );
@@ -129,7 +132,7 @@ export class ViewDataExecutedWorkout {
               if (this.currentSpinnerId) {
                 this.spinnerService.setError(this.currentSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 response.errore.error,
                 "ViewDataExecutedWorkout.getDatiAllenamento"
               );
@@ -140,7 +143,7 @@ export class ViewDataExecutedWorkout {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "ViewDataExecutedWorkout.getDatiAllenamento"
             );
@@ -151,7 +154,7 @@ export class ViewDataExecutedWorkout {
         if (this.currentSpinnerId) {
           this.spinnerService.setError(this.currentSpinnerId);
         }
-        this.errorHandlerService.handleError(
+        this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
           "ViewDataExecutedWorkout.getDatiAllenamento"
         );
@@ -161,7 +164,7 @@ export class ViewDataExecutedWorkout {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewTemplatePlan.getDatiAllenamento"
       );
@@ -173,7 +176,7 @@ export class ViewDataExecutedWorkout {
     try {
       this.router.navigate(["/allenamenti-svolti"]);
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewDataExecutedWorkout.goBack"
       );
@@ -187,12 +190,14 @@ export class ViewDataExecutedWorkout {
         {
           state: {
             allenamentoDTO: this.allenamento,
+            idAllenamento: this.allenamento.id,
+            idTemplateAllenamento: this.allenamento.idTemplate,
             createOrEdit: createOrEdit.edit,
           },
         }
       );
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewDataExecutedWorkout.modificaScheda"
       );
@@ -210,7 +215,7 @@ export class ViewDataExecutedWorkout {
         onConfirm: () => this.eliminaAllenamento(),
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewDataExecutedWorkout.modificaScheda"
       );
@@ -230,7 +235,7 @@ export class ViewDataExecutedWorkout {
           minSpinnerDuration: 250,
         }
       );
-      if (this.idAllenamento !== null && this.idAllenamento > 0 ) {
+      if (this.idAllenamento !== null && this.idAllenamento > 0) {
         const request: DeleteDatiAllenamentoRequestModel = {
           allenamentoId: this.idAllenamento,
         };
@@ -245,7 +250,7 @@ export class ViewDataExecutedWorkout {
               if (this.currentSpinnerId) {
                 this.spinnerService.setError(this.currentSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 response.errore.error,
                 "ViewDataExecutedWorkout.eliminaAllenamento"
               );
@@ -255,7 +260,7 @@ export class ViewDataExecutedWorkout {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "ViewDataExecutedWorkout.eliminaAllenamento"
             );
@@ -265,7 +270,7 @@ export class ViewDataExecutedWorkout {
         if (this.currentSpinnerId) {
           this.spinnerService.setError(this.currentSpinnerId);
         }
-        this.errorHandlerService.handleError(
+        this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
           "ViewDataExecutedWorkout.eliminaAllenamento"
         );
@@ -274,7 +279,7 @@ export class ViewDataExecutedWorkout {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewDataExecutedWorkout.eliminaAllenamento"
       );

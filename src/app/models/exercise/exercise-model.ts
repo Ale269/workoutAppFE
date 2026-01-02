@@ -1,7 +1,8 @@
 import { BaseResponseModel } from "../base-response/base-response";
-import {ExerciseDTO} from "./exercisedto";
+import {ExerciseTypeDTO, IconExerciseDTO, MuscleGroupDTO} from "./exercisedto";
 
-export interface ExerciseResponseModel extends BaseResponseModel {
-  exercises: ExerciseDTO[];
+export interface GetAllExerciseTypeResponseModel extends BaseResponseModel {
+  exercises: ExerciseTypeDTO[];
+  muscles: MuscleGroupDTO[];
+  icons: IconExerciseDTO[];
 }
-

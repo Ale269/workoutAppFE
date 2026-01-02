@@ -28,7 +28,7 @@ export class TrainingMethodologySelectorComponent implements OnInit {
     try {
       console.log(this.control);
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "TrainingMethodologySelectorComponent.ngOnInit"
       );

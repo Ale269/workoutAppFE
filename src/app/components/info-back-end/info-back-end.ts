@@ -68,7 +68,7 @@ export class InfoBackEnd {
       if (this.loginSpinnerId) {
         this.spinnerService.setError(this.loginSpinnerId);
       }
-      this.errorHandlerService.handleError(error, "LoginComponent.onLogin");
+      this.errorHandlerService.logError(error, "LoginComponent.onLogin");
     }
   }
 

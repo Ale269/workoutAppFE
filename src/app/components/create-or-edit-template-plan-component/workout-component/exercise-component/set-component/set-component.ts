@@ -53,7 +53,7 @@ export class SetComponent implements OnInit {
       ] as FormControl<number | null>;
 
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "SetComponent.ngOnInit"
       );
@@ -72,7 +72,7 @@ export class SetComponent implements OnInit {
         onClose: () => console.log("Modal closed"),
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "SetComponent.openDeleteModal"
       );
@@ -85,7 +85,7 @@ export class SetComponent implements OnInit {
         this.formSerie.form.controls["identifier"].value
       );
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "SetComponent.deleteSerie"
       );

@@ -1,6 +1,6 @@
 // exercise-icon.pipe.ts
 import { Pipe, PipeTransform } from '@angular/core';
-import { getExerciseIconPath } from 'src/app/components/enums/exercise-icons';
+import { getIconPathById } from 'src/app/components/enums/exercise-icons';
 
 @Pipe({
   name: 'exerciseIcon',
@@ -8,6 +8,6 @@ import { getExerciseIconPath } from 'src/app/components/enums/exercise-icons';
 })
 export class ExerciseIconPipe implements PipeTransform {
   transform(iconId: number | null | undefined): string {
-    return getExerciseIconPath(iconId);
+    return getIconPathById(iconId);
   }
 }

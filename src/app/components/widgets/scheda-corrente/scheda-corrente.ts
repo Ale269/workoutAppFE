@@ -83,7 +83,7 @@ export class SchedaCorrente {
     try {
       this.router.navigate(["/le-mie-schede/visualizza-scheda", idScheda]);
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "SchedaCorrente.VisualizzaDatiScheda"
       );

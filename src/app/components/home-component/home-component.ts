@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     try {
     } catch (error) {
-      this.errorHandlerService.handleError(error, "HomeComponent.ngOnInit");
+      this.errorHandlerService.logError(error, "HomeComponent.ngOnInit");
     }
   }
 
@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     try {
       this.initializeWidgets();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "HomeComponent.ngAfterViewInit"
       );
@@ -73,13 +73,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
       if (user) {
         await this.getWidgetsData(user.userId);
       } else {
-        this.errorHandlerService.handleError(
+        this.errorHandlerService.logError(
           "nessun user trovato",
           "HomeComponent.initializeWidgets"
         );
       }
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "HomeComponent.initializeWidgets"
       );
@@ -104,7 +104,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.prossimoAllenamento
           .getDatiProssimoAllenamentoWidget(idUser)
           .catch((error) => {
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "Widget ProssimoAllenamento"
             );
@@ -112,7 +112,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
           }),
         this.SchedaCorrente.getDatiSchedaCorrenteWidget(idUser).catch(
           (error) => {
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "Widget SchedaCorrente"
             );
@@ -122,13 +122,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.UltimiAllenamentiSvolti.getDatiUltimiAllenamentiSvoltiWidget(
           idUser
         ).catch((error) => {
-          this.errorHandlerService.handleError(error, "Widget UltimiAllenamentiSvolti");
+          this.errorHandlerService.logError(error, "Widget UltimiAllenamentiSvolti");
           return null;
         }),
         this.UltimeSchedeSvolte.getDatiUltimeSchedeSvolteWidget(
           idUser
         ).catch((error) => {
-          this.errorHandlerService.handleError(error, "Widget UltimeSchedeSvolte");
+          this.errorHandlerService.logError(error, "Widget UltimeSchedeSvolte");
           return null;
         }),
 
@@ -143,7 +143,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         }
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "HomeComponent.getWidgetsData"
       );

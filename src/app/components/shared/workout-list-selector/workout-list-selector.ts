@@ -1,60 +1,62 @@
 import { Component, inject, OnInit } from "@angular/core";
-import { getGymExercisesArray } from "../../enums/gym-exercises";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
-import { getExerciseIconPathByExerciseId } from "../../enums/exercise-icons";
 import { ExerciseIconColorPipe } from "../../../core/pipes/exercise-icon-color";
 import { BottomSheetController } from "src/app/components/shared/bottom-sheet/bottom-sheet-controller";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { FormFiltri } from "./form-filtri";
 import { MatInputModule } from "@angular/material/input";
+import {
+  ExerciseService,
+  ExerciseViewModel,
+  MuscleGroup,
+} from "src/app/core/services/exercise.service";
 
 @Component({
   selector: "app-workout-list-selector",
   imports: [
-    ExerciseIconColorPipe, 
-    ReactiveFormsModule, 
+    ExerciseIconColorPipe,
+    ReactiveFormsModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
   ],
   templateUrl: "./workout-list-selector.html",
   styleUrl: "./workout-list-selector.scss",
 })
 export class WorkoutListSelector implements OnInit {
-  exercises = getGymExercisesArray();
   public exercisesView: ExerciseViewModel[] = [];
   public filteredExercises: ExerciseViewModel[] = [];
+  public muscleGroups: MuscleGroup[] = [];
 
   private errorHandlerService = inject(ErrorHandlerService);
-  private bottomSheetController = inject(BottomSheetController<ExerciseViewModel>);
+  private bottomSheetController = inject(
+    BottomSheetController<ExerciseViewModel>
+  );
+  private exerciseService = inject(ExerciseService);
 
   public formFiltri!: FormFiltri;
 
   ngOnInit(): void {
     try {
       this.createFormFiltri();
-      
-      this.exercises.forEach((el) => {
-        this.exercisesView.push({
-          id: el.id,
-          label: el.label,
-          imgPath: getExerciseIconPathByExerciseId(el.id),
-        });
-      });
-      
+
+      // Carica lista esercizi
+      this.exercisesView = this.exerciseService.getExercisesWithIcons();
+
+      // Carica i gruppi muscolari
+      this.muscleGroups = this.exerciseService.getMuscleGroups();
+
       // Inizializza la lista filtrata con tutti gli esercizi
       this.filteredExercises = [...this.exercisesView];
-      
+
       // Sottoscrivi ai cambiamenti del form per filtrare in tempo reale
-      this.formFiltri.form.controls["descrizione"]?.valueChanges.subscribe(() => {
-        this.filterList();
-      });
-      
-    } catch (error) {
-      this.errorHandlerService.handleError(
-        error,
-        "WorkoutListSelector.ngOnInit"
+      this.formFiltri.form.controls["descrizione"]?.valueChanges.subscribe(
+        () => {
+          this.filterList();
+        }
       );
+    } catch (error) {
+      this.errorHandlerService.logError(error, "WorkoutListSelector.ngOnInit");
     }
   }
 
@@ -62,7 +64,7 @@ export class WorkoutListSelector implements OnInit {
     try {
       this.formFiltri = new FormFiltri();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "WorkoutListSelector.createFormFiltri"
       );
@@ -72,21 +74,30 @@ export class WorkoutListSelector implements OnInit {
   filterList(): void {
     try {
       const searchText = this.formFiltri.form.controls["descrizione"]?.value;
+      const selectedMuscle = this.formFiltri.form.controls["idMuscle"]?.value;
+      
       const normalizedSearch = searchText?.toLowerCase().trim() || '';
       
-      if (!normalizedSearch) {
-        // Se la ricerca è vuota, mostra tutti gli esercizi
-        this.filteredExercises = [...this.exercisesView];
-      } else {
-        // Filtra gli esercizi che contengono il testo cercato nella descrizione
-        this.filteredExercises = this.exercisesView.filter(exercise =>
-          exercise.label.toLowerCase().includes(normalizedSearch)
-        );
-      }
+      // Applica entrambi i filtri
+      this.filteredExercises = this.exercisesView.filter(exercise => {
+        // Filtro per testo di ricerca
+        const matchesSearch = !normalizedSearch || 
+          exercise.label.toLowerCase().includes(normalizedSearch);
+        
+        // Filtro per gruppo muscolare
+        const matchesMuscle = !selectedMuscle || 
+          exercise.idMuscle === selectedMuscle;
+        
+        return matchesSearch && matchesMuscle;
+      });
       
-      console.log('Filtro applicato:', normalizedSearch, 'Risultati:', this.filteredExercises.length);
+      console.log('Filtro applicato:', {
+        search: normalizedSearch,
+        muscle: selectedMuscle,
+        risultati: this.filteredExercises.length
+      });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "WorkoutListSelector.filterList"
       );
@@ -95,15 +106,21 @@ export class WorkoutListSelector implements OnInit {
 
   async selectExercise(exercise: ExerciseViewModel): Promise<void> {
     try {
-      console.log('🟢 [1] selectExercise chiamato con:', exercise);
-      console.log('🟢 [2] Bottom Sheet ID:', this.bottomSheetController.bottomSheetId);
-      
+      console.log("🟢 [1] selectExercise chiamato con:", exercise);
+      console.log(
+        "🟢 [2] Bottom Sheet ID:",
+        this.bottomSheetController.bottomSheetId
+      );
+
       // Chiude il bottom sheet e ritorna l'esercizio selezionato
-      const result = await this.bottomSheetController.dismiss(exercise, 'selected');
-      console.log('🟢 [3] Dismiss result:', result);
+      const result = await this.bottomSheetController.dismiss(
+        exercise,
+        "selected"
+      );
+      console.log("🟢 [3] Dismiss result:", result);
     } catch (error) {
-      console.error('🔴 Errore in selectExercise:', error);
-      this.errorHandlerService.handleError(
+      console.error("🔴 Errore in selectExercise:", error);
+      this.errorHandlerService.logError(
         error,
         "WorkoutListSelector.selectExercise"
       );
@@ -113,18 +130,9 @@ export class WorkoutListSelector implements OnInit {
   async cancel(): Promise<void> {
     try {
       // Chiude il bottom sheet senza ritornare dati
-      await this.bottomSheetController.dismiss(undefined, 'cancel');
+      await this.bottomSheetController.dismiss(undefined, "cancel");
     } catch (error) {
-      this.errorHandlerService.handleError(
-        error,
-        "WorkoutListSelector.cancel"
-      );
+      this.errorHandlerService.logError(error, "WorkoutListSelector.cancel");
     }
   }
-}
-
-export interface ExerciseViewModel {
-  id: number;
-  label: string;
-  imgPath: string;
 }

@@ -10,7 +10,7 @@ export class GlobalErrorHandler implements ErrorHandler {
       private injector: Injector,
       private authService: AuthService) {}
 
-  handleError(error: any): void {
+  logError(error: any): void {
     // Ottieni il router in modo lazy per evitare dipendenze circolari
     const router = this.injector.get(Router);
     

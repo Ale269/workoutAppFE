@@ -1,30 +1,81 @@
 {
-  "esito": "OK",
-  "messaggio": "Lista allenamenti recuperata con successo",
-  "listaAllenamentiDTO": [
+  "errore": {
+    "error": false,
+    "codice": 200,
+    "messaggio": "Dati recuperati con successo"
+  },
+  "exercises": [
     {
-      "id": 1,
-      "nomeAllenamento": "Push Day",
-      "nomeScheda": "Upper/Lower Strength",
-      "numeroAllenamento": "3",
-      "numeroTotaleAllenamentiScheda": "4",
-      "dataEsecuzione": "2025-10-19T10:30:00Z"
+      "idTipoEsercizio": 1,
+      "nomeTipoEsercizio": "Panca Piana",
+      "idMuscolo": 1,
+      "idIcona": 3
     },
     {
-      "id": 1,
-      "nomeAllenamento": "Pull Day",
-      "nomeScheda": "Upper/Lower Strength",
-      "numeroAllenamento": "4",
-      "numeroTotaleAllenamentiScheda": "4",
-      "dataEsecuzione": "2025-10-21T11:00:00Z"
+      "idTipoEsercizio": 2,
+      "nomeTipoEsercizio": "Croci Cavi",
+      "idMuscolo": 1,
+      "idIcona": 3
     },
     {
-      "id": 1,
-      "nomeAllenamento": "Leg Day",
-      "nomeScheda": "Upper/Lower Strength",
-      "numeroAllenamento": "2",
-      "numeroTotaleAllenamentiScheda": "4",
-      "dataEsecuzione": "2025-10-22T09:15:00Z"
+      "idTipoEsercizio": 3,
+      "nomeTipoEsercizio": "Trazioni alla Sbarra",
+      "idMuscolo": 2,
+      "idIcona": 2
+    },
+    {
+      "idTipoEsercizio": 4,
+      "nomeTipoEsercizio": "Rematore Bilanciere",
+      "idMuscolo": 2,
+      "idIcona": 2
+    },
+    {
+      "idTipoEsercizio": 5,
+      "nomeTipoEsercizio": "Military Press",
+      "idMuscolo": 3,
+      "idIcona": 4
+    },
+    {
+      "idTipoEsercizio": 6,
+      "nomeTipoEsercizio": "Curl Manubri",
+      "idMuscolo": 4,
+      "idIcona": 1
+    },
+    {
+      "idTipoEsercizio": 7,
+      "nomeTipoEsercizio": "Squat",
+      "idMuscolo": 6,
+      "idIcona": 5
+    },
+    {
+      "idTipoEsercizio": 8,
+      "nomeTipoEsercizio": "Leg Curl",
+      "idMuscolo": 7,
+      "idIcona": 6
+    },
+    {
+      "idTipoEsercizio": 9,
+      "nomeTipoEsercizio": "Plank",
+      "idMuscolo": 11,
+      "idIcona": 8
     }
+  ],
+  "muscles": [
+    { "idMuscolo": 1, "nomeMuscolo": "Petto" },
+    { "idMuscolo": 2, "nomeMuscolo": "Dorsali" },
+    { "idMuscolo": 3, "nomeMuscolo": "Spalle" },
+    { "idMuscolo": 4, "nomeMuscolo": "Bicipiti" },
+    { "idMuscolo": 6, "nomeMuscolo": "Quadricipiti" },
+    { "idMuscolo": 7, "nomeMuscolo": "Femorali" },
+    { "idMuscolo": 11, "nomeMuscolo": "Core" }
+  ],
+  "icons": [
+    { "idIcona": 1, "nomeIcona": "Bicipiti", "coloreIcona": "#E11D48" },
+    { "idIcona": 2, "nomeIcona": "Dorsali", "coloreIcona": "#2563EB" },
+    { "idIcona": 3, "nomeIcona": "Petto", "coloreIcona": "#16A34A" },
+    { "idIcona": 4, "nomeIcona": "Spalle", "coloreIcona": "#D97706" },
+    { "idIcona": 5, "nomeIcona": "Gambe", "coloreIcona": "#7C3AED" },
+    { "idIcona": 6, "nomeIcona": "Femorali", "coloreIcona": "#4F46E5" },
+    { "idIcona": 8, "nomeIcona": "Addominali", "coloreIcona": "#0891B2" }
   ]
 }

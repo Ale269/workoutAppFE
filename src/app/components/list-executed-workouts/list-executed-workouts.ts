@@ -35,7 +35,7 @@ export class ListExecutedWorkouts {
     try {
       this.getListaAllenamentiSvolti();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ListExecutedWorkouts.ngOnInit"
       );
@@ -91,7 +91,7 @@ export class ListExecutedWorkouts {
                 if (this.currentSpinnerId) {
                   this.spinnerService.setError(this.currentSpinnerId);
                 }
-                this.errorHandlerService.handleError(
+                this.errorHandlerService.logError(
                   response.errore.error,
                   "ListExecutedWorkouts.getListaTemplateSchede"
                 );
@@ -100,7 +100,7 @@ export class ListExecutedWorkouts {
               if (this.currentSpinnerId) {
                 this.spinnerService.setError(this.currentSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 response.errore.error,
                 "ListExecutedWorkouts.getListaTemplateSchede"
               );
@@ -110,7 +110,7 @@ export class ListExecutedWorkouts {
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "ListExecutedWorkouts.getListaTemplateSchede"
             );
@@ -125,7 +125,7 @@ export class ListExecutedWorkouts {
       if (this.currentSpinnerId) {
         this.spinnerService.setError(this.currentSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ListExecutedWorkouts.getListaTemplateSchede"
       );
@@ -136,7 +136,7 @@ export class ListExecutedWorkouts {
     try {
       this.router.navigate(["/allenamenti-svolti/visualizza-allenamento", idAllenamento]);
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ListExecutedWorkouts.VisualizzaDatiScheda"
       );

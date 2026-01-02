@@ -109,7 +109,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         this.createOrEdit = state.createOrEdit;
       }
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.constructor"
       );
@@ -120,7 +120,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     try {
       this.initializeWorkout();
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.ngOnInit"
       );
@@ -162,7 +162,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
               if (this.initSpinnerId) {
                 this.spinnerService.setError(this.initSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 error,
                 "CreateOrEditWorkoutExecution.getDatiAllenamento"
               );
@@ -177,7 +177,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           break;
       }
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.initializeWorkout"
       );
@@ -215,7 +215,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
               if (this.initSpinnerId) {
                 this.spinnerService.setError(this.initSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 response.errore.error,
                 "CreateOrEditWorkoutExecution.getDatiAllenamento"
               );
@@ -233,7 +233,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         if (this.initSpinnerId) {
           this.spinnerService.setError(this.initSpinnerId);
         }
-        this.errorHandlerService.handleError(
+        this.errorHandlerService.logError(
           "nessun id allenamento trovato",
           "CreateOrEditWorkoutExecution.getDatiAllenamento"
         );
@@ -243,7 +243,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       if (this.initSpinnerId) {
         this.spinnerService.setError(this.initSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.getDatiAllenamento"
       );
@@ -287,7 +287,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
               if (this.initSpinnerId) {
                 this.spinnerService.setError(this.initSpinnerId);
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 response.errore.error,
                 "CreateOrEditWorkoutExecution.getDatiTemplateNuovoAllenamento"
               );
@@ -298,7 +298,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
             if (this.initSpinnerId) {
               this.spinnerService.setError(this.initSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               error,
               "CreateOrEditWorkoutExecution.getDatiTemplateNuovoAllenamento"
             );
@@ -308,7 +308,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         if (this.initSpinnerId) {
           this.spinnerService.setError(this.initSpinnerId);
         }
-        this.errorHandlerService.handleError(
+        this.errorHandlerService.logError(
           "nessun id allenamento trovato",
           "CreateOrEditWorkoutExecution.getDatiTemplateNuovoAllenamento"
         );
@@ -318,7 +318,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       if (this.initSpinnerId) {
         this.spinnerService.setError(this.initSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.getDatiAllenamento"
       );
@@ -342,7 +342,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         identifier
       );
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.deleteEexercise"
       );
@@ -354,7 +354,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         undefined
       );
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.addNuovoEsercizio"
       );
@@ -411,7 +411,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                   "Errore nella fase di salvataggio"
                 );
               }
-              this.errorHandlerService.handleError(
+              this.errorHandlerService.logError(
                 error,
                 "CreateOrEditWorkoutExecution.registraAllenamento"
               );
@@ -422,7 +422,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       if (this.saveSpinnerId) {
         this.spinnerService.setError(this.saveSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.registraAllenamento"
       );
@@ -473,7 +473,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
       return allenamentoDTO;
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.ConvertAllenamentoFormDTOToAllenamentoDTO"
       );
@@ -498,7 +498,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         this.PerformBackNavigate();
       }
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.goBack"
       );
@@ -516,7 +516,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         onConfirm: () => this.eliminaAllenamento(),
       });
     } catch (error) {
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "ViewTemplatePlan.openDeleteScheda"
       );
@@ -563,7 +563,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
             if (this.initSpinnerId) {
               this.spinnerService.setError(this.initSpinnerId);
             }
-            this.errorHandlerService.handleError(
+            this.errorHandlerService.logError(
               objError,
               "CreateOrEditWorkoutExecution.getListaTemplateSchede"
             );
@@ -575,7 +575,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       if (this.initSpinnerId) {
         this.spinnerService.setError(this.initSpinnerId);
       }
-      this.errorHandlerService.handleError(
+      this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.getListaTemplateSchede"
       );
