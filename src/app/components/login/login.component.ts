@@ -146,7 +146,6 @@ export class LoginComponent implements OnInit {
 
   onLogin() {
     try {
-      console.log("Login form submitted:", this.loginForm);
 
       if (!this.loginForm.form.valid) {
         this.markFormGroupTouched();
@@ -175,7 +174,6 @@ export class LoginComponent implements OnInit {
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
-          console.log("RESPONSE LOGIN: ", response);
           //imposto lo stato autenticato user
           this.authService.setAuthState(
             {

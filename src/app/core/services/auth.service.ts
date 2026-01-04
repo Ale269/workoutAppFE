@@ -35,7 +35,6 @@ export class AuthService {
     }
 
     signup(credentials: SignupRequestModel): Observable<SignupResponseModel> {
-        console.log('User registered:', credentials);
         return this.apiCatalogService.executeApiCall('auth','register', undefined, credentials);
     }
 
@@ -56,8 +55,6 @@ export class AuthService {
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('token', token);
 
-        console.log("LOG SET USER: ", user);
-        console.log("LOG SET TOKEN: ", token);
          this.authStateSubject.next({
              isAuthenticated: true,
              user: user,
@@ -79,8 +76,7 @@ export class AuthService {
     private loadAuthState(): void {
          const token = localStorage.getItem('token');
          const userStr = localStorage.getItem('user');
-         console.log("LOG USER: ", userStr);
-         console.log("LOG token: ", token);
+
          if (token && userStr) {
              try {
                  const user = JSON.parse(userStr);
