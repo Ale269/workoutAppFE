@@ -1,16 +1,14 @@
 import { BaseResponseModel } from "../base-response/base-response";
 import { RoleEnum } from "../user/user-model";
 
-export interface LoginRequestModel {
-  username: string;
-  password: string;
+export interface RefreshTokenRequestModel {
+  refreshToken: string;
 }
 
-export interface LoginResponseModel extends BaseResponseModel {
+export interface RefreshTokenResponseModel extends BaseResponseModel {
   userId: number;
   username: string;
   jwtToken: string;
-  refreshToken: string;
   expiresIn: number;
   role?: RoleEnum;
   email?: string;

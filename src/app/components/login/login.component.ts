@@ -184,7 +184,8 @@ export class LoginComponent implements OnInit {
               name: response.name,
               surname: response.surname,
             },
-            response.jwtToken
+            response.jwtToken,
+            response.refreshToken
           );
 
           this.isLoading = false;

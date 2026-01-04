@@ -21,6 +21,13 @@
         "isMocked": false
       },
       {
+        "name": "refresh",
+        "endpoint": "/auth/refresh",
+        "method": "post",
+        "description": "Rinnova l'access token usando il refresh token",
+        "isMocked": false
+      },
+      {
         "name": "checkUserAuthentication",
         "endpoint": "/auth/checkUserStatus",
         "method": "get",
