@@ -442,8 +442,9 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         };
 
         if (allenamentoDaSalvare) {
-          this.createOrEditWorkoutExecutionService
-            .registraAllenamento(registraAllenamentoRequest)
+          if (this.createOrEdit === createOrEdit.edit){
+            this.createOrEditWorkoutExecutionService
+            .aggiornaAllenamentoSvolo(registraAllenamentoRequest)
             .then((response) => {
               if (this.saveSpinnerId) {
                 this.spinnerService.setSuccess(this.saveSpinnerId);
@@ -462,6 +463,28 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                 "CreateOrEditWorkoutExecution.registraAllenamento"
               );
             });
+          }else{
+            this.createOrEditWorkoutExecutionService
+              .registraAllenamento(registraAllenamentoRequest)
+              .then((response) => {
+                if (this.saveSpinnerId) {
+                  this.spinnerService.setSuccess(this.saveSpinnerId);
+                }
+                this.router.navigate(["/home"]);
+              })
+              .catch((error) => {
+                if (this.saveSpinnerId) {
+                  this.spinnerService.setError(
+                    this.saveSpinnerId,
+                    "Errore nella fase di salvataggio"
+                  );
+                }
+                this.errorHandlerService.logError(
+                  error,
+                  "CreateOrEditWorkoutExecution.registraAllenamento"
+                );
+              });
+            }
         }
       }
     } catch (error) {

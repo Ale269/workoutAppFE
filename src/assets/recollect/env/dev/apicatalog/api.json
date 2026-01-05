@@ -149,6 +149,13 @@
         "method": "post",
         "description": "Registra i dati del nuovo allenamento nello storico.",
         "isMocked": false
+      },
+      {
+        "name": "aggiornaAllenamentoSvolto",
+        "endpoint": "/training/updateHistoryTraining",
+        "method": "post",
+        "description": "Aggiorna i dati dell'allenamento svolto nello storico.",
+        "isMocked": false
       }
     ],
     "widgets": [
