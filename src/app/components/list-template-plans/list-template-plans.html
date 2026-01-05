@@ -1,16 +1,26 @@
-<!-- list-template-plans.html -->
 <div class="content">
   <div class="section-title-container">
     <h1 class="text-title">I tuoi template schede</h1>
   </div>
   <div class="lista-template-schede-container">
     @for (scheda of listaSchede; track scheda.id; let i = $index) {
-    <div class="template-scheda" (click)="visualizzaDatiScheda(scheda.id)">
-      <div class="nome-data-scheda">
-        <h3 class="text-white">{{ scheda.nomeScheda }}</h3>
-        <h3 class="text-grey">
-          Creata il {{ scheda.dataCreazione | date: "dd/MM/yyyy" }}
-        </h3>
+    <div class="scheda-wrapper">
+      <div
+        #schedaCard
+        class="template-scheda"
+        (click)="visualizzaDatiScheda(scheda.id)"
+      >
+        <div class="nome-data-scheda">
+          <h3 class="text-white">{{ scheda.nomeScheda }}</h3>
+          <h3 class="text-grey">
+            Creata il {{ scheda.dataCreazione | date: "dd/MM/yyyy" }}
+          </h3>
+        </div>
+      </div>
+      <div class="delete-action" tabbable (click)="openDeleteScheda(scheda.id)">
+        <div class="text-shape-button-icon-container-danger">
+          <img src="assets/recollect/svg/google-delete.svg" />
+        </div>
       </div>
     </div>
     } @empty {
@@ -21,14 +31,51 @@
   <div class="floating-static-button-container">
     <div class="floating-actions-workout">
       <button class="floating-static-button" (click)="guidaImportScheda()">
-          <span>Guida per import</span>
+        <span>Guida per import</span>
       </button>
       <button class="floating-static-button" (click)="importScheda()">
-          <span>Importa scheda</span>
+        <span>Importa scheda</span>
       </button>
       <button class="floating-static-button" (click)="createNewScheda()">
-          <span>Nuova scheda</span>
+        <span>Nuova scheda</span>
       </button>
     </div>
   </div>
 </div>
+
+<ng-template #headerDeleteTemplate>
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
+</ng-template>
+
+<!-- Template per il body -->
+<ng-template #bodyDeleteTemplate>
+  <h3 class="text-white">
+    Sei sicuro di voler eliminare questo template scheda?
+  </h3>
+  <h3 class="text-white">Questa azione non può essere annullata.</h3>
+</ng-template>
+
+<!-- Template per il bottone di chiusura -->
+<ng-template #footerCloseDeleteTemplate>
+  <button class="text-shape-button-cancel">
+    <span>Annulla</span>
+    <div class="text-shape-button-icon-container-cancel">
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<!-- Template per il bottone di conferma -->
+<ng-template #footerConfirmDeleteTemplate>
+  <button class="text-shape-button-danger">
+    <span>Elimina</span>
+    <div class="text-shape-button-icon-container-danger">
+      <img src="assets/recollect/svg/google-delete.svg" />
+    </div>
+  </button>
+</ng-template>
+

@@ -1,5 +1,5 @@
 <!-- app-gym-exercise-selector.html -->
-<mat-form-field appearance="outline" [style.width]="width">
+<mat-form-field appearance="outline" [style.width]="width" (click)="openSheet($event)">
   <mat-label>{{ label }}</mat-label>
   
   <!-- Input readonly che simula una select -->
@@ -8,7 +8,6 @@
     [value]="displayValue"
     [placeholder]="label"
     readonly
-    (click)="openSheet($event)"
     style="cursor: pointer;"
     [class.error]="control.invalid && control.touched"
   />

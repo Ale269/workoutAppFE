@@ -89,4 +89,15 @@ export class SchedaCorrente {
       );
     }
   }
+
+  NavigaAElencoTemplateSchede() {
+    try {
+      this.router.navigate(["/le-mie-schede"]);
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "SchedaCorrente.NavigaAElencoTemplateSchede"
+      );
+    }
+  }
 }

@@ -1,4 +1,9 @@
-import {ChangeDetectorRef, Component, TemplateRef, ViewChild} from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  TemplateRef,
+  ViewChild,
+} from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
@@ -24,16 +29,15 @@ import {
   AttivaSchedaRequestModel,
   AttivaSchedaResponseModel,
 } from "src/app/models/view-modifica-scheda/attivaScheda";
-import {DownloadSchedaRequestModel} from "../../models/view-modifica-scheda/downloadScheda";
+import { DownloadSchedaRequestModel } from "../../models/view-modifica-scheda/downloadScheda";
 import {
   SaveDatiTemplateSchedaRequestModel,
-  SaveDatiTemplateSchedaResponseModel
+  SaveDatiTemplateSchedaResponseModel,
 } from "../../models/view-modifica-scheda/saveDatiTemplateScheda";
-import {Observable} from "rxjs";
-import {
-  CreateOrEditTemplatePlanService
-} from "../create-or-edit-template-plan-component/create-or-edit-template-plan-service";
-import {AuthService} from "../../core/services/auth.service";
+import { Observable } from "rxjs";
+import { CreateOrEditTemplatePlanService } from "../create-or-edit-template-plan-component/create-or-edit-template-plan-service";
+import { AuthService } from "../../core/services/auth.service";
+import { MultiOptionButton } from "../shared/multi-option-button/multi-option-button";
 
 @Component({
   selector: "app-view-template-plan",
@@ -44,6 +48,7 @@ import {AuthService} from "../../core/services/auth.service";
     ExerciseIconPipe,
     ExerciseIconColorPipe,
     Switch,
+    MultiOptionButton
   ],
   templateUrl: "./view-template-plan.html",
   styleUrl: "./view-template-plan.scss",
@@ -63,7 +68,6 @@ export class ViewTemplatePlan {
   private currentSpinnerId: string | null = null;
   private saveSpinnerId: string | null = null;
 
-  
   public LoadingProgressionEnum = LoadingProgression;
   public loadingProgression: LoadingProgression = LoadingProgression.none;
 
@@ -74,18 +78,15 @@ export class ViewTemplatePlan {
     private router: Router,
     private workoutService: WorkoutService,
     private modalService: ModalService,
-    
+
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService,
+    private authService: AuthService
   ) {
     try {
       this.idScheda = Number(this.activatedRouter.snapshot.paramMap.get("id"));
     } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "ViewTemplatePlan.constructor"
-      );
+      this.errorHandlerService.logError(error, "ViewTemplatePlan.constructor");
     }
   }
 
@@ -121,7 +122,8 @@ export class ViewTemplatePlan {
           next: (response: GetDatiTemplateSchedaResponseModel) => {
             if (!response.errore?.error) {
               if (response.datiScheda) {
-                this.scheda = response.datiScheda;
+                this.scheda = this.ordinaScheda(response.datiScheda);
+
                 if (this.currentSpinnerId) {
                   this.spinnerService.setSuccess(this.currentSpinnerId);
                 }
@@ -178,6 +180,48 @@ export class ViewTemplatePlan {
       );
       this.loadingProgression = LoadingProgression.failed;
     }
+  }
+
+  private ordinaScheda(scheda: SchedaDTO): SchedaDTO {
+    const schedaOrdinata = { ...scheda };
+
+    if (
+      schedaOrdinata.listaAllenamenti &&
+      schedaOrdinata.listaAllenamenti.length > 0
+    ) {
+      schedaOrdinata.listaAllenamenti = schedaOrdinata.listaAllenamenti
+        .map((allenamento) => {
+          const allenamentoOrdinato = { ...allenamento };
+
+          if (
+            allenamentoOrdinato.listaEsercizi &&
+            allenamentoOrdinato.listaEsercizi.length > 0
+          ) {
+            allenamentoOrdinato.listaEsercizi =
+              allenamentoOrdinato.listaEsercizi
+                .map((esercizio) => {
+                  const esercizioOrdinato = { ...esercizio };
+
+                  if (
+                    esercizioOrdinato.listaSerie &&
+                    esercizioOrdinato.listaSerie.length > 0
+                  ) {
+                    esercizioOrdinato.listaSerie = [
+                      ...esercizioOrdinato.listaSerie,
+                    ].sort((a, b) => a.ordinamento - b.ordinamento);
+                  }
+
+                  return esercizioOrdinato;
+                })
+                .sort((a, b) => a.ordinamento - b.ordinamento);
+          }
+
+          return allenamentoOrdinato;
+        })
+        .sort((a, b) => a.ordinamento - b.ordinamento);
+    }
+
+    return schedaOrdinata;
   }
 
   goBack() {
@@ -314,7 +358,7 @@ export class ViewTemplatePlan {
         }
       );
       const user = this.authService.getCurrentUser();
-      
+
       if (this.idScheda !== null && this.idScheda > 0 && user) {
         const request: AttivaSchedaRequestModel = {
           idScheda: this.idScheda,
@@ -328,8 +372,7 @@ export class ViewTemplatePlan {
                 this.spinnerService.setSuccess(this.currentSpinnerId);
               }
 
-              this.scheda.schedaAttiva =  this.Switch.isActiveInternal;
-
+              this.scheda.schedaAttiva = this.Switch.isActiveInternal;
             } else {
               this.Switch.setValue(false);
               if (this.currentSpinnerId) {
@@ -372,32 +415,30 @@ export class ViewTemplatePlan {
       );
     }
   }
-  
-  downloadSchedaExcel(){
-    
+
+  downloadSchedaExcel() {
     if (this.idScheda !== null && this.idScheda > 0) {
       const request: DownloadSchedaRequestModel = {
         idScheda: this.idScheda,
       };
-      
+
       this.workoutService.esportaScheda(request).subscribe({
         next: (response: any) => {
-          
           if (response instanceof Blob) {
-            const blob = new Blob([response], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+            const blob = new Blob([response], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
             const url = window.URL.createObjectURL(blob);
-            
-            const link = document.createElement('a');
+
+            const link = document.createElement("a");
             link.href = url;
-            link.download = 'Scheda_Allenamento.xlsx'; // Nome del file
+            link.download = "Scheda_Allenamento.xlsx"; // Nome del file
             link.click();
             window.URL.revokeObjectURL(url);
           }
         },
-        error: (error: any) => {
-        
-        }
-      })
+        error: (error: any) => {},
+      });
     }
   }
 }

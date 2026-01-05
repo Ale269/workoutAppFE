@@ -79,8 +79,10 @@
   }@else {
   <div class="floating-double-buttons-container">
     <app-multi-option-button
-      [options]="buttonOptions"
-      [transformButtonLabel]="'Cambia'"
+      [rightGroups]="rightButtonOptionsGroup"
+      [rightButtonLabel]="'Cambia'"
+      [leftGroups]="leftButtonOptionsGroup"
+      [leftButtonLabel]="''"
       (optionSelected)="onOptionSelected($event)"
     >
       <!-- Il pulsante statico viene proiettato qui -->

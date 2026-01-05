@@ -85,4 +85,15 @@ export class ProssimoAllenamento implements OnInit {
       );
     }
   }
+
+  NavigaAElencoTemplateSchede() {
+    try {
+      this.router.navigate(["/le-mie-schede"]);
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "ProssimoAllenamento.NavigaAElencoTemplateSchede"
+      );
+    }
+  }
 }

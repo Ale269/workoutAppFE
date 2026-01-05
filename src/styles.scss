@@ -317,6 +317,12 @@ body.no-scroll {
     hue-rotate(89deg) brightness(104%) contrast(102%);
 }
 
+.option-icon-section-container img {
+  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
+    hue-rotate(89deg) brightness(104%) contrast(102%);
+}
+
+
 .button-disabled {
   cursor: not-allowed;
   opacity: 0.5;

@@ -113,7 +113,9 @@ export class ViewDataExecutedWorkout {
           next: (response: GetDatiAllenamentoResponseModel) => {
             if (!response.errore?.error) {
               if (response.allenamentoCorrente) {
-                this.allenamento = response.allenamentoCorrente;
+                this.allenamento = this.ordinaAllenamento(
+                  response.allenamentoCorrente
+                );
                 if (this.currentSpinnerId) {
                   this.spinnerService.setSuccess(this.currentSpinnerId);
                 }
@@ -170,6 +172,34 @@ export class ViewDataExecutedWorkout {
       );
       this.loadingProgression = LoadingProgression.failed;
     }
+  }
+
+  private ordinaAllenamento(allenamento: AllenamentoDTO): AllenamentoDTO {
+    const allenamentoOrdinato = { ...allenamento };
+
+    if (
+      allenamentoOrdinato.listaEsercizi &&
+      allenamentoOrdinato.listaEsercizi.length > 0
+    ) {
+      allenamentoOrdinato.listaEsercizi = allenamentoOrdinato.listaEsercizi
+        .map((esercizio) => {
+          const esercizioOrdinato = { ...esercizio };
+
+          if (
+            esercizioOrdinato.listaSerie &&
+            esercizioOrdinato.listaSerie.length > 0
+          ) {
+            esercizioOrdinato.listaSerie = [
+              ...esercizioOrdinato.listaSerie,
+            ].sort((a, b) => a.ordinamento - b.ordinamento);
+          }
+
+          return esercizioOrdinato;
+        })
+        .sort((a, b) => a.ordinamento - b.ordinamento);
+    }
+
+    return allenamentoOrdinato;
   }
 
   goBack() {

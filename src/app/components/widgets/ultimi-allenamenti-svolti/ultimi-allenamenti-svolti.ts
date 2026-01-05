@@ -1,5 +1,7 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
+import { Router } from "@angular/router";
+import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { WidgetsService } from "src/app/core/services/widgets.service";
 import { ultimiAllenamentiSvoltiDTO } from "src/app/models/widgets/ultimi-allenamenti-svolti/allenamentiSvolti";
 import {
@@ -17,6 +19,9 @@ export class UltimiAllenamentiSvolti {
   public datiRecuperati: boolean = false;
   public ultimiAllenamentiSvoltiDTO: ultimiAllenamentiSvoltiDTO[] = [];
 
+  private router = inject(Router);
+  private errorHandlerService = inject(ErrorHandlerService);
+
   constructor(private widgetsService: WidgetsService) {}
 
   ngOnInit() {}
@@ -31,7 +36,8 @@ export class UltimiAllenamentiSvolti {
         this.widgetsService.getDatiUltimiAllenamentiSvolti(request).subscribe({
           next: (response: GetDatiUltimiAllenamentiSvoltiResponseModel) => {
             if (!response.errore?.error) {
-              this.ultimiAllenamentiSvoltiDTO = response.ultimiAllenamentiSvoltiDTO;
+              this.ultimiAllenamentiSvoltiDTO =
+                response.ultimiAllenamentiSvoltiDTO;
               this.datiRecuperati = true;
               resolve(null);
             } else {
@@ -49,6 +55,17 @@ export class UltimiAllenamentiSvolti {
   }
 
   mostraFunzionalitaInArrivo(): void {
-    alert('Funzionalità in arrivo');
+    alert("Funzionalità in arrivo");
+  }
+
+  NavigaAElencoTemplateSchede() {
+    try {
+      this.router.navigate(["/le-mie-schede"]);
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "UltimiAllenamentiSvolti.NavigaAElencoTemplateSchede"
+      );
+    }
   }
 }

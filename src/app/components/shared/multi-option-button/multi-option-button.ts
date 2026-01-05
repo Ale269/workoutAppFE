@@ -10,6 +10,24 @@ import {
 } from "@angular/core";
 import { gsap } from "gsap";
 
+export interface buttonOption {
+  optionId: number;
+  description: string;
+  color?: string;
+  iconPath?: string; // Path SVG o immagine
+}
+
+export interface multiOptionGroup {
+  label: string;
+  options: buttonOption[];
+}
+export interface OptionSelectedEvent {
+  id: number;
+  side: MenuSide;
+}
+
+export type MenuSide = "left" | "right";
+
 @Component({
   selector: "app-multi-option-button",
   imports: [],
@@ -17,22 +35,37 @@ import { gsap } from "gsap";
   styleUrl: "./multi-option-button.scss",
 })
 export class MultiOptionButton implements OnInit, AfterViewInit {
-  @Input() options: buttonOption[] = [];
-  @Input() transformButtonLabel: string = "Transform button";
+  @Input() leftGroups: multiOptionGroup[] = [];
+  @Input() rightGroups: multiOptionGroup[] = [];
+  
+  @Input() leftButtonLabel: string = "Left Option";
+  @Input() rightButtonLabel: string = "Right Option";
 
-  @Output() optionSelected = new EventEmitter<number>();
+  @Output() optionSelected = new EventEmitter<{ id: number; side: MenuSide }>();
 
-  @ViewChild("container", { static: false }) container!: ElementRef;
-  @ViewChild("transformButton", { static: false }) transformButton!: ElementRef;
-  @ViewChild("transformedContent", { static: false })
-  transformedContent!: ElementRef;
-  @ViewChild("basicContent", { static: false }) basicContent!: ElementRef;
-  @ViewChild("staticButton", { static: false }) staticButton!: ElementRef;
-  @ViewChild("closeBtn", { static: false }) closeBtn!: ElementRef;
+  // Wrappers
+  @ViewChild("leftWrapper") leftWrapper!: ElementRef;
+  @ViewChild("rightWrapper") rightWrapper!: ElementRef;
 
-  public isExpanded = false;
+  // Elements Left
+  @ViewChild("leftTransformButton") leftTransformButton?: ElementRef;
+  @ViewChild("leftTransformedContent") leftTransformedContent?: ElementRef;
+  @ViewChild("leftBasicContent") leftBasicContent?: ElementRef;
+
+  // Elements Right
+  @ViewChild("rightTransformButton") rightTransformButton?: ElementRef;
+  @ViewChild("rightTransformedContent") rightTransformedContent?: ElementRef;
+  @ViewChild("rightBasicContent") rightBasicContent?: ElementRef;
+
+  // Static
+  @ViewChild("staticButton") staticButton!: ElementRef;
+
+  public expandedSide: MenuSide | null = null;
   public isAnimating = false;
-  private naturalHeight = 0;
+
+  // Cache dimensioni originali per evitare scatti al ripristino
+  private originalWidths = new Map<HTMLElement, number>();
+  private naturalHeights = { left: 0, right: 0 };
 
   constructor() {}
 
@@ -40,249 +73,224 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.initializeComponent();
-    }, 0);
+      this.calculateNaturalHeights();
+      this.setInitialState();
+    }, 100);
   }
 
-  private initializeComponent() {
-    this.isExpanded = false;
-    this.isAnimating = false;
-
-    this.setupEventListeners();
-    this.calculateDimensions();
-    this.setInitialState();
+  private calculateNaturalHeights() {
+    // Calcola altezza menu a tendina
+    if (this.leftTransformedContent)
+      this.naturalHeights.left = this.getHiddenHeight(
+        this.leftTransformedContent.nativeElement
+      );
+    if (this.rightTransformedContent)
+      this.naturalHeights.right = this.getHiddenHeight(
+        this.rightTransformedContent.nativeElement
+      );
   }
 
-  private setupEventListeners() {
-    this.transformButton.nativeElement.addEventListener("click", () => {
-      if (!this.isExpanded && !this.isAnimating) {
-        this.expandButton();
-      }
-    });
-
-    this.closeBtn.nativeElement.addEventListener("click", () => {
-      if (this.isExpanded && !this.isAnimating) {
-        this.collapseButton();
-      }
-    });
-  }
-
-  private calculateDimensions() {
-    // Calcola l'altezza naturale del contenuto trasformato
-    gsap.set(this.transformedContent.nativeElement, {
-      height: "auto",
-      visibility: "hidden",
-      display: "block",
-    });
-
-    this.naturalHeight = this.transformedContent.nativeElement.scrollHeight;
-
-    // Reset
-    gsap.set(this.transformedContent.nativeElement, {
+  private getHiddenHeight(el: HTMLElement): number {
+    gsap.set(el, { height: "auto", display: "block", visibility: "hidden" });
+    const h = el.scrollHeight;
+    gsap.set(el, {
       height: 0,
+      display: "block",
       visibility: "visible",
       opacity: 0,
     });
+    return h;
   }
 
   private setInitialState() {
-    const childContainers =
-      this.transformedContent.nativeElement.querySelectorAll(
-        ".transformed-setting-option-container, .transformed-setting-close-button-container"
-      );
-
-    // Reset completo di tutti gli elementi
-    gsap.set(this.transformButton.nativeElement, {
-      clearProps: "all", // Rimuove tutti gli stili inline di GSAP
-    });
-
-    gsap.set(this.transformedContent.nativeElement, {
-      height: 0,
-      opacity: 0,
-      display: "block",
-    });
-
-    gsap.set(childContainers, {
-      width: 0,
-      overflow: "hidden",
-    });
-
-    gsap.set(this.basicContent.nativeElement, {
-      opacity: 1,
-      height: "auto",
-    });
-
-    gsap.set(this.staticButton.nativeElement, {
-      opacity: 1,
-      scaleX: 1,
-      width: "auto",
-    });
+    // Reset pulito
+    if (this.leftTransformButton)
+      gsap.set(this.leftTransformButton.nativeElement, { clearProps: "all" });
+    if (this.rightTransformButton)
+      gsap.set(this.rightTransformButton.nativeElement, { clearProps: "all" });
+    gsap.set(this.staticButton.nativeElement, { clearProps: "all" });
   }
 
-  onOptionClick(optionId: number) {
-    this.optionSelected.emit(optionId);
-    this.collapseButton();
+  onOptionClick(optionId: number, side: MenuSide) {
+    this.optionSelected.emit({ id: optionId, side });
+    this.collapseButton(side);
   }
 
-  private expandButton() {
+  expandButton(side: MenuSide) {
+    if (this.expandedSide || this.isAnimating) return;
     this.isAnimating = true;
-    this.transformButton.nativeElement.classList.add("transformed");
 
-    const childContainers =
-      this.transformedContent.nativeElement.querySelectorAll(
-        ".transformed-setting-option-container, .transformed-setting-close-button-container"
-      );
+    const activeBtn =
+      side === "left"
+        ? this.leftTransformButton!.nativeElement
+        : this.rightTransformButton!.nativeElement;
+    const activeContent =
+      side === "left"
+        ? this.leftTransformedContent!.nativeElement
+        : this.rightTransformedContent!.nativeElement;
+    const activeBasic =
+      side === "left"
+        ? this.leftBasicContent!.nativeElement
+        : this.rightBasicContent!.nativeElement;
+    const activeWrapper =
+      side === "left"
+        ? this.leftWrapper.nativeElement
+        : this.rightWrapper.nativeElement;
+    const activeNaturalHeight =
+      side === "left" ? this.naturalHeights.left : this.naturalHeights.right;
 
-    const timeline = gsap.timeline({
+    // Elementi da nascondere
+    const toHide =
+      side === "left"
+        ? [this.rightWrapper.nativeElement]
+        : [this.leftWrapper.nativeElement, this.staticButton.nativeElement];
+
+    // Lock delle larghezze correnti
+    toHide.forEach((el) => {
+      this.originalWidths.set(el, el.offsetWidth);
+      el.style.width = `${el.offsetWidth}px`;
+    });
+
+    activeBtn.classList.add("transformed");
+
+    const tl = gsap.timeline({
       onComplete: () => {
-        this.isExpanded = true;
+        this.expandedSide = side;
         this.isAnimating = false;
       },
     });
 
-    timeline
-      // Nascondi contenuti di base
-      .to([this.basicContent.nativeElement, this.staticButton.nativeElement], {
-        opacity: 0,
-        duration: 0.2,
-        ease: "power2.out",
-      })
+    tl.to(toHide, {
+      opacity: 0,
+      width: 0,
+      margin: 0,
+      padding: 0,
+      duration: 0.4,
+      ease: "power2.inOut",
+    })
       .to(
-        this.basicContent.nativeElement,
+        activeBasic,
         {
+          opacity: 0,
           height: 0,
           duration: 0.2,
-          ease: "power2.out",
         },
         "<"
       )
       .to(
-        this.staticButton.nativeElement,
+        activeWrapper,
         {
-          scaleX: 0,
-          width: 0,
-          duration: 0.2,
-          ease: "power2.out",
-        },
-        "<"
-      )
-
-      // Espansione
-      .to(
-        this.transformButton.nativeElement,
-        {
-          width: "100%",
+          flexGrow: 1, // Il wrapper ora accetta di occupare tutto lo spazio
           duration: 0.4,
-          ease: "back.out(1.2)",
+          ease: "power2.inOut",
         },
-        "+=0.1"
+        "<"
       )
       .to(
-        this.transformedContent.nativeElement,
+        activeBtn,
         {
-          height: this.naturalHeight,
+          width: "100%", // Ora si espande fluidamente perché il wrapper glielo permette
+          duration: 0.5,
+          ease: "back.out(1.1)",
+        },
+        "-=0.2"
+      )
+      .to(
+        activeContent,
+        {
+          height: activeNaturalHeight,
           opacity: 1,
           duration: 0.4,
-          ease: "back.out(1)",
         },
-        "<"
+        "-=0.2"
       )
-      .to(
-        childContainers,
-        {
-          width: "100%",
-          duration: 0.4,
-          ease: "back.out(1)",
-        },
-        "<"
-      )
-
-      // Altezza auto per responsiveness
-      .set(this.transformedContent.nativeElement, { height: "auto" });
+      .set(activeContent, { height: "auto" });
   }
 
-  private collapseButton() {
+  collapseButton(side: MenuSide) {
+    if (!this.expandedSide || this.isAnimating) return;
     this.isAnimating = true;
-    this.transformButton.nativeElement.classList.remove("transformed");
 
-    const childContainers =
-      this.transformedContent.nativeElement.querySelectorAll(
-        ".transformed-setting-option-container, .transformed-setting-close-button-container"
-      );
+    const activeBtn =
+      side === "left"
+        ? this.leftTransformButton!.nativeElement
+        : this.rightTransformButton!.nativeElement;
+    const activeContent =
+      side === "left"
+        ? this.leftTransformedContent!.nativeElement
+        : this.rightTransformedContent!.nativeElement;
+    const activeBasic =
+      side === "left"
+        ? this.leftBasicContent!.nativeElement
+        : this.rightBasicContent!.nativeElement;
+    const activeWrapper =
+      side === "left"
+        ? this.leftWrapper.nativeElement
+        : this.rightWrapper.nativeElement;
 
-    // se height è auto → fissalo al valore corrente
-    if (this.transformedContent.nativeElement.style.height === "auto") {
-      gsap.set(this.transformedContent.nativeElement, {
-        height: this.transformedContent.nativeElement.scrollHeight,
-      });
+    const toRestore =
+      side === "left"
+        ? [this.rightWrapper.nativeElement]
+        : [this.leftWrapper.nativeElement, this.staticButton.nativeElement];
+
+    activeBtn.classList.remove("transformed");
+
+    if (activeContent.style.height === "auto") {
+      gsap.set(activeContent, { height: activeContent.scrollHeight });
     }
 
-    const timeline = gsap.timeline({
+    const tl = gsap.timeline({
       onComplete: () => {
-        this.isExpanded = false;
+        this.expandedSide = null;
         this.isAnimating = false;
-
-        // qui puoi fare il reset completo, incluso clearProps
-        gsap.set(this.transformButton.nativeElement, { clearProps: "width" });
-        this.setInitialState();
+        gsap.set([activeBtn, activeWrapper, ...toRestore], {
+          clearProps: "all",
+        });
+        this.originalWidths.clear();
       },
     });
 
-    timeline
-      // Contrazione contenuto trasformato
-      .to(this.transformedContent.nativeElement, {
-        opacity: 0,
-        height: 0,
-        duration: 0.3,
-        ease: "power2.out",
-      })
+    tl.to(activeContent, {
+      height: 0,
+      opacity: 0,
+      duration: 0.3,
+    })
       .to(
-        childContainers,
+        activeBtn,
         {
-          width: 0,
-          duration: 0.3,
-          ease: "power2.out",
+          width: "fit-content", // Torna alla sua dimensione naturale
+          duration: 0.4,
+          ease: "power2.inOut",
         },
         "<"
       )
-
-      // Anima la larghezza del transformButton verso una misura minima
       .to(
-        this.transformButton.nativeElement,
+        activeWrapper,
         {
-          width: "auto", // oppure una width fissa che fa da base
+          flexGrow: 0, // Rilascia lo spazio extra
           duration: 0.4,
-          ease: "back.in(1.2)",
+          ease: "power2.inOut",
         },
-        "<" // parte in parallelo
+        "<"
       )
-
-      // Ripristino elementi base
       .to(
-        this.staticButton.nativeElement,
+        toRestore,
         {
+          width: (i, target) => `${this.originalWidths.get(target)}px`,
           opacity: 1,
-          scaleX: 1,
-          width: "auto",
-          duration: 0.3,
-          ease: "back.out(1)",
+          duration: 0.4,
+          ease: "power2.out",
         },
-        "+=0.1"
+        "-=0.2"
       )
       .to(
-        this.basicContent.nativeElement,
+        activeBasic,
         {
           height: "auto",
           opacity: 1,
-          duration: 0.3,
-          ease: "power2.out",
+          duration: 0.2,
         },
-        "<"
+        "-=0.2"
       );
   }
-}
-
-export interface buttonOption {
-  optionId: number;
-  description: string;
 }

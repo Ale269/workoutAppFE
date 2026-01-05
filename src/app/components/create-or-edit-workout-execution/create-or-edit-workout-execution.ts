@@ -13,8 +13,9 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatTabsModule } from "@angular/material/tabs";
 import { ExerciseComponent } from "../create-or-edit-template-plan-component/workout-component/exercise-component/exercise-component";
 import {
-  buttonOption,
   MultiOptionButton,
+  multiOptionGroup,
+  OptionSelectedEvent,
 } from "../shared/multi-option-button/multi-option-button";
 import { Router } from "@angular/router";
 import { AllenamentoDTO as AllenamentoFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/allenamentodto";
@@ -75,7 +76,39 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   public loadingProgression: LoadingProgression = LoadingProgression.none;
 
   // Definisci le opzioni del pulsante
-  public buttonOptions: buttonOption[] = [];
+  public rightButtonOptionsGroup: multiOptionGroup[] = [];
+  public leftButtonOptionsGroup: multiOptionGroup[] = [
+    {
+      label: "",
+      options: [
+        {
+          description: "Duplica",
+          optionId: 1,
+          color: " rgba(0, 255, 225, 1)",
+        },
+        {
+          description: "Importa",
+          optionId: 1,
+          color: " rgba(0, 255, 225, 1)",
+        },
+        {
+          description: "Esporta",
+          optionId: 1,
+          color: " rgba(0, 255, 225, 1)",
+        },
+      ],
+    },
+    {
+      label: "",
+      options: [
+        {
+          description: "Elimina",
+          optionId: 2,
+          color: " rgba(0, 255, 225, 1)",
+        },
+      ],
+    },
+  ];
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
@@ -277,9 +310,18 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           .then((response) => {
             if (!response.errore?.error) {
               this.loadingProgression = LoadingProgression.complete;
-              this.buttonOptions = response.opzioniAltriAllenamenti.map((o) => {
-                return { description: o.description, optionId: o.id };
-              });
+              this.rightButtonOptionsGroup = [
+                {
+                  label: "",
+                  options: response.opzioniAltriAllenamenti.map((o) => {
+                    return {
+                      description: o.description,
+                      optionId: o.id,
+                      color: " rgba(0, 255, 225, 1)",
+                    };
+                  }),
+                },
+              ];
               if (this.initSpinnerId) {
                 this.spinnerService.setSuccess(this.initSpinnerId);
               }
@@ -361,10 +403,14 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     }
   }
 
-  onOptionSelected(optionId: number) {
-    this.idTemplateAllenamento = optionId;
-    this.createOrEditWorkoutExecutionService.resetData();
-    this.initializeWorkout();
+  onOptionSelected(option: OptionSelectedEvent) {
+    switch (option.side) {
+      case "left":
+        this.idTemplateAllenamento = option.id;
+        this.createOrEditWorkoutExecutionService.resetData();
+        this.initializeWorkout();
+        break;
+    }
   }
 
   registraAllenamento() {
