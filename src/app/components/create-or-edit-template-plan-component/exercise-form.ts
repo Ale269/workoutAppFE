@@ -7,6 +7,7 @@ export interface EsercizioFormModel {
   identifier: FormControl<number | null>;
   id: FormControl<number | null>;
   idTemplate: FormControl<number | null>;
+  descrizioneEsercizio: FormControl<string | null>;
   idTipoEsercizio: FormControl<number | null>;
   idIconaEsercizio: FormControl<number | null>;
   idMetodologia: FormControl<number | null>;
@@ -30,6 +31,9 @@ export class EsercizioForm {
       identifier: new FormControl<number | null>(identifier),
       id: new FormControl<number | null>(
         esercizioDTO?.id || null
+      ), 
+      descrizioneEsercizio: new FormControl<string | null>(
+        esercizioDTO?.descrizioneEsercizio || null
       ),
       idTemplate: new FormControl<number | null>(
         esercizioDTO?.idTemplate || null
@@ -175,6 +179,7 @@ export class EsercizioForm {
       let esercizioDaSalvare: EsercizioDTO = {
         id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
         idTemplate: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
+        descrizioneEsercizio: this.form.controls["descrizioneEsercizio"].value ? this.form.controls["descrizioneEsercizio"].value : 0,
         idIconaEsercizio: this.form.controls["idIconaEsercizio"].value
           ? this.form.controls["idIconaEsercizio"].value
           : 0,

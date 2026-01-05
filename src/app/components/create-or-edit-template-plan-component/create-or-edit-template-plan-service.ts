@@ -66,6 +66,7 @@ export class CreateOrEditTemplatePlanService {
           const esercizioFormDTO: EsercizioFormDTO = {
             id: 0,
             idTemplate: esercizio.id,
+            descrizioneEsercizio: esercizio.descrizioneEsercizio,
             idIconaEsercizio: esercizio.idIconaEsercizio,
             idMetodologia: esercizio.idMetodologia,
             idTipoEsercizio: esercizio.idTipoEsercizio,

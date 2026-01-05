@@ -23,6 +23,7 @@ import { TrainingMethodologySelectorComponent } from "src/app/components/shared/
 import { ExerciseIconColorPipe } from "../../../../core/pipes/exercise-icon-color";
 import { BottomSheetService } from "src/app/components/shared/bottom-sheet/bottom-sheet-service";
 import { ExerciseService } from "src/app/core/services/exercise.service";
+import { MatInputModule } from "@angular/material/input";
 
 @Component({
   selector: "app-exercise-component",
@@ -34,6 +35,8 @@ import { ExerciseService } from "src/app/core/services/exercise.service";
     MatFormFieldModule,
     MatSelectModule,
     ExerciseIconColorPipe,
+    MatFormFieldModule,
+    MatInputModule
   ],
   templateUrl: "./exercise-component.html",
   styleUrl: "./exercise-component.scss",

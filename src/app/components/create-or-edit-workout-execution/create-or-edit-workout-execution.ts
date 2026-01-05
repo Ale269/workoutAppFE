@@ -495,6 +495,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         const esercizioDTO: EsercizioDTO = {
           id: esercizioForm.id,
           idTemplate: esercizioForm.idTemplate,
+          descrizioneEsercizio: esercizioForm.descrizioneEsercizio,
           idIconaEsercizio: esercizioForm.idIconaEsercizio,
           idMetodologia: esercizioForm.idMetodologia,
           idTipoEsercizio: esercizioForm.idTipoEsercizio,
