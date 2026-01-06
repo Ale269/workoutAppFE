@@ -179,6 +179,31 @@ export class CreateOrEditWorkoutExecutionService {
       }
     });
   }
+  
+  async aggiornaAllenamentoSvolo(
+    savePlanRequest: RegistraAllenamentoRequestModel
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        console.log("AGGIORNO ALLENAMENTO SVOLTO:  ", savePlanRequest)
+        this.workoutService.aggiornaAllenamentoSvolo(savePlanRequest).subscribe({
+          next: (response: any) => {
+            if (!response.errore?.error) {
+              console.log("RESPONSE: ", response)
+              resolve(response);
+            } else {
+              reject(null);
+            }
+          },
+          error: (error) => {
+            reject(error);
+          },
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 
   eliminaAllenamento(
     request: DeleteDatiAllenamentoRequestModel

@@ -151,6 +151,17 @@ export class WorkoutService {
         request
     );
   }
+  
+  aggiornaAllenamentoSvolo(
+    request: RegistraAllenamentoRequestModel
+  ): Observable<RegistraAllenamentoResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "training",
+      "aggiornaAllenamentoSvolto",
+      undefined,
+      request
+    );
+  }
 
   
   attivaScheda(
