@@ -1,49 +1,65 @@
 <div class="buttons-container" #container>
-
   <div class="side-wrapper left" #leftWrapper>
     @if(leftGroups.length > 0) {
-      <div class="transformation-button left" #leftTransformButton>
-        <button class="basic-setting" #leftBasicContent (click)="expandButton('left')">
-          {{ leftButtonLabel }}
-           <div class="option-icon-section-container" (click)="collapseButton('left')">
-              <img src="assets/recollect/svg/google-more-options.svg" alt="Opzioni" />
-            </div>
-        </button>
-        
-        <div class="transformed-setting" #leftTransformedContent>
-          <div class="transformed-setting-close-button-container">
-            <div class="close-icon-section-container" (click)="collapseButton('left')">
-              <img src="assets/recollect/svg/google-close-icon.svg" alt="Chiudi" />
-            </div>
+    <div
+      class="transformation-button left"
+      #leftTransformButton
+      (click)="expandButton('left')"
+    >
+      <!-- BASIC STATE -->
+      <div class="basic-setting" #leftBasicContent>
+        <button [class.has-label-and-icon]="leftButtonLabel">
+          <span class="button-label">{{ leftButtonLabel }}</span>
+          <div class="option-icon-section-container">
+            <img
+              src="assets/recollect/svg/google-more-options.svg"
+              alt="Opzioni"
+            />
           </div>
+        </button>
+      </div>
 
-          @for(group of leftGroups; track group.label) {
-            <div class="group-section">
-              @if(group.label) {
-                <div class="group-label">{{ group.label }}</div>
-              }
-              
-              @for(option of group.options; track option.optionId) {
-                <div class="transformed-setting-option-container">
-                  <button (click)="onOptionClick(option.optionId, 'left')" [style.color]="option.color">
-                    <div class="option-content">
-                      @if(option.iconPath) {
-                        <img [src]="option.iconPath" class="option-icon" />
-                      }
-                      <span class="option-label">{{ option.description }}</span>
-                    </div>
-                  </button>
-                </div>
-              }
-            </div>
+      <!-- EXPANDED STATE -->
+      <div class="transformed-setting" #leftTransformedContent>
+        <div class="transformed-setting-close-button-container">
+          <div
+            class="close-icon-section-container"
+            (click)="collapseButton('left')"
+          >
+            <img
+              src="assets/recollect/svg/google-close-icon.svg"
+              alt="Chiudi"
+            />
+          </div>
+        </div>
+
+        @for(group of leftGroups; track group.id) {
+        <div class="group-section">
+          @if(group.label) {
+          <div class="group-label">{{ group.label }}</div>
+          } @for(option of group.options; track option.optionId) {
+          <div class="transformed-setting-option-container">
+            <button
+              (click)="onOptionClick(option.optionId, 'left')"
+              [style.color]="option.color"
+            >
+              <div class="option-content">
+                @if(option.iconPath) {
+                <img [src]="option.iconPath" class="option-icon" />
+                }
+                <span class="option-label">{{ option.description }}</span>
+              </div>
+            </button>
+          </div>
           }
         </div>
+        }
       </div>
+    </div>
     }
   </div>
 
   <div class="side-wrapper right" #rightWrapper>
-    
     <div class="static-button" #staticButton>
       <div class="static-button-container">
         <ng-content></ng-content>
@@ -51,41 +67,53 @@
     </div>
 
     @if(rightGroups.length > 0) {
-      <div class="transformation-button right" #rightTransformButton>
-        <button class="basic-setting" #rightBasicContent (click)="expandButton('right')">
-          {{ rightButtonLabel }}
+    <div
+      class="transformation-button right"
+      #rightTransformButton
+      (click)="expandButton('right')"
+    >
+      <div class="basic-setting" #rightBasicContent>
+        <button [class.has-label-and-icon]="rightButtonLabel">
+          <span class="button-label">{{ rightButtonLabel }}</span>
         </button>
+      </div>
 
-        <div class="transformed-setting" #rightTransformedContent>
-          <div class="transformed-setting-close-button-container">
-            <div class="close-icon-section-container" (click)="collapseButton('right')">
-              <img src="assets/recollect/svg/google-close-icon.svg" alt="Chiudi" />
-            </div>
+      <div class="transformed-setting" #rightTransformedContent>
+        <div class="transformed-setting-close-button-container">
+          <div
+            class="close-icon-section-container"
+            (click)="collapseButton('right')"
+          >
+            <img
+              src="assets/recollect/svg/google-close-icon.svg"
+              alt="Chiudi"
+            />
           </div>
+        </div>
 
-          @for(group of rightGroups; track group.label) {
-            <div class="group-section">
-              @if(group.label) {
-                <div class="group-label">{{ group.label }}</div>
-              }
-
-              @for(option of group.options; track option.optionId) {
-                <div class="transformed-setting-option-container">
-                  <button (click)="onOptionClick(option.optionId, 'right')" [style.color]="option.color">
-                    <div class="option-content">
-                      @if(option.iconPath) {
-                        <img [src]="option.iconPath" class="option-icon" />
-                      }
-                      <span class="option-label">{{ option.description }}</span>
-                    </div>
-                  </button>
-                </div>
-              }
-            </div>
+        @for(group of rightGroups; track group.id) {
+        <div class="group-section">
+          @if(group.label) {
+          <div class="group-label">{{ group.label }}</div>
+          } @for(option of group.options; track option.optionId) {
+          <div class="transformed-setting-option-container">
+            <button
+              (click)="onOptionClick(option.optionId, 'right')"
+              [style.color]="option.color"
+            >
+              <div class="option-content">
+                @if(option.iconPath) {
+                <img [src]="option.iconPath" class="option-icon" />
+                }
+                <span class="option-label">{{ option.description }}</span>
+              </div>
+            </button>
+          </div>
           }
         </div>
+        }
       </div>
+    </div>
     }
   </div>
-
 </div>

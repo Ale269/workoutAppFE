@@ -79,6 +79,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   public rightButtonOptionsGroup: multiOptionGroup[] = [];
   public leftButtonOptionsGroup: multiOptionGroup[] = [
     {
+      id: 1,
       label: "",
       options: [
         {
@@ -88,17 +89,18 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         },
         {
           description: "Importa",
-          optionId: 1,
+          optionId: 2,
           color: " rgba(0, 255, 225, 1)",
         },
         {
           description: "Esporta",
-          optionId: 1,
+          optionId: 3,
           color: " rgba(0, 255, 225, 1)",
         },
       ],
     },
     {
+      id: 2,
       label: "",
       options: [
         {
@@ -312,6 +314,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
               this.loadingProgression = LoadingProgression.complete;
               this.rightButtonOptionsGroup = [
                 {
+                  id: 1,
                   label: "",
                   options: response.opzioniAltriAllenamenti.map((o) => {
                     return {

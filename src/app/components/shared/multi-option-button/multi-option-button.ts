@@ -14,13 +14,15 @@ export interface buttonOption {
   optionId: number;
   description: string;
   color?: string;
-  iconPath?: string; // Path SVG o immagine
+  iconPath?: string;
 }
 
 export interface multiOptionGroup {
+  id: number;
   label: string;
   options: buttonOption[];
 }
+
 export interface OptionSelectedEvent {
   id: number;
   side: MenuSide;
@@ -37,33 +39,25 @@ export type MenuSide = "left" | "right";
 export class MultiOptionButton implements OnInit, AfterViewInit {
   @Input() leftGroups: multiOptionGroup[] = [];
   @Input() rightGroups: multiOptionGroup[] = [];
-  
+
   @Input() leftButtonLabel: string = "Left Option";
   @Input() rightButtonLabel: string = "Right Option";
 
   @Output() optionSelected = new EventEmitter<{ id: number; side: MenuSide }>();
 
-  // Wrappers
   @ViewChild("leftWrapper") leftWrapper!: ElementRef;
   @ViewChild("rightWrapper") rightWrapper!: ElementRef;
-
-  // Elements Left
   @ViewChild("leftTransformButton") leftTransformButton?: ElementRef;
   @ViewChild("leftTransformedContent") leftTransformedContent?: ElementRef;
   @ViewChild("leftBasicContent") leftBasicContent?: ElementRef;
-
-  // Elements Right
   @ViewChild("rightTransformButton") rightTransformButton?: ElementRef;
   @ViewChild("rightTransformedContent") rightTransformedContent?: ElementRef;
   @ViewChild("rightBasicContent") rightBasicContent?: ElementRef;
-
-  // Static
   @ViewChild("staticButton") staticButton!: ElementRef;
 
   public expandedSide: MenuSide | null = null;
   public isAnimating = false;
 
-  // Cache dimensioni originali per evitare scatti al ripristino
   private originalWidths = new Map<HTMLElement, number>();
   private naturalHeights = { left: 0, right: 0 };
 
@@ -79,36 +73,54 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
   }
 
   private calculateNaturalHeights() {
-    // Calcola altezza menu a tendina
-    if (this.leftTransformedContent)
+    if (this.leftTransformedContent) {
       this.naturalHeights.left = this.getHiddenHeight(
         this.leftTransformedContent.nativeElement
       );
-    if (this.rightTransformedContent)
+    }
+    if (this.rightTransformedContent) {
       this.naturalHeights.right = this.getHiddenHeight(
         this.rightTransformedContent.nativeElement
       );
+    }
   }
 
   private getHiddenHeight(el: HTMLElement): number {
-    gsap.set(el, { height: "auto", display: "block", visibility: "hidden" });
-    const h = el.scrollHeight;
+    const original = {
+      display: el.style.display,
+      visibility: el.style.visibility,
+      position: el.style.position,
+      height: el.style.height,
+    };
+
     gsap.set(el, {
-      height: 0,
       display: "block",
-      visibility: "visible",
-      opacity: 0,
+      visibility: "hidden",
+      position: "absolute",
+      height: "auto",
     });
-    return h;
+
+    const height = el.scrollHeight;
+
+    gsap.set(el, original);
+    gsap.set(el, { height: 0, opacity: 0 });
+
+    return height;
   }
 
   private setInitialState() {
-    // Reset pulito
-    if (this.leftTransformButton)
-      gsap.set(this.leftTransformButton.nativeElement, { clearProps: "all" });
-    if (this.rightTransformButton)
-      gsap.set(this.rightTransformButton.nativeElement, { clearProps: "all" });
-    gsap.set(this.staticButton.nativeElement, { clearProps: "all" });
+    if (this.leftTransformedContent) {
+      gsap.set(this.leftTransformedContent.nativeElement, {
+        height: 0,
+        opacity: 0,
+      });
+    }
+    if (this.rightTransformedContent) {
+      gsap.set(this.rightTransformedContent.nativeElement, {
+        height: 0,
+        opacity: 0,
+      });
+    }
   }
 
   onOptionClick(optionId: number, side: MenuSide) {
@@ -139,72 +151,92 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     const activeNaturalHeight =
       side === "left" ? this.naturalHeights.left : this.naturalHeights.right;
 
-    // Elementi da nascondere
     const toHide =
       side === "left"
         ? [this.rightWrapper.nativeElement]
         : [this.leftWrapper.nativeElement, this.staticButton.nativeElement];
 
-    // Lock delle larghezze correnti
+    // Salva le larghezze originali
     toHide.forEach((el) => {
       this.originalWidths.set(el, el.offsetWidth);
-      el.style.width = `${el.offsetWidth}px`;
     });
-
-    activeBtn.classList.add("transformed");
 
     const tl = gsap.timeline({
       onComplete: () => {
+        gsap.set(activeContent, { height: "auto" });
         this.expandedSide = side;
         this.isAnimating = false;
       },
     });
 
+    // FASE 1: Nascondi completamente gli altri elementi PRIMA di tutto
     tl.to(toHide, {
       opacity: 0,
-      width: 0,
-      margin: 0,
-      padding: 0,
-      duration: 0.4,
+      duration: 0.15,
       ease: "power2.inOut",
     })
-      .to(
-        activeBasic,
-        {
-          opacity: 0,
-          height: 0,
-          duration: 0.2,
-        },
-        "<"
-      )
-      .to(
-        activeWrapper,
-        {
-          flexGrow: 1, // Il wrapper ora accetta di occupare tutto lo spazio
-          duration: 0.4,
-          ease: "power2.inOut",
-        },
-        "<"
-      )
-      .to(
-        activeBtn,
-        {
-          width: "100%", // Ora si espande fluidamente perché il wrapper glielo permette
-          duration: 0.5,
-          ease: "back.out(1.1)",
-        },
-        "-=0.2"
-      )
-      .to(
-        activeContent,
-        {
-          height: activeNaturalHeight,
-          opacity: 1,
-          duration: 0.4,
-        },
-        "-=0.2"
-      )
-      .set(activeContent, { height: "auto" });
+    .to(toHide, {
+      width: 0,
+      duration: 0.15,
+      ease: "power2.inOut",
+      onComplete: () => {
+        toHide.forEach((el) => (el.style.pointerEvents = "none"));
+      },
+    })
+    
+    // FASE 2: Rimuovi il gap del wrapper SENZA aggiungere transformed
+    .call(() => {
+      activeWrapper.style.gap = "0";
+    })
+    
+    // FASE 3: Nascondi il contenuto base
+    .to(
+      activeBasic,
+      {
+        opacity: 0,
+        height: 0,
+        duration: 0.15,
+        ease: "power2.in",
+      },
+      "-=0.05"
+    )
+    
+    // FASE 4: Espandi il wrapper e la larghezza del pulsante con bounce
+    .to(
+      activeWrapper,
+      {
+        flexGrow: 1,
+        duration: 0.3,
+        ease: "back.out(1.3)",
+      },
+      "-=0.05"
+    )
+    .to(
+      activeBtn,
+      {
+        width: "100%",
+        duration: 0.32,
+        ease: "back.out(1.4)",
+      },
+      "<"
+    )
+    
+    // FASE 5: Aggiungi classe transformed DOPO che la larghezza è completa
+    .call(() => {
+      activeBtn.classList.add("transformed");
+    })
+    
+    // FASE 6: Mostra il contenuto trasformato subito dopo con bounce
+    .to(
+      activeContent,
+      {
+        height: activeNaturalHeight,
+        opacity: 1,
+        duration: 0.35,
+        ease: "back.out(1.5)",
+      },
+      "+=0.02"
+    );
   }
 
   collapseButton(side: MenuSide) {
@@ -233,64 +265,122 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
         ? [this.rightWrapper.nativeElement]
         : [this.leftWrapper.nativeElement, this.staticButton.nativeElement];
 
-    activeBtn.classList.remove("transformed");
-
+    // Fixa l'altezza corrente prima di collassare
     if (activeContent.style.height === "auto") {
       gsap.set(activeContent, { height: activeContent.scrollHeight });
+    }
+
+    // Calcola la larghezza target PRIMA di rimuovere la classe
+    // Salva temporaneamente la classe per il calcolo
+    const hadTransformed = activeBtn.classList.contains("transformed");
+    activeBtn.classList.remove("transformed");
+    
+    const currentWidth = activeBtn.offsetWidth;
+    activeBtn.style.width = "auto";
+    const targetWidth = activeBtn.offsetWidth;
+    activeBtn.style.width = `${currentWidth}px`;
+    
+    // Rimetti la classe per l'animazione
+    if (hadTransformed) {
+      activeBtn.classList.add("transformed");
     }
 
     const tl = gsap.timeline({
       onComplete: () => {
         this.expandedSide = null;
         this.isAnimating = false;
-        gsap.set([activeBtn, activeWrapper, ...toRestore], {
-          clearProps: "all",
+
+        // Reset completo
+        activeBtn.classList.remove("transformed");
+        activeWrapper.style.gap = "";
+        gsap.set([activeBtn, activeWrapper], { clearProps: "all" });
+        gsap.set(activeContent, { height: 0, opacity: 0 });
+        gsap.set(activeBasic, { clearProps: "all" });
+        toRestore.forEach((el) => {
+          gsap.set(el, { clearProps: "all" });
+          el.style.pointerEvents = "";
         });
+
         this.originalWidths.clear();
       },
     });
 
+    // FASE 1: Nascondi il contenuto trasformato mantenendo il pulsante largo con bounce
     tl.to(activeContent, {
       height: 0,
       opacity: 0,
-      duration: 0.3,
+      duration: 0.25,
+      ease: "back.in(1.3)",
     })
-      .to(
-        activeBtn,
-        {
-          width: "fit-content", // Torna alla sua dimensione naturale
-          duration: 0.4,
-          ease: "power2.inOut",
+    
+    // FASE 2: Riduci SOLO l'altezza minima e rimuovi la classe transformed
+    .call(() => {
+      activeBtn.classList.remove("transformed");
+    })
+    
+    // FASE 3: Riduci la larghezza del pulsante con bounce
+    .to(
+      activeBtn,
+      {
+        width: targetWidth,
+        duration: 0.28,
+        ease: "back.in(1.4)",
+      },
+      "+=0.02"
+    )
+    
+    // FASE 4: Riduci il wrapper contemporaneamente con bounce
+    .to(
+      activeWrapper,
+      {
+        flexGrow: 0,
+        duration: 0.28,
+        ease: "back.in(1.3)",
+      },
+      "<"
+    )
+    
+    // FASE 5: Mostra il contenuto base
+    .to(
+      activeBasic,
+      {
+        height: "auto",
+        opacity: 1,
+        duration: 0.15,
+        ease: "power2.out",
+      },
+      "-=0.12"
+    )
+    
+    // FASE 6: Ripristina il gap del wrapper
+    .call(() => {
+      activeWrapper.style.gap = "";
+    })
+    
+    // FASE 7: Ripristina gli elementi nascosti ALLA FINE con bounce
+    .to(
+      toRestore,
+      {
+        width: (i, target) => this.originalWidths.get(target)!,
+        duration: 0.18,
+        ease: "back.out(1.3)",
+        onStart: () => {
+          toRestore.forEach((el) => (el.style.pointerEvents = ""));
         },
-        "<"
-      )
-      .to(
-        activeWrapper,
-        {
-          flexGrow: 0, // Rilascia lo spazio extra
-          duration: 0.4,
-          ease: "power2.inOut",
-        },
-        "<"
-      )
-      .to(
-        toRestore,
-        {
-          width: (i, target) => `${this.originalWidths.get(target)}px`,
-          opacity: 1,
-          duration: 0.4,
-          ease: "power2.out",
-        },
-        "-=0.2"
-      )
-      .to(
-        activeBasic,
-        {
-          height: "auto",
-          opacity: 1,
-          duration: 0.2,
-        },
-        "-=0.2"
-      );
+      },
+      "-=0.05"
+    )
+    .to(
+      toRestore,
+      {
+        opacity: 1,
+        duration: 0.15,
+        ease: "power2.out",
+      },
+      "<0.05"
+    )
+    .call(() => {
+      gsap.set(toRestore, { clearProps: "width" });
+    });
   }
 }
