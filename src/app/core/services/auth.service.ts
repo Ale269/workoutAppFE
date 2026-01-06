@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of, filter, take} from 'rxjs';
 import { Router } from '@angular/router';
 import {ApiCatalogService} from "./api-catalog.service";
 import { LoginRequestModel, LoginResponseModel } from 'src/app/models/auth/login-model';
@@ -100,8 +100,13 @@ export class AuthService {
                      token: token
                  });
 
-                 // Schedule auto-refresh anche al caricamento dell'app
-                 this.scheduleTokenRefresh(token);
+                 // Aspetta che API Catalog sia disponibile prima di schedulare il refresh
+                 this.apiCatalogService.apiCatalog$.pipe(
+                     filter(catalog => catalog !== null),
+                     take(1)
+                 ).subscribe(() => {
+                     this.scheduleTokenRefresh(token);
+                 });
              } catch (error) {
                  this.clearAuthState();
              }
@@ -135,8 +140,6 @@ export class AuthService {
 
         return (this.apiCatalogService.executeApiCall('auth', 'refresh', undefined, request) as Observable<RefreshTokenResponseModel>).pipe(
             tap((response: RefreshTokenResponseModel) => {
-                // Aggiorna lo stato con il nuovo access token
-                // Il refresh token rimane lo stesso (no rotation)
                 const currentUser = this.getCurrentUser();
                 if (currentUser) {
                     this.authStateSubject.next({
@@ -151,8 +154,6 @@ export class AuthService {
                         token: response.jwtToken
                     });
                     localStorage.setItem('token', response.jwtToken);
-
-                    // Re-schedule auto-refresh con il nuovo token
                     this.scheduleTokenRefresh(response.jwtToken);
                 }
             })
@@ -160,35 +161,53 @@ export class AuthService {
     }
 
     private scheduleTokenRefresh(token: string): void {
-        // Cancella eventuali timeout precedenti
         if (this.refreshTokenTimeout) {
             clearTimeout(this.refreshTokenTimeout);
         }
 
         try {
-            // Decodifica il JWT per ottenere la scadenza
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const expiresAt = payload.exp * 1000; // Converti in millisecondi
-            const now = Date.now();
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                if (this.getRefreshToken()) {
+                    this.refreshAccessToken().subscribe({
+                        error: () => this.logout()
+                    });
+                } else {
+                    this.logout();
+                }
+                return;
+            }
 
-            // Calcola quando fare il refresh (5 minuti prima della scadenza)
-            const refreshAt = expiresAt - (5 * 60 * 1000); // 5 minuti prima
+            const payload = JSON.parse(atob(parts[1]));
+            const expiresAt = payload.exp * 1000;
+            const now = Date.now();
+            const refreshAt = expiresAt - (5 * 60 * 1000);
             const timeUntilRefresh = refreshAt - now;
 
-            // Se il tempo è positivo, schedula il refresh
-            if (timeUntilRefresh > 0) {
-                this.refreshTokenTimeout = setTimeout(() => {
+            if (timeUntilRefresh <= 0) {
+                if (this.getRefreshToken()) {
                     this.refreshAccessToken().subscribe({
-                        error: (error) => {
-                            // Se il refresh fallisce, effettua logout
-                            console.error('Auto-refresh failed:', error);
-                            this.logout();
-                        }
+                        error: () => this.logout()
                     });
-                }, timeUntilRefresh);
+                } else {
+                    this.logout();
+                }
+                return;
             }
+
+            this.refreshTokenTimeout = setTimeout(() => {
+                this.refreshAccessToken().subscribe({
+                    error: () => this.logout()
+                });
+            }, timeUntilRefresh);
         } catch (error) {
-            console.error('Error scheduling token refresh:', error);
+            if (this.getRefreshToken()) {
+                this.refreshAccessToken().subscribe({
+                    error: () => this.logout()
+                });
+            } else {
+                this.logout();
+            }
         }
     }
 }

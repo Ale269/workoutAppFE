@@ -32,8 +32,10 @@ export class ApiCatalogService {
 
     return this.http.get<ApiCatalog>(catalogPath).pipe(
       tap((catalog) => {
-        this.apiCatalogSubject.next(catalog);
+        // IMPORTANTE: inizializza la baseUrl PRIMA di emettere il catalog
+        // altrimenti i subscriber ricevono il catalog ma la baseUrl è ancora vuota
         this.initializeBaseUrl(catalog);
+        this.apiCatalogSubject.next(catalog);
         console.log("✅ API Catalog caricato - BaseUrl:", this.baseUrl);
       }),
       catchError((error) => {
