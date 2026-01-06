@@ -65,10 +65,5 @@ bootstrapApplication(AppComponent, {
 
     // provideAppInitializer per caricare le configurazioni prima dell'avvio dell'app
     provideAppInitializer(initializeApp()),
-    
-    provideServiceWorker("ngsw-worker.js", {
-      enabled: !isDevMode(),
-      registrationStrategy: "registerWhenStable:30000",
-    }),
   ],
 }).catch((err) => console.error(err));
