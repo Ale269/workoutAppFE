@@ -1,4 +1,18 @@
-<div class="workout-content">
+<div class="workout-detail-container">
+  <!-- Header con back button e titolo -->
+  <div class="section-workout-container close-icon-title-container">
+    <div class="close-icon-section-container">
+      <div class="close-icon-trigger" (click)="backToList()"></div>
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+
+    <h1 class="text-title">
+      {{formAllenamento.form.controls['nomeAllenamento'].value}}
+    </h1>
+  </div>
+
+  <!-- Contenuto workout -->
+  <div class="workout-content">
   <div class="workout-data">
     <div class="nome-allenamento-container">
       <form [formGroup]="formAllenamento.form">
@@ -46,14 +60,6 @@
         </mat-form-field>
       </form>
     </div>
-    <!-- <div class="add-allenamento-button-row">
-      <button class="text-shape-button" (click)="addWorkout()">
-        <span>Aggiungi nuovo allenamento</span>
-        <div class="text-shape-button-icon-container">
-          <img src="assets/recollect/svg/google-add.svg" />
-        </div>
-      </button>
-    </div> -->
     <div class="delete-allenamento-button-row">
       <button class="text-shape-button-danger" (click)="openDeleteWorkout()">
         <span>Elimina questo allenamento</span>
@@ -82,6 +88,7 @@
     </button>
   </div>
 </div>
+<!-- Fine workout-detail-container -->
 
 <!-- Template per il modale -->
 

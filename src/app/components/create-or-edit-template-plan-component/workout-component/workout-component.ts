@@ -58,7 +58,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
   @Input() formScheda!: SchedaForm;
 
   @Output() onDeleteWorkout = new EventEmitter<number>();
-  @Output() onAddWorkout = new EventEmitter<string>();
+  @Output() onBackToList = new EventEmitter<void>();
 
   public ordinamentoControl!: FormControl<number | null>;
 
@@ -97,7 +97,6 @@ export class WorkoutComponent implements OnInit, OnDestroy {
   ifEmptySetPlaceholder(event: any) {
     try {
       if (event.target.value.trim().length === 0) {
-        // Qui è vuoto o solo spazi
         this.formAllenamento.form.controls["nomeAllenamento"].setValue(
           "Giorno " + this.formAllenamento.form.controls["ordinamento"].value
         );
@@ -120,8 +119,6 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         return;
       }
 
-      // Usa il metodo moveAllenamento di SchedaForm per gestire lo spostamento
-      // e il riallineamento automatico di tutti gli ordinamenti
       const success = this.formScheda.moveAllenamento(
         currentWorkoutId,
         newPosition
@@ -129,8 +126,6 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
       if (!success) {
         console.error("Errore durante lo spostamento dell'allenamento");
-        // Opzionalmente, potresti ripristinare il valore precedente
-        // o mostrare un messaggio di errore all'utente
       }
       
       this.cdr.detectChanges();
@@ -152,6 +147,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       );
     }
   }
+
   addNuovoEsercizio() {
     try {
       this.formAllenamento.addEsercizioForm(undefined);
@@ -181,17 +177,6 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       );
     }
   }
- 
-  // addWorkout() {
-  //   try {
-  //     this.onAddWorkout.emit();
-  //   } catch (error) {
-  //     this.errorHandlerService.handleError(
-  //       error,
-  //       "WorkoutComponent.confirmAddWorkout"
-  //     );
-  //   }
-  // }
 
   deleteWorkout() {
     try {
@@ -202,6 +187,17 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       this.errorHandlerService.logError(
         error,
         "WorkoutComponent.deleteWorkout"
+      );
+    }
+  }
+
+  backToList() {
+    try {
+      this.onBackToList.emit();
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "WorkoutComponent.backToList"
       );
     }
   }

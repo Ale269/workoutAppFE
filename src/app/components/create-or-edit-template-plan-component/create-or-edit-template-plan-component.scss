@@ -1,91 +1,158 @@
-.tab-container {
+// Stili per le sezioni e la nuova struttura senza accordion
+
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
   position: relative;
 }
 
-::ng-deep .mat-mdc-option-active span {
-  color: #fff !important;
-}
-::ng-deep .mat-mdc-option {
-  border-bottom: 1px solid #212121;
-}
-::ng-deep .mat-mdc-option .mat-pseudo-checkbox {
-  --mat-pseudo-checkbox-minimal-selected-checkmark-color: #fff !important;
-}
-::ng-deep .mat-mdc-select-panel {
-  border: 1px solid #00ffe1;
-}
-
-mat-form-field {
+.list-view,
+.workout-detail-view {
   width: 100%;
-}
-
-.add-workout-modal-description {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  padding-bottom: 16px;
-}
-
-.content {
-  padding-bottom: 40px;
-}
-
-.nome-scheda-container {
-  padding-bottom: 40px;
 }
 
 .warning-icon {
   width: 40px;
 }
 
-.add-tab-container {
-  position: absolute;
-  top: 12px;
-  left: 0;
-  z-index: 10;
+.add-workout-icon {
+  width: 40px;
 }
 
-.add-tab-container img {
-  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
-    hue-rotate(89deg) brightness(104%) contrast(102%);
-}
-
-.add-tab-trigger {
-  width: 44px;
-  height: 44px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 99;
-}
-
-.swipe-icon-container {
-  position: absolute;
-  top: 14px;
-  right: 0;
-  z-index: 10;
-}
-
-.swipe-icon-container img {
-  width: 18px;
-  filter: brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%)
-    hue-rotate(240deg) brightness(96%) contrast(88%);
-}
-
-.delete-scheda-button-row {
-  margin-top: 16px;
+// Container degli allenamenti
+.workouts-container {
   display: flex;
-  justify-content: flex-start;
-}
-
-.container-switch {
-  padding-bottom: 32px;
+  flex-direction: column;
+  gap: 1rem;
   width: 100%;
 }
 
-.floating-actions-workout{
+.section-dati-scheda-title {
+  padding-bottom: 16px;
+}
+
+.workouts-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+// Card allenamento
+.workout-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(4px);
+  }
+
+  &:active {
+    transform: translateX(2px);
+  }
+}
+
+.workout-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+
+  .workout-name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .arrow-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+}
+
+.workout-card:hover .arrow-icon {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.workout-card-body {
+  .exercise-count {
+    font-size: 0.9rem;
+    opacity: 0.7;
+  }
+}
+
+.add-workout-button-container {
+  margin-top: 1rem;
+
+  button {
+    width: 100%;
+  }
+}
+
+// Vista dettaglio allenamento
+.workout-detail-view {
+  app-workout-component {
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
+.nome-scheda-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.delete-scheda-button-row {
+  display: flex;
+}
+
+.section-workout-container{
+  padding-bottom: 0;
+}
+
+// Warning row per nessun allenamento
+.add-allenamento-button-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 0;
+
+  .warnign-row {
+    text-align: center;
+
+    h3 {
+      opacity: 0.7;
+    }
+  }
+}
+
+// Switch container
+.container-switch {
+  margin-bottom: 2rem;
+}
+
+// Modal body styling
+.add-workout-modal-description {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.workout-name-input-container {
+  width: 100%;
 }
