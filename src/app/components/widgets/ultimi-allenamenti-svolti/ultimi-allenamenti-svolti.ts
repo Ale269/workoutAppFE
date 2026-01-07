@@ -54,8 +54,15 @@ export class UltimiAllenamentiSvolti {
     });
   }
 
-  mostraFunzionalitaInArrivo(): void {
-    alert("Funzionalità in arrivo");
+  NavigaAElencoAllenamentiSchede() {
+    try {
+      this.router.navigate(["/allenamenti-svolti"]);
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "UltimiAllenamentiSvolti.NavigaAElencoAllenamentiSchede"
+      );
+    }
   }
 
   NavigaAElencoTemplateSchede() {

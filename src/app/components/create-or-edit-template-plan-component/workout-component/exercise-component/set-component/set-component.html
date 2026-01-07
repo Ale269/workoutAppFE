@@ -1,43 +1,37 @@
 <form [formGroup]="formSerie.form">
   <div class="titolo-serie-container">
     <div class="numero-serie-container">
-      <h3 class="text-grey">
+      <h3 class="text-white small-text">
         Serie {{this.formSerie.form.controls['ordinamento'].value}}
       </h3>
+    </div>
+    <div class="input-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Reps</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="ripetizioni"
+          placeholder="reps"
+          min="1"
+          max="999"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Kg</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="carico"
+          placeholder="Kg"
+          min="1"
+          max="999"
+        />
+      </mat-form-field>
     </div>
     <div class="delete-icon-element-container">
       <div class="close-icon-trigger" (click)="deleteSerie()"></div>
       <img src="assets/recollect/svg/google-close-icon.svg" />
     </div>
-  </div>
-  <div class="input-row">
-    <mat-form-field
-      appearance="outline"
-      class="full-width"
-    >
-      <mat-label>N° ripetizioni</mat-label>
-      <input
-        matInput
-        type="number"
-        formControlName="ripetizioni"
-        placeholder="ripetizioni"
-        min="1"
-        max="999"
-      />
-    </mat-form-field>
-    <mat-form-field
-      appearance="outline"
-      class="full-width"
-    >
-      <mat-label>Carico</mat-label>
-      <input
-        matInput
-        type="number"
-        formControlName="carico"
-        placeholder="carico"
-        min="1"
-        max="999"
-      />
-    </mat-form-field>
   </div>
 </form>

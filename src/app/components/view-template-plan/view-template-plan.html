@@ -9,7 +9,12 @@
   </div>
 
   <div class="container-switch">
-    <app-switch #IsActiveSwitch [Descrizione]="'Scheda attiva'" [IsActive]="this.scheda.schedaAttiva" (stateChange)="onAttivazioneStateChange($event)"></app-switch>
+    <app-switch
+      #IsActiveSwitch
+      [Descrizione]="'Scheda attiva'"
+      [IsActive]="this.scheda.schedaAttiva"
+      (stateChange)="onAttivazioneStateChange($event)"
+    ></app-switch>
   </div>
 
   <div class="lista-template-schede-container">
@@ -74,15 +79,17 @@
     </div>
   </div>
 
-  <div class="floating-static-button-container">
-      <div class="floating-actions-workout">
-        <button class="floating-static-button" (click)="downloadSchedaExcel()">
-            <span>Download scheda</span>
-        </button>
-        <button class="floating-static-button" (click)="modificaScheda()">
-            <span>Modifica scheda</span>
-        </button>
-      </div>
+  <div class="floating-double-buttons-container">
+    <app-multi-option-button
+      [leftButtonLabel]="''"
+      [leftGroups]="leftButtonOptionsGroup"
+      (optionSelected)="onOptionSelected($event)"
+    >
+      <!-- Il pulsante statico viene proiettato qui -->
+      <button class="floating-static-button" (click)="modificaScheda()">
+        <span>Modifica scheda</span>
+      </button>
+    </app-multi-option-button>
   </div>
 </div>
 

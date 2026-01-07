@@ -14,7 +14,7 @@ import {
   GetDatiAllenamentoResponseModel,
 } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
 import { AllenamentoForm } from "../create-or-edit-template-plan-component/workout-form";
-import { RegistraAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/registra-allenaneto";
+import { RegistraAllenamentoRequestModel, RegistraAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/registra-allenaneto";
 import {
   DeleteDatiAllenamentoRequestModel,
   DeleteDatiAllenamentoResponseModel,
@@ -180,13 +180,14 @@ export class CreateOrEditWorkoutExecutionService {
     });
   }
   
-  async aggiornaAllenamentoSvolo(
+
+  async aggiornaAllenamentoSvolto(
     savePlanRequest: RegistraAllenamentoRequestModel
-  ): Promise<void> {
+  ): Promise<RegistraAllenamentoResponseModel> {
     return new Promise((resolve, reject) => {
       try {
         console.log("AGGIORNO ALLENAMENTO SVOLTO:  ", savePlanRequest)
-        this.workoutService.aggiornaAllenamentoSvolo(savePlanRequest).subscribe({
+        this.workoutService.aggiornaAllenamentoSvolto(savePlanRequest).subscribe({
           next: (response: any) => {
             if (!response.errore?.error) {
               console.log("RESPONSE: ", response)

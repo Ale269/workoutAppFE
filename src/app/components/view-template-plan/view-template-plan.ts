@@ -30,14 +30,13 @@ import {
   AttivaSchedaResponseModel,
 } from "src/app/models/view-modifica-scheda/attivaScheda";
 import { DownloadSchedaRequestModel } from "../../models/view-modifica-scheda/downloadScheda";
-import {
-  SaveDatiTemplateSchedaRequestModel,
-  SaveDatiTemplateSchedaResponseModel,
-} from "../../models/view-modifica-scheda/saveDatiTemplateScheda";
-import { Observable } from "rxjs";
 import { CreateOrEditTemplatePlanService } from "../create-or-edit-template-plan-component/create-or-edit-template-plan-service";
 import { AuthService } from "../../core/services/auth.service";
-import { MultiOptionButton } from "../shared/multi-option-button/multi-option-button";
+import {
+  MultiOptionButton,
+  multiOptionGroup,
+  OptionSelectedEvent,
+} from "../shared/multi-option-button/multi-option-button";
 
 @Component({
   selector: "app-view-template-plan",
@@ -48,7 +47,7 @@ import { MultiOptionButton } from "../shared/multi-option-button/multi-option-bu
     ExerciseIconPipe,
     ExerciseIconColorPipe,
     Switch,
-    MultiOptionButton
+    MultiOptionButton,
   ],
   templateUrl: "./view-template-plan.html",
   styleUrl: "./view-template-plan.scss",
@@ -66,10 +65,28 @@ export class ViewTemplatePlan {
   public scheda!: SchedaDTO;
   public selectedTabIndex: number = 0;
   private currentSpinnerId: string | null = null;
-  private saveSpinnerId: string | null = null;
 
   public LoadingProgressionEnum = LoadingProgression;
   public loadingProgression: LoadingProgression = LoadingProgression.none;
+
+  public leftButtonOptionsGroup: multiOptionGroup[] = [
+    {
+      id: 1,
+      label: "",
+      options: [
+        {
+          optionId: 1,
+          color: " rgba(0, 255, 225, 1)",
+          description: "Download scheda",
+        },
+        {
+          optionId: 2,
+          color: " rgba(0, 255, 225, 1)",
+          description: "Duplica scheda",
+        },
+      ],
+    },
+  ];
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
@@ -439,6 +456,25 @@ export class ViewTemplatePlan {
         },
         error: (error: any) => {},
       });
+    }
+  }
+
+  onOptionSelected(option: OptionSelectedEvent) {
+    switch (option.side) {
+      case "left":
+        switch (option.groupId) {
+          case 1:
+            switch (option.optionId) {
+              case 1:
+                this.downloadSchedaExcel();
+                break;
+              case 2:
+                // this.downloadSchedaExcel();
+                break;
+            }
+            break;
+        }
+        break;
     }
   }
 }

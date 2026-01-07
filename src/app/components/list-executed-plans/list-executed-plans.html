@@ -1,19 +1,19 @@
 <div class="content">
   <div class="section-title-container">
-    <h1 class="text-title">I tuoi template schede</h1>
+    <h1 class="text-title">Lista schede svolte</h1>
   </div>
-  <div class="lista-template-schede-container">
+  <div class="lista-executed-schede-container">
     @for (scheda of listaSchede; track scheda.id; let i = $index) {
     <div class="scheda-wrapper">
       <div
         #schedaCard
-        class="template-scheda"
+        class="executed-scheda"
         (click)="visualizzaDatiScheda(scheda.id)"
       >
         <div class="nome-data-scheda">
           <h3 class="text-white">{{ scheda.nomeScheda }}</h3>
           <h3 class="text-grey">
-            Creata il {{ scheda.dataCreazione | date: "dd/MM/yyyy" }}
+            Creata il {{ scheda.dataAttivazione | date: "dd/MM/yyyy" }}
           </h3>
         </div>
       </div>
@@ -24,21 +24,14 @@
       </div>
     </div>
     } @empty {
-    <h3 class="text-white">Nessuna scheda aggiunta</h3>
+    <h3 class="text-white">Nessuna scheda svolta</h3>
     }
   </div>
 
   <div class="floating-double-buttons-container">
-    <app-multi-option-button
-      [leftButtonLabel]="''"
-      [leftGroups]="leftButtonOptionsGroup"
-      (optionSelected)="onOptionSelected($event)"
-    >
-      <!-- Il pulsante statico viene proiettato qui -->
-      <button class="floating-static-button" (click)="createNewScheda()">
-        <span>Nuova scheda</span>
-      </button>
-    </app-multi-option-button>
+    <button class="floating-static-button" (click)="createNewScheda()">
+      <span>Nuova scheda</span>
+    </button>
   </div>
 </div>
 
@@ -53,7 +46,7 @@
 <!-- Template per il body -->
 <ng-template #bodyDeleteTemplate>
   <h3 class="text-white">
-    Sei sicuro di voler eliminare questo template scheda?
+    Sei sicuro di voler eliminare questa scheda?
   </h3>
   <h3 class="text-white">Questa azione non può essere annullata.</h3>
 </ng-template>
@@ -77,4 +70,3 @@
     </div>
   </button>
 </ng-template>
-

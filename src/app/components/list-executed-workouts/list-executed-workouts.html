@@ -5,46 +5,89 @@
   <div class="lista-template-allenamenti-container">
     @for (allenamentoView of listaAllenamentiSvoltiView; track
     allenamentoView.allenamentoSvolto.id; let i = $index) {
-
-    <div
-      class="allenamento-container"
-      (click)="visualizzaDatiAllenamento(allenamentoView.allenamentoSvolto.id)"
-    >
-      <div class="graphic-data">
-        <div class="giorni-counter-container">
-          <h3 class="text-white small-text">
-            <span>{{allenamentoView.allenamentoSvolto.numeroAllenamento}}</span>
-            /
-            <span
-              >{{allenamentoView.allenamentoSvolto.numeroTotaleAllenamentiScheda}}</span
-            >
-          </h3>
-        </div>
-        <div class="graphic-visualizer-container">
-          <div class="visualizer-allenamento-container">
-            @for (giorno of allenamentoView.giorniArray; track giorno) {
-            <div
-              [ngClass]="{'current-day-visualizer': giorno == allenamentoView.allenamentoSvolto.numeroAllenamento}"
-            ></div>
-            }
+    
+    <!-- Wrapper per swipe -->
+    <div class="allenamento-wrapper">
+      <div
+        #allenamentoCard
+        class="allenamento-container"
+        (click)="visualizzaDatiAllenamento(allenamentoView.allenamentoSvolto.id)"
+      >
+        <div class="graphic-data">
+          <div class="giorni-counter-container">
+            <h3 class="text-white small-text">
+              <span>{{allenamentoView.allenamentoSvolto.numeroAllenamento}}</span>
+              /
+              <span>{{allenamentoView.allenamentoSvolto.numeroTotaleAllenamentiScheda}}</span>
+            </h3>
+          </div>
+          <div class="graphic-visualizer-container">
+            <div class="visualizer-allenamento-container">
+              @for (giorno of allenamentoView.giorniArray; track giorno) {
+              <div
+                [ngClass]="{'current-day-visualizer': giorno == allenamentoView.allenamentoSvolto.numeroAllenamento}"
+              ></div>
+              }
+            </div>
           </div>
         </div>
+        <div class="nome-data-allenamento">
+          <h3 class="text-white">
+            {{ allenamentoView.allenamentoSvolto.nomeAllenamento }}
+          </h3>
+          <h3 class="text-grey">
+            {{ allenamentoView.allenamentoSvolto.nomeScheda }}
+          </h3>
+          <h3 class="text-grey">
+            Svolto il {{ allenamentoView.allenamentoSvolto.dataEsecuzione | date: "dd/MM/yyyy" }}
+          </h3>
+        </div>
       </div>
-      <div class="nome-data-allenamento">
-        <h3 class="text-white">
-          {{ allenamentoView.allenamentoSvolto.nomeAllenamento }}
-        </h3>
-        <h3 class="text-grey">
-          {{ allenamentoView.allenamentoSvolto.nomeScheda }}
-        </h3>
-        <h3 class="text-grey">
-          Svolto il {{ allenamentoView.allenamentoSvolto.dataEsecuzione | date:
-          "dd/MM/yyyy" }}
-        </h3>
+      
+      <!-- Bottone delete che appare con lo swipe -->
+      <div class="delete-action" (click)="openDeleteAllenamento(allenamentoView.allenamentoSvolto.id)">
+        <div class="text-shape-button-icon-container-danger">
+          <img src="assets/recollect/svg/google-delete.svg" />
+        </div>
       </div>
     </div>
+    
     } @empty {
     <h3 class="text-white">Nessun allenamento svolto</h3>
     }
   </div>
 </div>
+
+<!-- Templates per la modale di conferma eliminazione -->
+<ng-template #headerDeleteTemplate>
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
+</ng-template>
+
+<ng-template #bodyDeleteTemplate>
+  <h3 class="text-white">
+    Sei sicuro di voler eliminare questo allenamento?
+  </h3>
+  <h3 class="text-white">Questa azione non può essere annullata.</h3>
+</ng-template>
+
+<ng-template #footerCloseDeleteTemplate>
+  <button class="text-shape-button-cancel">
+    <span>Annulla</span>
+    <div class="text-shape-button-icon-container-cancel">
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<ng-template #footerConfirmDeleteTemplate>
+  <button class="text-shape-button-danger">
+    <span>Elimina</span>
+    <div class="text-shape-button-icon-container-danger">
+      <img src="assets/recollect/svg/google-delete.svg" />
+    </div>
+  </button>
+</ng-template>

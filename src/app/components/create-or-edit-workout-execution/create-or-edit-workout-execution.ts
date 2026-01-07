@@ -77,40 +77,6 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   // Definisci le opzioni del pulsante
   public rightButtonOptionsGroup: multiOptionGroup[] = [];
-  public leftButtonOptionsGroup: multiOptionGroup[] = [
-    {
-      id: 1,
-      label: "",
-      options: [
-        {
-          description: "Duplica",
-          optionId: 1,
-          color: " rgba(0, 255, 225, 1)",
-        },
-        {
-          description: "Importa",
-          optionId: 2,
-          color: " rgba(0, 255, 225, 1)",
-        },
-        {
-          description: "Esporta",
-          optionId: 3,
-          color: " rgba(0, 255, 225, 1)",
-        },
-      ],
-    },
-    {
-      id: 2,
-      label: "",
-      options: [
-        {
-          description: "Elimina",
-          optionId: 2,
-          color: " rgba(0, 255, 225, 1)",
-        },
-      ],
-    },
-  ];
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
@@ -408,28 +374,20 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   onOptionSelected(option: OptionSelectedEvent) {
     switch (option.side) {
-      case "left":
-        this.idTemplateAllenamento = option.id;
-        this.createOrEditWorkoutExecutionService.resetData();
-        this.initializeWorkout();
+      case "right":
+        switch (option.groupId) {
+          case 1:
+            this.idTemplateAllenamento = option.optionId;
+            this.createOrEditWorkoutExecutionService.resetData();
+            this.initializeWorkout();
+            break;
+        }
         break;
     }
   }
 
   registraAllenamento() {
     try {
-      // Mostra lo spinner di salvataggio
-      this.saveSpinnerId = this.spinnerService.showWithResult(
-        "Salvataggio in corso",
-        {
-          forceShow: true,
-          successMessage: "Salvataggio completato con successo",
-          errorMessage: "Errore durante il salvataggio",
-          resultDuration: 500,
-          minSpinnerDuration: 500,
-        }
-      );
-
       let allenamentoForm: AllenamentoFormDTO =
         this.createOrEditWorkoutExecutionService.AllenamentoForm.getDatiAllenamentoDaSalvare();
 
@@ -445,33 +403,61 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         };
 
         if (allenamentoDaSalvare) {
-          if (this.createOrEdit === createOrEdit.edit){
+          if (this.createOrEdit === createOrEdit.edit) {
+            // Mostra lo spinner di salvataggio
+            this.saveSpinnerId = this.spinnerService.showWithResult(
+              "Salvataggio in corso",
+              {
+                forceShow: true,
+                successMessage: "Salvataggio completato con successo",
+                errorMessage: "Errore durante il salvataggio",
+                resultDuration: 2000,
+                minSpinnerDuration: 500,
+              }
+            );
+
             this.createOrEditWorkoutExecutionService
-            .aggiornaAllenamentoSvolo(registraAllenamentoRequest)
-            .then((response) => {
-              if (this.saveSpinnerId) {
-                this.spinnerService.setSuccess(this.saveSpinnerId);
-              }
-              this.router.navigate(["/home"]);
-            })
-            .catch((error) => {
-              if (this.saveSpinnerId) {
-                this.spinnerService.setError(
-                  this.saveSpinnerId,
-                  "Errore nella fase di salvataggio"
+              .aggiornaAllenamentoSvolto(registraAllenamentoRequest)
+              .then(async (response) => {
+                if (this.saveSpinnerId) {
+                  await this.spinnerService.setSuccess(this.saveSpinnerId);
+                }
+
+                this.idAllenamento = response.allenamentoCorrente.id;
+                this.allenamentoDTO = response.allenamentoCorrente;
+                this.initializeWorkout();
+              })
+              .catch((error) => {
+                if (this.saveSpinnerId) {
+                  this.spinnerService.setError(
+                    this.saveSpinnerId,
+                    "Errore nella fase di salvataggio"
+                  );
+                }
+                this.errorHandlerService.logError(
+                  error,
+                  "CreateOrEditWorkoutExecution.registraAllenamento"
                 );
+              });
+          } else {
+            // Mostra lo spinner di salvataggio
+            this.saveSpinnerId = this.spinnerService.showWithResult(
+              "Salvataggio in corso",
+              {
+                forceShow: true,
+                successMessage:
+                  "Salvataggio completato con successo, redirect a home",
+                errorMessage: "Errore durante il salvataggio",
+                resultDuration: 3000,
+                minSpinnerDuration: 500,
               }
-              this.errorHandlerService.logError(
-                error,
-                "CreateOrEditWorkoutExecution.registraAllenamento"
-              );
-            });
-          }else{
+            );
+
             this.createOrEditWorkoutExecutionService
               .registraAllenamento(registraAllenamentoRequest)
-              .then((response) => {
+              .then(async (response) => {
                 if (this.saveSpinnerId) {
-                  this.spinnerService.setSuccess(this.saveSpinnerId);
+                  await this.spinnerService.setSuccess(this.saveSpinnerId);
                 }
                 this.router.navigate(["/home"]);
               })
@@ -487,7 +473,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                   "CreateOrEditWorkoutExecution.registraAllenamento"
                 );
               });
-            }
+          }
         }
       }
     } catch (error) {

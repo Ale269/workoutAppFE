@@ -28,6 +28,7 @@ import {
 } from "../../models/view-modifica-allenamento-svolto/registra-allenaneto";
 import { AttivaSchedaRequestModel, AttivaSchedaResponseModel } from "src/app/models/view-modifica-scheda/attivaScheda";
 import {DownloadSchedaRequestModel} from "../../models/view-modifica-scheda/downloadScheda";
+import { GetListaSchedeSvolteRequestModel, GetListaSchedeSvolteResponseModel } from "src/app/models/lista-schede-svolte/get-lista-schede-svolte";
 
 @Injectable({
   providedIn: "root",
@@ -152,7 +153,7 @@ export class WorkoutService {
     );
   }
   
-  aggiornaAllenamentoSvolo(
+  aggiornaAllenamentoSvolto(
     request: RegistraAllenamentoRequestModel
   ): Observable<RegistraAllenamentoResponseModel> {
     return this.apiCatalogService.executeApiCall(
@@ -201,6 +202,17 @@ export class WorkoutService {
       "exportWorkout",
       request,
       undefined
+    );
+  }
+
+  getListaSchedeSvolte(
+    request: GetListaSchedeSvolteRequestModel
+  ): Observable<GetListaSchedeSvolteResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "workout",
+      "getSchedeSvolte",
+      request,
+      null
     );
   }
 

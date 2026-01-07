@@ -1,16 +1,16 @@
-.lista-template-allenamenti-container {
+.lista-executed-schede-container {
   display: flex;
   flex-flow: column;
   gap: 8px;
 }
 
-.allenamento-wrapper {
+.scheda-wrapper {
   position: relative;
   overflow: hidden;
-  touch-action: pan-y;
+  touch-action: pan-y; 
 }
 
-.allenamento-container {
+.executed-scheda {
   position: relative;
   display: flex;
   padding: 16px;
@@ -19,50 +19,25 @@
   gap: 16px;
   background-color: #000;
   cursor: pointer;
-  user-select: none;
+  user-select: none; 
   -webkit-user-select: none;
 }
 
-.allenamento-container:first-of-type {
+.executed-scheda:first-of-type {
   border-top: 1px solid #212121;
 }
 
-.nome-data-allenamento {
+.naviga-scheda-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.nome-data-scheda {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.graphic-data {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
-.graphic-visualizer-container {
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-}
-
-.visualizer-allenamento-container {
   flex: 1;
-  display: flex;
-  flex-flow: column;
-  align-items: flex-end;
-  height: 100%;
-
-  div {
-    flex: 1;
-    width: 2px;
-    background-color: #fff;
-    border-radius: 16px;
-  }
-
-  .current-day-visualizer {
-    width: 8px;
-  }
 }
 
 .delete-action {
@@ -85,10 +60,10 @@
   border: 1px solid #970000;
 
   opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
+  visibility: hidden; 
+  pointer-events: none; 
   cursor: pointer;
-  z-index: 10;
+  z-index: 10; 
 
   svg {
     color: #ffffff;

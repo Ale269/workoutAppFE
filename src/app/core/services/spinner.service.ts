@@ -1,4 +1,4 @@
-// spinner.service.ts - Versione migliorata
+// spinner.service.ts - Versione con forceShow corretto
 import { Injectable, signal } from '@angular/core';
 
 export enum SpinnerResult {
@@ -19,8 +19,8 @@ export interface SpinnerConfig {
   showFinalResult?: boolean;
   resultDuration?: number;
   minSpinnerDuration?: number;
-  startTime?: number; // Nuovo campo per tracciare quando inizia
-  forceShow?: boolean;
+  startTime?: number;
+  forceShow?: boolean; // Se true, garantisce visibilità minima
 }
 
 @Injectable({
@@ -39,7 +39,8 @@ export class SpinnerService {
     infoMessage: "Informazione: operazione completata",
     showFinalResult: false,
     resultDuration: 2000,
-    minSpinnerDuration: 800
+    minSpinnerDuration: 800,
+    forceShow: false
   };
 
   /**
@@ -51,13 +52,10 @@ export class SpinnerService {
       ...this.defaultConfig,
       ...config,
       id,
-      startTime: Date.now() // Salva quando inizia lo spinner
+      startTime: Date.now()
     };
 
-    // Rimuovi eventuali spinner esistenti con lo stesso ID
     this.hide(id);
-    
-    // Aggiungi il nuovo spinner
     this._spinners.update(spinners => [...spinners, fullConfig]);
     
     return id;
@@ -118,7 +116,7 @@ export class SpinnerService {
   }
 
   /**
-   * Metodi di convenienza per mostrare spinner con risultati predefiniti
+   * Metodi di convenienza per mostrare spinner
    */
   showLoading(message: string, id?: string): string {
     return this.show({
@@ -135,8 +133,8 @@ export class SpinnerService {
     warningMessage?: string;
     infoMessage?: string;
     resultDuration?: number;
-    forceShow?: true;
     minSpinnerDuration?: number;
+    forceShow?: boolean;
   }): string {
     return this.show({
       ...config,
@@ -146,113 +144,116 @@ export class SpinnerService {
   }
 
   /**
-   * Metodi per impostare il risultato di uno spinner esistente
+   * Imposta il risultato di uno spinner esistente (versione base sincrona)
    */
   setResult(id: string, result: SpinnerResult): boolean {
     return this.update(id, { result });
   }
 
-  // NUOVI METODI CON GESTIONE AUTOMATICA DEI TIMING
+  // ============================================================
+  // METODI PRINCIPALI - Gestiscono timing e nascondimento automatico
+  // ============================================================
 
   /**
-   * Imposta il successo rispettando automaticamente il minSpinnerDuration
+   * Imposta il successo con gestione completa del timing
+   * @returns Promise che si risolve quando lo spinner è completamente nascosto
    */
-  setSuccessSmart(id: string, message?: string): Promise<boolean> {
-    return this.setResultSmart(id, SpinnerResult.SUCCESS, message);
+  async setSuccess(id: string, message?: string): Promise<boolean> {
+    return this.setResultWithTiming(id, SpinnerResult.SUCCESS, message);
   }
 
   /**
-   * Imposta l'errore rispettando automaticamente il minSpinnerDuration
+   * Imposta l'errore con gestione completa del timing
+   * @returns Promise che si risolve quando lo spinner è completamente nascosto
    */
-  setErrorSmart(id: string, message?: string): Promise<boolean> {
-    return this.setResultSmart(id, SpinnerResult.ERROR, message);
+  async setError(id: string, message?: string): Promise<boolean> {
+    return this.setResultWithTiming(id, SpinnerResult.ERROR, message);
   }
 
   /**
-   * Imposta il warning rispettando automaticamente il minSpinnerDuration
+   * Imposta il warning con gestione completa del timing
+   * @returns Promise che si risolve quando lo spinner è completamente nascosto
    */
-  setWarningSmart(id: string, message?: string): Promise<boolean> {
-    return this.setResultSmart(id, SpinnerResult.WARNING, message);
+  async setWarning(id: string, message?: string): Promise<boolean> {
+    return this.setResultWithTiming(id, SpinnerResult.WARNING, message);
   }
 
   /**
-   * Imposta l'info rispettando automaticamente il minSpinnerDuration
+   * Imposta l'info con gestione completa del timing
+   * @returns Promise che si risolve quando lo spinner è completamente nascosto
    */
-  setInfoSmart(id: string, message?: string): Promise<boolean> {
-    return this.setResultSmart(id, SpinnerResult.INFO, message);
+  async setInfo(id: string, message?: string): Promise<boolean> {
+    return this.setResultWithTiming(id, SpinnerResult.INFO, message);
   }
 
   /**
-   * Metodo privato che gestisce il timing automaticamente
+   * Metodo centrale che gestisce:
+   * 1. Attesa minSpinnerDuration (SE forceShow è true)
+   * 2. Impostazione del risultato
+   * 3. Attesa resultDuration (se showFinalResult è true)
+   * 4. Nascondimento automatico dello spinner
    */
-  private setResultSmart(id: string, result: SpinnerResult, message?: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      const spinner = this.getSpinner(id);
-      if (!spinner) {
-        resolve(false);
-        return;
-      }
+  private async setResultWithTiming(
+    id: string, 
+    result: SpinnerResult, 
+    message?: string
+  ): Promise<boolean> {
+    const spinner = this.getSpinner(id);
+    if (!spinner) {
+      return false;
+    }
 
+    // 1. Se forceShow è true, garantisci che lo spinner sia visibile per minSpinnerDuration
+    if (spinner.forceShow) {
       const elapsedTime = Date.now() - (spinner.startTime || 0);
       const minDuration = spinner.minSpinnerDuration || 800;
       const waitTime = Math.max(0, minDuration - elapsedTime);
 
-      const updateSpinner = () => {
-        const updates: Partial<SpinnerConfig> = { result };
-        
-        // Aggiungi il messaggio personalizzato se fornito
-        switch (result) {
-          case SpinnerResult.SUCCESS:
-            if (message) updates.successMessage = message;
-            break;
-          case SpinnerResult.ERROR:
-            if (message) updates.errorMessage = message;
-            break;
-          case SpinnerResult.WARNING:
-            if (message) updates.warningMessage = message;
-            break;
-          case SpinnerResult.INFO:
-            if (message) updates.infoMessage = message;
-            break;
-        }
-
-        const success = this.update(id, updates);
-        resolve(success);
-      };
-
       if (waitTime > 0) {
-        // Aspetta il tempo rimanente prima di impostare il risultato
-        setTimeout(updateSpinner, waitTime);
-      } else {
-        // Imposta immediatamente il risultato
-        updateSpinner();
+        await this.delay(waitTime);
       }
-    });
+    }
+
+    // 2. Imposta il risultato
+    const updates: Partial<SpinnerConfig> = { result };
+    
+    switch (result) {
+      case SpinnerResult.SUCCESS:
+        if (message) updates.successMessage = message;
+        break;
+      case SpinnerResult.ERROR:
+        if (message) updates.errorMessage = message;
+        break;
+      case SpinnerResult.WARNING:
+        if (message) updates.warningMessage = message;
+        break;
+      case SpinnerResult.INFO:
+        if (message) updates.infoMessage = message;
+        break;
+    }
+
+    const updateSuccess = this.update(id, updates);
+    if (!updateSuccess) {
+      return false;
+    }
+
+    // 3. Se showFinalResult è true, mostra il risultato per resultDuration
+    if (spinner.showFinalResult) {
+      const resultDuration = spinner.resultDuration || 2000;
+      await this.delay(resultDuration);
+    }
+
+    // 4. Nascondi lo spinner
+    this.hide(id);
+
+    return true;
   }
 
-  // Metodi legacy (mantieni per retrocompatibilità)
-  setSuccess(id: string, message?: string): boolean {
-    const updates: Partial<SpinnerConfig> = { result: SpinnerResult.SUCCESS };
-    if (message) updates.successMessage = message;
-    return this.update(id, updates);
-  }
-
-  setError(id: string, message?: string): boolean {
-    const updates: Partial<SpinnerConfig> = { result: SpinnerResult.ERROR };
-    if (message) updates.errorMessage = message;
-    return this.update(id, updates);
-  }
-
-  setWarning(id: string, message?: string): boolean {
-    const updates: Partial<SpinnerConfig> = { result: SpinnerResult.WARNING };
-    if (message) updates.warningMessage = message;
-    return this.update(id, updates);
-  }
-
-  setInfo(id: string, message?: string): boolean {
-    const updates: Partial<SpinnerConfig> = { result: SpinnerResult.INFO };
-    if (message) updates.infoMessage = message;
-    return this.update(id, updates);
+  /**
+   * Helper per creare delay
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   private generateId(): string {

@@ -113,6 +113,14 @@
         "description": "Download scheda di un utente",
         "isMocked": false
       }
+      ,
+      {
+        "name": "getSchedeSvolte",
+        "endpoint": "/workout/templates/:userId",
+        "method": "get",
+        "description": "Recupera tutte le schede svolte di un utente",
+        "isMocked": true
+      }
     ],
     "training": [
       {

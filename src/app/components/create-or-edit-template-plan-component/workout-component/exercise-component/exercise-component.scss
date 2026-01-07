@@ -1,8 +1,41 @@
+@use "@angular/material" as mat;
+
 .exercise-container {
   border-radius: 24px;
-  background-color: #0C0C0C;
-  border: 1px solid #212121;
+  background-color: #0c0c0c;
+  // border: 1px solid #212121;
   padding: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.exercise-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+  padding: 1px;
+
+  background: radial-gradient(
+      circle at top left,
+      #515151,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      #515151,
+      transparent 60%
+    );
+
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  transition: opacity 0.3s ease;
 }
 
 .input-row {
@@ -29,13 +62,17 @@ app-gym-exercise-selector {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 app-set-component {
   display: block;
-  border-bottom: 1px solid #212121;
   padding: 16px 0 0 0;
+}
+
+app-set-component:last-of-type {
+  border-bottom: 1px solid #212121;
+  padding: 16px 0 16px 0;
 }
 
 app-set-component:first-of-type {
@@ -49,7 +86,7 @@ app-set-component:first-of-type {
 }
 
 .icona-numero-esercizio-container img {
-  width: 40px;
+  width: 24px;
 }
 
 .warning-icon {
@@ -85,16 +122,25 @@ mat-form-field {
 .add-serie-button-row {
   display: flex;
   justify-content: flex-end;
-  padding-top: 32px;
-  padding-bottom: 16px;
+  padding-top: 16px;
 }
 
 .circle-icon {
   border: 1px solid #fff;
-  width: 50px;
-  height: 50px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
+// .exercise-container {
+//   @include mat.form-field-overrides(
+//     (
+//       container-vertical-padding: 4px,
+//       container-height: 32px
+//     )
+//   );
+
+// }

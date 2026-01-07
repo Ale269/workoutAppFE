@@ -1,57 +1,23 @@
-// list-template-plans.component.ts
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  QueryList,
-  ViewChildren,
-  ElementRef,
-  TemplateRef,
-  ViewChild,
-} from "@angular/core";
+import { Component, ElementRef, QueryList, TemplateRef, ViewChild, ViewChildren } from "@angular/core";
+import { Router } from "@angular/router";
+import { AuthService } from "src/app/core/services/auth.service";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
-import { SchedaListaDTO } from "src/app/models/lista-template-schede/schedalistadto";
-import { CommonModule } from "@angular/common";
+import { ModalService } from "src/app/core/services/modal.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { WorkoutService } from "src/app/core/services/workout.service";
-import { AuthService } from "src/app/core/services/auth.service";
-import {
-  GetListaTemplatesSchedaRequestModel,
-  GetListaTemplatesSchedaResponseModel,
-} from "src/app/models/lista-template-schede/get-lista-templates-schede";
-import { Router } from "@angular/router";
-import { ReactiveFormsModule } from "@angular/forms";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { ModalService } from "src/app/core/services/modal.service";
-import gsap from "gsap";
-import { Draggable } from "gsap/Draggable";
-import {
-  DeleteDatiTemplateSchedaRequestModel,
-  DeleteDatiTemplateSchedaResponseModel,
-} from "src/app/models/view-modifica-scheda/deleteDatiTemplateScheda";
-import {
-  MultiOptionButton,
-  multiOptionGroup,
-  OptionSelectedEvent,
-} from "../shared/multi-option-button/multi-option-button";
-
-// Registra il plugin Draggable
-gsap.registerPlugin(Draggable);
+import { SchedaListaDTO } from "src/app/models/lista-schede-svolte/schedalistadto";
+import { DeleteDatiTemplateSchedaRequestModel, DeleteDatiTemplateSchedaResponseModel } from "src/app/models/view-modifica-scheda/deleteDatiTemplateScheda";
+import { multiOptionGroup, OptionSelectedEvent } from "../shared/multi-option-button/multi-option-button";
+import { CommonModule } from "@angular/common";
+import { GetListaSchedeSvolteRequestModel, GetListaSchedeSvolteResponseModel } from "src/app/models/lista-schede-svolte/get-lista-schede-svolte";
 
 @Component({
-  selector: "app-list-template-plans",
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MultiOptionButton,
-  ],
-  templateUrl: "./list-template-plans.html",
-  styleUrl: "./list-template-plans.scss",
+  selector: "app-list-executed-plans",
+  imports: [CommonModule],
+  templateUrl: "./list-executed-plans.html",
+  styleUrl: "./list-executed-plans.scss",
 })
-export class ListTemplatePlans implements OnInit, AfterViewInit {
+export class ListExecutedPlans {
   @ViewChildren("schedaCard") schedaCards!: QueryList<ElementRef>;
   @ViewChild("headerDeleteTemplate") headerDeleteTemplate!: TemplateRef<any>;
   @ViewChild("bodyDeleteTemplate") bodyDeleteTemplate!: TemplateRef<any>;
@@ -97,16 +63,16 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     try {
       this.Initialize();
     } catch (error) {
-      this.errorHandlerService.logError(error, "ListTemplatePlans.ngOnInit");
+      this.errorHandlerService.logError(error, "ListExecutedPlans.ngOnInit");
     }
   }
 
   Initialize() {
     try {
       this.listaSchede = [];
-      this.getListaTemplateSchede();
+      this.getListaSchedeSvolte();
     } catch (error) {
-      this.errorHandlerService.logError(error, "ListTemplatePlans.Initialize");
+      this.errorHandlerService.logError(error, "ListExecutedPlans.Initialize");
     }
   }
 
@@ -224,7 +190,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.initializeSwipe"
+        "ListExecutedPlans.initializeSwipe"
       );
     }
   }
@@ -262,7 +228,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     });
   }
 
-  getListaTemplateSchede() {
+  getListaSchedeSvolte() {
     try {
       this.currentSpinnerId = this.spinnerService.showWithResult(
         "Recupero dati schede",
@@ -277,12 +243,12 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
       const user = this.authService.getCurrentUser();
 
       if (user) {
-        const request: GetListaTemplatesSchedaRequestModel = {
+        const request: GetListaSchedeSvolteRequestModel = {
           userId: user.userId,
         };
 
-        this.workoutService.getListaTemplatesScheda(request).subscribe({
-          next: (response: GetListaTemplatesSchedaResponseModel) => {
+        this.workoutService.getListaSchedeSvolte(request).subscribe({
+          next: (response: GetListaSchedeSvolteResponseModel) => {
             if (!response.errore?.error) {
               if (response.listaSchedeDTO) {
                 this.listaSchede = response.listaSchedeDTO;
@@ -295,7 +261,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
                 }
                 this.errorHandlerService.logError(
                   response.errore.error,
-                  "ListTemplatePlans.getListaTemplateSchede"
+                  "ListExecutedPlans.getListaSchedeSvolte"
                 );
               }
             } else {
@@ -304,7 +270,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
               }
               this.errorHandlerService.logError(
                 response.errore.error,
-                "ListTemplatePlans.getListaTemplateSchede"
+                "ListExecutedPlans.getListaSchedeSvolte"
               );
             }
           },
@@ -314,13 +280,13 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
             }
             this.errorHandlerService.logError(
               error,
-              "ListTemplatePlans.getListaTemplateSchede"
+              "ListExecutedPlans.getListaSchedeSvolte"
             );
           },
         });
       } else {
         throw new Error(
-          "ListTemplatePlans.addEsercizioForm: " + "nessun user trovato"
+          "ListExecutedPlans.getListaSchedeSvolte: " + "nessun user trovato"
         );
       }
     } catch (error) {
@@ -329,7 +295,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
       }
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.getListaTemplateSchede"
+        "ListExecutedPlans.getListaSchedeSvolte"
       );
     }
   }
@@ -341,7 +307,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.VisualizzaDatiScheda"
+        "ListExecutedPlans.VisualizzaDatiScheda"
       );
     }
   }
@@ -352,38 +318,9 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.VisualizzaDatiScheda"
+        "ListExecutedPlans.VisualizzaDatiScheda"
       );
     }
-  }
-
-  guidaImportScheda() {
-    this.workoutService.getGuidaImport().subscribe({
-      next: (response: any) => {
-        if (response instanceof Blob) {
-          const blob = new Blob([response], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          });
-          const url = window.URL.createObjectURL(blob);
-
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = "GuidaImportSchedaExcel.xlsx";
-          link.click();
-          window.URL.revokeObjectURL(url);
-        }
-      },
-      error: (error: any) => {
-        this.errorHandlerService.logError(
-          error,
-          "ListTemplatePlans.guidaImportScheda"
-        );
-      },
-    });
-  }
-
-  importScheda() {
-    this.workoutService.importaScheda();
   }
 
   openDeleteScheda(idScheda: number) {
@@ -399,93 +336,74 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.openDeleteScheda"
+        "ListExecutedPlans.openDeleteScheda"
       );
     }
   }
 
   eliminaScheda(idScheda: number) {
-    try {
-      // Mostra lo spinner di inizializzazione
-      this.currentSpinnerId = this.spinnerService.showWithResult(
-        "Elimino dati scheda",
-        {
-          forceShow: true,
-          successMessage: "Scheda eliminata con successo",
-          errorMessage: "Errore nell'eliminare la scheda",
-          resultDuration: 250,
-          minSpinnerDuration: 250,
-        }
-      );
+    // try {
+    //   // Mostra lo spinner di inizializzazione
+    //   this.currentSpinnerId = this.spinnerService.showWithResult(
+    //     "Elimino dati scheda",
+    //     {
+    //       forceShow: true,
+    //       successMessage: "Scheda eliminata con successo",
+    //       errorMessage: "Errore nell'eliminare la scheda",
+    //       resultDuration: 250,
+    //       minSpinnerDuration: 250,
+    //     }
+    //   );
 
-      if (idScheda !== null && idScheda > 0) {
-        const request: DeleteDatiTemplateSchedaRequestModel = {
-          workoutId: idScheda,
-        };
+    //   if (idScheda !== null && idScheda > 0) {
+    //     const request: DeleteDatiTemplateSchedaRequestModel = {
+    //       workoutId: idScheda,
+    //     };
 
-        this.workoutService.deleteTemplateScheda(request).subscribe({
-          next: (response: DeleteDatiTemplateSchedaResponseModel) => {
-            if (!response.errore?.error) {
-              if (this.currentSpinnerId) {
-                this.spinnerService.setSuccess(this.currentSpinnerId);
-              }
-              this.Initialize();
-            } else {
-              if (this.currentSpinnerId) {
-                this.spinnerService.setError(this.currentSpinnerId);
-              }
-              this.errorHandlerService.logError(
-                response.errore.error,
-                "ListTemplatePlans.eliminaScheda"
-              );
-            }
-          },
-          error: (error) => {
-            if (this.currentSpinnerId) {
-              this.spinnerService.setError(this.currentSpinnerId);
-            }
-            this.errorHandlerService.logError(
-              error,
-              "ListTemplatePlans.eliminaScheda"
-            );
-          },
-        });
-      } else {
-        if (this.currentSpinnerId) {
-          this.spinnerService.setError(this.currentSpinnerId);
-        }
-        this.errorHandlerService.logError(
-          "Nessuna scheda trovata: ",
-          "ListTemplatePlans.eliminaScheda"
-        );
-      }
-    } catch (error) {
-      if (this.currentSpinnerId) {
-        this.spinnerService.setError(this.currentSpinnerId);
-      }
-      this.errorHandlerService.logError(
-        error,
-        "ListTemplatePlans.eliminaScheda"
-      );
-    }
-  }
-
-  onOptionSelected(option: OptionSelectedEvent) {
-    switch (option.side) {
-      case "left":
-        switch (option.groupId) {
-          case 1:
-            switch (option.optionId) {
-              case 1:
-                this.importScheda();
-                break;
-              case 2:
-                this.guidaImportScheda();
-                break;
-            }
-            break;
-        }
-        break;
-    }
+    //     this.workoutService.deleteTemplateScheda(request).subscribe({
+    //       next: (response: DeleteDatiTemplateSchedaResponseModel) => {
+    //         if (!response.errore?.error) {
+    //           if (this.currentSpinnerId) {
+    //             this.spinnerService.setSuccess(this.currentSpinnerId);
+    //           }
+    //           this.Initialize();
+    //         } else {
+    //           if (this.currentSpinnerId) {
+    //             this.spinnerService.setError(this.currentSpinnerId);
+    //           }
+    //           this.errorHandlerService.logError(
+    //             response.errore.error,
+    //             "ListExecutedPlans.eliminaScheda"
+    //           );
+    //         }
+    //       },
+    //       error: (error) => {
+    //         if (this.currentSpinnerId) {
+    //           this.spinnerService.setError(this.currentSpinnerId);
+    //         }
+    //         this.errorHandlerService.logError(
+    //           error,
+    //           "ListExecutedPlans.eliminaScheda"
+    //         );
+    //       },
+    //     });
+    //   } else {
+    //     if (this.currentSpinnerId) {
+    //       this.spinnerService.setError(this.currentSpinnerId);
+    //     }
+    //     this.errorHandlerService.logError(
+    //       "Nessuna scheda trovata: ",
+    //       "ListExecutedPlans.eliminaScheda"
+    //     );
+    //   }
+    // } catch (error) {
+    //   if (this.currentSpinnerId) {
+    //     this.spinnerService.setError(this.currentSpinnerId);
+    //   }
+    //   this.errorHandlerService.logError(
+    //     error,
+    //     "ListExecutedPlans.eliminaScheda"
+    //   );
+    // }
   }
 }

@@ -114,12 +114,6 @@
           </form>
   <div class="floating-static-button-container">
       <div class="floating-actions-workout">
-        @if(!isNuovaScheda){  
-          <button class="floating-static-button" (click)="savePlan(0)">
-            <span>Duplica scheda</span>
-          </button>
-        }
-
         <button
           class="floating-static-button"
           [class.button-disabled]="!createOrEditTemplatePlanService.formScheda.form.valid"

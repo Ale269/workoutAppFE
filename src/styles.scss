@@ -284,6 +284,10 @@ body.no-scroll {
     hue-rotate(162deg) brightness(92%) contrast(96%);
 }
 
+.small-text {
+  font-size: 10px;
+}
+
 .close-icon-trigger {
   width: 44px;
   height: 44px;
@@ -322,7 +326,6 @@ body.no-scroll {
     hue-rotate(89deg) brightness(104%) contrast(102%);
 }
 
-
 .button-disabled {
   cursor: not-allowed;
   opacity: 0.5;
@@ -356,6 +359,7 @@ body.no-scroll {
 // Se volessi usare il mixin form-field-overrides per i suoi scopi specifici
 // (es. cambiare colori di disabilitato, ma non font-size/weight generali)
 :root {
+  // Questo purtroppo non basta per gli input perché non c'è un modo diretto di modificare contemporaneamente bordo e backgroudn
   @include mat.form-field-overrides(
     (
       // Esempio: cambia il colore del placeholder quando il campo è disabilitato
@@ -375,14 +379,22 @@ body.no-scroll {
       enabled-select-arrow-color: "#808080",
       outlined-caret-color: "#808080",
       outlined-label-text-color: "#808080",
-      outlined-outline-color: "#808080",
+      outlined-outline-color: "transparent",
       outlined-input-text-color: "#fff",
-      outlined-hover-outline-color: "#fff",
-      outlined-focus-outline-color: "#fff",
+      outlined-hover-outline-color: "rgba(255, 255, 255, 0.1)",
+      outlined-focus-outline-color: "rgba(255, 255, 255, 0.1)",
       outlined-focus-label-text-color: "#808080",
-      outlined-hover-label-text-color: "#808080"
+      outlined-hover-label-text-color: "#808080",
+      container-vertical-padding: 8px,
+      container-height: 40px,
+      outlined-input-text-placeholder-color: "#808080"
     )
   );
+
+  .mat-mdc-text-field-wrapper {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+  }
 }
 
 :root {
@@ -401,6 +413,17 @@ body.no-scroll {
 }
 
 :root {
+  .mat-mdc-icon-button.mat-mdc-button-base {
+    --mdc-icon-button-state-layer-size: 40px;
+    --mat-icon-button-state-layer-size: 40px;
+     padding: 8px;
+  }
+
+  .mat-mdc-icon-button img, .mat-mdc-icon-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
   @include mat.datepicker-overrides(
     (
       calendar-body-label-text-color: #fff,
@@ -417,7 +440,7 @@ body.no-scroll {
       calendar-date-today-outline-color: #212112,
       calendar-date-selected-state-text-color: #000,
       calendar-date-selected-state-background-color: #fff,
-      calendar-date-focus-state-background-color: #212112
+      calendar-date-focus-state-background-color: #212112,
     )
   );
 }

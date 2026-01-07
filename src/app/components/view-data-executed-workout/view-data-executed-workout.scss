@@ -69,6 +69,10 @@
   width: 40px;
 }
 
+.serie-numerator-container {
+  width: 40%;
+}
+
 .exercise-serie-list-container {
   display: flex;
   flex-direction: column;
@@ -78,29 +82,58 @@
 
 .exercise-data-serie-container {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
   border-radius: 8px;
   background-color: #0C0C0C;
-  border: 1px solid #212121;
+  position: relative;
   padding: 16px;
+    z-index: 1;
+}
+
+.exercise-data-serie-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+  padding: 1px;
+
+  background: radial-gradient(
+      circle at top left,
+      #515151,
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      #515151,
+      transparent 20%
+    );
+
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  transition: opacity 0.3s ease;
 }
 
 .serie-data-container {
   display: flex;
+  width: 60%;
   gap: 16px;
 }
 
 .ripetizioni-container {
   display: flex;
   flex: 1;
-  flex-direction: column;
   gap: 8px;
+  width: 50%;
 }
 
 .carico-container {
   display: flex;
   flex: 1;
-  flex-direction: column;
   gap: 8px;
+  width: 50%;
 }

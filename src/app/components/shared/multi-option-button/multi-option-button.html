@@ -40,7 +40,7 @@
           } @for(option of group.options; track option.optionId) {
           <div class="transformed-setting-option-container">
             <button
-              (click)="onOptionClick(option.optionId, 'left')"
+              (click)="onOptionClick(group.id, option.optionId, 'left')"
               [style.color]="option.color"
             >
               <div class="option-content">
@@ -60,12 +60,6 @@
   </div>
 
   <div class="side-wrapper right" #rightWrapper>
-    <div class="static-button" #staticButton>
-      <div class="static-button-container">
-        <ng-content></ng-content>
-      </div>
-    </div>
-
     @if(rightGroups.length > 0) {
     <div
       class="transformation-button right"
@@ -98,7 +92,7 @@
           } @for(option of group.options; track option.optionId) {
           <div class="transformed-setting-option-container">
             <button
-              (click)="onOptionClick(option.optionId, 'right')"
+              (click)="onOptionClick(group.id, option.optionId, 'right')"
               [style.color]="option.color"
             >
               <div class="option-content">
@@ -115,5 +109,11 @@
       </div>
     </div>
     }
+
+    <div class="static-button" #staticButton>
+      <div class="static-button-container">
+        <ng-content></ng-content>
+      </div>
+    </div>
   </div>
 </div>

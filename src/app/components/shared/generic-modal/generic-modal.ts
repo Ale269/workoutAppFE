@@ -30,7 +30,7 @@ import { gsap } from "gsap";
     '[style.left]': 'isVisible ? "0" : "auto"',
     '[style.width]': 'isVisible ? "100%" : "auto"',
     '[style.height]': 'isVisible ? "100%" : "auto"',
-    '[style.z-index]': 'isVisible ? "9997" : "auto"',
+    '[style.z-index]': 'isVisible ? "9999" : "auto"',
     '[style.pointer-events]': 'isVisible ? "auto" : "none"'
   }
 })

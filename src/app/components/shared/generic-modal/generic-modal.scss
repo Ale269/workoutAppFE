@@ -1,16 +1,20 @@
 .modal-overlay {
-  background-color: #000000c5;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  // Inizia con opacity 0 ma backdrop-filter attivo
+  opacity: 0;
   position: fixed; // ✅ FIXED invece di absolute
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 9998;
+  z-index: 9999;
 }
 
 .modal-container {
   background-color: #000000;
-  position: fixed; // ✅ FIXED invece di absolute  
+  position: fixed; // ✅ FIXED invece di absolute
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -18,7 +22,7 @@
   border-radius: 8px;
   width: 80%;
   // box-shadow: 0 0 400px rgba(0, 255, 225, 0.4);
-  border: 1px solid #00ffe1;
+  border: 1px solid #1c1c1c
 }
 
 .modal-header {
@@ -47,8 +51,4 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 16px;
-}
-
-:host(.modal-warning) .modal-container {
-  border-color: #ff0000 ;
 }
