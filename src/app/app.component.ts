@@ -6,6 +6,7 @@ import {
   AfterViewInit,
   ViewChild,
   effect,
+  inject,
 } from "@angular/core";
 import {
   NavigationEnd,
@@ -14,6 +15,7 @@ import {
 } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { ErrorHandlerService } from "./core/services/error-handler.service";
+import { ExerciseService } from "./core/services/exercise.service";
 import { filter, Subject, takeUntil } from "rxjs";
 import { MenuComponent } from "./components/shared/menu-component/menu-component";
 import { GenericModal } from "./components/shared/generic-modal/generic-modal";
@@ -45,6 +47,15 @@ import { AnimationService } from "./core/services/page-animation-service";
   ],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
+  // Dependency injection tramite inject()
+  private router = inject(Router);
+  private errorHandler = inject(ErrorHandlerService);
+  public modalService = inject(ModalService);
+  public spinnerService = inject(SpinnerService);
+  public bottomSheetService = inject(BottomSheetService);
+  private translate = inject(TranslateService);
+  private animationService = inject(AnimationService);
+
   public MenuIsVisible: boolean = false;
 
   @ViewChild("mainContent") mainContentRef: ElementRef | undefined;
@@ -52,15 +63,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private router: Router,
-    private errorHandler: ErrorHandlerService,
-    public modalService: ModalService,
-    public spinnerService: SpinnerService,
-    public bottomSheetService: BottomSheetService,
-    private translate: TranslateService,
-    private animationService: AnimationService
-  ) {
+  constructor() {
     this.translate.setDefaultLang("it");
 
     // Setup routing events
