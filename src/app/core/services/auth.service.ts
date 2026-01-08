@@ -11,6 +11,7 @@ import {UserModel} from "../../models/user/user-model";
 import {ErrorHandlerService} from "./error-handler.service";
 import {SpinnerService} from "./spinner.service";
 import { tap } from 'rxjs/operators';
+import {ConfigurationService} from "./configuration.service";
 
 @Injectable({
     providedIn: 'root'
@@ -34,7 +35,8 @@ export class AuthService {
         private router: Router,
         private apiCatalogService: ApiCatalogService,
         private errorHandlerService: ErrorHandlerService,
-        private spinnerService: SpinnerService,) {
+        private spinnerService: SpinnerService,
+        private configurationService: ConfigurationService) {
         //bisogna fare chiamata api per recuperare user e allora siamo apposto
         this.loadAuthState();
     }
@@ -49,6 +51,7 @@ export class AuthService {
 
     logout(): void {
          this.clearAuthState();
+         this.configurationService.resetConfigurations();
          this.router.navigate(['/login']);
     }
 
@@ -62,7 +65,7 @@ export class AuthService {
      * @param token
      * @param refreshToken
      */
-    setAuthState(user: UserModel, token: string, refreshToken: string): void {
+    async setAuthState(user: UserModel, token: string, refreshToken: string): Promise<void> {
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('token', token);
         localStorage.setItem('refreshToken', refreshToken);
@@ -75,6 +78,15 @@ export class AuthService {
 
          // Schedule auto-refresh 5 minuti prima della scadenza del token
          this.scheduleTokenRefresh(token);
+
+         // Carica le configurazioni dopo aver impostato lo stato
+         try {
+             await this.configurationService.loadConfigurations();
+         } catch (error) {
+             // Logga ma non blocca - l'utente è autenticato comunque
+             console.error('Errore caricamento configurazioni post-login:', error);
+         }
+
          // Emetti authInitialized dopo aver impostato lo stato e schedulato il refresh
          this.authInitializedSubject.next(true);
     }

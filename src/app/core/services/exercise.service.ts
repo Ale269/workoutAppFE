@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ApiCatalogService } from "./api-catalog.service";
 import { Router } from "@angular/router";
 import { GetAllExerciseTypeResponseModel } from "../../models/exercise/exercise-model";
@@ -18,10 +18,11 @@ export class ExerciseService {
   private muscles: MuscleGroupDTO[] = [];
   private icons: IconExerciseDTO[] = [];
 
+  private apiCatalogService = inject(ApiCatalogService)
+
   constructor(
-    private apiCatalogService: ApiCatalogService
   ) {
-    this.initializeExercises();
+    // initializeExercises() sarà chiamato da ConfigurationService
   }
 
   getExercises(): ExerciseTypeDTO[] | undefined {
@@ -33,6 +34,17 @@ export class ExerciseService {
   }
 
   initializeExercises(): Promise<GetAllExerciseTypeResponseModel> {
+    // Se già caricati, ritorna immediatamente (idempotente)
+    if (this.exercises.length > 0) {
+      return Promise.resolve({
+        exercises: this.exercises,
+        errore: { error: false, codiceErrore: 0, messaggioErrore: '', errorMessage: ''},
+        icons: [],
+        id: '',
+        muscles: []
+      } as GetAllExerciseTypeResponseModel);
+    }
+
     return new Promise((resolve, reject) => {
       // Chiamata diretta senza aspettare authInitialized$
       // A questo punto l'initializer ha già garantito che il token sia valido
@@ -149,6 +161,8 @@ export class ExerciseService {
     }
 
     if (this.exercises.length === 0) {
+      // Con il nuovo pattern questo non dovrebbe succedere, ma teniamo fallback
+      console.warn('ExerciseService: exercises array vuoto - configurazioni non caricate?');
       return "Caricamento...";
     }
 
