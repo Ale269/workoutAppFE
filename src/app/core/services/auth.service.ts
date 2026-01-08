@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable, of, filter, take} from 'rxjs';
+import {BehaviorSubject, Observable, of, filter, take, firstValueFrom} from 'rxjs';
 import { Router } from '@angular/router';
 import {ApiCatalogService} from "./api-catalog.service";
 import { LoginRequestModel, LoginResponseModel } from 'src/app/models/auth/login-model';
@@ -24,9 +24,11 @@ export class AuthService {
          token: null
      });
 
+    private authInitializedSubject = new BehaviorSubject<boolean>(false);
     private currentSpinnerId: string | null = null;
     private refreshTokenTimeout: any = null;
     public authState$ = this.authStateSubject.asObservable();
+    public authInitialized$ = this.authInitializedSubject.asObservable();
 
     constructor(
         private router: Router,
@@ -109,7 +111,11 @@ export class AuthService {
                  });
              } catch (error) {
                  this.clearAuthState();
+                 this.authInitializedSubject.next(true);
              }
+         } else {
+             // Nessun token presente, inizializzazione completata immediatamente
+             this.authInitializedSubject.next(true);
          }
     }
 
@@ -127,6 +133,44 @@ export class AuthService {
 
     getRefreshToken(): string | null {
          return localStorage.getItem('refreshToken');
+    }
+
+    async verifyAndRefreshToken(): Promise<void> {
+        const token = this.getToken();
+        const refreshToken = this.getRefreshToken();
+
+        // Se non c'è token, non c'è nulla da verificare
+        if (!token || !refreshToken) {
+            return;
+        }
+
+        try {
+            // Decodifica il token per controllare la scadenza
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                // Token malformato, prova a refreshare
+                await firstValueFrom(this.refreshAccessToken());
+                return;
+            }
+
+            const payload = JSON.parse(atob(parts[1]));
+            const expiresAt = payload.exp * 1000;
+            const now = Date.now();
+
+            // Se il token è scaduto o sta per scadere (entro 5 minuti), refresha
+            if (now >= expiresAt - (5 * 60 * 1000)) {
+                await firstValueFrom(this.refreshAccessToken());
+            }
+        } catch (error) {
+            // Se qualcosa va storto, prova a refreshare
+            try {
+                await firstValueFrom(this.refreshAccessToken());
+            } catch (refreshError) {
+                // Se anche il refresh fallisce, fai logout
+                this.clearAuthState();
+                throw refreshError;
+            }
+        }
     }
 
     refreshAccessToken(): Observable<RefreshTokenResponseModel> {
@@ -168,46 +212,32 @@ export class AuthService {
         try {
             const parts = token.split('.');
             if (parts.length !== 3) {
-                if (this.getRefreshToken()) {
-                    this.refreshAccessToken().subscribe({
-                        error: () => this.logout()
-                    });
-                } else {
-                    this.logout();
-                }
+                // Token malformato, emetti inizializzazione completata
+                this.authInitializedSubject.next(true);
                 return;
             }
 
             const payload = JSON.parse(atob(parts[1]));
             const expiresAt = payload.exp * 1000;
             const now = Date.now();
+            // Schedula refresh 5 minuti PRIMA della scadenza
             const refreshAt = expiresAt - (5 * 60 * 1000);
             const timeUntilRefresh = refreshAt - now;
 
-            if (timeUntilRefresh <= 0) {
-                if (this.getRefreshToken()) {
+            if (timeUntilRefresh > 0) {
+                // Schedula il refresh automatico
+                this.refreshTokenTimeout = setTimeout(() => {
                     this.refreshAccessToken().subscribe({
                         error: () => this.logout()
                     });
-                } else {
-                    this.logout();
-                }
-                return;
+                }, timeUntilRefresh);
             }
 
-            this.refreshTokenTimeout = setTimeout(() => {
-                this.refreshAccessToken().subscribe({
-                    error: () => this.logout()
-                });
-            }, timeUntilRefresh);
+            // Token valido, inizializzazione completata
+            this.authInitializedSubject.next(true);
         } catch (error) {
-            if (this.getRefreshToken()) {
-                this.refreshAccessToken().subscribe({
-                    error: () => this.logout()
-                });
-            } else {
-                this.logout();
-            }
+            // Se c'è un errore nel parsing, emetti comunque inizializzazione completata
+            this.authInitializedSubject.next(true);
         }
     }
 }
