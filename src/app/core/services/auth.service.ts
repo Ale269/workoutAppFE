@@ -56,6 +56,12 @@ export class AuthService {
         return this.apiCatalogService.executeApiCall('auth','checkUserAuthentication', undefined, undefined);
     }
 
+    /**
+     * Imposta la sessione utente nello storage in caso di variazioni a questa come il login
+     * @param user
+     * @param token
+     * @param refreshToken
+     */
     setAuthState(user: UserModel, token: string, refreshToken: string): void {
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('token', token);
@@ -69,8 +75,14 @@ export class AuthService {
 
          // Schedule auto-refresh 5 minuti prima della scadenza del token
          this.scheduleTokenRefresh(token);
+         // Emetti authInitialized dopo aver impostato lo stato e schedulato il refresh
+         this.authInitializedSubject.next(true);
     }
 
+    /**
+     * Pulisce lo storage dalla sessione utente e disattiva eventuali timeout presenti. 
+     * Da usare in caso di logout o in caso di problemi per pulire
+     */
     private clearAuthState(): void {
          localStorage.removeItem('token');
          localStorage.removeItem('user');
@@ -89,6 +101,10 @@ export class AuthService {
          });
     }
 
+    /**
+     * Verifica iniziale per recuperare la sessione dallo storage.
+     * Non emette authInitialized$ - sarà emesso dopo verifyAndRefreshToken().
+     */
     private loadAuthState(): void {
          const token = localStorage.getItem('token');
          const userStr = localStorage.getItem('user');
@@ -101,22 +117,13 @@ export class AuthService {
                      user: user,
                      token: token
                  });
-
-                 // Aspetta che API Catalog sia disponibile prima di schedulare il refresh
-                 this.apiCatalogService.apiCatalog$.pipe(
-                     filter(catalog => catalog !== null),
-                     take(1)
-                 ).subscribe(() => {
-                     this.scheduleTokenRefresh(token);
-                 });
+                 // scheduleTokenRefresh verrà chiamato dopo verifyAndRefreshToken
              } catch (error) {
                  this.clearAuthState();
-                 this.authInitializedSubject.next(true);
+                 // authInitialized verrà emesso dall'initializer
              }
-         } else {
-             // Nessun token presente, inizializzazione completata immediatamente
-             this.authInitializedSubject.next(true);
          }
+         // authInitialized verrà emesso dall'initializer
     }
 
     isAuthenticated(): boolean {
@@ -139,8 +146,9 @@ export class AuthService {
         const token = this.getToken();
         const refreshToken = this.getRefreshToken();
 
-        // Se non c'è token, non c'è nulla da verificare
+        // Se non c'è token, emetti subito authInitialized
         if (!token || !refreshToken) {
+            this.authInitializedSubject.next(true);
             return;
         }
 
@@ -150,6 +158,7 @@ export class AuthService {
             if (parts.length !== 3) {
                 // Token malformato, prova a refreshare
                 await firstValueFrom(this.refreshAccessToken());
+                this.authInitializedSubject.next(true);
                 return;
             }
 
@@ -159,15 +168,24 @@ export class AuthService {
 
             // Se il token è scaduto o sta per scadere (entro 5 minuti), refresha
             if (now >= expiresAt - (5 * 60 * 1000)) {
+                // Token scaduto o sta per scadere, refresha
                 await firstValueFrom(this.refreshAccessToken());
+            } else {
+                // Token valido, schedula il refresh futuro
+                this.scheduleTokenRefresh(token);
             }
+
+            // Token verificato/refreshato, inizializzazione completata
+            this.authInitializedSubject.next(true);
         } catch (error) {
             // Se qualcosa va storto, prova a refreshare
             try {
                 await firstValueFrom(this.refreshAccessToken());
+                this.authInitializedSubject.next(true);
             } catch (refreshError) {
                 // Se anche il refresh fallisce, fai logout
                 this.clearAuthState();
+                this.authInitializedSubject.next(true);
                 throw refreshError;
             }
         }
@@ -212,8 +230,7 @@ export class AuthService {
         try {
             const parts = token.split('.');
             if (parts.length !== 3) {
-                // Token malformato, emetti inizializzazione completata
-                this.authInitializedSubject.next(true);
+                // Token malformato, non schedulare nulla
                 return;
             }
 
@@ -232,12 +249,8 @@ export class AuthService {
                     });
                 }, timeUntilRefresh);
             }
-
-            // Token valido, inizializzazione completata
-            this.authInitializedSubject.next(true);
         } catch (error) {
-            // Se c'è un errore nel parsing, emetti comunque inizializzazione completata
-            this.authInitializedSubject.next(true);
+            // Ignora errori di parsing - il token potrebbe essere invalido
         }
     }
 }
