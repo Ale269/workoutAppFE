@@ -9,8 +9,6 @@ import {
   MuscleGroupDTO,
 } from "src/app/models/exercise/exercisedto";
 import { getIconPathById } from "src/app/components/enums/exercise-icons";
-import { AuthService } from "./auth.service";
-import { filter, take, switchMap } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -21,8 +19,7 @@ export class ExerciseService {
   private icons: IconExerciseDTO[] = [];
 
   constructor(
-    private apiCatalogService: ApiCatalogService,
-    private authService: AuthService
+    private apiCatalogService: ApiCatalogService
   ) {
     this.initializeExercises();
   }
@@ -37,12 +34,9 @@ export class ExerciseService {
 
   initializeExercises(): Promise<GetAllExerciseTypeResponseModel> {
     return new Promise((resolve, reject) => {
-      // Aspetta che l'autenticazione sia inizializzata prima di fare chiamate
-      this.authService.authInitialized$.pipe(
-        filter(initialized => initialized === true),
-        take(1),
-        switchMap(() => this.getAllExercise())
-      ).subscribe({
+      // Chiamata diretta senza aspettare authInitialized$
+      // A questo punto l'initializer ha già garantito che il token sia valido
+      this.getAllExercise().subscribe({
         next: (response: GetAllExerciseTypeResponseModel) => {
           if (!response.errore.error) {
             this.exercises = response.exercises;

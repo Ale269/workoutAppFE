@@ -1,6 +1,6 @@
 // app.initializer.ts
 import { inject } from '@angular/core';
-import { filter, firstValueFrom, take } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ApiCatalogService } from './app/core/services/api-catalog.service';
 import { ErrorHandlerService } from './app/core/services/error-handler.service';
 import { AuthService } from './app/core/services/auth.service';
@@ -18,15 +18,8 @@ export function initializeApp() {
 
       // Verifica e refresha il token se necessario PRIMA che l'app si avvii
       await authService.verifyAndRefreshToken();
-      
 
-      // Aspetta che l'autenticazione sia completamente inizializzata
-      await firstValueFrom(
-        authService.authInitialized$.pipe(
-          filter(initialized => initialized === true),
-          take(1)
-        )
-      );
+      // Token verificato - l'app può avviarsi
 
     } catch (error) {
       // Non fare throw - lascia l'app avviarsi
