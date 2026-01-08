@@ -35,6 +35,15 @@ export const AuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
                 if (!isAuthenticationEndpoint) {
                     // Token scaduto - prova a fare refresh
                     return authService.refreshAccessToken().pipe(
+                        // Ordine importante:
+                        // 1. Facciamo il catch per il refresh
+                        // 2. Se va tutto a buon fine, allora lanciamo la richiesta originale con il token aggiornato.
+                        catchError((refreshError) => {
+                            
+                            // Refresh fallito - effettua logout
+                            authService.logout();
+                            return throwError(() => refreshError);
+                        }),
                         switchMap((refreshResponse) => {
                             // Refresh riuscito - riprova la richiesta originale con il nuovo token
                             const retryReq = req.clone({
@@ -42,12 +51,7 @@ export const AuthInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
                                     Authorization: `Bearer ${refreshResponse.jwtToken}`
                                 }
                             });
-                            return next(retryReq);
-                        }),
-                        catchError((refreshError) => {
-                            // Refresh fallito - effettua logout
-                            authService.logout();
-                            return throwError(() => refreshError);
+                            return next(retryReq); // Se questa richiesta va in errore, finisce nel flusso normale come errore per il chiamante. 
                         })
                     );
                 }
