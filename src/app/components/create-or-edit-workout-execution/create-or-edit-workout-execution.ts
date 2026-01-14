@@ -31,6 +31,7 @@ import { GetDatiTemplateNuovoAllenamentoRequestModel } from "src/app/models/view
 import { ModalService } from "src/app/core/services/modal.service";
 import { LoadingProgression } from "src/app/models/enums/loading-progression";
 import { DeleteDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
+import {AuthService} from "../../core/services/auth.service";
 
 @Component({
   selector: "app-create-or-edit-workout-execution",
@@ -83,7 +84,8 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     private spinnerService: SpinnerService,
     public createOrEditWorkoutExecutionService: CreateOrEditWorkoutExecutionService,
     private router: Router,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private authService: AuthService
   ) {
     try {
       const navigation = this.router.getCurrentNavigation();
@@ -393,13 +395,15 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
       const allenamentoDaSalvare: AllenamentoDTO | null =
         this.ConvertAllenamentoFormDTOToAllenamentoDTO(allenamentoForm);
-
-      if (allenamentoDaSalvare != null) {
+      
+      const user = this.authService.getCurrentUser();
+      if (allenamentoDaSalvare != null && user!=null) {
         const registraAllenamentoRequest: RegistraAllenamentoRequestModel = {
           dataSvolgimento:
             this.createOrEditWorkoutExecutionService.AllenamentoForm.form
               .controls["dataEsecuzione"].value,
           allenamentoDTO: allenamentoDaSalvare,
+          userId: user.userId,
         };
 
         if (allenamentoDaSalvare) {

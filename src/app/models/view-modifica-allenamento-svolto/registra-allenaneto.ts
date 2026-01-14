@@ -4,6 +4,7 @@ import { AllenamentoDTO } from "./allenamentodto";
 export interface RegistraAllenamentoRequestModel {
   dataSvolgimento : Date;
   allenamentoDTO: AllenamentoDTO;
+  userId: number;
 }
 
 export interface RegistraAllenamentoResponseModel extends BaseResponseModel {
