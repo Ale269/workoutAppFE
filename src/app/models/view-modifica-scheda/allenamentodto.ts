@@ -5,4 +5,5 @@ export interface AllenamentoDTO {
   nomeAllenamento: string;
   ordinamento: number;
   listaEsercizi: EsercizioDTO[];
+  description: string;
 }

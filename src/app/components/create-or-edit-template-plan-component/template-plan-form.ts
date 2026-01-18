@@ -37,7 +37,8 @@ export class SchedaForm {
       dataEsecuzione: null,
       nomeAllenamento: "Giorno 1",
       ordinamento: 1,
-      listaEsercizi: [], // o altri campi necessari per AllenamentoDTO
+      listaEsercizi: [],
+      description: ""
     };
 
     // Aggiunge il primo allenamento con nome di default "Giorno 1"

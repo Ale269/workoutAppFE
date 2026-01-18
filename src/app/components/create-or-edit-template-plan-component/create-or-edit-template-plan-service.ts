@@ -59,6 +59,7 @@ export class CreateOrEditTemplatePlanService {
           listaEsercizi: [],
           nomeAllenamento: allenamento.nomeAllenamento,
           ordinamento: allenamento.ordinamento,
+          description: allenamento.description
         };
         schedaFormDTO.listaAllenamenti.push(allenamentoFormDTO);
 
@@ -66,7 +67,7 @@ export class CreateOrEditTemplatePlanService {
           const esercizioFormDTO: EsercizioFormDTO = {
             id: 0,
             idTemplate: esercizio.id,
-            descrizioneEsercizio: esercizio.descrizioneEsercizio,
+            description: esercizio.description,
             idIconaEsercizio: esercizio.idIconaEsercizio,
             idMetodologia: esercizio.idMetodologia,
             idTipoEsercizio: esercizio.idTipoEsercizio,
@@ -124,7 +125,8 @@ export class CreateOrEditTemplatePlanService {
         dataEsecuzione: null,
         nomeAllenamento: nomeAllenamento || `Giorno ${nextOrdinamento}`,
         ordinamento: nextOrdinamento,
-        listaEsercizi: [], // Lista vuota per un nuovo allenamento
+        listaEsercizi: [],
+        description: ""
       };
 
       // Usa il metodo esistente per aggiungere l'allenamento

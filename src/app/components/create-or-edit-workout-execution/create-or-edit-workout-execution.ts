@@ -500,6 +500,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         //TODO usare unica sintassi, evitare idTemplate, meglio usare solita nomenclatura
         //come allenamentoId, schedaId, ecc...
         idTemplate: allenamentoForm.idTemplate,
+        description: allenamentoForm.description,
         dataEsecuzione: allenamentoForm.dataEsecuzione,
         nomeScheda: null,
         listaEsercizi: [],
@@ -511,7 +512,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         const esercizioDTO: EsercizioDTO = {
           id: esercizioForm.id,
           idTemplate: esercizioForm.idTemplate,
-          descrizioneEsercizio: esercizioForm.descrizioneEsercizio,
+          description: esercizioForm.description,
           idIconaEsercizio: esercizioForm.idIconaEsercizio,
           idMetodologia: esercizioForm.idMetodologia,
           idTipoEsercizio: esercizioForm.idTipoEsercizio,

@@ -118,6 +118,7 @@ export class CreateOrEditWorkoutExecutionService {
         idTemplate: allenamento.id,
         listaEsercizi: [],
         nomeAllenamento: allenamento.nomeAllenamento,
+        description: allenamento.description,
         ordinamento: allenamento.ordinamento,
       };
 
@@ -125,7 +126,7 @@ export class CreateOrEditWorkoutExecutionService {
         const esercizioFormDTO: EsercizioFormDTO = {
           id: 0,
           idTemplate: esercizio.id,
-          descrizioneEsercizio: esercizio.descrizioneEsercizio,
+          description: esercizio.description,
           idIconaEsercizio: esercizio.idIconaEsercizio,
           idMetodologia: esercizio.idMetodologia,
           idTipoEsercizio: esercizio.idTipoEsercizio,

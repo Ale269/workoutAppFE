@@ -1,15 +1,11 @@
 <div class="exercise-container">
   <div class="titolo-esercizio-container">
     <div class="icona-numero-esercizio-container">
-      <div
-        class="circle-icon"
-        [style.border-color]="this.formEsercizio.form.controls['idIconaEsercizio'].value | exerciseIconColor"
-      >
-        <img
-          [src]="exerciseIconPath"
+      <div class="circle-icon"
+        [style.border-color]="this.formEsercizio.form.controls['idIconaEsercizio'].value | exerciseIconColor">
+        <img [src]="exerciseIconPath"
           [alt]="'Icona esercizio ' + this.formEsercizio.form.controls['idIconaEsercizio'].value"
-          class="exercise-icon"
-        />
+          class="exercise-icon" />
       </div>
       <h3 class="text-white">
         Esercizio {{this.formEsercizio.form.controls['ordinamento'].value}}
@@ -22,35 +18,20 @@
   </div>
   <form [formGroup]="formEsercizio.form">
     <div class="input-row">
-      <app-gym-exercise-selector
-        [control]="this.idTipoEsercizioControl"
-        label="Esercizio"
-      >
+      <app-gym-exercise-selector [control]="this.idTipoEsercizioControl" label="Esercizio">
       </app-gym-exercise-selector>
     </div>
     <div class="input-row">
-      <mat-form-field
-          appearance="outline"
-          class="full-width"
-        >
-          <mat-label>Descrizione esercizio</mat-label>
-          <input
-            matInput
-            [type]="'text'"
-            formControlName="descrizioneEsercizio"
-            placeholder="Descrizione esercizio"
-          />
-
-        </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descrizione esercizio</mat-label>
+        <input matInput [type]="'text'" formControlName="description" placeholder="Descrizione esercizio">
+      </mat-form-field>
     </div>
 
     <div class="input-row">
       <mat-form-field appearance="outline">
         <mat-label>Posizione</mat-label>
-        <mat-select
-          [formControl]="ordinamentoControl"
-          [placeholder]="'Seleziona posizione'"
-        >
+        <mat-select [formControl]="ordinamentoControl" [placeholder]="'Seleziona posizione'">
           @for (position of formAllenamento.availableExercisePositions; let idx
           = $index; track idx) {
           <mat-option [value]="position">
@@ -73,10 +54,7 @@
 
     @for (serieForm of this.formEsercizio.listaSerieForm; track
     serieForm.form.controls['identifier'].value) {
-    <app-set-component
-      [formSerie]="serieForm"
-      (onDeleteSerie)="deleteSerie($event)"
-    >
+    <app-set-component [formSerie]="serieForm" (onDeleteSerie)="deleteSerie($event)">
     </app-set-component>
 
     } @empty {
@@ -99,11 +77,7 @@
 <!-- Template per il modale -->
 
 <ng-template #headerDeleteWorkout>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
 </ng-template>
 
 <!-- Template per il body -->

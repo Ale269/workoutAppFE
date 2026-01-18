@@ -9,6 +9,7 @@ export interface AllenamentoFormModel {
   idTemplate: FormControl<number | null>;
   dataEsecuzione : FormControl<Date | null>;
   nomeAllenamento: FormControl<string | null>;
+  description: FormControl<string | null>;
   ordinamento: FormControl<number | null>;
   listaEsercizi: FormArray<FormGroup<EsercizioFormModel>>;
 }
@@ -29,6 +30,9 @@ export class AllenamentoForm {
 
       nomeAllenamento: new FormControl<string | null>(
         allenamentoDTO?.nomeAllenamento || null
+      ),
+      description: new FormControl<string | null>(
+        allenamentoDTO?.description || null
       ),
       ordinamento: new FormControl<number | null>(
         allenamentoDTO?.ordinamento || null
@@ -218,6 +222,7 @@ export class AllenamentoForm {
         idTemplate: this.form.controls["idTemplate"].value  ? this.form.controls["idTemplate"].value : 0,
         dataEsecuzione: this.form.controls["dataEsecuzione"].value ? this.form.controls["dataEsecuzione"].value : new Date(),
         nomeAllenamento: this.form.controls["nomeAllenamento"].value ? this.form.controls["nomeAllenamento"].value : "",
+        description: this.form.controls["description"].value ? this.form.controls["description"].value : "",
         ordinamento: this.form.controls["ordinamento"].value ? this.form.controls["ordinamento"].value : 0,
         listaEsercizi: [],
       };

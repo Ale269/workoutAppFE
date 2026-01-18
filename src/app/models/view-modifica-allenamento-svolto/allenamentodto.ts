@@ -5,6 +5,7 @@ export interface AllenamentoDTO {
   idTemplate: number;
   nomeAllenamento: string;
   nomeScheda: string | null;
+  description: string;
   dataEsecuzione: Date | null;
   ordinamento: number;
   listaEsercizi: EsercizioDTO[];

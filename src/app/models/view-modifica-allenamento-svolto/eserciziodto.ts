@@ -3,7 +3,7 @@ import { SerieDTO } from "./seriedto";
 export interface EsercizioDTO {
   id: number;
   idTemplate: number;
-  descrizioneEsercizio: string;
+  description: string;
   idTipoEsercizio: number;
   idIconaEsercizio: number;
   idMetodologia: number;
