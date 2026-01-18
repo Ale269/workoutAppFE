@@ -75,4 +75,15 @@ export class UltimiAllenamentiSvolti {
       );
     }
   }
+
+  NavigaAVisualizzaAllenamento(idAllenamento: number) {
+    try {
+      this.router.navigate(["/allenamenti-svolti/visualizza-allenamento", idAllenamento]);
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "UltimiAllenamentiSvolti.NavigaAVisualizzaAllenamento"
+      );
+    }
+  }
 }
