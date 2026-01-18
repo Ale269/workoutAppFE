@@ -185,6 +185,34 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     }
   }
 
+  duplicateLastSerie() {
+    try {
+      const seriesList = this.formEsercizio.listaSerieForm;
+
+      if (seriesList.length === 0) {
+        this.addSerie();
+      } else {
+        const lastSerie = seriesList[seriesList.length - 1];
+        const serieData = lastSerie.getDatiSerieDaSalvare();
+
+        const newSerieData = {
+          ...serieData,
+          id: 0,
+          idTemplate: 0,
+          ordinamento: 0,
+        };
+
+        this.formEsercizio.addSerieForm(newSerieData);
+        this.cdr.detectChanges();
+      }
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "ExerciseComponent.duplicateLastSerie"
+      );
+    }
+  }
+
   deleteSerie(identifier: number) {
     try {
       this.formEsercizio.deleteSerie(identifier);
