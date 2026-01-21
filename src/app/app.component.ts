@@ -27,6 +27,8 @@ import { BottomSheetWrapperComponent } from "./components/shared/bottom-sheet/bo
 import { TranslateService } from "@ngx-translate/core";
 import { gsap } from "gsap";
 import { AnimationService } from "./core/services/page-animation-service";
+import { FocusOverlayWrapperComponent } from "./components/shared/focus-overlay/focus-overlay-wrapper";
+import { FocusOverlayService } from "./components/shared/focus-overlay/focus-overlay.service";
 
 @Component({
   selector: "app-root",
@@ -42,6 +44,7 @@ import { AnimationService } from "./core/services/page-animation-service";
     UpdateBannerComponent,
     OfflineIndicatorComponent,
     BottomSheetWrapperComponent,
+    FocusOverlayWrapperComponent,
   ],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -58,6 +61,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     public modalService: ModalService,
     public spinnerService: SpinnerService,
     public bottomSheetService: BottomSheetService,
+    public focusOverlayService: FocusOverlayService,
     private translate: TranslateService,
     private animationService: AnimationService
   ) {
@@ -74,13 +78,17 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.updateMenuVisibility(event.urlAfterRedirects || event.url);
       });
 
-    // Monitor modali e bottom sheets per bloccare lo scroll
+    // Monitor modali, bottom sheets e focus overlays per bloccare lo scroll
     effect(() => {
       const hasActiveModal = this.modalService.modals().length > 0;
       const hasActiveBottomSheet =
         this.bottomSheetService.activeBottomSheets().length > 0;
+      const hasActiveFocusOverlay = 
+        this.focusOverlayService.activeOverlays().length > 0;
 
-      this.toggleBodyScroll(hasActiveModal || hasActiveBottomSheet);
+      this.toggleBodyScroll(
+        hasActiveModal || hasActiveBottomSheet || hasActiveFocusOverlay
+      );
     });
   }
 
@@ -101,7 +109,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     // Monitora errori critici che possono verificarsi durante l'esecuzione
-    // AppComponent gestisce SOLO il routing, non il detection degli errori
     this.errorHandler.onError((error) => {
       if (error.isCritical) {
         console.error("🔥 Nuovo errore critico rilevato in runtime:", error);

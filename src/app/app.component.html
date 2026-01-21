@@ -39,4 +39,9 @@
   @for (sheet of bottomSheetService.activeBottomSheets(); track sheet.id) {
   <app-bottom-sheet-wrapper [instance]="sheet"></app-bottom-sheet-wrapper>
   }
+
+  <!-- Focus Overlays -->
+  @for (overlay of focusOverlayService.activeOverlays(); track overlay.id) {
+  <app-focus-overlay-wrapper [instance]="overlay"></app-focus-overlay-wrapper>
+  }
 </div>

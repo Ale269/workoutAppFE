@@ -18,21 +18,12 @@
       </h3>
     </div>
     <div class="date-row">
-      <form
-        [formGroup]="createOrEditWorkoutExecutionService.AllenamentoForm.form"
-      >
+      <form [formGroup]="createOrEditWorkoutExecutionService.AllenamentoForm.form">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Scegli una data</mat-label>
-          <input
-            matInput
-            [matDatepicker]="picker"
-            formControlName="dataEsecuzione"
-          />
+          <input matInput [matDatepicker]="picker" formControlName="dataEsecuzione" />
           <mat-hint>DD/MM/YYYY</mat-hint>
-          <mat-datepicker-toggle
-            matIconSuffix
-            [for]="picker"
-          ></mat-datepicker-toggle>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
       </form>
@@ -42,11 +33,8 @@
     @for (esercizioForm of
     this.createOrEditWorkoutExecutionService.AllenamentoForm.listaEserciziForm;
     track esercizioForm.form.controls['identifier'].value) {
-    <app-exercise-component
-      [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm"
-      (onDeleteExercise)="deleteEexercise($event)"
-      [formEsercizio]="esercizioForm"
-    ></app-exercise-component>
+    <app-exercise-component [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm"
+      (onDeleteExercise)="deleteEexercise($event)" [formEsercizio]="esercizioForm"></app-exercise-component>
     } @empty { }
   </div>
   <div class="add-exercise-button-row">
@@ -68,27 +56,22 @@
 
   @if(this.idAllenamento){
   <div class="floating-static-button-container">
-    <button
-      class="floating-static-button"
-      [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
-      (click)="registraAllenamento()"
-    >
-      <span>Salva</span>
-    </button>
+    <div class="floating-static-button-glass">
+      <button class="floating-static-button"
+        [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
+        (click)="registraAllenamento()">
+        <span>Salva</span>
+      </button>
+    </div>
   </div>
   }@else {
   <div class="floating-double-buttons-container">
-    <app-multi-option-button
-      [rightGroups]="rightButtonOptionsGroup"
-      [rightButtonLabel]="'Cambia'"
-      (optionSelected)="onOptionSelected($event)"
-    >
+    <app-multi-option-button [rightGroups]="rightButtonOptionsGroup" [rightButtonLabel]="'Cambia'"
+      (optionSelected)="onOptionSelected($event)">
       <!-- Il pulsante statico viene proiettato qui -->
-      <button
-        class="floating-static-button"
+      <button class="floating-static-button"
         [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
-        (click)="registraAllenamento()"
-      >
+        (click)="registraAllenamento()">
         <span>Salva</span>
       </button>
     </app-multi-option-button>
@@ -106,11 +89,7 @@ this.loadingProgression === LoadingProgressionEnum.loading){
 }
 
 <ng-template #headerGoBack>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
 </ng-template>
 
 <!-- Template per il body -->
@@ -140,11 +119,7 @@ this.loadingProgression === LoadingProgressionEnum.loading){
 </ng-template>
 
 <ng-template #headerDeleteTemplate>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
 </ng-template>
 
 <!-- Template per il body -->

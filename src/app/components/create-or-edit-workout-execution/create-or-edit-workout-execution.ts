@@ -286,7 +286,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                     return {
                       description: o.description,
                       optionId: o.id,
-                      color: " rgba(0, 255, 225, 1)",
+                      color: " #fff",
                     };
                   }),
                 },

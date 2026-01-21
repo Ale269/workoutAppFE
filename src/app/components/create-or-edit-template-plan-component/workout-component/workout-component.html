@@ -1,9 +1,9 @@
 <div class="workout-detail-container">
   <!-- Header con back button e titolo -->
-  <div class="section-workout-container close-icon-title-container">
-    <div class="close-icon-section-container">
-      <div class="close-icon-trigger" (click)="backToList()"></div>
-      <img src="assets/recollect/svg/google-close-icon.svg" />
+  <div class="section-workout-container back-icon-title-container">
+    <div class="back-icon-section-container">
+      <div class="back-icon-trigger" (click)="backToList()"></div>
+      <img src="assets/recollect/svg/google-arrow.svg" />
     </div>
 
     <h1 class="text-title">
@@ -13,123 +13,108 @@
 
   <!-- Contenuto workout -->
   <div class="workout-content">
-  <div class="workout-data">
-    <div class="nome-allenamento-container">
-      <form [formGroup]="formAllenamento.form">
-        <mat-form-field
-          appearance="outline"
-          class="full-width"
-        >
-          <mat-label>Alias allenamento </mat-label>
-          <input
-            (change)="ifEmptySetPlaceholder($event)"
-            matInput
-            [type]="'text'"
-            formControlName="nomeAllenamento"
-            placeholder="Nome allenamento"
-          />
+    <div class="workout-data">
+      <div class="nome-allenamento-container">
+        <form [formGroup]="formAllenamento.form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Alias allenamento </mat-label>
+            <input (change)="ifEmptySetPlaceholder($event)" matInput [type]="'text'" formControlName="nomeAllenamento"
+              placeholder="Nome allenamento" />
 
-          @if
-          (this.formAllenamento.form.controls['nomeAllenamento'].hasError('required'))
-          {
-          <mat-error>Nome allenamento obbligatorio</mat-error>
-          }
-        </mat-form-field>
-      </form>
-    </div>
-    <div class="ordinamento-container">
-      <form [formGroup]="formAllenamento.form">
-        <mat-form-field appearance="outline">
-          <mat-label>Posizione</mat-label>
-          <mat-select
-            [formControl]="ordinamentoControl"
-            [placeholder]="'Seleziona posizione'"
-          >
-            @for (position of formScheda.availableWorkoutPositions; let idx =
-            $index; track idx) {
-            <mat-option [value]="position">
-              <div class="custom-option">
-                <span>Posizione {{ position }}</span>
-              </div>
-            </mat-option>
+            @if
+            (this.formAllenamento.form.controls['nomeAllenamento'].hasError('required'))
+            {
+            <mat-error>Nome allenamento obbligatorio</mat-error>
             }
-          </mat-select>
-          @if(ordinamentoControl.invalid && ordinamentoControl.touched){
-          <mat-error> La posizione è obbligatoria </mat-error>
-          }
-        </mat-form-field>
-      </form>
+          </mat-form-field>
+        </form>
+      </div>
+      <div class="ordinamento-container">
+        <form [formGroup]="formAllenamento.form">
+          <mat-form-field appearance="outline">
+            <mat-label>Posizione</mat-label>
+            <mat-select [formControl]="ordinamentoControl" [placeholder]="'Seleziona posizione'">
+              @for (position of formScheda.availableWorkoutPositions; let idx =
+              $index; track idx) {
+              <mat-option [value]="position">
+                <div class="custom-option">
+                  <span>Posizione {{ position }}</span>
+                </div>
+              </mat-option>
+              }
+            </mat-select>
+            @if(ordinamentoControl.invalid && ordinamentoControl.touched){
+            <mat-error> La posizione è obbligatoria </mat-error>
+            }
+          </mat-form-field>
+        </form>
+      </div>
+      <div class="delete-allenamento-button-row">
+        <button class="text-shape-button-danger" (click)="openDeleteWorkout()">
+          <span>Elimina questo allenamento</span>
+          <div class="text-shape-button-icon-container-danger">
+            <img src="assets/recollect/svg/google-delete.svg" />
+          </div>
+        </button>
+      </div>
     </div>
-    <div class="delete-allenamento-button-row">
-      <button class="text-shape-button-danger" (click)="openDeleteWorkout()">
-        <span>Elimina questo allenamento</span>
-        <div class="text-shape-button-icon-container-danger">
-          <img src="assets/recollect/svg/google-delete.svg" />
+
+    <div #exerciseDataContainer class="exercise-data">
+      @for (esercizioForm of this.formAllenamento.listaEserciziForm; track
+      esercizioForm.form.controls['identifier'].value) {
+      <div #exerciseCard appLongPress [duration]="500" (mouseLongPress)="toggleCompactMode()" class="exercise-wrapper">
+        <app-exercise-component [formAllenamento]="formAllenamento" (onDeleteExercise)="deleteEexercise($event)"
+          [formEsercizio]="esercizioForm" [isCompactMode]="isCompactMode"></app-exercise-component>
+      </div>
+      } @empty { }
+    </div>
+    <div class="add-exercise-button-row">
+      <button class="text-shape-button" (click)="addNuovoEsercizio()">
+        <span>Aggiungi esercizio</span>
+        <div class="text-shape-button-icon-container">
+          <img src="assets/recollect/svg/google-add.svg" />
         </div>
       </button>
     </div>
   </div>
-  <div class="exercise-data">
-    @for (esercizioForm of this.formAllenamento.listaEserciziForm; track
-    esercizioForm.form.controls['identifier'].value) {
-    <app-exercise-component
-      [formAllenamento]="formAllenamento"
-      (onDeleteExercise)="deleteEexercise($event)"
-      [formEsercizio]="esercizioForm"
-    ></app-exercise-component>
-    } @empty { }
+  <div class="floating-static-button-container">
+    <div class="floating-static-button-glass">
+      <button class="floating-static-button" (click)="backToList()">
+        <span>Torna alla scheda</span>
+      </button>
+    </div>
   </div>
-  <div class="add-exercise-button-row">
-    <button class="text-shape-button" (click)="addNuovoEsercizio()">
-      <span>Aggiungi esercizio</span>
-      <div class="text-shape-button-icon-container">
-        <img src="assets/recollect/svg/google-add.svg" />
+  <!-- Fine workout-detail-container -->
+
+  <!-- Template per il modale -->
+
+  <ng-template #headerDeleteWorkout>
+    <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
+  </ng-template>
+
+  <ng-template #bodyDeleteWorkout>
+    <h3 class="text-white">Sei sicuro di voler eliminare questo allenamento?</h3>
+    <h3 class="text-white">Questa azione non può essere annullata.</h3>
+  </ng-template>
+
+  <ng-template #footerCloseDeleteWorkout>
+    <button class="text-shape-button-cancel">
+      <span>Annulla</span>
+      <div class="text-shape-button-icon-container-cancel">
+        <img src="assets/recollect/svg/google-close-icon.svg" />
       </div>
     </button>
-  </div>
-</div>
-<!-- Fine workout-detail-container -->
+  </ng-template>
 
-<!-- Template per il modale -->
+  <ng-template #footerConfirmDeleteWorkout>
+    <button class="text-shape-button-danger">
+      <span>Elimina</span>
+      <div class="text-shape-button-icon-container-danger">
+        <img src="assets/recollect/svg/google-delete.svg" />
+      </div>
+    </button>
+  </ng-template>
 
-<ng-template #headerDeleteWorkout>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
-</ng-template>
-
-<!-- Template per il body -->
-<ng-template #bodyDeleteWorkout>
-  <h3 class="text-white">Sei sicuro di voler eliminare questo allenamento?</h3>
-  <h3 class="text-white">Questa azione non può essere annullata.</h3>
-</ng-template>
-
-<!-- Template per il bottone di chiusura -->
-<ng-template #footerCloseDeleteWorkout>
-  <button class="text-shape-button-cancel">
-    <span>Annulla</span>
-    <div class="text-shape-button-icon-container-cancel">
-      <img src="assets/recollect/svg/google-close-icon.svg" />
-    </div>
-  </button>
-</ng-template>
-
-<!-- Template per il bottone di conferma -->
-<ng-template #footerConfirmDeleteWorkout>
-  <button class="text-shape-button-danger">
-    <span>Elimina</span>
-    <div class="text-shape-button-icon-container-danger">
-      <img src="assets/recollect/svg/google-delete.svg" />
-    </div>
-  </button>
-</ng-template>
-
-<ng-template #headerAddWorkout>
-  <img
-    src="assets/recollect/images/icona-add-workout.png"
-    alt="Aggiungi Allenamento"
-    class="add-workout-icon"
-  />
-</ng-template>
+  <ng-template #headerAddWorkout>
+    <img src="assets/recollect/images/icona-add-workout.png" alt="Aggiungi Allenamento" class="add-workout-icon" />
+  </ng-template>

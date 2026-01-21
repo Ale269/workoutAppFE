@@ -1,9 +1,7 @@
 @use "@angular/material" as mat;
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
 
-@include mat.core(
-
-); // Assicurati di includere il core theme se non l'hai già fatto
+@include mat.core(); // Assicurati di includere il core theme se non l'hai già fatto
 
 // Mantieni le tue definizioni di tema .dark-theme e .light-theme con le variabili di colore e altezza.
 // Verranno applicate come classi al body tramite ThemeService.
@@ -72,8 +70,10 @@
 html {
   margin: 0;
   padding: 0;
-  height: 100%; /* HTML e BODY devono occupare il 100% dell'altezza della viewport */
-  width: 100%; /* E il 100% della larghezza */
+  height: 100%;
+  /* HTML e BODY devono occupare il 100% dell'altezza della viewport */
+  width: 100%;
+  /* E il 100% della larghezza */
   font-family: Roboto, "Helvetica Neue", sans-serif; // Spostato qui per applicarlo globalmente
 }
 
@@ -93,7 +93,8 @@ body {
 /* Regola per bloccare lo scroll del body quando il modale è aperto */
 body.no-scroll {
   overflow: hidden;
-  padding-right: 15px; /* Adatta al tuo sistema operativo */
+  padding-right: 15px;
+  /* Adatta al tuo sistema operativo */
 }
 
 .content {
@@ -113,6 +114,7 @@ body.no-scroll {
   font-family: "poppins";
   font-size: 14px;
 }
+
 .text-grey {
   color: #808080;
   font-weight: 700;
@@ -145,8 +147,7 @@ body.no-scroll {
 }
 
 .text-shape-button-icon-container img {
-  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
-    hue-rotate(89deg) brightness(104%) contrast(102%);
+  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%) hue-rotate(89deg) brightness(104%) contrast(102%);
   width: 16px;
   height: 16px;
 }
@@ -200,15 +201,13 @@ body.no-scroll {
 }
 
 .text-shape-button-icon-container-cancel img {
-  filter: brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%)
-    hue-rotate(240deg) brightness(96%) contrast(88%);
+  filter: brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%) hue-rotate(240deg) brightness(96%) contrast(88%);
   width: 16px;
   height: 16px;
 }
 
 .text-shape-button-icon-container-danger img {
-  filter: brightness(0) saturate(100%) invert(15%) sepia(83%) saturate(6873%)
-    hue-rotate(360deg) brightness(106%) contrast(118%);
+  filter: brightness(0) saturate(100%) invert(15%) sepia(83%) saturate(6873%) hue-rotate(360deg) brightness(106%) contrast(118%);
   width: 16px;
   height: 16px;
 }
@@ -222,15 +221,21 @@ body.no-scroll {
   font-family: "poppins";
   font-weight: 700;
   color: #00ffe1;
-  background: #002b28;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 43, 40, 1) 0%,
-    rgba(0, 20, 19, 1) 50%,
-    rgba(0, 43, 40, 1) 100%
-  );
-  border: 1px solid #00564c;
+  // background: #002b28;
+  // background: linear-gradient(180deg,
+  //     rgba(0, 43, 40, 1) 0%,
+  //     rgba(0, 20, 19, 1) 50%,
+  //     rgba(0, 43, 40, 1) 100%);
+  // border: 1px solid #00564c;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 32px;
+  min-width: 120px;
   cursor: pointer;
 }
 
@@ -280,8 +285,7 @@ body.no-scroll {
 }
 
 .delete-icon-element-container img {
-  filter: brightness(0) saturate(100%) invert(54%) sepia(0%) saturate(59%)
-    hue-rotate(162deg) brightness(92%) contrast(96%);
+  filter: brightness(0) saturate(100%) invert(54%) sepia(0%) saturate(59%) hue-rotate(162deg) brightness(92%) contrast(96%);
 }
 
 .small-text {
@@ -312,18 +316,15 @@ body.no-scroll {
 
 .back-icon-section-container img {
   rotate: 180deg;
-  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
-    hue-rotate(89deg) brightness(104%) contrast(102%);
+  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%) hue-rotate(89deg) brightness(104%) contrast(102%);
 }
 
 .close-icon-section-container img {
-  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
-    hue-rotate(89deg) brightness(104%) contrast(102%);
+  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%) hue-rotate(89deg) brightness(104%) contrast(102%);
 }
 
 .option-icon-section-container img {
-  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
-    hue-rotate(89deg) brightness(104%) contrast(102%);
+  filter: brightness(0) saturate(100%) invert(100%);
 }
 
 .button-disabled {
@@ -337,6 +338,7 @@ body.no-scroll {
 
 // Media Query per l'altezza dell'header su schermi piccoli
 @media (max-width: 599px) {
+
   // Tipico breakpoint mobile per Angular Material
   :root {
     --header-height: 56px; // Altezza MatToolbar su mobile
@@ -360,9 +362,7 @@ body.no-scroll {
 // (es. cambiare colori di disabilitato, ma non font-size/weight generali)
 :root {
   // Questo purtroppo non basta per gli input perché non c'è un modo diretto di modificare contemporaneamente bordo e backgroudn
-  @include mat.form-field-overrides(
-    (
-      // Esempio: cambia il colore del placeholder quando il campo è disabilitato
+  @include mat.form-field-overrides(( // Esempio: cambia il colore del placeholder quando il campo è disabilitato
       container-text-size: 14px,
       container-text-weight: 700,
       container-text-font: "poppins",
@@ -381,26 +381,24 @@ body.no-scroll {
       outlined-label-text-color: "#808080",
       outlined-outline-color: "transparent",
       outlined-input-text-color: "#fff",
-      outlined-hover-outline-color: "rgba(255, 255, 255, 0.1)",
-      outlined-focus-outline-color: "rgba(255, 255, 255, 0.1)",
+      outlined-hover-outline-color: "transparent",
+      outlined-focus-outline-color: "transparent",
       outlined-focus-label-text-color: "#808080",
       outlined-hover-label-text-color: "#808080",
       container-vertical-padding: 8px,
       container-height: 40px,
       outlined-input-text-placeholder-color: "#808080"
-    )
-  );
+    ));
 
   .mat-mdc-text-field-wrapper {
     background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
   }
 }
 
 :root {
-  @include mat.select-overrides(
-    (
-      placeholder-text-color: "#808080",
+  @include mat.select-overrides((placeholder-text-color: "#808080",
       enabled-arrow-color: "#808080",
       focused-arrow-color: "#fff",
       trigger-text-font: "poppins",
@@ -408,25 +406,23 @@ body.no-scroll {
       trigger-text-weight: 700,
       panel-background-color: "#000",
       enabled-trigger-text-color: "#fff",
-    )
-  );
+    ));
 }
 
 :root {
   .mat-mdc-icon-button.mat-mdc-button-base {
     --mdc-icon-button-state-layer-size: 40px;
     --mat-icon-button-state-layer-size: 40px;
-     padding: 8px;
+    padding: 8px;
   }
 
-  .mat-mdc-icon-button img, .mat-mdc-icon-button svg {
+  .mat-mdc-icon-button img,
+  .mat-mdc-icon-button svg {
     width: 20px;
     height: 20px;
   }
 
-  @include mat.datepicker-overrides(
-    (
-      calendar-body-label-text-color: #fff,
+  @include mat.datepicker-overrides((calendar-body-label-text-color: #fff,
       calendar-container-background-color: #000,
       calendar-container-text-color: #fff,
       calendar-date-outline-color: #212112,
@@ -441,8 +437,7 @@ body.no-scroll {
       calendar-date-selected-state-text-color: #000,
       calendar-date-selected-state-background-color: #fff,
       calendar-date-focus-state-background-color: #212112,
-    )
-  );
+    ));
 }
 
 // Sovrascrittura comportamento defaul mat tab
@@ -566,18 +561,32 @@ mat-tab-header {
 .floating-static-button-container {
   z-index: 9998;
   position: fixed;
-  right: 16px;
-  bottom: 16px;
+  right: 0;
+  left: 0;
+  bottom: 0;
   display: flex;
+  padding: 16px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
   justify-content: flex-end;
+}
+
+.floating-static-button-glass {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+  border-radius: 30px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .floating-double-buttons-container {
   z-index: 9998;
   position: fixed;
-  right: 16px;
-  left: 16px;
-  bottom: 16px;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  padding: 16px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
   display: flex;
   justify-content: flex-end;
 }

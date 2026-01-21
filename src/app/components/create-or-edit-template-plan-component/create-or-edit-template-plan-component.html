@@ -2,141 +2,184 @@
 <div class="content">
   <!-- Vista Lista Allenamenti -->
   @if(currentView === 'list') {
-    <div #listView class="list-view">
-      <div class="section-title-container close-icon-title-container">
-        <div class="close-icon-section-container">
-          <div class="close-icon-trigger" (click)="goBack()"></div>
-          <img src="assets/recollect/svg/google-close-icon.svg" />
-        </div>
-
-        <h1 class="text-title">
-          @if(isNuovaScheda){
-            Nuova scheda
-          }@else {
-            Modifica scheda
-          }
-        </h1>
+  <div #listView class="list-view">
+    <div class="section-title-container close-icon-title-container">
+      <div class="close-icon-section-container">
+        <div class="close-icon-trigger" (click)="goBack()"></div>
+        <img src="assets/recollect/svg/google-close-icon.svg" />
       </div>
 
-      <form [formGroup]="createOrEditTemplatePlanService.formScheda.form">
-        <div class="container-switch">
-          <app-switch #IsActiveSwitch [Descrizione]="'Scheda attiva'" [IsActive]="scheda ? scheda.schedaAttiva : false" (stateChange)="onAttivazioneStateChange($event)"></app-switch>
+      <h1 class="text-title">
+        @if(isNuovaScheda){
+        Nuova scheda
+        }@else {
+        Modifica scheda
+        }
+      </h1>
+    </div>
+
+    <form [formGroup]="createOrEditTemplatePlanService.formScheda.form">
+      <div class="container-switch">
+        <app-switch #IsActiveSwitch [Descrizione]="'Scheda attiva'" [IsActive]="scheda ? scheda.schedaAttiva : false"
+          (stateChange)="onAttivazioneStateChange($event)"></app-switch>
+      </div>
+
+      <!-- Sezione Dati Scheda -->
+      <div class="section-container">
+        <div class="section-title">
+          <h2 class="text-title">Dati scheda</h2>
         </div>
 
-        <!-- Sezione Dati Scheda -->
-        <div class="section-container">
-          <h2 class="section-title text-title">Dati scheda</h2>
-          
-          <div class="section-content">
-            <div class="nome-scheda-container">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Nome scheda </mat-label>
-                <input
-                  matInput
-                  [type]="'text'"
-                  formControlName="nomeScheda"
-                  placeholder="Nome scheda"
-                />
+        <div class="section-content">
+          <div class="dati-scheda-container">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nome scheda </mat-label>
+              <input matInput [type]="'text'" formControlName="nomeScheda" placeholder="Nome scheda" />
 
-                @if
-                (createOrEditTemplatePlanService.formScheda.form.controls['nomeScheda'].hasError('required'))
-                {
-                <mat-error>Nome scheda obbligatorio</mat-error>
-                }
-              </mat-form-field>
+              @if
+              (createOrEditTemplatePlanService.formScheda.form.controls['nomeScheda'].hasError('required'))
+              {
+              <mat-error>Nome scheda obbligatorio</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Descrizione scheda </mat-label>
+              <input matInput [type]="'text'" formControlName="descrizioneScheda" placeholder="Descrizione scheda" />
 
-              <div class="delete-scheda-button-row">
-                <button
-                  class="text-shape-button-danger"
-                  (click)="openDeleteScheda()"
-                >
-                  <span>Elimina scheda</span>
-                  <div class="text-shape-button-icon-container-danger">
-                    <img src="assets/recollect/svg/google-delete.svg" />
-                  </div>
-                </button>
+              @if
+              (createOrEditTemplatePlanService.formScheda.form.controls['descrizioneScheda'].hasError('required'))
+              {
+              <mat-error>Nome scheda obbligatorio</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="delete-scheda-button-row">
+            <button class="text-shape-button-danger" (click)="openDeleteScheda()">
+              <span>Elimina scheda</span>
+              <div class="text-shape-button-icon-container-danger">
+                <img src="assets/recollect/svg/google-delete.svg" />
               </div>
-            </div>
+            </button>
           </div>
         </div>
+      </div>
 
-        <!-- Sezione Allenamenti -->
-        <div class="section-container">
-          <h2 class="section-title text-title">Allenamenti</h2>
-          
-          <div class="section-content">
-            <div class="workouts-container">
-              <!-- Lista card allenamenti -->
-              @if(createOrEditTemplatePlanService.formScheda.listaAllenamentiForm.length > 0) {
-                <div class="workouts-list">
-                  @for (allenamentoForm of createOrEditTemplatePlanService.formScheda.listaAllenamentiForm; 
-                        track allenamentoForm.form.controls['identifier'].value) {
-                    <div class="workout-card" (click)="openWorkoutDetail(allenamentoForm)">
-                      <div class="workout-card-header">
-                        <h3 class="text-white workout-name">
-                          {{allenamentoForm.form.controls['nomeAllenamento'].value}}
-                        </h3>
-                        <img src="assets/recollect/svg/google-arrow-right.svg" class="arrow-icon" />
-                      </div>
-                      <div class="workout-card-body">
-                        <span class="text-white exercise-count">
-                          {{getExerciseCount(allenamentoForm)}} 
-                          @if(getExerciseCount(allenamentoForm) === 1) {
-                            esercizio
-                          } @else {
-                            esercizi
-                          }
-                        </span>
+      <!-- Sezione Allenamenti -->
+      <div class="section-container">
+        <h2 class="section-title text-title">Allenamenti</h2>
+
+        <div class="section-content">
+          <div class="workouts-container">
+            <!-- Lista card allenamenti -->
+            @if(createOrEditTemplatePlanService.formScheda.listaAllenamentiForm.length > 0) {
+            <div class="workouts-list">
+              @for (allenamentoForm of createOrEditTemplatePlanService.formScheda.listaAllenamentiForm;
+              track allenamentoForm.form.controls['identifier'].value) {
+              <div class="allenamento-wrapper">
+                <div #allenamentoCard class="allenamento-container" (click)="openWorkoutDetail(allenamentoForm)">
+                  <div class="graphic-data">
+                    <div class="giorni-counter-container">
+                      <h3 class="text-white small-text">
+                        <span>{{allenamentoForm.form.controls['ordinamento'].value}}</span>
+                        /
+                        <span>{{createOrEditTemplatePlanService.formScheda.listaAllenamentiForm.length}}</span>
+                      </h3>
+                    </div>
+                    <div class="graphic-visualizer-container">
+                      <div class="visualizer-allenamento-container">
+                        @for (workout of createOrEditTemplatePlanService.formScheda.listaAllenamentiForm; track
+                        workout.form.controls['identifier'].value) {
+                        <div
+                          [class.current-day-visualizer]="workout.form.controls['identifier'].value === allenamentoForm.form.controls['identifier'].value">
+                        </div>
+                        }
                       </div>
                     </div>
-                  }
-                </div>
-              } @else {
-                <div class="add-allenamento-button-row">
-                  <div class="warnign-row">
-                    <h3 class="text-white">Nessun allenamento aggiunto</h3>
+                  </div>
+                  <div class="nome-dati-allenamento">
+                    <div>
+                      <h3 class="text-white">
+                        {{allenamentoForm.form.controls['nomeAllenamento'].value}}
+                      </h3>
+                    </div>
+                    <div>
+                      <h3 class="text-grey">
+                        {{getExerciseCount(allenamentoForm)}}
+                        @if(getExerciseCount(allenamentoForm) === 1) {
+                        esercizio
+                        } @else {
+                        esercizi
+                        }
+                      </h3>
+                    </div>
+                    <!-- Riga con icone esercizi -->
+                    @if(allenamentoForm.listaEserciziForm.length > 0) {
+                    <div class="icona-numero-esercizio-container">
+                      @for (esercizioForm of allenamentoForm.listaEserciziForm; track
+                      esercizioForm.form.controls['identifier'].value) {
+                      <div class="icon-container-accumulator">
+                        <div class="circle-icon"
+                          [title]="esercizioForm.form.controls['descrizioneEsercizio'].value || 'Esercizio'"
+                          [style.border-color]="esercizioForm.form.controls['idIconaEsercizio'].value | exerciseIconColor">
+                          <img [src]="getExerciseIconPath(esercizioForm)"
+                            [alt]="'Icona esercizio ' + esercizioForm.form.controls['idTipoEsercizio'].value" />
+                        </div>
+                      </div>
+                      }
+                    </div>
+                    }
                   </div>
                 </div>
-              }
 
-              <!-- Bottone aggiungi allenamento -->
-              <div class="add-workout-button-container">
-                <button class="text-shape-button" (click)="openAddWorkoutModal()">
-                  <span>Aggiungi allenamento</span>
-                  <div class="text-shape-button-icon-container">
-                    <img src="assets/recollect/svg/google-add.svg" />
+                <!-- Bottone delete che appare con lo swipe -->
+                <div class="delete-action">
+                  <div class="text-shape-button-icon-container-danger"
+                    (click)="openDeleteWorkout(allenamentoForm.form.controls['identifier'].value)">
+                    <img src="assets/recollect/svg/google-delete.svg" />
                   </div>
-                </button>
+                </div>
               </div>
+              }
+            </div>
+            } @else {
+            <div class="add-allenamento-button-row">
+              <div class="warning-row">
+                <h3 class="text-white">Nessun allenamento aggiunto</h3>
+              </div>
+            </div>
+            }
+
+            <!-- Bottone aggiungi allenamento -->
+            <div class="add-workout-button-container">
+              <button class="text-shape-button" (click)="openAddWorkoutModal()">
+                <span>Aggiungi allenamento</span>
+                <div class="text-shape-button-icon-container">
+                  <img src="assets/recollect/svg/google-add.svg" />
+                </div>
+              </button>
             </div>
           </div>
         </div>
-      </form>
-    </div>
-    <div class="floating-static-button-container">
-        <div class="floating-actions-workout">
-          <button
-            class="floating-static-button"
-            [class.button-disabled]="!createOrEditTemplatePlanService.formScheda.form.valid"
-            (click)="savePlan(1)"
-          >
-            <span>Salva</span>
-          </button>
-        </div>
       </div>
+    </form>
+  </div>
+  <div class="floating-static-button-container">
+    <div class="floating-static-button-glass">
+      <button class="floating-static-button"
+        [class.button-disabled]="!createOrEditTemplatePlanService.formScheda.form.valid" (click)="savePlan(1)">
+        <span>Salva</span>
+      </button>
+    </div>
+  </div>
   }
 
   <!-- Vista Dettaglio Allenamento -->
   @if(currentView === 'detail' && selectedWorkout) {
-    <div #detailView class="workout-detail-view">
-      <app-workout-component
-        [formScheda]="this.createOrEditTemplatePlanService.formScheda"
-        (onDeleteWorkout)="deleteWorkout($event)"
-        (onBackToList)="backToList()"
-        [formAllenamento]="selectedWorkout"
-      >
-      </app-workout-component>
-    </div>
+  <div #detailView class="workout-detail-view">
+    <app-workout-component [formScheda]="this.createOrEditTemplatePlanService.formScheda"
+      (onDeleteWorkout)="deleteWorkout($event)" (onBackToList)="backToList()" [formAllenamento]="selectedWorkout">
+    </app-workout-component>
+  </div>
   }
 </div>
 }@else if(this.loadingProgression === LoadingProgressionEnum.none ||
@@ -154,13 +197,9 @@ this.loadingProgression === LoadingProgressionEnum.loading) {
   <div class="workout-name-input-container">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Nome allenamento</mat-label>
-      <input
-        [formControl]="this.newWorkoutNameControl"
-        matInput
-        type="text"
+      <input [formControl]="this.newWorkoutNameControl" matInput type="text"
         [placeholder]="'Giorno ' + (createOrEditTemplatePlanService.formScheda.listaAllenamentiForm.length + 1 || 1)"
-        maxlength="50"
-      />
+        maxlength="50" />
       <mat-hint>Se lasci vuoto, verrà usato il nome predefinito</mat-hint>
     </mat-form-field>
   </div>
@@ -187,11 +226,7 @@ this.loadingProgression === LoadingProgressionEnum.loading) {
 </ng-template>
 
 <ng-template #headerGoBack>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
 </ng-template>
 
 <!-- Template per il body -->
@@ -221,11 +256,7 @@ this.loadingProgression === LoadingProgressionEnum.loading) {
 </ng-template>
 
 <ng-template #headerDeleteTemplate>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
 </ng-template>
 
 <!-- Template per il body -->
@@ -257,9 +288,35 @@ this.loadingProgression === LoadingProgressionEnum.loading) {
 </ng-template>
 
 <ng-template #headerAddWorkout>
-  <img
-    src="assets/recollect/images/icona-add-workout.png"
-    alt="Aggiungi Allenamento"
-    class="add-workout-icon"
-  />
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Aggiungi Allenamento" class="add-workout-icon" />
+</ng-template>
+
+<!-- Templates per la modale di conferma eliminazione allenamento -->
+<ng-template #headerDeleteWorkoutTemplate>
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
+</ng-template>
+
+<ng-template #bodyDeleteWorkoutTemplate>
+  <h3 class="text-white">
+    Sei sicuro di voler eliminare questo allenamento?
+  </h3>
+  <h3 class="text-white">Questa azione non può essere annullata.</h3>
+</ng-template>
+
+<ng-template #footerCloseDeleteWorkoutTemplate>
+  <button class="text-shape-button-cancel">
+    <span>Annulla</span>
+    <div class="text-shape-button-icon-container-cancel">
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<ng-template #footerConfirmDeleteWorkoutTemplate>
+  <button class="text-shape-button-danger">
+    <span>Elimina</span>
+    <div class="text-shape-button-icon-container-danger">
+      <img src="assets/recollect/svg/google-delete.svg" />
+    </div>
+  </button>
 </ng-template>

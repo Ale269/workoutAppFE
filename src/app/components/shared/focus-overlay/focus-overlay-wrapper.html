@@ -1,0 +1,5 @@
+<div #backdrop class="focus-overlay-backdrop" (click)="onBackdropClick()">
+  <div #content class="focus-overlay-content" (click)="onContentClick($event)">
+    <ng-container #dynamicComponent></ng-container>
+  </div>
+</div>

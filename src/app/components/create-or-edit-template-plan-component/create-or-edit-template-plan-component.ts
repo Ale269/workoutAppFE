@@ -8,10 +8,13 @@ import {
   TemplateRef,
   ChangeDetectorRef,
   ElementRef,
+  ViewChildren,
+  QueryList,
 } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { CreateOrEditTemplatePlanService } from "./create-or-edit-template-plan-service";
 
+import { ExerciseIconColorPipe } from "../../core/pipes/exercise-icon-color";
 import { WorkoutComponent } from "./workout-component/workout-component";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -28,6 +31,12 @@ import { LoadingProgression } from "src/app/models/enums/loading-progression";
 import { Switch } from "../shared/switch/switch";
 import { AllenamentoForm } from "./workout-form";
 import { gsap } from "gsap";
+import { Draggable } from "gsap/Draggable";
+import { EsercizioForm } from "./exercise-form";
+import { ExerciseService } from "src/app/core/services/exercise.service";
+
+// Registra il plugin Draggable
+gsap.registerPlugin(Draggable);
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -39,15 +48,16 @@ import { gsap } from "gsap";
     MatInput,
     MatFormFieldModule,
     Switch,
+    ExerciseIconColorPipe,
   ],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",
 })
 export class CreateOrEditTemplatePlanComponent
-  implements OnInit, OnDestroy
-{
+  implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("listView") listView!: ElementRef<HTMLElement>;
   @ViewChild("detailView") detailView!: ElementRef<HTMLElement>;
+  @ViewChildren("allenamentoCard") allenamentoCards!: QueryList<ElementRef>;
 
   @ViewChild("headerAddWorkout") headerAddWorkout!: TemplateRef<any>;
   @ViewChild("bodyAddWorkout") bodyAddWorkout!: TemplateRef<any>;
@@ -70,6 +80,13 @@ export class CreateOrEditTemplatePlanComponent
   @ViewChild("footerConfirmDeleteTemplate")
   footerConfirmDeleteTemplate!: TemplateRef<any>;
 
+  @ViewChild("headerDeleteWorkoutTemplate") headerDeleteWorkoutTemplate!: TemplateRef<any>;
+  @ViewChild("bodyDeleteWorkoutTemplate") bodyDeleteWorkoutTemplate!: TemplateRef<any>;
+  @ViewChild("footerCloseDeleteWorkoutTemplate")
+  footerCloseDeleteWorkoutTemplate!: TemplateRef<any>;
+  @ViewChild("footerConfirmDeleteWorkoutTemplate")
+  footerConfirmDeleteWorkoutTemplate!: TemplateRef<any>;
+
   // Gestione visualizzazione
   public currentView: 'list' | 'detail' = 'list';
   public selectedWorkout: AllenamentoForm | null = null;
@@ -77,7 +94,7 @@ export class CreateOrEditTemplatePlanComponent
 
   public scheda!: SchedaDTO;
 
-  public get isNuovaScheda():boolean{
+  public get isNuovaScheda(): boolean {
     return !this.scheda || this.scheda.id == -1;
   }
 
@@ -91,6 +108,9 @@ export class CreateOrEditTemplatePlanComponent
 
   private currentSpinnerId: string | null = null;
 
+  // Gestione swipe
+  private draggableInstances: any[] = [];
+
   constructor(
     private errorHandlerService: ErrorHandlerService,
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
@@ -99,7 +119,8 @@ export class CreateOrEditTemplatePlanComponent
     private cdr: ChangeDetectorRef,
     private router: Router,
     private authService: AuthService,
-    private workoutService: WorkoutService
+    private workoutService: WorkoutService,
+    private exerciseService: ExerciseService,
   ) {
     try {
       const navigation = this.router.getCurrentNavigation();
@@ -169,6 +190,21 @@ export class CreateOrEditTemplatePlanComponent
     }
   }
 
+  ngAfterViewInit(): void {
+    try {
+      // Inizializza lo swipe quando le card cambiano
+      this.allenamentoCards.changes.subscribe(() => {
+        this.initializeSwipe();
+      });
+      this.initializeSwipe();
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditTemplatePlanComponent.ngAfterViewInit"
+      );
+    }
+  }
+
   ngOnDestroy(): void {
     if (this.initSpinnerId) {
       this.spinnerService.hide(this.initSpinnerId);
@@ -176,30 +212,172 @@ export class CreateOrEditTemplatePlanComponent
     if (this.saveSpinnerId) {
       this.spinnerService.hide(this.saveSpinnerId);
     }
+    // Pulisci le istanze draggable
+    this.draggableInstances.forEach((instance) => instance.kill());
+  }
+
+  private initializeSwipe(): void {
+    try {
+      // Pulisci istanze precedenti
+      this.draggableInstances.forEach((instance) => instance.kill());
+      this.draggableInstances = [];
+
+      setTimeout(() => {
+        this.allenamentoCards.forEach((cardRef, index) => {
+          const card = cardRef.nativeElement;
+          const wrapper = card.closest(".allenamento-wrapper");
+          const deleteButton = wrapper?.querySelector(
+            ".delete-action"
+          ) as HTMLElement;
+
+          if (!deleteButton) return;
+
+          const SWIPE_THRESHOLD = -80;
+          const DELETE_WIDTH = 80;
+
+          gsap.set(deleteButton, {
+            autoAlpha: 0,
+            pointerEvents: "none",
+          });
+
+          const component = this;
+
+          const draggableArray = Draggable.create(card, {
+            type: "x",
+            bounds: { minX: SWIPE_THRESHOLD, maxX: 0 },
+            inertia: true,
+            dragClickables: false,
+            onDrag: function (this: any) {
+              const progress = Math.abs(this.x) / DELETE_WIDTH;
+              const alpha = Math.min(progress, 1);
+
+              gsap.to(deleteButton, {
+                autoAlpha: alpha,
+                duration: 0.1,
+                overwrite: true,
+              });
+
+              if (alpha > 0.5) {
+                gsap.set(deleteButton, { pointerEvents: "auto" });
+              } else {
+                gsap.set(deleteButton, { pointerEvents: "none" });
+              }
+            },
+            onDragEnd: function (this: any) {
+              if (this.x < SWIPE_THRESHOLD / 2) {
+                gsap.to(card, {
+                  x: SWIPE_THRESHOLD,
+                  duration: 0.3,
+                  ease: "power2.out",
+                });
+                gsap.to(deleteButton, {
+                  autoAlpha: 1,
+                  duration: 0.3,
+                  overwrite: true,
+                  onComplete: () => {
+                    gsap.set(deleteButton, { pointerEvents: "auto" });
+                  },
+                });
+                this.vars.isOpen = true;
+              } else {
+                gsap.to(card, {
+                  x: 0,
+                  duration: 0.3,
+                  ease: "power2.out",
+                });
+                gsap.to(deleteButton, {
+                  autoAlpha: 0,
+                  duration: 0.3,
+                  overwrite: true,
+                  onComplete: () => {
+                    gsap.set(deleteButton, { pointerEvents: "none" });
+                  },
+                });
+                this.vars.isOpen = false;
+              }
+            },
+            onClick: function (this: any, e: MouseEvent) {
+              if (this.vars.isOpen) {
+                e.stopPropagation();
+                component.closeSwipe(card, deleteButton, this);
+              }
+            },
+          });
+
+          const draggable = draggableArray[0];
+          draggable.vars["isOpen"] = false;
+          this.draggableInstances.push(draggable);
+        });
+      }, 0);
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditTemplatePlanComponent.initializeSwipe"
+      );
+    }
+  }
+
+  private closeSwipe(
+    card: HTMLElement,
+    deleteButton: Element,
+    draggable: any
+  ): void {
+    gsap.to(card, {
+      x: 0,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+    gsap.to(deleteButton, {
+      autoAlpha: 0,
+      duration: 0.3,
+      onComplete: () => {
+        gsap.set(deleteButton, { pointerEvents: "none" });
+      },
+    });
+    draggable.vars.isOpen = false;
+  }
+
+  private closeAllSwipes(): void {
+    this.allenamentoCards.forEach((cardRef, index) => {
+      const card = cardRef.nativeElement;
+      const deleteButton = card
+        .closest(".allenamento-wrapper")
+        ?.querySelector(".delete-action");
+      const draggable = this.draggableInstances[index];
+
+      if (draggable?.vars.isOpen && deleteButton) {
+        this.closeSwipe(card, deleteButton, draggable);
+      }
+    });
   }
 
   // Metodi per la navigazione animata tra viste
   public async openWorkoutDetail(workout: AllenamentoForm): Promise<void> {
     if (this.isAnimating) return;
-    
+
     try {
       this.isAnimating = true;
-      
+
+      // Chiudi tutti gli swipe aperti prima di navigare
+      this.closeAllSwipes();
+
       // Fade out della vista corrente
       if (this.listView?.nativeElement) {
         await this.playFadeOut(this.listView.nativeElement);
       }
-      
+
+      window.scrollTo(0, 0);
+
       // Cambia la vista
       this.selectedWorkout = workout;
       this.currentView = 'detail';
       this.cdr.detectChanges();
-      
+
       // Fade in della nuova vista
       if (this.detailView?.nativeElement) {
         await this.playFadeIn(this.detailView.nativeElement);
       }
-      
+
       this.isAnimating = false;
     } catch (error) {
       this.isAnimating = false;
@@ -212,25 +390,27 @@ export class CreateOrEditTemplatePlanComponent
 
   public async backToList(): Promise<void> {
     if (this.isAnimating) return;
-    
+
     try {
       this.isAnimating = true;
-      
+
       // Fade out della vista corrente
       if (this.detailView?.nativeElement) {
         await this.playFadeOut(this.detailView.nativeElement);
       }
-      
+
+      window.scrollTo(0, 0);
+
       // Cambia la vista
       this.selectedWorkout = null;
       this.currentView = 'list';
       this.cdr.detectChanges();
-      
+
       // Fade in della nuova vista
       if (this.listView?.nativeElement) {
         await this.playFadeIn(this.listView.nativeElement);
       }
-      
+
       this.isAnimating = false;
     } catch (error) {
       this.isAnimating = false;
@@ -273,16 +453,34 @@ export class CreateOrEditTemplatePlanComponent
     return workout.listaEserciziForm.length;
   }
 
+  openDeleteWorkout(identifier: number): void {
+    try {
+      this.modalService.open({
+        warning: true,
+        headerTemplate: this.headerDeleteWorkoutTemplate,
+        bodyTemplate: this.bodyDeleteWorkoutTemplate,
+        footerCloseTemplate: this.footerCloseDeleteWorkoutTemplate,
+        footerConfirmTemplate: this.footerConfirmDeleteWorkoutTemplate,
+        onConfirm: () => this.deleteWorkout(identifier),
+      });
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditTemplatePlanComponent.openDeleteWorkout"
+      );
+    }
+  }
+
   deleteWorkout(identifier: number): void {
     try {
       this.createOrEditTemplatePlanService.DeleteWorkout(identifier);
-      
+
       // Se siamo in vista dettaglio e abbiamo cancellato l'allenamento visualizzato, torna alla lista
-      if (this.currentView === 'detail' && 
-          this.selectedWorkout?.form.controls["identifier"].value === identifier) {
+      if (this.currentView === 'detail' &&
+        this.selectedWorkout?.form.controls["identifier"].value === identifier) {
         this.backToList();
       }
-      
+
       this.cdr.detectChanges();
     } catch (error) {
       this.errorHandlerService.logError(
@@ -381,17 +579,17 @@ export class CreateOrEditTemplatePlanComponent
       this.scheda = this.createOrEditTemplatePlanService.formScheda.getDatiSchedaDaSalvare();
 
       const user = this.authService.getCurrentUser();
-      
+
       if (user) {
         const SaveDatiTemplateSchedaRequest: SaveDatiTemplateSchedaRequestModel =
-          {
-            schedaDTO:  this.scheda,
-            userId: user.userId,
-          };
-        
-        if (actionId===0){
-          SaveDatiTemplateSchedaRequest.schedaDTO.id=-1;
-          SaveDatiTemplateSchedaRequest.schedaDTO.schedaAttiva=false;
+        {
+          schedaDTO: this.scheda,
+          userId: user.userId,
+        };
+
+        if (actionId === 0) {
+          SaveDatiTemplateSchedaRequest.schedaDTO.id = -1;
+          SaveDatiTemplateSchedaRequest.schedaDTO.schedaAttiva = false;
         }
         this.createOrEditTemplatePlanService
           .savePlan(SaveDatiTemplateSchedaRequest)
@@ -555,6 +753,19 @@ export class CreateOrEditTemplatePlanComponent
         error,
         "CreateOrEditTemplatePlanComponent.eliminaScheda"
       );
+    }
+  }
+
+  getExerciseIconPath(esercizioForm: EsercizioForm): string {
+    try {
+      const idTipoEsercizio = esercizioForm.form.controls['idTipoEsercizio'].value;
+      return this.exerciseService.getExerciseIconPathByExerciseId(idTipoEsercizio);
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "TemplatePlanComponent.getExerciseIconPath"
+      );
+      return "assets/recollect/svg/default-exercise-icon.svg";
     }
   }
 }

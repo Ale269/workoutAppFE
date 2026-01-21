@@ -159,8 +159,8 @@ export class LoginComponent implements OnInit {
           forceShow: true,
           successMessage: "Accesso effettuato con successo",
           errorMessage: "Errore durante l'accesso",
-          resultDuration: 250,
-          minSpinnerDuration: 250,
+          resultDuration: 500,
+          minSpinnerDuration: 500,
         }
       );
 
