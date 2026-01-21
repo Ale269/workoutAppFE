@@ -7,7 +7,7 @@ export interface AllenamentoFormModel {
   identifier: FormControl<number | null>;
   id: FormControl<number | null>;
   idTemplate: FormControl<number | null>;
-  dataEsecuzione : FormControl<Date | null>;
+  dataEsecuzione: FormControl<Date | null>;
   nomeAllenamento: FormControl<string | null>;
   description: FormControl<string | null>;
   ordinamento: FormControl<number | null>;
@@ -215,11 +215,76 @@ export class AllenamentoForm {
     }
   }
 
+  /**
+   * Riordina tutti gli esercizi in base a un array di identificatori nell'ordine desiderato
+   * @param orderedIdentifiers Array degli identifier degli esercizi nell'ordine desiderato
+   * @returns true se il riordino è riuscito, false altrimenti
+   */
+  reorderExercisesByIdentifiers(orderedIdentifiers: number[]): boolean {
+    try {
+      console.log('reorderExercisesByIdentifiers chiamato con:', orderedIdentifiers);
+
+      // Crea una mappa per un accesso rapido agli esercizi per identifier
+      const exerciseMap = new Map<number, EsercizioForm>();
+      this.listaEserciziForm.forEach(exercise => {
+        const identifier = exercise.form.get("identifier")?.value;
+        if (identifier !== null && identifier !== undefined) {
+          exerciseMap.set(identifier, exercise);
+        }
+      });
+
+      // Verifica che tutti gli identifier siano validi
+      const reorderedList: EsercizioForm[] = [];
+      for (const identifier of orderedIdentifiers) {
+        const exercise = exerciseMap.get(identifier);
+        if (!exercise) {
+          console.error(`Esercizio con identifier ${identifier} non trovato`);
+          return false;
+        }
+        reorderedList.push(exercise);
+      }
+
+      // Se le lunghezze non corrispondono, c'è un problema
+      if (reorderedList.length !== this.listaEserciziForm.length) {
+        console.error("Il numero di esercizi nel nuovo ordine non corrisponde");
+        return false;
+      }
+
+      // 1. Aggiorna i valori ordinamento PRIMA di sostituire l'array
+      reorderedList.forEach((exercise, index) => {
+        const newOrdinamento = index + 1;
+        exercise.form.get("ordinamento")?.setValue(newOrdinamento, { emitEvent: false });
+      });
+
+      // 2. Sostituisci l'array
+      this.listaEserciziForm = reorderedList;
+
+      // 3. Aggiorna le posizioni disponibili
+      this.updateAvailablePositions();
+
+      // 4. Ricostruisci il FormArray nell'ordine corretto
+      this.rebuildFormArray();
+
+      // 5. Marca il form come dirty
+      this.form.markAsDirty();
+
+      console.log('Esercizi riordinati con successo. Nuovo ordine:');
+      this.listaEserciziForm.forEach((e, i) => {
+        console.log(`  ${i}: identifier=${e.form.get('identifier')?.value}, ordinamento=${e.form.get('ordinamento')?.value}`);
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Errore durante il riordino degli esercizi:", error);
+      return false;
+    }
+  }
+
   getDatiAllenamentoDaSalvare(): AllenamentoDTO {
     try {
       let allenamentoDaSalvare: AllenamentoDTO = {
-        id: this.form.controls["id"].value  ? this.form.controls["id"].value : 0,
-        idTemplate: this.form.controls["idTemplate"].value  ? this.form.controls["idTemplate"].value : 0,
+        id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
+        idTemplate: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
         dataEsecuzione: this.form.controls["dataEsecuzione"].value ? this.form.controls["dataEsecuzione"].value : new Date(),
         nomeAllenamento: this.form.controls["nomeAllenamento"].value ? this.form.controls["nomeAllenamento"].value : "",
         description: this.form.controls["description"].value ? this.form.controls["description"].value : "",

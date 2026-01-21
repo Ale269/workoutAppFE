@@ -28,6 +28,7 @@ export class GymExerciseSelectorComponent implements OnInit {
   @Input() appearance: "fill" | "outline" | "legacy" | "standard" = "outline";
   @Input() width: string = "100%";
   @Input() hint: string = "";
+  @Input() disabled: boolean = false;
 
   exercises: ExerciseViewModel[] = [];
   displayValue: string = "";
@@ -68,8 +69,11 @@ export class GymExerciseSelectorComponent implements OnInit {
 
   async openSheet(event: Event): Promise<void> {
     // Previeni il comportamento di default
+    if(this.disabled) return
+
     event.preventDefault();
     event.stopPropagation();
+
 
     try {
       const ref = await this.bottomSheetService.open<any, ExerciseViewModel>({

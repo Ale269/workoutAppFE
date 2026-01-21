@@ -6,42 +6,35 @@
 .buttons-container {
   display: flex;
   width: 100%;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: stretch;
   box-sizing: border-box;
 }
 
-.side-wrapper {
+// Contenitore unico per tutti i pulsanti
+.all-buttons-wrapper {
   display: flex;
   align-items: stretch;
   gap: 8px;
   flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+  border-radius: 30px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
-  &.left {
-    justify-content: flex-start;
-  }
-  &.right {
-    justify-content: flex-end;
-  }
-
-  // ← Rimuove il gap quando il pulsante è espanso
+  // Rimuove il gap quando un pulsante è espanso
   &:has(.transformation-button.transformed) {
     gap: 0;
   }
 }
 
 .transformation-button {
-  background: linear-gradient(#000000 0 0) padding-box,
-    linear-gradient(
-        to right,
-        rgba(0, 255, 225, 1) 0%,
-        rgba(0, 23, 19, 1) 50%,
-        rgba(0, 255, 225, 1) 100%
-      )
-      border-box;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 8px 12px;
-  border: 1px solid transparent;
-  border-radius: 32px;
+  border-radius: 24px;
   cursor: pointer;
   overflow: hidden;
   display: flex;
@@ -54,15 +47,18 @@
   min-height: 42px;
   position: relative;
 
+  &.left {
+    min-width: 48px;
+  }
+
+  &.right {
+    min-width: 48px;
+  }
+
   &.transformed {
-    background: linear-gradient(#000000 0 0) padding-box,
-      linear-gradient(
-          to bottom,
-          rgba(0, 255, 225, 1) 0%,
-          rgba(0, 23, 19, 1) 50%,
-          rgba(0, 255, 225, 1) 100%
-        )
-        border-box;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   button {
@@ -75,11 +71,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0; // ← Rimosso gap di default
+    gap: 0;
 
     &.has-label-and-icon {
-    gap: 8px;
-  }
+      gap: 8px;
+    }
   }
 }
 
@@ -93,7 +89,7 @@
   button {
     font-weight: 700;
     font-family: "poppins";
-    color: rgba(0, 255, 225, 1);
+    color: #fff;
     white-space: nowrap;
   }
 
@@ -158,7 +154,8 @@
     display: flex;
     justify-content: flex-end;
 
-    .close-icon-section-container {
+    .close-icon-section-container,
+    .delete-icon-element-container {
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -222,7 +219,7 @@
 .group-label {
   font-size: 12px;
   font-weight: 600;
-  color: rgba(0, 255, 225, 0.6);
+  color: #fff;
   text-transform: uppercase;
   margin-bottom: 12px;
   letter-spacing: 0.5px;

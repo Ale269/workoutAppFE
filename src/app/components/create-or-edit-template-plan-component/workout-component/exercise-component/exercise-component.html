@@ -1,4 +1,4 @@
-<div class="exercise-container">
+<div class="exercise-container" [class.compact-mode]="isCompactMode">
   <div class="titolo-esercizio-container">
     <div class="icona-numero-esercizio-container">
       <div class="circle-icon"
@@ -11,20 +11,25 @@
         Esercizio {{this.formEsercizio.form.controls['ordinamento'].value}}
       </h3>
     </div>
+    @if (!isCompactMode) {
     <div class="delete-icon-element-container">
       <div class="close-icon-trigger" (click)="openDeleteModal()"></div>
       <img src="assets/recollect/svg/google-close-icon.svg" />
     </div>
+    }
   </div>
   <form [formGroup]="formEsercizio.form">
     <div class="input-row">
-      <app-gym-exercise-selector [control]="this.idTipoEsercizioControl" label="Esercizio">
+      <app-gym-exercise-selector [control]="this.idTipoEsercizioControl" label="Esercizio" [disabled]="isCompactMode">
       </app-gym-exercise-selector>
     </div>
+
+    <!-- Campi visibili solo in modalità normale -->
+    @if (!isCompactMode) {
     <div class="input-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Descrizione esercizio</mat-label>
-        <input matInput [type]="'text'" formControlName="description" placeholder="Descrizione esercizio">
+        <input matInput [type]="'text'" formControlName="description" placeholder="Descrizione esercizio" />
       </mat-form-field>
     </div>
 
@@ -76,6 +81,7 @@
         </div>
       </button>
     </div>
+    }
   </form>
 </div>
 
@@ -85,13 +91,11 @@
   <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
 </ng-template>
 
-<!-- Template per il body -->
 <ng-template #bodyDeleteWorkout>
   <h3 class="text-white">Sei sicuro di voler eliminare questo esercizio?</h3>
   <h3 class="text-white">Questa azione non può essere annullata.</h3>
 </ng-template>
 
-<!-- Template per il bottone di chiusura -->
 <ng-template #footerCloseDeleteWorkout>
   <button class="text-shape-button-cancel" slot="footer-btn-close">
     <span>Annulla</span>
@@ -101,7 +105,6 @@
   </button>
 </ng-template>
 
-<!-- Template per il bottone di conferma -->
 <ng-template #footerConfirmDeleteWorkout>
   <button class="text-shape-button-danger">
     <span>Elimina</span>

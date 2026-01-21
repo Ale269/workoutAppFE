@@ -29,6 +29,8 @@ import { BottomSheetWrapperComponent } from "./components/shared/bottom-sheet/bo
 import { TranslateService } from "@ngx-translate/core";
 import { gsap } from "gsap";
 import { AnimationService } from "./core/services/page-animation-service";
+import { FocusOverlayWrapperComponent } from "./components/shared/focus-overlay/focus-overlay-wrapper";
+import { FocusOverlayService } from "./components/shared/focus-overlay/focus-overlay.service";
 
 @Component({
   selector: "app-root",
@@ -44,6 +46,7 @@ import { AnimationService } from "./core/services/page-animation-service";
     UpdateBannerComponent,
     OfflineIndicatorComponent,
     BottomSheetWrapperComponent,
+    FocusOverlayWrapperComponent,
   ],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -52,6 +55,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private errorHandler = inject(ErrorHandlerService);
   public modalService = inject(ModalService);
   public spinnerService = inject(SpinnerService);
+  public focusOverlayService = inject(FocusOverlayService);
   public bottomSheetService = inject(BottomSheetService);
   private translate = inject(TranslateService);
   private animationService = inject(AnimationService);
@@ -63,7 +67,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private destroy$ = new Subject<void>();
 
-  constructor() {
+  constructor(
+  ) {
     this.translate.setDefaultLang("it");
 
     // Setup routing events
@@ -77,13 +82,17 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.updateMenuVisibility(event.urlAfterRedirects || event.url);
       });
 
-    // Monitor modali e bottom sheets per bloccare lo scroll
+    // Monitor modali, bottom sheets e focus overlays per bloccare lo scroll
     effect(() => {
       const hasActiveModal = this.modalService.modals().length > 0;
       const hasActiveBottomSheet =
         this.bottomSheetService.activeBottomSheets().length > 0;
+      const hasActiveFocusOverlay =
+        this.focusOverlayService.activeOverlays().length > 0;
 
-      this.toggleBodyScroll(hasActiveModal || hasActiveBottomSheet);
+      this.toggleBodyScroll(
+        hasActiveModal || hasActiveBottomSheet || hasActiveFocusOverlay
+      );
     });
   }
 
@@ -95,7 +104,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error("🔥 Errori critici rilevati durante il bootstrap");
       const lastError = this.errorHandler.getLastError();
       console.error("Ultimo errore:", lastError);
-      
+
       this.MenuIsVisible = false;
       this.router.navigate(["/error"]).catch((err) => {
         console.error("Impossibile navigare a /error:", err);
@@ -104,12 +113,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     // Monitora errori critici che possono verificarsi durante l'esecuzione
-    // AppComponent gestisce SOLO il routing, non il detection degli errori
     this.errorHandler.onError((error) => {
       if (error.isCritical) {
         console.error("🔥 Nuovo errore critico rilevato in runtime:", error);
         this.MenuIsVisible = false;
-        
+
         // Naviga alla pagina errore
         this.router.navigate(["/error"]).catch((err) => {
           console.error("Impossibile navigare a /error:", err);

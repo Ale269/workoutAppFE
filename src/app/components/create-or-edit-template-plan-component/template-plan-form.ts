@@ -8,6 +8,7 @@ interface SchedaFormModel {
   isActive: FormControl<boolean | null>;
   idTemplate: FormControl<number | null>;
   nomeScheda: FormControl<string | null>;
+  descrizioneScheda: FormControl<string | null>;
   listaAllenamenti: FormArray<FormGroup<AllenamentoFormModel>>;
 }
 
@@ -24,6 +25,7 @@ export class SchedaForm {
       id: new FormControl<number | null>(null),
       idTemplate: new FormControl<number | null>(null),
       isActive: new FormControl<boolean | null>(false),
+      descrizioneScheda: new FormControl<string | null>(""),
       nomeScheda: new FormControl<string | null>("Scheda allenamento", [
         Validators.required,
       ]),

@@ -237,13 +237,13 @@ export class SpinnerService {
       return false;
     }
 
-    // 3. Se showFinalResult è true, mostra il risultato per resultDuration
+    // 3. Se showFinalResult è true, delega la chiusura al componente
     if (spinner.showFinalResult) {
-      const resultDuration = spinner.resultDuration || 2000;
-      await this.delay(resultDuration);
+      // Il componente gestirà la visualizzazione del risultato e la chiusura automatica
+      return true;
     }
 
-    // 4. Nascondi lo spinner
+    // 4. Nascondi lo spinner immediatamente se non c'è risultato da mostrare
     this.hide(id);
 
     return true;

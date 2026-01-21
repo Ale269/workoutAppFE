@@ -39,6 +39,16 @@
   justify-content: flex-start;
 }
 
+.compact-mode-toggle {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+  
+  button {
+    min-width: 160px;
+  }
+}
+
 .exercise-data {
   display: flex;
   flex-direction: column;

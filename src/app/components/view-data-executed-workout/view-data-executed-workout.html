@@ -22,15 +22,9 @@
       <accordion-header>
         <div class="esercizio-container">
           <div class="icon-esercizio-container">
-            <div
-              class="circle-icon"
-              [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor"
-            >
-              <img
-                [src]="esercizio.idIconaEsercizio | exerciseIcon"
-                class="exercise-icon"
-                [alt]="esercizio.idTipoEsercizio | exerciseName"
-              />
+            <div class="circle-icon" [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor">
+              <img [src]="esercizio.idIconaEsercizio | exerciseIcon" class="exercise-icon"
+                [alt]="esercizio.idTipoEsercizio | exerciseName" />
             </div>
           </div>
           <div class="dati-esercizio-container">
@@ -89,9 +83,11 @@
   </div>
 
   <div class="floating-static-button-container">
-    <button class="floating-static-button" (click)="modificaAllenamento()">
-      <span>Modifica allenamento </span>
-    </button>
+    <div class="floating-static-button-glass">
+      <button class="floating-static-button" (click)="modificaAllenamento()">
+        <span>Modifica allenamento </span>
+      </button>
+    </div>
   </div>
 </div>
 } @else if(this.loadingProgression === LoadingProgressionEnum.loading ||
@@ -102,11 +98,7 @@ this.loadingProgression === LoadingProgressionEnum.none){
 }
 
 <ng-template #headerDeleteWorkout>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
 </ng-template>
 
 <!-- Template per il body -->
