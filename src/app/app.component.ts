@@ -55,6 +55,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private errorHandler = inject(ErrorHandlerService);
   public modalService = inject(ModalService);
   public spinnerService = inject(SpinnerService);
+  public focusOverlayService = inject(FocusOverlayService);
   public bottomSheetService = inject(BottomSheetService);
   private translate = inject(TranslateService);
   private animationService = inject(AnimationService);
@@ -67,14 +68,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private router: Router,
-    private errorHandler: ErrorHandlerService,
-    public modalService: ModalService,
-    public spinnerService: SpinnerService,
-    public bottomSheetService: BottomSheetService,
-    public focusOverlayService: FocusOverlayService,
-    private translate: TranslateService,
-    private animationService: AnimationService
   ) {
     this.translate.setDefaultLang("it");
 

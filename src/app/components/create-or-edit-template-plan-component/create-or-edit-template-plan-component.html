@@ -119,7 +119,7 @@
                       esercizioForm.form.controls['identifier'].value) {
                       <div class="icon-container-accumulator">
                         <div class="circle-icon"
-                          [title]="esercizioForm.form.controls['descrizioneEsercizio'].value || 'Esercizio'"
+                          [title]="esercizioForm.form.controls['description'].value || 'Esercizio'"
                           [style.border-color]="esercizioForm.form.controls['idIconaEsercizio'].value | exerciseIconColor">
                           <img [src]="getExerciseIconPath(esercizioForm)"
                             [alt]="'Icona esercizio ' + esercizioForm.form.controls['idTipoEsercizio'].value" />
