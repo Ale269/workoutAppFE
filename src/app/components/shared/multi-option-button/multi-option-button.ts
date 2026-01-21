@@ -46,8 +46,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
 
   @Output() optionSelected = new EventEmitter<OptionSelectedEvent>();
 
-  @ViewChild("leftWrapper") leftWrapper!: ElementRef;
-  @ViewChild("rightWrapper") rightWrapper!: ElementRef;
+  @ViewChild("allButtonsWrapper") allButtonsWrapper!: ElementRef;
   @ViewChild("leftTransformButton") leftTransformButton?: ElementRef;
   @ViewChild("leftTransformedContent") leftTransformedContent?: ElementRef;
   @ViewChild("leftBasicContent") leftBasicContent?: ElementRef;
@@ -62,9 +61,9 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
   private originalWidths = new Map<HTMLElement, number>();
   private naturalHeights = { left: 0, right: 0 };
 
-  constructor() {}
+  constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -137,6 +136,8 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     if (this.expandedSide || this.isAnimating) return;
     this.isAnimating = true;
 
+    const wrapper = this.allButtonsWrapper.nativeElement;
+
     const activeBtn =
       side === "left"
         ? this.leftTransformButton!.nativeElement
@@ -149,17 +150,18 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
       side === "left"
         ? this.leftBasicContent!.nativeElement
         : this.rightBasicContent!.nativeElement;
-    const activeWrapper =
-      side === "left"
-        ? this.leftWrapper.nativeElement
-        : this.rightWrapper.nativeElement;
     const activeNaturalHeight =
       side === "left" ? this.naturalHeights.left : this.naturalHeights.right;
 
-    const toHide =
-      side === "left"
-        ? [this.rightWrapper.nativeElement]
-        : [this.leftWrapper.nativeElement, this.staticButton.nativeElement];
+    // Elementi da nascondere (tutti tranne quello attivo)
+    const toHide: HTMLElement[] = [];
+    if (side === "left") {
+      if (this.rightTransformButton) toHide.push(this.rightTransformButton.nativeElement);
+      toHide.push(this.staticButton.nativeElement);
+    } else {
+      if (this.leftTransformButton) toHide.push(this.leftTransformButton.nativeElement);
+      toHide.push(this.staticButton.nativeElement);
+    }
 
     // Salva le larghezze originali
     toHide.forEach((el) => {
@@ -177,21 +179,21 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     // FASE 1: Nascondi completamente gli altri elementi PRIMA di tutto
     tl.to(toHide, {
       opacity: 0,
-      duration: 0.15,
+      duration: 0.075,
       ease: "power2.inOut",
     })
       .to(toHide, {
         width: 0,
-        duration: 0.15,
+        duration: 0.075,
         ease: "power2.inOut",
         onComplete: () => {
           toHide.forEach((el) => (el.style.pointerEvents = "none"));
         },
       })
 
-      // FASE 2: Rimuovi il gap del wrapper SENZA aggiungere transformed
+      // FASE 2: Rimuovi il gap del wrapper
       .call(() => {
-        activeWrapper.style.gap = "0";
+        wrapper.style.gap = "0";
       })
 
       // FASE 3: Nascondi il contenuto base
@@ -200,7 +202,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
         {
           opacity: 0,
           height: 0,
-          duration: 0.15,
+          duration: 0.075,
           ease: "power2.in",
         },
         "-=0.05"
@@ -208,10 +210,10 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
 
       // FASE 4: Espandi il wrapper e la larghezza del pulsante con bounce
       .to(
-        activeWrapper,
+        wrapper,
         {
           flexGrow: 1,
-          duration: 0.3,
+          duration: 0.15,
           ease: "back.out(1.3)",
         },
         "-=0.05"
@@ -220,7 +222,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
         activeBtn,
         {
           width: "100%",
-          duration: 0.32,
+          duration: 0.16,
           ease: "back.out(1.4)",
         },
         "<"
@@ -237,7 +239,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
         {
           height: activeNaturalHeight,
           opacity: 1,
-          duration: 0.35,
+          duration: 0.175,
           ease: "back.out(1.5)",
         },
         "+=0.02"
@@ -247,6 +249,8 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
   collapseButton(side: MenuSide) {
     if (!this.expandedSide || this.isAnimating) return;
     this.isAnimating = true;
+
+    const wrapper = this.allButtonsWrapper.nativeElement;
 
     const activeBtn =
       side === "left"
@@ -260,15 +264,16 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
       side === "left"
         ? this.leftBasicContent!.nativeElement
         : this.rightBasicContent!.nativeElement;
-    const activeWrapper =
-      side === "left"
-        ? this.leftWrapper.nativeElement
-        : this.rightWrapper.nativeElement;
 
-    const toRestore =
-      side === "left"
-        ? [this.rightWrapper.nativeElement]
-        : [this.leftWrapper.nativeElement, this.staticButton.nativeElement];
+    // Elementi da ripristinare
+    const toRestore: HTMLElement[] = [];
+    if (side === "left") {
+      if (this.rightTransformButton) toRestore.push(this.rightTransformButton.nativeElement);
+      toRestore.push(this.staticButton.nativeElement);
+    } else {
+      if (this.leftTransformButton) toRestore.push(this.leftTransformButton.nativeElement);
+      toRestore.push(this.staticButton.nativeElement);
+    }
 
     // Fixa l'altezza corrente prima di collassare
     if (activeContent.style.height === "auto") {
@@ -276,7 +281,6 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     }
 
     // Calcola la larghezza target PRIMA di rimuovere la classe
-    // Salva temporaneamente la classe per il calcolo
     const hadTransformed = activeBtn.classList.contains("transformed");
     activeBtn.classList.remove("transformed");
 
@@ -297,8 +301,8 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
 
         // Reset completo
         activeBtn.classList.remove("transformed");
-        activeWrapper.style.gap = "";
-        gsap.set([activeBtn, activeWrapper], { clearProps: "all" });
+        wrapper.style.gap = "";
+        gsap.set([activeBtn, wrapper], { clearProps: "all" });
         gsap.set(activeContent, { height: 0, opacity: 0 });
         gsap.set(activeBasic, { clearProps: "all" });
         toRestore.forEach((el) => {
@@ -314,11 +318,11 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     tl.to(activeContent, {
       height: 0,
       opacity: 0,
-      duration: 0.25,
+      duration: 0.125,
       ease: "back.in(1.3)",
     })
 
-      // FASE 2: Riduci SOLO l'altezza minima e rimuovi la classe transformed
+      // FASE 2: Rimuovi la classe transformed
       .call(() => {
         activeBtn.classList.remove("transformed");
       })
@@ -328,7 +332,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
         activeBtn,
         {
           width: targetWidth,
-          duration: 0.28,
+          duration: 0.14,
           ease: "back.in(1.4)",
         },
         "+=0.02"
@@ -336,10 +340,10 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
 
       // FASE 4: Riduci il wrapper contemporaneamente con bounce
       .to(
-        activeWrapper,
+        wrapper,
         {
           flexGrow: 0,
-          duration: 0.28,
+          duration: 0.14,
           ease: "back.in(1.3)",
         },
         "<"
@@ -351,7 +355,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
         {
           height: "auto",
           opacity: 1,
-          duration: 0.15,
+          duration: 0.075,
           ease: "power2.out",
         },
         "-=0.12"
@@ -359,7 +363,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
 
       // FASE 6: Ripristina il gap del wrapper
       .call(() => {
-        activeWrapper.style.gap = "";
+        wrapper.style.gap = "";
       })
 
       // FASE 7: Ripristina gli elementi nascosti ALLA FINE con bounce
@@ -367,7 +371,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
         toRestore,
         {
           width: (i, target) => this.originalWidths.get(target)!,
-          duration: 0.18,
+          duration: 0.09,
           ease: "back.out(1.3)",
           onStart: () => {
             toRestore.forEach((el) => (el.style.pointerEvents = ""));
@@ -379,7 +383,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
         toRestore,
         {
           opacity: 1,
-          duration: 0.15,
+          duration: 0.075,
           ease: "power2.out",
         },
         "<0.05"

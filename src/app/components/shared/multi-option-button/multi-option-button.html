@@ -1,20 +1,14 @@
 <div class="buttons-container" #container>
-  <div class="side-wrapper left" #leftWrapper>
+  <div class="all-buttons-wrapper" #allButtonsWrapper>
+    <!-- Left transformation button (now positioned before static) -->
     @if(leftGroups.length > 0) {
-    <div
-      class="transformation-button left"
-      #leftTransformButton
-      (click)="expandButton('left')"
-    >
+    <div class="transformation-button left" #leftTransformButton (click)="expandButton('left')">
       <!-- BASIC STATE -->
       <div class="basic-setting" #leftBasicContent>
         <button [class.has-label-and-icon]="leftButtonLabel">
           <span class="button-label">{{ leftButtonLabel }}</span>
           <div class="option-icon-section-container">
-            <img
-              src="assets/recollect/svg/google-more-options.svg"
-              alt="Opzioni"
-            />
+            <img src="assets/recollect/svg/google-more-options.svg" alt="Opzioni" />
           </div>
         </button>
       </div>
@@ -22,14 +16,8 @@
       <!-- EXPANDED STATE -->
       <div class="transformed-setting" #leftTransformedContent>
         <div class="transformed-setting-close-button-container">
-          <div
-            class="close-icon-section-container"
-            (click)="collapseButton('left')"
-          >
-            <img
-              src="assets/recollect/svg/google-close-icon.svg"
-              alt="Chiudi"
-            />
+          <div class="delete-icon-element-container" (click)="collapseButton('left')">
+            <img src="assets/recollect/svg/google-close-icon.svg" alt="Chiudi" />
           </div>
         </div>
 
@@ -39,10 +27,7 @@
           <div class="group-label">{{ group.label }}</div>
           } @for(option of group.options; track option.optionId) {
           <div class="transformed-setting-option-container">
-            <button
-              (click)="onOptionClick(group.id, option.optionId, 'left')"
-              [style.color]="option.color"
-            >
+            <button (click)="onOptionClick(group.id, option.optionId, 'left')" [style.color]="option.color">
               <div class="option-content">
                 @if(option.iconPath) {
                 <img [src]="option.iconPath" class="option-icon" />
@@ -57,15 +42,10 @@
       </div>
     </div>
     }
-  </div>
 
-  <div class="side-wrapper right" #rightWrapper>
+    <!-- Right transformation button -->
     @if(rightGroups.length > 0) {
-    <div
-      class="transformation-button right"
-      #rightTransformButton
-      (click)="expandButton('right')"
-    >
+    <div class="transformation-button right" #rightTransformButton (click)="expandButton('right')">
       <div class="basic-setting" #rightBasicContent>
         <button [class.has-label-and-icon]="rightButtonLabel">
           <span class="button-label">{{ rightButtonLabel }}</span>
@@ -74,14 +54,8 @@
 
       <div class="transformed-setting" #rightTransformedContent>
         <div class="transformed-setting-close-button-container">
-          <div
-            class="close-icon-section-container"
-            (click)="collapseButton('right')"
-          >
-            <img
-              src="assets/recollect/svg/google-close-icon.svg"
-              alt="Chiudi"
-            />
+          <div class="delete-icon-element-container" (click)="collapseButton('right')">
+            <img src="assets/recollect/svg/google-close-icon.svg" alt="Chiudi" />
           </div>
         </div>
 
@@ -91,10 +65,7 @@
           <div class="group-label">{{ group.label }}</div>
           } @for(option of group.options; track option.optionId) {
           <div class="transformed-setting-option-container">
-            <button
-              (click)="onOptionClick(group.id, option.optionId, 'right')"
-              [style.color]="option.color"
-            >
+            <button (click)="onOptionClick(group.id, option.optionId, 'right')" [style.color]="option.color">
               <div class="option-content">
                 @if(option.iconPath) {
                 <img [src]="option.iconPath" class="option-icon" />
@@ -110,6 +81,7 @@
     </div>
     }
 
+    <!-- Static button (content projection) -->
     <div class="static-button" #staticButton>
       <div class="static-button-container">
         <ng-content></ng-content>

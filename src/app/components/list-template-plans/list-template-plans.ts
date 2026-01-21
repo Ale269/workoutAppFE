@@ -72,12 +72,12 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
       options: [
         {
           optionId: 1,
-          color: " rgba(0, 255, 225, 1)",
+          color: " #fff",
           description: "Importa scheda",
         },
         {
           optionId: 2,
-          color: " rgba(0, 255, 225, 1)",
+          color: " #fff",
           description: "Download guida importazione",
         },
       ],
@@ -91,7 +91,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     private authService: AuthService,
     private router: Router,
     private modalService: ModalService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     try {

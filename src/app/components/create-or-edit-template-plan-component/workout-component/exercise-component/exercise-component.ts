@@ -44,6 +44,7 @@ import { MatInputModule } from "@angular/material/input";
 export class ExerciseComponent implements OnInit, OnDestroy {
   @Input() formAllenamento!: AllenamentoForm;
   @Input() formEsercizio!: EsercizioForm;
+  @Input() isCompactMode: boolean = false; // Nuova proprietà per la modalità compatta
 
   @ViewChild("headerDeleteWorkout") headerDeleteWorkout!: TemplateRef<any>;
   @ViewChild("bodyDeleteWorkout") bodyDeleteWorkout!: TemplateRef<any>;
@@ -83,10 +84,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         "ordinamento"
       ] as FormControl<number | null>;
 
-      // Inizializza l'icona basandosi sull'IdTipoEsercizio
       this.updateExerciseIcon();
 
-      // Sottoscrizione al cambio di valore dell'ordinamento
       this.ordinamentoControl.valueChanges
         .pipe(takeUntil(this.destroy$))
         .subscribe((newPosition) => {
@@ -95,7 +94,6 @@ export class ExerciseComponent implements OnInit, OnDestroy {
           }
         });
 
-      // Sottoscrizione al cambio del tipo di esercizio per aggiornare l'icona
       this.idTipoEsercizioControl.valueChanges
         .pipe(takeUntil(this.destroy$))
         .subscribe(() => {
@@ -113,7 +111,6 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   private updateExerciseIcon(): void {
     try {
-      // Usa la nuova funzione che mappa IdTipoEsercizio -> Icona
       this.exerciseIconPath = this.exerciseService.getExerciseIconPathByExerciseId(
         this.idTipoEsercizioControl.value
       );
@@ -154,8 +151,6 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         return;
       }
 
-      // Usa il metodo moveEsercizio di AllenamentoForm per gestire lo spostamento
-      // e il riallineamento automatico di tutti gli ordinamenti
       const success = this.formAllenamento.moveEsercizio(
         currentExerciseId,
         newPosition
@@ -163,8 +158,6 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
       if (!success) {
         console.error("Errore durante lo spostamento dell'esercizio");
-        // Opzionalmente, potresti ripristinare il valore precedente
-        // o mostrare un messaggio di errore all'utente
       }
 
       this.cdr.detectChanges();
@@ -237,4 +230,5 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       );
     }
   }
+
 }

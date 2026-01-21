@@ -61,11 +61,13 @@
 
   @if(this.idAllenamento){
   <div class="floating-static-button-container">
-    <button class="floating-static-button"
-      [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
-      (click)="registraAllenamento()">
-      <span>Salva</span>
-    </button>
+    <div class="floating-static-button-glass">
+      <button class="floating-static-button"
+        [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
+        (click)="registraAllenamento()">
+        <span>Salva</span>
+      </button>
+    </div>
   </div>
   }@else {
   <div class="floating-double-buttons-container">

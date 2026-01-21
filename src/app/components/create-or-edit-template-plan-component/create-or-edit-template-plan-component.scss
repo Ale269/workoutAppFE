@@ -1,91 +1,290 @@
-.tab-container {
-  position: relative;
-}
-
-::ng-deep .mat-mdc-option-active span {
-  color: #fff !important;
-}
-::ng-deep .mat-mdc-option {
+// Stili per le sezioni e la nuova struttura senza accordion
+.section-title {
+  padding-bottom: 16px;
   border-bottom: 1px solid #212121;
 }
-::ng-deep .mat-mdc-option .mat-pseudo-checkbox {
-  --mat-pseudo-checkbox-minimal-selected-checkmark-color: #fff !important;
-}
-::ng-deep .mat-mdc-select-panel {
-  border: 1px solid #00ffe1;
-}
 
-mat-form-field {
-  width: 100%;
-}
-
-.add-workout-modal-description {
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 16px;
+.section-content {
+  padding-top: 16px;
 }
 
 .content {
-  padding-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  position: relative;
 }
 
-.nome-scheda-container {
-  padding-bottom: 40px;
+.list-view,
+.workout-detail-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .warning-icon {
   width: 40px;
 }
 
-.add-tab-container {
-  position: absolute;
-  top: 12px;
-  left: 0;
-  z-index: 10;
+.add-workout-icon {
+  width: 40px;
 }
 
-.add-tab-container img {
-  filter: brightness(0) saturate(100%) invert(94%) sepia(45%) saturate(3320%)
-    hue-rotate(89deg) brightness(104%) contrast(102%);
-}
-
-.add-tab-trigger {
-  width: 44px;
-  height: 44px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 99;
-}
-
-.swipe-icon-container {
-  position: absolute;
-  top: 14px;
-  right: 0;
-  z-index: 10;
-}
-
-.swipe-icon-container img {
-  width: 18px;
-  filter: brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%)
-    hue-rotate(240deg) brightness(96%) contrast(88%);
-}
-
-.delete-scheda-button-row {
-  margin-top: 16px;
+// Container degli allenamenti
+.workouts-container {
   display: flex;
-  justify-content: flex-start;
-}
-
-.container-switch {
-  padding-bottom: 32px;
+  flex-direction: column;
   width: 100%;
 }
 
-.floating-actions-workout{
+.section-dati-scheda-title {
+  padding-bottom: 16px;
+}
+
+.workouts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+// Card allenamento
+.workout-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(4px);
+  }
+
+  &:active {
+    transform: translateX(2px);
+  }
+}
+
+.workout-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+
+  .workout-name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .arrow-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+}
+
+.workout-card:hover .arrow-icon {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.workout-card-body {
+  .exercise-count {
+    font-size: 0.9rem;
+    opacity: 0.7;
+  }
+}
+
+.add-workout-button-container {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+// Vista dettaglio allenamento
+.workout-detail-view {
+  app-workout-component {
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
+.dati-scheda-container {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.delete-scheda-button-row {
+  display: flex;
+  padding-top: 16px;
+}
+
+.section-workout-container {
+  padding-bottom: 0;
+}
+
+// Warning row per nessun allenamento
+.add-allenamento-button-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 0;
+
+  .warnign-row {
+    text-align: center;
+
+    h3 {
+      opacity: 0.7;
+    }
+  }
+}
+
+// Switch container
+.container-switch {
+  margin-bottom: 2rem;
+}
+
+// Modal body styling
+.add-workout-modal-description {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.workout-name-input-container {
+  width: 100%;
+  display: flex;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.section-container {
+  padding-bottom: 32px;
+}
+
+
+.allenamento-wrapper {
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.allenamento-container {
+  position: relative;
+  display: flex;
+  padding: 16px;
+  border: 1px solid #212121;
+  border-radius: 16px;
+  gap: 16px;
+  background-color: #000;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.allenamento-container:first-of-type {
+  border-top: 1px solid #212121;
+}
+
+.nome-datai-allenamento {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.graphic-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.graphic-visualizer-container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.visualizer-allenamento-container {
+  flex: 1;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
+  height: 100%;
+
+  div {
+    flex: 1;
+    width: 2px;
+    background-color: #fff;
+    border-radius: 16px;
+  }
+
+  .current-day-visualizer {
+    width: 8px;
+  }
+}
+
+.delete-action {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 120px;
+  border-radius: 16px;
+  padding-left: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ff0000;
+  background: radial-gradient(circle at calc(100% - 40px) 50%,
+      rgba(255, 0, 0, 0) 0%,
+      #820000 100%);
+  border: 1px solid #970000;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  cursor: pointer;
+  z-index: 10;
+
+  svg {
+    color: #ffffff;
+  }
+}
+
+.circle-icon {
+  border: 1px solid #fff;
+  width: 24px;
+  background-color: #000;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.icon-container-accumulator {
+  width: 18px;
+  overflow-x: visible;
+}
+
+.icona-numero-esercizio-container {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.icona-numero-esercizio-container img {
+  width: 16px;
 }

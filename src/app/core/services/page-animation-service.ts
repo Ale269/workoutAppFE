@@ -17,7 +17,7 @@ export class AnimationService {
     }
   }
 
-  public playFadeOut(duration = 0.28): Promise<void> {
+  public playFadeOut(duration = 0.16): Promise<void> {
     return new Promise((resolve) => {
       if (!this.mainEl) {
         resolve();
@@ -35,7 +35,7 @@ export class AnimationService {
     });
   }
 
-  public playFadeIn(duration = 0.28): Promise<void> {
+  public playFadeIn(duration = 0.16): Promise<void> {
     return new Promise((resolve) => {
       if (!this.mainEl) {
         resolve();

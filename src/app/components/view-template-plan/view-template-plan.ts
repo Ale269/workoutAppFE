@@ -76,12 +76,12 @@ export class ViewTemplatePlan {
       options: [
         {
           optionId: 1,
-          color: " rgba(0, 255, 225, 1)",
+          color: "#fff",
           description: "Download scheda",
         },
         {
           optionId: 2,
-          color: " rgba(0, 255, 225, 1)",
+          color: " #fff",
           description: "Duplica scheda",
         },
       ],
@@ -454,7 +454,7 @@ export class ViewTemplatePlan {
             window.URL.revokeObjectURL(url);
           }
         },
-        error: (error: any) => {},
+        error: (error: any) => { },
       });
     }
   }
