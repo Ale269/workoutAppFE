@@ -17,6 +17,16 @@ app-multi-option-button {
 
 .date-row {
   padding-bottom: 32px;
+
+  form {
+    display: flex;
+    flex-flow: column;
+    gap: 16px;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
 }
 
 .full-width {

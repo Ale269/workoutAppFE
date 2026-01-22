@@ -1,4 +1,4 @@
-// spinner.service.ts - Versione con forceShow corretto
+// spinner.service.ts - Versione con sistema di Promise per completamento
 import { Injectable, signal } from '@angular/core';
 
 export enum SpinnerResult {
@@ -32,6 +32,10 @@ export class SpinnerService {
   // Getter per accedere ai spinners (readonly)
   spinners = this._spinners.asReadonly();
 
+  // Sistema di Promise per aspettare il completamento dello spinner
+  private completionPromises = new Map<string, Promise<void>>();
+  private completionResolvers = new Map<string, () => void>();
+
   private defaultConfig: Partial<SpinnerConfig> = {
     successMessage: "Operazione completata con successo",
     errorMessage: "Operazione fallita",
@@ -56,6 +60,13 @@ export class SpinnerService {
     };
 
     this.hide(id);
+    
+    // Crea una Promise che si risolverà quando lo spinner viene nascosto
+    const completionPromise = new Promise<void>((resolve) => {
+      this.completionResolvers.set(id, resolve);
+    });
+    this.completionPromises.set(id, completionPromise);
+    
     this._spinners.update(spinners => [...spinners, fullConfig]);
     
     return id;
@@ -88,6 +99,15 @@ export class SpinnerService {
     
     if (filteredSpinners.length !== currentSpinners.length) {
       this._spinners.set(filteredSpinners);
+      
+      // Risolvi la Promise di completamento
+      const resolver = this.completionResolvers.get(id);
+      if (resolver) {
+        resolver();
+        this.completionResolvers.delete(id);
+        this.completionPromises.delete(id);
+      }
+      
       return true;
     }
     
@@ -98,6 +118,18 @@ export class SpinnerService {
    * Nasconde tutti gli spinner
    */
   hideAll(): void {
+    const currentSpinners = this._spinners();
+    
+    // Risolvi tutte le Promise
+    currentSpinners.forEach(spinner => {
+      const resolver = this.completionResolvers.get(spinner.id);
+      if (resolver) {
+        resolver();
+      }
+    });
+    
+    this.completionResolvers.clear();
+    this.completionPromises.clear();
     this._spinners.set([]);
   }
 
@@ -190,8 +222,10 @@ export class SpinnerService {
    * Metodo centrale che gestisce:
    * 1. Attesa minSpinnerDuration (SE forceShow è true)
    * 2. Impostazione del risultato
-   * 3. Attesa resultDuration (se showFinalResult è true)
+   * 3. Attesa completamento animazione (se showFinalResult è true)
    * 4. Nascondimento automatico dello spinner
+   * 
+   * @returns Promise che si risolve quando lo spinner è completamente chiuso
    */
   private async setResultWithTiming(
     id: string, 
@@ -237,9 +271,10 @@ export class SpinnerService {
       return false;
     }
 
-    // 3. Se showFinalResult è true, delega la chiusura al componente
+    // 3. Se showFinalResult è true, aspetta che il componente completi l'animazione
     if (spinner.showFinalResult) {
-      // Il componente gestirà la visualizzazione del risultato e la chiusura automatica
+      // Aspetta che il componente chiami hide() dopo aver mostrato il risultato
+      await this.waitForCompletion(id);
       return true;
     }
 
@@ -247,6 +282,17 @@ export class SpinnerService {
     this.hide(id);
 
     return true;
+  }
+
+  /**
+   * Aspetta che uno spinner completi TUTTA l'animazione (risultato + chiusura)
+   * Questa Promise si risolve quando hide() viene chiamato dal componente
+   */
+  async waitForCompletion(id: string): Promise<void> {
+    const promise = this.completionPromises.get(id);
+    if (promise) {
+      await promise;
+    }
   }
 
   /**

@@ -1,5 +1,3 @@
-<!-- create-or-edit-template-plan-component.html -->
-
 @if(this.loadingProgression === LoadingProgressionEnum.complete){
 <div class="content">
   <div class="section-title-container close-icon-title-container">
@@ -18,30 +16,50 @@
       </h3>
     </div>
     <div class="date-row">
-      <form [formGroup]="createOrEditWorkoutExecutionService.AllenamentoForm.form">
+      <form
+        [formGroup]="createOrEditWorkoutExecutionService.AllenamentoForm.form"
+      >
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Scegli una data</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="dataEsecuzione" />
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="dataEsecuzione"
+          />
           <mat-hint>DD/MM/YYYY</mat-hint>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
-
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Descrizione</mat-label>
-          <input matInput type="'text'" formControlName="description">
+          <input matInput type="'text'" formControlName="description" />
         </mat-form-field>
       </form>
     </div>
   </div>
-  <div class="exercise-data">
+  
+  <div #exerciseDataContainer class="exercise-data">
     @for (esercizioForm of
     this.createOrEditWorkoutExecutionService.AllenamentoForm.listaEserciziForm;
     track esercizioForm.form.controls['identifier'].value) {
-    <app-exercise-component [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm"
-      (onDeleteExercise)="deleteEexercise($event)" [formEsercizio]="esercizioForm"></app-exercise-component>
+    <div #exerciseCard 
+         appLongPress 
+         [duration]="500" 
+         (mouseLongPress)="toggleCompactMode()" 
+         class="exercise-wrapper">
+      <app-exercise-component
+        [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm"
+        (onDeleteExercise)="deleteEexercise($event)"
+        [formEsercizio]="esercizioForm"
+        [isCompactMode]="isCompactMode">
+      </app-exercise-component>
+    </div>
     } @empty { }
   </div>
+  
   <div class="add-exercise-button-row">
     <button class="text-shape-button" (click)="addNuovoEsercizio()">
       <span>Aggiungi esercizio</span>
@@ -50,38 +68,41 @@
       </div>
     </button>
   </div>
-  <div class="delete-allenamento-button-row">
-    <button class="text-shape-button-danger" (click)="openDeleteAllenamento()">
-      <span>Elimina allenamento</span>
-      <div class="text-shape-button-icon-container-danger">
-        <img src="assets/recollect/svg/google-delete.svg" />
-      </div>
-    </button>
-  </div>
 
   @if(this.idAllenamento){
-  <div class="floating-static-button-container">
-    <div class="floating-static-button-glass">
-      <button class="floating-static-button"
-        [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
-        (click)="registraAllenamento()">
-        <span>Salva</span>
-      </button>
-    </div>
-  </div>
-  }@else {
   <div class="floating-double-buttons-container">
-    <app-multi-option-button [rightGroups]="rightButtonOptionsGroup" [rightButtonLabel]="'Cambia'"
-      (optionSelected)="onOptionSelected($event)">
-      <!-- Il pulsante statico viene proiettato qui -->
-      <button class="floating-static-button"
+    <app-multi-option-button
+      [leftGroups]="leftButtonOptionsGroup"
+      [leftButtonLabel]="''"
+      (optionSelected)="onOptionSelected($event)"
+    >
+      <button
+        class="floating-static-button"
         [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
-        (click)="registraAllenamento()">
+        (click)="registraAllenamento()"
+      >
         <span>Salva</span>
       </button>
     </app-multi-option-button>
   </div>
-  } }@else {
+  }@else {
+  <div class="floating-double-buttons-container">
+    <app-multi-option-button
+      [rightGroups]="rightButtonOptionsGroup"
+      [rightButtonLabel]="'Cambia'"
+      (optionSelected)="onOptionSelected($event)"
+    >
+      <button
+        class="floating-static-button"
+        [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
+        (click)="registraAllenamento()"
+      >
+        <span>Salva</span>
+      </button>
+    </app-multi-option-button>
+  </div>
+  } 
+  }@else {
   <h3 class="text-white">Nessun allenamento aggiunto</h3>
   }
 </div>
@@ -93,17 +114,20 @@ this.loadingProgression === LoadingProgressionEnum.loading){
 <h3 class="text-white">Caricamento fallito</h3>
 }
 
+<!-- Templates modali -->
 <ng-template #headerGoBack>
-  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
 </ng-template>
 
-<!-- Template per il body -->
 <ng-template #bodyGoBack>
   <h3 class="text-white">Sei sicuro di voler annullare la modifica?</h3>
   <h3 class="text-white">I dati non salvati andranno persi.</h3>
 </ng-template>
 
-<!-- Template per il bottone di chiusura -->
 <ng-template #footerCloseGoBack>
   <button class="text-shape-button-cancel">
     <span>Annulla</span>
@@ -113,7 +137,6 @@ this.loadingProgression === LoadingProgressionEnum.loading){
   </button>
 </ng-template>
 
-<!-- Template per il bottone di conferma -->
 <ng-template #footerConfirmGoBack>
   <button class="text-shape-button-danger">
     <span>Conferma</span>
@@ -124,18 +147,20 @@ this.loadingProgression === LoadingProgressionEnum.loading){
 </ng-template>
 
 <ng-template #headerDeleteTemplate>
-  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
 </ng-template>
 
-<!-- Template per il body -->
 <ng-template #bodyDeleteTemplate>
   <h3 class="text-white">
-    Sei sicuro di voler eliminare questo template scheda?
+    Sei sicuro di voler eliminare questo allenamento svolto?
   </h3>
   <h3 class="text-white">Questa azione non può essere annullata.</h3>
 </ng-template>
 
-<!-- Template per il bottone di chiusura -->
 <ng-template #footerCloseDeleteTemplate>
   <button class="text-shape-button-cancel">
     <span>Annulla</span>
@@ -145,7 +170,6 @@ this.loadingProgression === LoadingProgressionEnum.loading){
   </button>
 </ng-template>
 
-<!-- Template per il bottone di conferma -->
 <ng-template #footerConfirmDeleteTemplate>
   <button class="text-shape-button-danger">
     <span>Elimina</span>

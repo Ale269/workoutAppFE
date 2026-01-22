@@ -7,48 +7,49 @@
       <img src="assets/recollect/images/storico-allenamenti-icon.png" />
     </div>
   </div>
-  @if(datiRecuperati){ @for (ultimoAllenamentoSvolto of
-  this.ultimiAllenamentiSvoltiDTO; track ultimoAllenamentoSvolto.id; let i =
-  $index) {
-  <div class="widget-data">
-    <div class="workout-info-container">
-      <div class="workout-details">
-        <div class="descrizione-allenamento-container">
-          <h3 class="text-white">
-            {{ultimoAllenamentoSvolto.descrizioneAllenamento}}
-          </h3>
-        </div>
-        <div class="giorno-data-allenamento-container">
-          <h3 class="text-grey">
-            Giorno {{ultimoAllenamentoSvolto.giornoAllenamento}} di
-            {{ultimoAllenamentoSvolto.giorniTotaliAllenamentiScheda}}
-          </h3>
-          <h3 class="text-grey">
-            {{ ultimoAllenamentoSvolto.dataSvolgimento| date: "dd/MM/yyyy" }}
-          </h3>
+  @if(datiRecuperati){
+  <div class="widget-data-container">
+    @for (ultimoAllenamentoSvolto of this.ultimiAllenamentiSvoltiDTO; track
+    ultimoAllenamentoSvolto.id; let i = $index) {
+    <div class="widget-data" (click)="NavigaAVisualizzaAllenamento(ultimoAllenamentoSvolto.id)">
+      <div class="workout-info-container">
+        <div class="workout-details">
+          <div class="descrizione-allenamento-container">
+            <h3 class="text-white">
+              {{ultimoAllenamentoSvolto.descrizioneAllenamento}}
+            </h3>
+          </div>
+          <div class="giorno-data-allenamento-container">
+            <h3 class="text-grey">
+              Giorno {{ultimoAllenamentoSvolto.giornoAllenamento}} di
+              {{ultimoAllenamentoSvolto.giorniTotaliAllenamentiScheda}}
+            </h3>
+            <h3 class="text-grey">
+              {{ ultimoAllenamentoSvolto.dataSvolgimento| date: "dd/MM/yyyy" }}
+            </h3>
+          </div>
         </div>
       </div>
-      <button class="play-button" (click)="NavigaAVisualizzaAllenamento(ultimoAllenamentoSvolto.id)">
-        <img src="assets/recollect/svg/google-play.svg" alt="Visualizza" />
-      </button>
     </div>
+    } @empty {
+    <div class="widget-data">
+      <h3 class="text-white">Nessun dato trovato</h3>
+    </div>
+    }
   </div>
-  } @empty {
-  <div class="widget-data">
-    <h3 class="text-white">Nessun dato trovato</h3>
-  </div>
-  }
   @if(this.ultimiAllenamentiSvoltiDTO.length > 0){
-    <div class="widget-button">
-      <button class="text-shape-button" (click)="NavigaAElencoAllenamentiSchede()">
-        <span>Apri allenamenti</span>
-        <div class="text-shape-button-icon-container">
-          <img src="assets/recollect/svg/google-arrow.svg" />
-        </div>
-      </button>
-    </div>
-  }
-  } @else{
+  <div class="widget-button">
+    <button
+      class="text-shape-button"
+      (click)="NavigaAElencoAllenamentiSchede()"
+    >
+      <span>Apri allenamenti</span>
+      <div class="text-shape-button-icon-container">
+        <img src="assets/recollect/svg/google-arrow.svg" />
+      </div>
+    </button>
+  </div>
+  } } @else{
   <div class="widget-data">
     <h3 class="text-white">Nessun dato trovato</h3>
   </div>

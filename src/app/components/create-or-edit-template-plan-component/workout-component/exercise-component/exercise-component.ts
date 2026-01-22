@@ -8,6 +8,7 @@ import {
   ViewChild,
   OnDestroy,
   ChangeDetectorRef,
+  ElementRef,
 } from "@angular/core";
 import { EsercizioForm } from "../../exercise-form";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
@@ -44,7 +45,7 @@ import { MatInputModule } from "@angular/material/input";
 export class ExerciseComponent implements OnInit, OnDestroy {
   @Input() formAllenamento!: AllenamentoForm;
   @Input() formEsercizio!: EsercizioForm;
-  @Input() isCompactMode: boolean = false; // Nuova proprietà per la modalità compatta
+  @Input() isCompactMode: boolean = false;
 
   @ViewChild("headerDeleteWorkout") headerDeleteWorkout!: TemplateRef<any>;
   @ViewChild("bodyDeleteWorkout") bodyDeleteWorkout!: TemplateRef<any>;
@@ -67,7 +68,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     private modalService: ModalService,
     private cdr: ChangeDetectorRef,
     private bottomSheetService: BottomSheetService,
-    private exerciseService: ExerciseService 
+    private exerciseService: ExerciseService,
+    private elementRef: ElementRef
   ) {}
 
   ngOnInit(): void {
@@ -169,35 +171,74 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     }
   }
 
-  addSerie() {
+  /**
+   * Salva l'altezza della pagina prima di aggiungere contenuto,
+   * poi scrolla per mantenere i pulsanti nella stessa posizione visiva
+   */
+  private async maintainButtonPosition(callback: () => void): Promise<void> {
     try {
-      this.formEsercizio.addSerieForm();
+      // Salva l'altezza corrente della pagina
+      const heightBefore = document.documentElement.scrollHeight;
+      
+      // Esegui l'operazione (aggiunta serie)
+      callback();
+      
+      // Forza il rilevamento dei cambiamenti
       this.cdr.detectChanges();
+      
+      // Aspetta che il DOM sia aggiornato
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      // Calcola la differenza di altezza
+      const heightAfter = document.documentElement.scrollHeight;
+      const heightDifference = heightAfter - heightBefore;
+      
+      // Scrolla della differenza se c'è stato un aumento di altezza
+      if (heightDifference > 0) {
+        window.scrollBy({
+          top: heightDifference,
+          behavior: 'smooth'
+        });
+      }
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "ExerciseComponent.maintainButtonPosition"
+      );
+    }
+  }
+
+  async addSerie() {
+    try {
+      await this.maintainButtonPosition(() => {
+        this.formEsercizio.addSerieForm();
+      });
     } catch (error) {
       this.errorHandlerService.logError(error, "ExerciseComponent.addSerie");
     }
   }
 
-  duplicateLastSerie() {
+  async duplicateLastSerie() {
     try {
-      const seriesList = this.formEsercizio.listaSerieForm;
+      await this.maintainButtonPosition(() => {
+        const seriesList = this.formEsercizio.listaSerieForm;
 
-      if (seriesList.length === 0) {
-        this.addSerie();
-      } else {
-        const lastSerie = seriesList[seriesList.length - 1];
-        const serieData = lastSerie.getDatiSerieDaSalvare();
+        if (seriesList.length === 0) {
+          this.formEsercizio.addSerieForm();
+        } else {
+          const lastSerie = seriesList[seriesList.length - 1];
+          const serieData = lastSerie.getDatiSerieDaSalvare();
 
-        const newSerieData = {
-          ...serieData,
-          id: 0,
-          idTemplate: 0,
-          ordinamento: 0,
-        };
+          const newSerieData = {
+            ...serieData,
+            id: 0,
+            idTemplate: 0,
+            ordinamento: 0,
+          };
 
-        this.formEsercizio.addSerieForm(newSerieData);
-        this.cdr.detectChanges();
-      }
+          this.formEsercizio.addSerieForm(newSerieData);
+        }
+      });
     } catch (error) {
       this.errorHandlerService.logError(
         error,
@@ -230,5 +271,4 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       );
     }
   }
-
 }

@@ -78,6 +78,7 @@ export class LongPressDirective {
   onContextMenu(event: Event): void {
     // Questo blocca il menu a comparsa (tasto destro / long tap)
     event.preventDefault();
+    event.stopPropagation();
   }
 
   @HostListener('mouseup')

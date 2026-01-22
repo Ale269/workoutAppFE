@@ -1,0 +1,131 @@
+.reorder-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.scrollable-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.workout-data {
+  width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.card-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 16px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.drag-handle-container {
+  width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: grab;
+  
+  &:active {
+    cursor: grabbing;
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+  }
+}
+
+.allenamento-container {
+  flex: 1;
+  position: relative;
+  display: flex;
+  padding: 16px;
+  border: 1px solid #212121;
+  border-radius: 16px;
+  gap: 16px;
+  background-color: #000;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+// nome-dati-allenamento
+
+.graphic-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.graphic-visualizer-container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.visualizer-allenamento-container {
+  flex: 1;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
+  height: 100%;
+
+  div {
+    flex: 1;
+    width: 2px;
+    background-color: #fff;
+    border-radius: 16px;
+  }
+
+  .current-day-visualizer {
+    width: 8px;
+  }
+}
+
+.circle-icon {
+  border: 1px solid #fff;
+  width: 24px;
+  background-color: #000;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.icon-container-accumulator {
+  width: 18px;
+  overflow-x: visible;
+}
+
+.icona-numero-esercizio-container {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.icona-numero-esercizio-container img {
+  width: 16px;
+}

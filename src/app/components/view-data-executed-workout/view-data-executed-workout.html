@@ -22,9 +22,15 @@
       <accordion-header>
         <div class="esercizio-container">
           <div class="icon-esercizio-container">
-            <div class="circle-icon" [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor">
-              <img [src]="esercizio.idIconaEsercizio | exerciseIcon" class="exercise-icon"
-                [alt]="esercizio.idTipoEsercizio | exerciseName" />
+            <div
+              class="circle-icon"
+              [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor"
+            >
+              <img
+                [src]="esercizio.idIconaEsercizio | exerciseIcon"
+                class="exercise-icon"
+                [alt]="esercizio.idTipoEsercizio | exerciseName"
+              />
             </div>
           </div>
           <div class="dati-esercizio-container">
@@ -73,21 +79,17 @@
     }
   </accordion-group>
 
-  <div class="delete-scheda-button-row">
-    <button class="text-shape-button-danger" (click)="openDeleteAllenamento()">
-      <span>Elimina allenamento</span>
-      <div class="text-shape-button-icon-container-danger">
-        <img src="assets/recollect/svg/google-delete.svg" />
-      </div>
-    </button>
-  </div>
-
   <div class="floating-static-button-container">
-    <div class="floating-static-button-glass">
+    <app-multi-option-button
+      [leftButtonLabel]="''"
+      [leftGroups]="leftButtonOptionsGroup"
+      (optionSelected)="onOptionSelected($event)"
+    >
+      <!-- Il pulsante statico viene proiettato qui -->
       <button class="floating-static-button" (click)="modificaAllenamento()">
         <span>Modifica allenamento </span>
       </button>
-    </div>
+    </app-multi-option-button>
   </div>
 </div>
 } @else if(this.loadingProgression === LoadingProgressionEnum.loading ||
@@ -98,7 +100,11 @@ this.loadingProgression === LoadingProgressionEnum.none){
 }
 
 <ng-template #headerDeleteWorkout>
-  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
 </ng-template>
 
 <!-- Template per il body -->

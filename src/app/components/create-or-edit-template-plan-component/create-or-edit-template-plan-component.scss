@@ -85,7 +85,9 @@
     width: 20px;
     height: 20px;
     opacity: 0.6;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
   }
 }
 
@@ -172,7 +174,6 @@
   padding-bottom: 32px;
 }
 
-
 .allenamento-wrapper {
   position: relative;
   overflow: hidden;
@@ -188,8 +189,16 @@
   gap: 16px;
   background-color: #000;
   cursor: pointer;
+
+  // Impedisce la selezione del testo
   user-select: none;
   -webkit-user-select: none;
+  
+  // Impedisce il menu callout (copia/incolla/condividi) su iOS
+  -webkit-touch-callout: none;
+  
+  // Rimuove l'highlight al tap su mobile
+  -webkit-tap-highlight-color: transparent;
 }
 
 .allenamento-container:first-of-type {
@@ -246,9 +255,11 @@
   align-items: center;
   justify-content: center;
   background: #ff0000;
-  background: radial-gradient(circle at calc(100% - 40px) 50%,
-      rgba(255, 0, 0, 0) 0%,
-      #820000 100%);
+  background: radial-gradient(
+    circle at calc(100% - 40px) 50%,
+    rgba(255, 0, 0, 0) 0%,
+    #820000 100%
+  );
   border: 1px solid #970000;
 
   opacity: 0;

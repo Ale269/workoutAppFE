@@ -33,7 +33,7 @@
       </mat-form-field>
     </div>
 
-    <div class="input-row">
+    <!-- <div class="input-row">
       <mat-form-field appearance="outline">
         <mat-label>Posizione</mat-label>
         <mat-select [formControl]="ordinamentoControl" [placeholder]="'Seleziona posizione'">
@@ -50,7 +50,7 @@
         <mat-error> La posizione è obbligatoria </mat-error>
         }
       </mat-form-field>
-    </div>
+    </div> -->
 
     <div class="input-row">
       <app-training-methodology-selector [control]="this.idMetodologiaControl">
@@ -70,12 +70,13 @@
 
     <div class="add-serie-button-row">
       <button class="text-shape-button" (click)="duplicateLastSerie()">
+        <span>Duplica</span>
         <div class="text-shape-button-icon-container">
-          <img src="assets/recollect/svg/google-copy-plus.svg" />
+          <img src="assets/recollect/svg/google-copy.svg" />
         </div>
       </button>
       <button class="text-shape-button" (click)="addSerie()">
-        <span>Aggiungi serie</span>
+        <span>Aggiungi</span>
         <div class="text-shape-button-icon-container">
           <img src="assets/recollect/svg/google-add.svg" />
         </div>

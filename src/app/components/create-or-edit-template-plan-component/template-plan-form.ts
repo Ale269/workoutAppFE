@@ -40,7 +40,7 @@ export class SchedaForm {
       nomeAllenamento: "Giorno 1",
       ordinamento: 1,
       listaEsercizi: [],
-      description: ""
+      description: "",
     };
 
     // Aggiunge il primo allenamento con nome di default "Giorno 1"
@@ -57,7 +57,7 @@ export class SchedaForm {
       id: schedaDTO.id,
       idTemplate: schedaDTO.idTemplate,
       nomeScheda: schedaDTO.nomeScheda,
-      isActive: schedaDTO.schedaAttiva
+      isActive: schedaDTO.schedaAttiva,
     });
 
     // Pulisce gli allenamenti esistenti
@@ -89,7 +89,7 @@ export class SchedaForm {
 
       const newAllenamentoForm: AllenamentoForm = new AllenamentoForm(
         this.identifier,
-        allenamentoDTO
+        allenamentoDTO,
       );
 
       // Se non ha già un ordinamento (nuovo allenamento), assegna l'ultima posizione
@@ -118,7 +118,7 @@ export class SchedaForm {
     const totalWorkouts = this.listaAllenamentiForm.length;
     this.availableWorkoutPositions = Array.from(
       { length: totalWorkouts },
-      (_, i) => i + 1
+      (_, i) => i + 1,
     );
   }
 
@@ -126,7 +126,7 @@ export class SchedaForm {
     try {
       if (!this.form) {
         throw new Error(
-          "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
+          "FormScheda non inizializzato. Chiamare prima InitializeScheda()",
         );
       }
 
@@ -134,12 +134,12 @@ export class SchedaForm {
       const indexToDelete = this.listaAllenamentiForm.findIndex(
         (allenamento) =>
           allenamento.form.controls["identifier"]?.value ===
-          allenamentoIdentifier
+          allenamentoIdentifier,
       );
 
       if (indexToDelete === -1) {
         throw new Error(
-          `Allenamento con identifier ${allenamentoIdentifier} non trovato`
+          `Allenamento con identifier ${allenamentoIdentifier} non trovato`,
         );
       }
 
@@ -163,7 +163,7 @@ export class SchedaForm {
     return (
       this.listaAllenamentiForm.find(
         (allenamento) =>
-          allenamento.form.get("identifier")?.value === identifier
+          allenamento.form.get("identifier")?.value === identifier,
       ) || null
     );
   }
@@ -193,7 +193,7 @@ export class SchedaForm {
     const totalWorkouts = this.listaAllenamentiForm.length;
     this.availableWorkoutPositions = Array.from(
       { length: totalWorkouts },
-      (_, i) => i + 1
+      (_, i) => i + 1,
     );
 
     // 4. Ricostruisci il FormArray nell'ordine corretto
@@ -219,7 +219,7 @@ export class SchedaForm {
   moveAllenamento(workoutIdentifier: number, newPosition: number): boolean {
     try {
       const currentIndex = this.listaAllenamentiForm.findIndex(
-        (a) => a.form.get("identifier")?.value === workoutIdentifier
+        (a) => a.form.get("identifier")?.value === workoutIdentifier,
       );
 
       if (currentIndex === -1) {
@@ -249,7 +249,7 @@ export class SchedaForm {
   }
 
   public toggleActiveState(newValue: boolean): void {
-    this.form.controls['isActive'].setValue(newValue);
+    this.form.controls["isActive"].setValue(newValue);
   }
 
   public resetForm(): void {
@@ -275,18 +275,75 @@ export class SchedaForm {
         idTemplate: this.form.controls["idTemplate"].value || 0,
         nomeScheda: this.form.controls["nomeScheda"].value || "",
         listaAllenamenti: [],
-        schedaAttiva: this.form.controls['isActive'].value || false,
+        schedaAttiva: this.form.controls["isActive"].value || false,
       };
 
       this.listaAllenamentiForm.forEach((allenamento) => {
         schedaDaSalvare.listaAllenamenti.push(
-          allenamento.getDatiAllenamentoDaSalvare()
+          allenamento.getDatiAllenamentoDaSalvare(),
         );
       });
 
       return schedaDaSalvare;
     } catch (error) {
       throw new Error("SchedaForm.GetDatiSchedaDaSalvare: " + error);
+    }
+  }
+
+  reorderWorkoutsByIdentifiers(orderedIdentifiers: number[]): void {
+    try {     
+      // Crea una mappa per accesso rapido agli allenamenti
+      const workoutMap = new Map<number, AllenamentoForm>();
+      this.listaAllenamentiForm.forEach((workout) => {
+        const identifier = workout.form.controls["identifier"].value;
+        if (identifier !== null && identifier !== undefined) {
+          workoutMap.set(identifier, workout);
+        }
+      });
+
+      // Riordina l'array in base agli identifier ordinati
+      const reorderedWorkouts: AllenamentoForm[] = [];
+      orderedIdentifiers.forEach((identifier) => {
+        const workout = workoutMap.get(identifier);
+        if (workout) {
+          reorderedWorkouts.push(workout);
+        } else {
+          console.warn(
+            `Workout con identifier ${identifier} non trovato nella mappa`,
+          );
+        }
+      });
+
+      // Verifica che tutti gli allenamenti siano presenti
+      if (reorderedWorkouts.length !== this.listaAllenamentiForm.length) {
+        console.error(
+          "Errore nel riordinamento: numero di allenamenti non corrispondente",
+        );
+        console.error(
+          "Previsti:",
+          this.listaAllenamentiForm.length,
+          "Ottenuti:",
+          reorderedWorkouts.length,
+        );
+        return;
+      }
+
+      // IMPORTANTE: Aggiorna l'array di riferimento
+      this.listaAllenamentiForm = reorderedWorkouts;
+
+      this.listaAllenamentiForm.forEach((allenamento, index) => {
+        allenamento.form
+          .get("ordinamento")
+          ?.setValue(index + 1, { emitEvent: false });
+      });
+
+      this.sanitizeWorkoutOrdering();
+
+      // Segna il form come modificato
+      this.form.markAsDirty();
+    } catch (error) {
+      console.error("Errore nel riordinamento degli allenamenti:", error);
+      throw new Error("SchedaForm.reorderWorkoutsByIdentifiers: " + error);
     }
   }
 }

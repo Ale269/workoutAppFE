@@ -25,6 +25,7 @@ import {
   DeleteDatiAllenamentoRequestModel,
   DeleteDatiAllenamentoResponseModel,
 } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
+import { MultiOptionButton, multiOptionGroup, OptionSelectedEvent } from "../shared/multi-option-button/multi-option-button";
 
 @Component({
   selector: "app-view-data-executed-workout",
@@ -39,6 +40,7 @@ import {
     TrainingMethodologyPipe,
     SeriesRepsPipe,
     CommonModule,
+    MultiOptionButton,
   ],
   templateUrl: "./view-data-executed-workout.html",
   styleUrl: "./view-data-executed-workout.scss",
@@ -58,22 +60,36 @@ export class ViewDataExecutedWorkout {
   public allenamento!: AllenamentoDTO;
   private currentSpinnerId: string | null = null;
 
+  public leftButtonOptionsGroup: multiOptionGroup[] = [
+    {
+      id: 1,
+      label: "",
+      options: [
+        {
+          optionId: 1,
+          color: "#ff0000",
+          description: "Elimina allenamento svolto",
+        },
+      ],
+    },
+  ];
+
   constructor(
     private errorHandlerService: ErrorHandlerService,
     private spinnerService: SpinnerService,
     private activatedRouter: ActivatedRoute,
     private router: Router,
     private workoutService: WorkoutService,
-    private modalService: ModalService
+    private modalService: ModalService,
   ) {
     try {
       this.idAllenamento = Number(
-        this.activatedRouter.snapshot.paramMap.get("id")
+        this.activatedRouter.snapshot.paramMap.get("id"),
       );
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ViewDataExecutedWorkout.constructor"
+        "ViewDataExecutedWorkout.constructor",
       );
     }
   }
@@ -84,7 +100,7 @@ export class ViewDataExecutedWorkout {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ViewDataExecutedWorkout.ngOnInit"
+        "ViewDataExecutedWorkout.ngOnInit",
       );
     }
   }
@@ -99,7 +115,7 @@ export class ViewDataExecutedWorkout {
           errorMessage: "Errore nel recupero dei dati",
           resultDuration: 250,
           minSpinnerDuration: 250,
-        }
+        },
       );
 
       this.loadingProgression = LoadingProgression.loading;
@@ -114,7 +130,7 @@ export class ViewDataExecutedWorkout {
             if (!response.errore?.error) {
               if (response.allenamentoCorrente) {
                 this.allenamento = this.ordinaAllenamento(
-                  response.allenamentoCorrente
+                  response.allenamentoCorrente,
                 );
                 if (this.currentSpinnerId) {
                   this.spinnerService.setSuccess(this.currentSpinnerId);
@@ -126,7 +142,7 @@ export class ViewDataExecutedWorkout {
                 }
                 this.errorHandlerService.logError(
                   response.errore.error,
-                  "ViewDataExecutedWorkout.getDatiAllenamento"
+                  "ViewDataExecutedWorkout.getDatiAllenamento",
                 );
                 this.loadingProgression = LoadingProgression.failed;
               }
@@ -136,7 +152,7 @@ export class ViewDataExecutedWorkout {
               }
               this.errorHandlerService.logError(
                 response.errore.error,
-                "ViewDataExecutedWorkout.getDatiAllenamento"
+                "ViewDataExecutedWorkout.getDatiAllenamento",
               );
               this.loadingProgression = LoadingProgression.failed;
             }
@@ -147,7 +163,7 @@ export class ViewDataExecutedWorkout {
             }
             this.errorHandlerService.logError(
               error,
-              "ViewDataExecutedWorkout.getDatiAllenamento"
+              "ViewDataExecutedWorkout.getDatiAllenamento",
             );
             this.loadingProgression = LoadingProgression.failed;
           },
@@ -158,7 +174,7 @@ export class ViewDataExecutedWorkout {
         }
         this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
-          "ViewDataExecutedWorkout.getDatiAllenamento"
+          "ViewDataExecutedWorkout.getDatiAllenamento",
         );
         this.loadingProgression = LoadingProgression.failed;
       }
@@ -168,7 +184,7 @@ export class ViewDataExecutedWorkout {
       }
       this.errorHandlerService.logError(
         error,
-        "ViewTemplatePlan.getDatiAllenamento"
+        "ViewTemplatePlan.getDatiAllenamento",
       );
       this.loadingProgression = LoadingProgression.failed;
     }
@@ -208,7 +224,7 @@ export class ViewDataExecutedWorkout {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ViewDataExecutedWorkout.goBack"
+        "ViewDataExecutedWorkout.goBack",
       );
     }
   }
@@ -224,12 +240,12 @@ export class ViewDataExecutedWorkout {
             idTemplateAllenamento: this.allenamento.idTemplate,
             createOrEdit: createOrEdit.edit,
           },
-        }
+        },
       );
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ViewDataExecutedWorkout.modificaScheda"
+        "ViewDataExecutedWorkout.modificaScheda",
       );
     }
   }
@@ -247,7 +263,7 @@ export class ViewDataExecutedWorkout {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ViewDataExecutedWorkout.modificaScheda"
+        "ViewDataExecutedWorkout.modificaScheda",
       );
     }
   }
@@ -263,7 +279,7 @@ export class ViewDataExecutedWorkout {
           errorMessage: "Errore nell'eliminare la scheda",
           resultDuration: 250,
           minSpinnerDuration: 250,
-        }
+        },
       );
       if (this.idAllenamento !== null && this.idAllenamento > 0) {
         const request: DeleteDatiAllenamentoRequestModel = {
@@ -282,7 +298,7 @@ export class ViewDataExecutedWorkout {
               }
               this.errorHandlerService.logError(
                 response.errore.error,
-                "ViewDataExecutedWorkout.eliminaAllenamento"
+                "ViewDataExecutedWorkout.eliminaAllenamento",
               );
             }
           },
@@ -292,7 +308,7 @@ export class ViewDataExecutedWorkout {
             }
             this.errorHandlerService.logError(
               error,
-              "ViewDataExecutedWorkout.eliminaAllenamento"
+              "ViewDataExecutedWorkout.eliminaAllenamento",
             );
           },
         });
@@ -302,7 +318,7 @@ export class ViewDataExecutedWorkout {
         }
         this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
-          "ViewDataExecutedWorkout.eliminaAllenamento"
+          "ViewDataExecutedWorkout.eliminaAllenamento",
         );
       }
     } catch (error) {
@@ -311,8 +327,24 @@ export class ViewDataExecutedWorkout {
       }
       this.errorHandlerService.logError(
         error,
-        "ViewDataExecutedWorkout.eliminaAllenamento"
+        "ViewDataExecutedWorkout.eliminaAllenamento",
       );
     }
   }
+
+  onOptionSelected(option: OptionSelectedEvent) {
+      switch (option.side) {
+        case "left":
+          switch (option.groupId) {
+            case 1:
+              switch (option.optionId) {
+                case 1:
+                  this.openDeleteAllenamento();
+                  break;
+              }
+              break;
+          }
+          break;
+      }
+    }
 }

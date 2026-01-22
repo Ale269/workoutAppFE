@@ -1,0 +1,72 @@
+<div class="reorder-wrapper">
+  <div class="scrollable-container">
+    <div #workoutDataContainer class="workout-data">
+      @for (allenamentoForm of workouts; track allenamentoForm.form.controls['identifier'].value) {
+      <div class="card-row" (click)="onCardClick($event)">
+        <div #cardElement class="allenamento-container">
+          <div class="graphic-data">
+            <div class="giorni-counter-container">
+              <h3 class="text-white small-text">
+                <span>{{allenamentoForm.form.controls['ordinamento'].value}}</span>
+                /
+                <span>{{workouts.length}}</span>
+              </h3>
+            </div>
+            <div class="graphic-visualizer-container">
+              <div class="visualizer-allenamento-container">
+                @for (workout of workouts; track workout.form.controls['identifier'].value) {
+                <div
+                  [class.current-day-visualizer]="workout.form.controls['identifier'].value === allenamentoForm.form.controls['identifier'].value"
+                ></div>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="nome-dati-allenamento">
+            <div>
+              <h3 class="text-white">
+                {{allenamentoForm.form.controls['nomeAllenamento'].value}}
+              </h3>
+            </div>
+            <div>
+              <h3 class="text-grey">
+                {{getExerciseCount(allenamentoForm)}}
+                @if(getExerciseCount(allenamentoForm) === 1) { esercizio } @else { esercizi }
+              </h3>
+            </div>
+            @if(allenamentoForm.listaEserciziForm.length > 0) {
+            <div class="icona-numero-esercizio-container">
+              @for (esercizioForm of allenamentoForm.listaEserciziForm; track esercizioForm.form.controls['identifier'].value) {
+              <div class="icon-container-accumulator">
+                <div
+                  class="circle-icon"
+                  [title]="esercizioForm.form.controls['description'].value || 'Esercizio'"
+                  [style.border-color]="esercizioForm.form.controls['idIconaEsercizio'].value | exerciseIconColor"
+                >
+                  <img
+                    [src]="getExerciseIconPath(esercizioForm)"
+                    [alt]="'Icona esercizio ' + esercizioForm.form.controls['idTipoEsercizio'].value"
+                  />
+                </div>
+              </div>
+              }
+            </div>
+            }
+          </div>
+        </div>
+        <div class="drag-handle-container">
+          <img src="assets/recollect/svg/google-drag-handle.svg" />
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="floating-static-button-container">
+    <div class="floating-static-button-glass">
+      <button class="floating-static-button" (click)="onConfirmClick($event)">
+        <span>Fatto</span>
+      </button>
+    </div>
+  </div>
+</div>

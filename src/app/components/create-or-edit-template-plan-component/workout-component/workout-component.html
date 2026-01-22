@@ -18,8 +18,13 @@
         <form [formGroup]="formAllenamento.form">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Alias allenamento </mat-label>
-            <input (change)="ifEmptySetPlaceholder($event)" matInput [type]="'text'" formControlName="nomeAllenamento"
-              placeholder="Nome allenamento" />
+            <input
+              (change)="ifEmptySetPlaceholder($event)"
+              matInput
+              [type]="'text'"
+              formControlName="nomeAllenamento"
+              placeholder="Nome allenamento"
+            />
 
             @if
             (this.formAllenamento.form.controls['nomeAllenamento'].hasError('required'))
@@ -33,7 +38,10 @@
         <form [formGroup]="formAllenamento.form">
           <mat-form-field appearance="outline">
             <mat-label>Posizione</mat-label>
-            <mat-select [formControl]="ordinamentoControl" [placeholder]="'Seleziona posizione'">
+            <mat-select
+              [formControl]="ordinamentoControl"
+              [placeholder]="'Seleziona posizione'"
+            >
               @for (position of formScheda.availableWorkoutPositions; let idx =
               $index; track idx) {
               <mat-option [value]="position">
@@ -49,22 +57,24 @@
           </mat-form-field>
         </form>
       </div>
-      <div class="delete-allenamento-button-row">
-        <button class="text-shape-button-danger" (click)="openDeleteWorkout()">
-          <span>Elimina questo allenamento</span>
-          <div class="text-shape-button-icon-container-danger">
-            <img src="assets/recollect/svg/google-delete.svg" />
-          </div>
-        </button>
-      </div>
     </div>
 
     <div #exerciseDataContainer class="exercise-data">
       @for (esercizioForm of this.formAllenamento.listaEserciziForm; track
       esercizioForm.form.controls['identifier'].value) {
-      <div #exerciseCard appLongPress [duration]="500" (mouseLongPress)="toggleCompactMode()" class="exercise-wrapper">
-        <app-exercise-component [formAllenamento]="formAllenamento" (onDeleteExercise)="deleteEexercise($event)"
-          [formEsercizio]="esercizioForm" [isCompactMode]="isCompactMode"></app-exercise-component>
+      <div
+        #exerciseCard
+        appLongPress
+        [duration]="500"
+        (mouseLongPress)="toggleCompactMode()"
+        class="exercise-wrapper"
+      >
+        <app-exercise-component
+          [formAllenamento]="formAllenamento"
+          (onDeleteExercise)="deleteEexercise($event)"
+          [formEsercizio]="esercizioForm"
+          [isCompactMode]="isCompactMode"
+        ></app-exercise-component>
       </div>
       } @empty { }
     </div>
@@ -77,23 +87,35 @@
       </button>
     </div>
   </div>
-  <div class="floating-static-button-container">
-    <div class="floating-static-button-glass">
+  <div class="floating-double-buttons-container">
+    <app-multi-option-button
+      [leftButtonLabel]="''"
+      [leftGroups]="leftButtonOptionsGroup"
+      (optionSelected)="onOptionSelected($event)"
+    >
+      <!-- Il pulsante statico viene proiettato qui -->
       <button class="floating-static-button" (click)="backToList()">
         <span>Torna alla scheda</span>
       </button>
-    </div>
+    </app-multi-option-button>
   </div>
+
   <!-- Fine workout-detail-container -->
 
   <!-- Template per il modale -->
 
   <ng-template #headerDeleteWorkout>
-    <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
+    <img
+      src="assets/recollect/images/icona-stop-modifica.png"
+      alt="Attenzione"
+      class="warning-icon"
+    />
   </ng-template>
 
   <ng-template #bodyDeleteWorkout>
-    <h3 class="text-white">Sei sicuro di voler eliminare questo allenamento?</h3>
+    <h3 class="text-white">
+      Sei sicuro di voler eliminare questo allenamento?
+    </h3>
     <h3 class="text-white">Questa azione non può essere annullata.</h3>
   </ng-template>
 
@@ -116,5 +138,10 @@
   </ng-template>
 
   <ng-template #headerAddWorkout>
-    <img src="assets/recollect/images/icona-add-workout.png" alt="Aggiungi Allenamento" class="add-workout-icon" />
+    <img
+      src="assets/recollect/images/icona-add-workout.png"
+      alt="Aggiungi Allenamento"
+      class="add-workout-icon"
+    />
   </ng-template>
+</div>

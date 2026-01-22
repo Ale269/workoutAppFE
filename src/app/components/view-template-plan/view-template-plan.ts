@@ -84,6 +84,11 @@ export class ViewTemplatePlan {
           color: " #fff",
           description: "Duplica scheda",
         },
+        {
+          optionId: 3,
+          color: "#ff0000",
+          description: "Elimina allenamento",
+        },
       ],
     },
   ];
@@ -98,7 +103,7 @@ export class ViewTemplatePlan {
 
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService
+    private authService: AuthService,
   ) {
     try {
       this.idScheda = Number(this.activatedRouter.snapshot.paramMap.get("id"));
@@ -125,7 +130,7 @@ export class ViewTemplatePlan {
           errorMessage: "Errore nel recupero dei dati",
           resultDuration: 250,
           minSpinnerDuration: 250,
-        }
+        },
       );
 
       this.loadingProgression = LoadingProgression.loading;
@@ -151,7 +156,7 @@ export class ViewTemplatePlan {
                 }
                 this.errorHandlerService.logError(
                   response.errore.error,
-                  "ViewTemplatePlan.getListaTemplateSchede"
+                  "ViewTemplatePlan.getListaTemplateSchede",
                 );
                 this.loadingProgression = LoadingProgression.failed;
               }
@@ -161,7 +166,7 @@ export class ViewTemplatePlan {
               }
               this.errorHandlerService.logError(
                 response.errore.error,
-                "ViewTemplatePlan.getListaTemplateSchede"
+                "ViewTemplatePlan.getListaTemplateSchede",
               );
               this.loadingProgression = LoadingProgression.failed;
             }
@@ -172,7 +177,7 @@ export class ViewTemplatePlan {
             }
             this.errorHandlerService.logError(
               error,
-              "ViewTemplatePlan.getListaTemplateSchede"
+              "ViewTemplatePlan.getListaTemplateSchede",
             );
             this.loadingProgression = LoadingProgression.failed;
           },
@@ -183,7 +188,7 @@ export class ViewTemplatePlan {
         }
         this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
-          "ViewTemplatePlan.getListaTemplateSchede"
+          "ViewTemplatePlan.getListaTemplateSchede",
         );
         this.loadingProgression = LoadingProgression.failed;
       }
@@ -193,7 +198,7 @@ export class ViewTemplatePlan {
       }
       this.errorHandlerService.logError(
         error,
-        "ViewTemplatePlan.getListaTemplateSchede"
+        "ViewTemplatePlan.getListaTemplateSchede",
       );
       this.loadingProgression = LoadingProgression.failed;
     }
@@ -257,7 +262,7 @@ export class ViewTemplatePlan {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ViewTemplatePlan.modificaScheda"
+        "ViewTemplatePlan.modificaScheda",
       );
     }
   }
@@ -275,7 +280,7 @@ export class ViewTemplatePlan {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "WorkoutComponent.modificaScheda"
+        "WorkoutComponent.modificaScheda",
       );
     }
   }
@@ -291,7 +296,7 @@ export class ViewTemplatePlan {
           errorMessage: "Errore nell'eliminare la scheda",
           resultDuration: 250,
           minSpinnerDuration: 250,
-        }
+        },
       );
 
       if (this.idScheda !== null && this.idScheda > 0) {
@@ -312,7 +317,7 @@ export class ViewTemplatePlan {
               }
               this.errorHandlerService.logError(
                 response.errore.error,
-                "ViewTemplatePlan.modificaScheda"
+                "ViewTemplatePlan.modificaScheda",
               );
             }
           },
@@ -322,7 +327,7 @@ export class ViewTemplatePlan {
             }
             this.errorHandlerService.logError(
               error,
-              "ViewTemplatePlan.modificaScheda"
+              "ViewTemplatePlan.modificaScheda",
             );
           },
         });
@@ -332,7 +337,7 @@ export class ViewTemplatePlan {
         }
         this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
-          "ViewTemplatePlan.modificaScheda"
+          "ViewTemplatePlan.modificaScheda",
         );
       }
     } catch (error) {
@@ -341,7 +346,7 @@ export class ViewTemplatePlan {
       }
       this.errorHandlerService.logError(
         error,
-        "ViewTemplatePlan.modificaScheda"
+        "ViewTemplatePlan.modificaScheda",
       );
     }
   }
@@ -352,7 +357,7 @@ export class ViewTemplatePlan {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "WorkoutComponent.OnAttivazioneStateChange"
+        "WorkoutComponent.OnAttivazioneStateChange",
       );
     }
   }
@@ -372,7 +377,7 @@ export class ViewTemplatePlan {
             : "Errore nella disattivazione della scheda",
           resultDuration: 250,
           minSpinnerDuration: 250,
-        }
+        },
       );
       const user = this.authService.getCurrentUser();
 
@@ -397,7 +402,7 @@ export class ViewTemplatePlan {
               }
               this.errorHandlerService.logError(
                 response.errore.error,
-                "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
+                "ViewTemplatePlan.CambiaStatoAttivazioneScheda",
               );
             }
           },
@@ -408,7 +413,7 @@ export class ViewTemplatePlan {
             }
             this.errorHandlerService.logError(
               error,
-              "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
+              "ViewTemplatePlan.CambiaStatoAttivazioneScheda",
             );
           },
         });
@@ -419,7 +424,7 @@ export class ViewTemplatePlan {
         }
         this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
-          "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
+          "ViewTemplatePlan.CambiaStatoAttivazioneScheda",
         );
       }
     } catch (error) {
@@ -428,7 +433,7 @@ export class ViewTemplatePlan {
       }
       this.errorHandlerService.logError(
         error,
-        "ViewTemplatePlan.CambiaStatoAttivazioneScheda"
+        "ViewTemplatePlan.CambiaStatoAttivazioneScheda",
       );
     }
   }
@@ -454,7 +459,7 @@ export class ViewTemplatePlan {
             window.URL.revokeObjectURL(url);
           }
         },
-        error: (error: any) => { },
+        error: (error: any) => {},
       });
     }
   }
@@ -470,6 +475,9 @@ export class ViewTemplatePlan {
                 break;
               case 2:
                 // this.downloadSchedaExcel();
+                break;
+              case 3:
+                this.openDeleteScheda();
                 break;
             }
             break;

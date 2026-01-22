@@ -34,6 +34,14 @@ import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { EsercizioForm } from "./exercise-form";
 import { ExerciseService } from "src/app/core/services/exercise.service";
+import {
+  MultiOptionButton,
+  multiOptionGroup,
+  OptionSelectedEvent,
+} from "../shared/multi-option-button/multi-option-button";
+import { FocusOverlayService } from "../shared/focus-overlay/focus-overlay.service";
+import { ReorderWorkoutComponent } from "./workout-component/reorder-workout-component/reorder-workout-component";
+import { LongPressDirective } from "../shared/directives/long-press.directive";
 
 // Registra il plugin Draggable
 gsap.registerPlugin(Draggable);
@@ -49,12 +57,15 @@ gsap.registerPlugin(Draggable);
     MatFormFieldModule,
     Switch,
     ExerciseIconColorPipe,
+    MultiOptionButton,
+    LongPressDirective
   ],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",
 })
 export class CreateOrEditTemplatePlanComponent
-  implements OnInit, OnDestroy, AfterViewInit {
+  implements OnInit, OnDestroy, AfterViewInit
+{
   @ViewChild("listView") listView!: ElementRef<HTMLElement>;
   @ViewChild("detailView") detailView!: ElementRef<HTMLElement>;
   @ViewChildren("allenamentoCard") allenamentoCards!: QueryList<ElementRef>;
@@ -80,15 +91,22 @@ export class CreateOrEditTemplatePlanComponent
   @ViewChild("footerConfirmDeleteTemplate")
   footerConfirmDeleteTemplate!: TemplateRef<any>;
 
-  @ViewChild("headerDeleteWorkoutTemplate") headerDeleteWorkoutTemplate!: TemplateRef<any>;
-  @ViewChild("bodyDeleteWorkoutTemplate") bodyDeleteWorkoutTemplate!: TemplateRef<any>;
+  @ViewChild("headerDeleteWorkoutTemplate")
+  headerDeleteWorkoutTemplate!: TemplateRef<any>;
+  @ViewChild("bodyDeleteWorkoutTemplate")
+  bodyDeleteWorkoutTemplate!: TemplateRef<any>;
   @ViewChild("footerCloseDeleteWorkoutTemplate")
   footerCloseDeleteWorkoutTemplate!: TemplateRef<any>;
   @ViewChild("footerConfirmDeleteWorkoutTemplate")
   footerConfirmDeleteWorkoutTemplate!: TemplateRef<any>;
 
+  @ViewChildren("workoutCard", { read: ElementRef })
+  workoutCardElements!: QueryList<ElementRef>;
+  @ViewChild("workoutListContainer", { read: ElementRef })
+  workoutListContainer!: ElementRef;
+
   // Gestione visualizzazione
-  public currentView: 'list' | 'detail' = 'list';
+  public currentView: "list" | "detail" = "list";
   public selectedWorkout: AllenamentoForm | null = null;
   private isAnimating = false;
 
@@ -111,6 +129,20 @@ export class CreateOrEditTemplatePlanComponent
   // Gestione swipe
   private draggableInstances: any[] = [];
 
+  public leftButtonOptionsGroup: multiOptionGroup[] = [
+    {
+      id: 1,
+      label: "",
+      options: [
+        {
+          optionId: 1,
+          color: "#ff0000",
+          description: "Elimina scheda",
+        },
+      ],
+    },
+  ];
+
   constructor(
     private errorHandlerService: ErrorHandlerService,
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
@@ -121,6 +153,7 @@ export class CreateOrEditTemplatePlanComponent
     private authService: AuthService,
     private workoutService: WorkoutService,
     private exerciseService: ExerciseService,
+    private focusOverlayService: FocusOverlayService
   ) {
     try {
       const navigation = this.router.getCurrentNavigation();
@@ -132,7 +165,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.constructor"
+        "CreateOrEditTemplatePlanComponent.constructor",
       );
     }
   }
@@ -146,14 +179,14 @@ export class CreateOrEditTemplatePlanComponent
           errorMessage: "Errore nel processo di inizializzazione",
           resultDuration: 250,
           minSpinnerDuration: 250,
-        }
+        },
       );
 
       this.loadingProgression = LoadingProgression.loading;
 
       if (this.scheda) {
         this.createOrEditTemplatePlanService.initializeFormWithData(
-          this.scheda
+          this.scheda,
         );
 
         setTimeout(() => {
@@ -183,7 +216,7 @@ export class CreateOrEditTemplatePlanComponent
 
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.ngOnInit"
+        "CreateOrEditTemplatePlanComponent.ngOnInit",
       );
 
       this.loadingProgression = LoadingProgression.failed;
@@ -200,7 +233,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.ngAfterViewInit"
+        "CreateOrEditTemplatePlanComponent.ngAfterViewInit",
       );
     }
   }
@@ -227,7 +260,7 @@ export class CreateOrEditTemplatePlanComponent
           const card = cardRef.nativeElement;
           const wrapper = card.closest(".allenamento-wrapper");
           const deleteButton = wrapper?.querySelector(
-            ".delete-action"
+            ".delete-action",
           ) as HTMLElement;
 
           if (!deleteButton) return;
@@ -312,7 +345,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.initializeSwipe"
+        "CreateOrEditTemplatePlanComponent.initializeSwipe",
       );
     }
   }
@@ -320,7 +353,7 @@ export class CreateOrEditTemplatePlanComponent
   private closeSwipe(
     card: HTMLElement,
     deleteButton: Element,
-    draggable: any
+    draggable: any,
   ): void {
     gsap.to(card, {
       x: 0,
@@ -370,7 +403,7 @@ export class CreateOrEditTemplatePlanComponent
 
       // Cambia la vista
       this.selectedWorkout = workout;
-      this.currentView = 'detail';
+      this.currentView = "detail";
       this.cdr.detectChanges();
 
       // Fade in della nuova vista
@@ -383,7 +416,7 @@ export class CreateOrEditTemplatePlanComponent
       this.isAnimating = false;
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.openWorkoutDetail"
+        "CreateOrEditTemplatePlanComponent.openWorkoutDetail",
       );
     }
   }
@@ -403,7 +436,7 @@ export class CreateOrEditTemplatePlanComponent
 
       // Cambia la vista
       this.selectedWorkout = null;
-      this.currentView = 'list';
+      this.currentView = "list";
       this.cdr.detectChanges();
 
       // Fade in della nuova vista
@@ -416,7 +449,7 @@ export class CreateOrEditTemplatePlanComponent
       this.isAnimating = false;
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.backToList"
+        "CreateOrEditTemplatePlanComponent.backToList",
       );
     }
   }
@@ -466,7 +499,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.openDeleteWorkout"
+        "CreateOrEditTemplatePlanComponent.openDeleteWorkout",
       );
     }
   }
@@ -476,8 +509,10 @@ export class CreateOrEditTemplatePlanComponent
       this.createOrEditTemplatePlanService.DeleteWorkout(identifier);
 
       // Se siamo in vista dettaglio e abbiamo cancellato l'allenamento visualizzato, torna alla lista
-      if (this.currentView === 'detail' &&
-        this.selectedWorkout?.form.controls["identifier"].value === identifier) {
+      if (
+        this.currentView === "detail" &&
+        this.selectedWorkout?.form.controls["identifier"].value === identifier
+      ) {
         this.backToList();
       }
 
@@ -485,7 +520,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.deleteWorkout"
+        "CreateOrEditTemplatePlanComponent.deleteWorkout",
       );
     }
   }
@@ -505,7 +540,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.openAddWorkoutModal"
+        "CreateOrEditTemplatePlanComponent.openAddWorkoutModal",
       );
     }
   }
@@ -523,10 +558,6 @@ export class CreateOrEditTemplatePlanComponent
 
   addWorkout() {
     try {
-      const addSpinnerId = this.spinnerService.showLoading(
-        "Aggiunta allenamento..."
-      );
-
       let workoutName = this.newWorkoutNameControl.value?.trim();
 
       const nextPosition =
@@ -540,25 +571,24 @@ export class CreateOrEditTemplatePlanComponent
 
       this.createOrEditTemplatePlanService.AddWorkout(workoutName);
 
-      setTimeout(() => {
-        this.spinnerService.hide(addSpinnerId);
-      }, 500);
       this.cdr.detectChanges();
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.addWorkout"
+        "CreateOrEditTemplatePlanComponent.addWorkout",
       );
     }
   }
 
   onAttivazioneStateChange(newState: boolean) {
     try {
-      this.createOrEditTemplatePlanService.formScheda.toggleActiveState(newState);
+      this.createOrEditTemplatePlanService.formScheda.toggleActiveState(
+        newState,
+      );
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.onAttivazioneStateChange"
+        "CreateOrEditTemplatePlanComponent.onAttivazioneStateChange",
       );
     }
   }
@@ -573,19 +603,20 @@ export class CreateOrEditTemplatePlanComponent
           errorMessage: "Errore durante il salvataggio",
           resultDuration: 500,
           minSpinnerDuration: 500,
-        }
+        },
       );
 
-      this.scheda = this.createOrEditTemplatePlanService.formScheda.getDatiSchedaDaSalvare();
+      this.scheda =
+        this.createOrEditTemplatePlanService.formScheda.getDatiSchedaDaSalvare();
 
       const user = this.authService.getCurrentUser();
 
       if (user) {
         const SaveDatiTemplateSchedaRequest: SaveDatiTemplateSchedaRequestModel =
-        {
-          schedaDTO: this.scheda,
-          userId: user.userId,
-        };
+          {
+            schedaDTO: this.scheda,
+            userId: user.userId,
+          };
 
         if (actionId === 0) {
           SaveDatiTemplateSchedaRequest.schedaDTO.id = -1;
@@ -604,17 +635,17 @@ export class CreateOrEditTemplatePlanComponent
             if (this.saveSpinnerId) {
               this.spinnerService.setError(
                 this.saveSpinnerId,
-                "Errore nella fase di salvataggio"
+                "Errore nella fase di salvataggio",
               );
             }
             this.errorHandlerService.logError(
               error,
-              "CreateOrEditTemplatePlanComponent.savePlan"
+              "CreateOrEditTemplatePlanComponent.savePlan",
             );
           });
       } else {
         throw new Error(
-          "CreateOrEditTemplatePlanComponent.savePlan: nessun user trovato"
+          "CreateOrEditTemplatePlanComponent.savePlan: nessun user trovato",
         );
       }
     } catch (error) {
@@ -623,7 +654,7 @@ export class CreateOrEditTemplatePlanComponent
       }
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.savePlan"
+        "CreateOrEditTemplatePlanComponent.savePlan",
       );
     }
   }
@@ -631,7 +662,7 @@ export class CreateOrEditTemplatePlanComponent
   resetAll(datiScheda: SchedaDTO) {
     try {
       this.scheda = datiScheda;
-      this.currentView = 'list';
+      this.currentView = "list";
       this.selectedWorkout = null;
       this.createOrEditTemplatePlanService.resetAll();
       this.createOrEditTemplatePlanService.initializeFormWithData(datiScheda);
@@ -639,7 +670,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.resetAll"
+        "CreateOrEditTemplatePlanComponent.resetAll",
       );
     }
   }
@@ -677,7 +708,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.goBack"
+        "CreateOrEditTemplatePlanComponent.goBack",
       );
     }
   }
@@ -695,7 +726,7 @@ export class CreateOrEditTemplatePlanComponent
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.openDeleteScheda"
+        "CreateOrEditTemplatePlanComponent.openDeleteScheda",
       );
     }
   }
@@ -716,7 +747,7 @@ export class CreateOrEditTemplatePlanComponent
             errorMessage: "Errore nell'eliminare la scheda",
             resultDuration: 250,
             minSpinnerDuration: 250,
-          }
+          },
         );
 
         const request: DeleteDatiTemplateSchedaRequestModel = {
@@ -739,7 +770,7 @@ export class CreateOrEditTemplatePlanComponent
             }
             this.errorHandlerService.logError(
               objError,
-              "CreateOrEditTemplatePlanComponent.eliminaScheda"
+              "CreateOrEditTemplatePlanComponent.eliminaScheda",
             );
           });
       } else {
@@ -751,21 +782,107 @@ export class CreateOrEditTemplatePlanComponent
       }
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditTemplatePlanComponent.eliminaScheda"
+        "CreateOrEditTemplatePlanComponent.eliminaScheda",
       );
     }
   }
 
   getExerciseIconPath(esercizioForm: EsercizioForm): string {
     try {
-      const idTipoEsercizio = esercizioForm.form.controls['idTipoEsercizio'].value;
-      return this.exerciseService.getExerciseIconPathByExerciseId(idTipoEsercizio);
+      const idTipoEsercizio =
+        esercizioForm.form.controls["idTipoEsercizio"].value;
+      return this.exerciseService.getExerciseIconPathByExerciseId(
+        idTipoEsercizio,
+      );
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "TemplatePlanComponent.getExerciseIconPath"
+        "TemplatePlanComponent.getExerciseIconPath",
       );
       return "assets/recollect/svg/default-exercise-icon.svg";
+    }
+  }
+
+  onOptionSelected(option: OptionSelectedEvent) {
+    switch (option.side) {
+      case "left":
+        switch (option.groupId) {
+          case 1:
+            switch (option.optionId) {
+              case 1:
+                this.openDeleteScheda();
+                break;
+            }
+            break;
+        }
+        break;
+    }
+  }
+
+  openWorkoutReorder(): void {
+    try {
+      const containerEl = this.workoutListContainer.nativeElement;
+      const containerRect = containerEl.getBoundingClientRect();
+      const containerPosition = {
+        top: containerRect.top,
+        left: containerRect.left,
+        width: containerRect.width,
+        height: containerRect.height,
+      };
+
+      const controller = this.focusOverlayService.open({
+        component: ReorderWorkoutComponent,
+        data: {
+          workouts:
+            this.createOrEditTemplatePlanService.formScheda
+              .listaAllenamentiForm,
+          containerPosition: containerPosition,
+        },
+        dismissOnBackdrop: false,
+        onDismiss: () => {
+          console.log("Overlay riordino allenamenti chiuso!");
+          this.cdr.detectChanges();
+        },
+      });
+
+      controller.registerOnPositionedFn(() => {
+        this.setOriginalWorkoutCardsVisibility(false);
+      });
+
+      controller.registerGetContainerPositionFn(() => {
+        const rect =
+          this.workoutListContainer.nativeElement.getBoundingClientRect();
+        return {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        };
+      });
+
+      controller.registerOnReadyToShowFn(() => {
+        this.setOriginalWorkoutCardsVisibility(true);
+      });
+
+      controller.registerApplyNewOrderFn((orderedIdentifiers: number[]) => {
+        this.createOrEditTemplatePlanService.formScheda.reorderWorkoutsByIdentifiers(
+          orderedIdentifiers,
+        );
+        this.cdr.detectChanges();
+      });
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditTemplatePlanComponent.openWorkoutReorder",
+      );
+    }
+  }
+
+  private setOriginalWorkoutCardsVisibility(visible: boolean): void {
+    if (this.workoutListContainer) {
+      const containerEl = this.workoutListContainer
+        .nativeElement as HTMLElement;
+      gsap.set(containerEl, { autoAlpha: visible ? 1 : 0 });
     }
   }
 }
