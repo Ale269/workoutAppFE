@@ -68,7 +68,7 @@ export class CreateOrEditTemplatePlanComponent
 {
   @ViewChild("listView") listView!: ElementRef<HTMLElement>;
   @ViewChild("detailView") detailView!: ElementRef<HTMLElement>;
-  @ViewChildren("allenamentoCard") allenamentoCards!: QueryList<ElementRef>;
+  @ViewChildren("workoutCard") allenamentoCards!: QueryList<ElementRef>;
 
   @ViewChild("headerAddWorkout") headerAddWorkout!: TemplateRef<any>;
   @ViewChild("bodyAddWorkout") bodyAddWorkout!: TemplateRef<any>;
@@ -549,9 +549,8 @@ export class CreateOrEditTemplatePlanComponent
     const nextPosition =
       (this.createOrEditTemplatePlanService.formScheda?.listaAllenamentiForm
         ?.length || 0) + 1;
-    const placeholder = `Giorno ${nextPosition}`;
 
-    this.newWorkoutNameControl = new FormControl<string>(placeholder, {
+    this.newWorkoutNameControl = new FormControl<string>('', {
       nonNullable: true,
     });
   }

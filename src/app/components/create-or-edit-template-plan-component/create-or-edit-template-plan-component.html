@@ -81,10 +81,10 @@
               track allenamentoForm.form.controls['identifier'].value) {
               <div class="allenamento-wrapper">
                 <div
-                  #workoutCard
-                  appLongPress
-                  [duration]="500"
-                  (mouseLongPress)="openWorkoutReorder()"
+                #workoutCard
+                appLongPress
+                [duration]="500"
+                (mouseLongPress)="openWorkoutReorder()"
                   class="allenamento-container"
                   (click)="openWorkoutDetail(allenamentoForm)"
                 >

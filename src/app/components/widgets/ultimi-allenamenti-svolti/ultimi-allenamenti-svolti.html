@@ -11,7 +11,10 @@
   <div class="widget-data-container">
     @for (ultimoAllenamentoSvolto of this.ultimiAllenamentiSvoltiDTO; track
     ultimoAllenamentoSvolto.id; let i = $index) {
-    <div class="widget-data" (click)="NavigaAVisualizzaAllenamento(ultimoAllenamentoSvolto.id)">
+    <div
+      class="widget-data"
+      (click)="NavigaAVisualizzaAllenamento(ultimoAllenamentoSvolto.id)"
+    >
       <div class="workout-info-container">
         <div class="workout-details">
           <div class="descrizione-allenamento-container">
@@ -32,7 +35,7 @@
       </div>
     </div>
     } @empty {
-    <div class="widget-data">
+    <div class="widget-data-no-data">
       <h3 class="text-white">Nessun dato trovato</h3>
     </div>
     }
@@ -50,7 +53,7 @@
     </button>
   </div>
   } } @else{
-  <div class="widget-data">
+  <div class="widget-data-no-data">
     <h3 class="text-white">Nessun dato trovato</h3>
   </div>
   <div class="widget-button">
