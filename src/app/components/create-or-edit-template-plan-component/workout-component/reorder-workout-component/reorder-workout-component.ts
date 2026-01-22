@@ -41,7 +41,7 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
     @ViewChild('workoutDataContainer') workoutDataContainer!: ElementRef;
     @ViewChildren('cardElement') cardElements!: QueryList<ElementRef>;
 
-    private readonly TARGET_TOP = 80;
+    private readonly TARGET_TOP = 120;
     private readonly GAP = 16;
     private isAnimating = false;
     private sortables: Sortable[] = [];

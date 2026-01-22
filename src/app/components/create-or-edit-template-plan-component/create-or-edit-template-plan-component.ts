@@ -42,6 +42,8 @@ import {
 import { FocusOverlayService } from "../shared/focus-overlay/focus-overlay.service";
 import { ReorderWorkoutComponent } from "./workout-component/reorder-workout-component/reorder-workout-component";
 import { LongPressDirective } from "../shared/directives/long-press.directive";
+import { Observable, Subject } from "rxjs";
+import { CanComponentDeactivate } from "src/app/core/guards/pending-changes.guard";
 
 // Registra il plugin Draggable
 gsap.registerPlugin(Draggable);
@@ -58,13 +60,13 @@ gsap.registerPlugin(Draggable);
     Switch,
     ExerciseIconColorPipe,
     MultiOptionButton,
-    LongPressDirective
+    LongPressDirective,
   ],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",
 })
 export class CreateOrEditTemplatePlanComponent
-  implements OnInit, OnDestroy, AfterViewInit
+  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate  
 {
   @ViewChild("listView") listView!: ElementRef<HTMLElement>;
   @ViewChild("detailView") detailView!: ElementRef<HTMLElement>;
@@ -143,6 +145,34 @@ export class CreateOrEditTemplatePlanComponent
     },
   ];
 
+  canDeactivate(): Observable<boolean> | boolean {
+  if (this.createOrEditTemplatePlanService.formScheda.form.pristine) {
+    return true;
+  }
+
+  // Creiamo un Subject che emetterà true (naviga) o false (resta)
+  const navigationResponse$ = new Subject<boolean>();
+
+  // Apriamo il modale
+  this.modalService.open({
+    warning: true,
+    headerTemplate: this.headerGoBack,
+    bodyTemplate: this.bodyGoBack,
+    footerCloseTemplate: this.footerCloseGoBack,
+    footerConfirmTemplate: this.footerConfirmGoBack,
+    onConfirm: () => {
+      navigationResponse$.next(true);
+      navigationResponse$.complete();
+    },
+    onClose: () => {
+      navigationResponse$.next(false);
+      navigationResponse$.complete();
+    }
+  });
+
+  return navigationResponse$.asObservable();
+}
+
   constructor(
     private errorHandlerService: ErrorHandlerService,
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
@@ -153,7 +183,7 @@ export class CreateOrEditTemplatePlanComponent
     private authService: AuthService,
     private workoutService: WorkoutService,
     private exerciseService: ExerciseService,
-    private focusOverlayService: FocusOverlayService
+    private focusOverlayService: FocusOverlayService,
   ) {
     try {
       const navigation = this.router.getCurrentNavigation();
@@ -455,12 +485,12 @@ export class CreateOrEditTemplatePlanComponent
   }
 
   // Metodi di animazione privati
-  private playFadeOut(element: HTMLElement, duration = 0.28): Promise<void> {
+  private playFadeOut(element: HTMLElement, duration = 0.3): Promise<void> {
     return new Promise((resolve) => {
       gsap.to(element, {
         autoAlpha: 0,
         duration,
-        ease: "power1.in",
+        ease: "power2.inOut",
         onComplete: () => {
           resolve();
         },
@@ -468,12 +498,12 @@ export class CreateOrEditTemplatePlanComponent
     });
   }
 
-  private playFadeIn(element: HTMLElement, duration = 0.28): Promise<void> {
+  private playFadeIn(element: HTMLElement, duration = 0.3): Promise<void> {
     return new Promise((resolve) => {
       gsap.to(element, {
         autoAlpha: 1,
         duration,
-        ease: "power1.out",
+        ease: "power2.inOut",
         onComplete: () => {
           resolve();
         },
@@ -550,7 +580,7 @@ export class CreateOrEditTemplatePlanComponent
       (this.createOrEditTemplatePlanService.formScheda?.listaAllenamentiForm
         ?.length || 0) + 1;
 
-    this.newWorkoutNameControl = new FormControl<string>('', {
+    this.newWorkoutNameControl = new FormControl<string>("", {
       nonNullable: true,
     });
   }

@@ -1,5 +1,12 @@
 @use "@angular/material" as mat;
 
+.floating-text {
+  position: absolute;
+  top: 60px;
+  left: 16px;
+      filter: drop-shadow(0 0 20px rgb(0 0 0));
+}
+
 // Wrapper principale
 .reorder-wrapper {
   position: fixed;
@@ -88,15 +95,16 @@
   border-radius: 20px;
   padding: 1px;
 
-  background: radial-gradient(circle at top left,
-      #515151,
-      transparent 60%),
-    radial-gradient(circle at bottom right,
-      #515151,
-      transparent 60%);
+  background:
+    radial-gradient(circle at top left, #515151, transparent 60%),
+    radial-gradient(circle at bottom right, #515151, transparent 60%);
 
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   z-index: -1;

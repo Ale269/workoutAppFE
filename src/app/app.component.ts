@@ -15,7 +15,6 @@ import {
 } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { ErrorHandlerService } from "./core/services/error-handler.service";
-import { ExerciseService } from "./core/services/exercise.service";
 import { filter, Subject, takeUntil } from "rxjs";
 import { MenuComponent } from "./components/shared/menu-component/menu-component";
 import { GenericModal } from "./components/shared/generic-modal/generic-modal";
@@ -67,18 +66,16 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-  ) {
+  constructor() {
     this.translate.setDefaultLang("it");
 
-    // Setup routing events
+    // Setup routing events - aggiorna solo la visibilità del menu
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
         takeUntil(this.destroy$)
       )
       .subscribe((event: NavigationEnd) => {
-        this.animationService.playFadeIn();
         this.updateMenuVisibility(event.urlAfterRedirects || event.url);
       });
 
@@ -129,7 +126,12 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): void {
     if (this.mainContentRef) {
       this.mainContent = this.mainContentRef.nativeElement;
+      
+      // Registra l'elemento principale nel servizio di animazione
+      // Il servizio gestirà automaticamente fade-out e fade-in
       this.animationService.setMainElement(this.mainContent);
+      
+      // Imposta visibilità iniziale
       gsap.set(this.mainContent, { autoAlpha: 1 });
     }
   }

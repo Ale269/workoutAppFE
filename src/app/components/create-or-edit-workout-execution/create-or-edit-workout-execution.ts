@@ -40,6 +40,7 @@ import { LongPressDirective } from "../shared/directives/long-press.directive";
 import { FocusOverlayService } from "../shared/focus-overlay/focus-overlay.service";
 import { ReorderExerciseComponent } from "../create-or-edit-template-plan-component/workout-component/reorder-exercise-component/reorder-exercise-component";
 import gsap from "gsap";
+import { Observable, Subject } from "rxjs";
 
 @Component({
   selector: "app-create-or-edit-workout-execution",
@@ -72,8 +73,10 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   @ViewChild("footerConfirmDeleteTemplate")
   footerConfirmDeleteTemplate!: TemplateRef<any>;
 
-  @ViewChildren('exerciseCard', { read: ElementRef }) exerciseCardElements!: QueryList<ElementRef>;
-  @ViewChild('exerciseDataContainer', { read: ElementRef }) exerciseDataContainer!: ElementRef;
+  @ViewChildren("exerciseCard", { read: ElementRef })
+  exerciseCardElements!: QueryList<ElementRef>;
+  @ViewChild("exerciseDataContainer", { read: ElementRef })
+  exerciseDataContainer!: ElementRef;
 
   private initSpinnerId: string | null = null;
   private saveSpinnerId: string | null = null;
@@ -107,6 +110,36 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     },
   ];
 
+  canDeactivate(): Observable<boolean> | boolean {
+    if (
+      this.createOrEditWorkoutExecutionService.AllenamentoForm.form.pristine
+    ) {
+      return true;
+    }
+
+    // Creiamo un Subject che emetterà true (naviga) o false (resta)
+    const navigationResponse$ = new Subject<boolean>();
+
+    // Apriamo il modale
+    this.modalService.open({
+      warning: true,
+      headerTemplate: this.headerGoBack,
+      bodyTemplate: this.bodyGoBack,
+      footerCloseTemplate: this.footerCloseGoBack,
+      footerConfirmTemplate: this.footerConfirmGoBack,
+      onConfirm: () => {
+        navigationResponse$.next(true);
+        navigationResponse$.complete();
+      },
+      onClose: () => {
+        navigationResponse$.next(false);
+        navigationResponse$.complete();
+      },
+    });
+
+    return navigationResponse$.asObservable();
+  }
+
   constructor(
     private errorHandlerService: ErrorHandlerService,
     private spinnerService: SpinnerService,
@@ -115,7 +148,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     private modalService: ModalService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    public focusOverlayService: FocusOverlayService
+    public focusOverlayService: FocusOverlayService,
   ) {
     try {
       const navigation = this.router.getCurrentNavigation();
@@ -184,7 +217,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditWorkoutExecution.toggleCompactMode"
+        "CreateOrEditWorkoutExecution.toggleCompactMode",
       );
     }
   }
@@ -206,8 +239,10 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       const controller = this.focusOverlayService.open({
         component: ReorderExerciseComponent,
         data: {
-          exercises: this.createOrEditWorkoutExecutionService.AllenamentoForm.listaEserciziForm,
-          containerPosition: containerPosition
+          exercises:
+            this.createOrEditWorkoutExecutionService.AllenamentoForm
+              .listaEserciziForm,
+          containerPosition: containerPosition,
         },
         dismissOnBackdrop: false,
         onDismiss: () => {
@@ -222,12 +257,13 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       });
 
       controller.registerGetContainerPositionFn(() => {
-        const rect = this.exerciseDataContainer.nativeElement.getBoundingClientRect();
+        const rect =
+          this.exerciseDataContainer.nativeElement.getBoundingClientRect();
         return {
           top: rect.top,
           left: rect.left,
           width: rect.width,
-          height: rect.height
+          height: rect.height,
         };
       });
 
@@ -236,7 +272,9 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       });
 
       controller.registerApplyNewOrderFn((orderedIdentifiers: number[]) => {
-        this.createOrEditWorkoutExecutionService.AllenamentoForm.reorderExercisesByIdentifiers(orderedIdentifiers);
+        this.createOrEditWorkoutExecutionService.AllenamentoForm.reorderExercisesByIdentifiers(
+          orderedIdentifiers,
+        );
         this.cdr.detectChanges();
       });
     }
@@ -247,7 +285,8 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
    */
   private setOriginalCardsVisibility(visible: boolean): void {
     if (this.exerciseDataContainer) {
-      const containerEl = this.exerciseDataContainer.nativeElement as HTMLElement;
+      const containerEl = this.exerciseDataContainer
+        .nativeElement as HTMLElement;
       gsap.set(containerEl, { autoAlpha: visible ? 1 : 0 });
     }
   }
@@ -542,7 +581,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                 if (this.saveSpinnerId) {
                   await this.spinnerService.setSuccess(this.saveSpinnerId);
                 }
-
+                
                 this.idAllenamento = response.allenamentoCorrente.id;
                 this.allenamentoDTO = response.allenamentoCorrente;
                 this.initializeWorkout();
@@ -578,6 +617,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                 if (this.saveSpinnerId) {
                   await this.spinnerService.setSuccess(this.saveSpinnerId);
                 }
+                this.createOrEditWorkoutExecutionService.AllenamentoForm.form.markAsPristine();
                 this.router.navigate(["/home"]);
               })
               .catch(async (error) => {

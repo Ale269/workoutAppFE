@@ -1,5 +1,8 @@
 <div class="reorder-wrapper">
   <div class="scrollable-container">
+    <h1 class="text-title floating-text">
+      Riordina allenamenti
+    </h1>
     <div #workoutDataContainer class="workout-data">
       @for (allenamentoForm of workouts; track allenamentoForm.form.controls['identifier'].value) {
       <div class="card-row" (click)="onCardClick($event)">
