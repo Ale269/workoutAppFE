@@ -11,6 +11,7 @@ import {
   ExerciseViewModel,
   MuscleGroup,
 } from "src/app/core/services/exercise.service";
+import { MatSelectModule } from "@angular/material/select";
 
 @Component({
   selector: "app-workout-list-selector",
@@ -19,6 +20,7 @@ import {
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule
   ],
   templateUrl: "./workout-list-selector.html",
   styleUrl: "./workout-list-selector.scss",
@@ -38,23 +40,15 @@ export class WorkoutListSelector implements OnInit {
 
   ngOnInit(): void {
     try {
-      this.createFormFiltri();
+      this.formFiltri = new FormFiltri();
 
-      // Carica lista esercizi
+      // Caricamento dati allineati al nuovo metodo
       this.exercisesView = this.exerciseService.getExercisesWithIcons();
-
-      // Carica i gruppi muscolari
       this.muscleGroups = this.exerciseService.getMuscleGroups();
-
-      // Inizializza la lista filtrata con tutti gli esercizi
       this.filteredExercises = [...this.exercisesView];
 
-      // Sottoscrivi ai cambiamenti del form per filtrare in tempo reale
-      this.formFiltri.form.controls["descrizione"]?.valueChanges.subscribe(
-        () => {
-          this.filterList();
-        }
-      );
+      // Filtro reattivo
+      this.formFiltri.form.valueChanges.subscribe(() => this.filterList());
     } catch (error) {
       this.errorHandlerService.logError(error, "WorkoutListSelector.ngOnInit");
     }
@@ -72,46 +66,23 @@ export class WorkoutListSelector implements OnInit {
   }
 
   filterList(): void {
-    try {
-      const searchText = this.formFiltri.form.controls["descrizione"]?.value;
-      const selectedMuscle = this.formFiltri.form.controls["idMuscle"]?.value;
+    const { descrizione, idMuscle } = this.formFiltri.form.value;
+    const search = descrizione?.toLowerCase().trim() || '';
+
+    this.filteredExercises = this.exercisesView.filter(ex => {
+      // Verifica nome
+      const matchesSearch = !search || ex.label.toLowerCase().includes(search);
       
-      const normalizedSearch = searchText?.toLowerCase().trim() || '';
-      
-      // Applica entrambi i filtri
-      this.filteredExercises = this.exercisesView.filter(exercise => {
-        // Filtro per testo di ricerca
-        const matchesSearch = !normalizedSearch || 
-          exercise.label.toLowerCase().includes(normalizedSearch);
-        
-        // Filtro per gruppo muscolare
-        const matchesMuscle = !selectedMuscle || 
-          exercise.idMuscle === selectedMuscle;
-        
-        return matchesSearch && matchesMuscle;
-      });
-      
-      console.log('Filtro applicato:', {
-        search: normalizedSearch,
-        muscle: selectedMuscle,
-        risultati: this.filteredExercises.length
-      });
-    } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "WorkoutListSelector.filterList"
-      );
-    }
+      // Verifica muscolo: idMuscle nel form è un numero singolo, 
+      // idMuscoli nell'oggetto è un array. Usiamo .includes()
+      const matchesMuscle = !idMuscle || ex.idMuscoli.includes(Number(idMuscle));
+
+      return matchesSearch && matchesMuscle;
+    });
   }
 
   async selectExercise(exercise: ExerciseViewModel): Promise<void> {
     try {
-      console.log("🟢 [1] selectExercise chiamato con:", exercise);
-      console.log(
-        "🟢 [2] Bottom Sheet ID:",
-        this.bottomSheetController.bottomSheetId
-      );
-
       // Chiude il bottom sheet e ritorna l'esercizio selezionato
       const result = await this.bottomSheetController.dismiss(
         exercise,
@@ -119,7 +90,6 @@ export class WorkoutListSelector implements OnInit {
       );
       console.log("🟢 [3] Dismiss result:", result);
     } catch (error) {
-      console.error("🔴 Errore in selectExercise:", error);
       this.errorHandlerService.logError(
         error,
         "WorkoutListSelector.selectExercise"

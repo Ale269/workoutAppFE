@@ -24,7 +24,7 @@ import { SwUpdateService } from '../../../core/services/sw-update.service';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      z-index: 9999;
+      z-index: 100;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     

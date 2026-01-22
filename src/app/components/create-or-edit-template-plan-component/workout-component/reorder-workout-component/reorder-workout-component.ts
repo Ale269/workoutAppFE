@@ -107,7 +107,7 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
                 left: this.containerPosition.left,
                 width: this.containerPosition.width,
                 margin: 0,
-                zIndex: 1001
+                zIndex: 95
             });
 
             const cardRows = container.querySelectorAll('.card-row') as NodeListOf<HTMLElement>;

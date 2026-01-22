@@ -52,6 +52,8 @@ export class ExerciseService {
         next: (response: GetAllExerciseTypeResponseModel) => {
           if (!response.errore.error) {
             this.exercises = response.exercises;
+            this.muscles = response.muscles;
+            this.icons = response.icons;
             resolve(response);
           } else {
             reject(response.errore.error);
@@ -89,10 +91,9 @@ export class ExerciseService {
         id: exercise.idTipoEsercizio,
         label: exercise.nomeTipoEsercizio,
         imgPath: getIconPathById(exercise.idIcona),
-        idMuscoli: exercise.idMuscoli, // Manteniamo l'array per i filtri
+        idMuscoli: exercise.idMuscoli,
         idIcona: exercise.idIcona,
         iconColor: iconDetails ? iconDetails.coloreIcona : undefined,
-        // Helper opzionale per mostrare i nomi dei muscoli nella UI
         muscleNames: this.getMuscleNamesByIds(exercise.idMuscoli),
       };
     });
@@ -177,9 +178,10 @@ export interface ExerciseViewModel {
   id: number;
   label: string;
   imgPath: string;
-  idMuscle?: number;
+  idMuscoli: number[]; // È un array di ID
   idIcona: number;
-  iconColor?: string; // Utile se vuoi colorare bordi o testi
+  iconColor?: string;
+  muscleNames?: string; // Stringa concatenata (es: "Petto, Tricipiti")
 }
 
 export interface MuscleGroup {

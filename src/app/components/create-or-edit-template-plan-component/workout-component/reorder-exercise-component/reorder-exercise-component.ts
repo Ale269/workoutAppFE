@@ -109,7 +109,7 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
                 left: this.containerPosition.left,
                 width: this.containerPosition.width,
                 margin: 0,
-                zIndex: 1001
+                zIndex: 95
             });
 
             const cardRows = container.querySelectorAll('.card-row') as NodeListOf<HTMLElement>;

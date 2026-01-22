@@ -24,27 +24,65 @@
         </button>
         }
       </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Gruppo muscolare</mat-label>
+        <mat-select
+          formControlName="idMuscle"
+          [placeholder]="'Seleziona gruppo muscolare'"
+        >
+          @for (muscle of muscleGroups; track muscle.id) {
+          <mat-option [value]="muscle.id">
+            <div class="custom-option">
+              <span>{{ muscle.name }}</span>
+            </div>
+          </mat-option>
+          }
+        </mat-select>
+        @if (formFiltri.form.controls?.['idMuscle']?.value) {
+        <button
+          class="cancel-input-button"
+          matSuffix
+          mat-icon-button
+          (click)="$event.stopPropagation(); formFiltri.form.controls?.['idMuscle']?.setValue('')"
+          type="button"
+        >
+          <img src="assets/recollect/svg/google-close-icon.svg" />
+        </button>
+        }
+      </mat-form-field>
     </form>
   </div>
   <div class="scroller">
     <div class="exercise-type-container">
-      @for (tipoEsercizio of filteredExercises; track tipoEsercizio.id; let i =
-      $index) {
+      @for (tipoEsercizio of filteredExercises; track tipoEsercizio.id) {
       <div class="exercise-container" (click)="selectExercise(tipoEsercizio)">
         <div class="icon-container">
           <div
             class="circle-icon"
-            [style.border-color]="tipoEsercizio.id | exerciseIconColor"
+            [style.border-color]="tipoEsercizio.idIcona | exerciseIconColor"
           >
             <img
               [src]="tipoEsercizio.imgPath"
-              [alt]="'Icona esercizio ' + tipoEsercizio.id"
+              [alt]="'Icona ' + tipoEsercizio.label"
               class="exercise-icon"
             />
           </div>
         </div>
+
         <div class="data-exercise-container">
-          <h3 class="text-white">{{tipoEsercizio.label}}</h3>
+          <h3 class="text-white">{{ tipoEsercizio.label }}</h3>
+
+          @if (tipoEsercizio.muscleNames) {
+          <div
+            class="chips-container"
+            style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px"
+          >
+            @for (muscle of tipoEsercizio.muscleNames.split(', '); track muscle)
+            {
+            <div class="dati-chip-container muscle-chip">{{ muscle }}</div>
+            }
+          </div>
+          }
         </div>
       </div>
       }

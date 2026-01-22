@@ -12,7 +12,7 @@
   background-color: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  z-index: 1000;
+  z-index: 100;
   // Inizia con opacity 0 ma backdrop-filter attivo
   opacity: 0;
   // Usa pointer-events invece di visibility
@@ -21,6 +21,14 @@
   // Forza l'accelerazione hardware
   will-change: opacity;
   transform: translateZ(0);
+}
+
+.handle-trigger {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
 }
 
 // Quando visibile, abilita pointer-events
@@ -36,7 +44,7 @@
   background-color: #000;
   border-radius: 16px 16px 0 0;
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.3);
-  z-index: 99999;
+  z-index: 100;
   height: 110vh;
   max-height: 110vh;
   display: flex;
@@ -57,6 +65,7 @@
   -webkit-user-select: none;
   touch-action: none;
   flex-shrink: 0;
+  position: relative;
 
   &:active {
     cursor: grabbing;

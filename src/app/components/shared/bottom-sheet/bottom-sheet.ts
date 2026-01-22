@@ -113,6 +113,7 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
       trigger: this.handle.nativeElement,
       bounds: { minY: vh20, maxY: window.innerHeight + vh20 },
       inertia: true,
+      zIndexBoost: false,
       onDrag: function() {
         const dragAmount = this["y"] - vh20;
         const maxDrag = window.innerHeight * 0.3;
