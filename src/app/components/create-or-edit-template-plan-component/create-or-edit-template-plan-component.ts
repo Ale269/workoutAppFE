@@ -310,6 +310,7 @@ export class CreateOrEditTemplatePlanComponent
             bounds: { minX: SWIPE_THRESHOLD, maxX: 0 },
             inertia: true,
             dragClickables: false,
+            zIndexBoost: false,
             onDrag: function (this: any) {
               const progress = Math.abs(this.x) / DELETE_WIDTH;
               const alpha = Math.min(progress, 1);
