@@ -7,7 +7,8 @@ import {
   ViewChild, 
   ElementRef, 
   AfterViewInit,
-  OnDestroy 
+  OnDestroy,
+  NgZone
 } from '@angular/core';
 import { gsap } from 'gsap';
 
@@ -33,33 +34,31 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
   private tl!: gsap.core.Timeline;
   private isAnimating = false;
 
-  constructor() { }
+  constructor(private ngZone: NgZone) { }
 
   ngAfterViewInit(): void {
-    // Inizializza GSAP timeline
-    this.initializeGSAP();
-    
-    // Imposta lo stato iniziale
-    this.setInitialState();
+    // ✅ Esegui fuori da Angular per evitare change detection
+    this.ngZone.runOutsideAngular(() => {
+      this.initializeGSAP();
+      this.setInitialState();
+    });
   }
 
   ngOnDestroy(): void {
-    // Pulisci le animazioni GSAP
     if (this.tl) {
       this.tl.kill();
     }
   }
 
   private initializeGSAP(): void {
-    // Crea una timeline GSAP
     this.tl = gsap.timeline({ paused: true });
   }
 
   private setInitialState(): void {
     if (this.Aperto) {
-      this.openAccordion(false); // false = senza animazione
+      this.openAccordion(false);
     } else {
-      this.closeAccordion(false); // false = senza animazione
+      this.closeAccordion(false);
     }
   }
 
@@ -68,19 +67,24 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
 
     this.Aperto = !this.Aperto;
     
-    if (this.Aperto) {
-      this.openAccordion(true);
-    } else {
-      this.closeAccordion(true);
-    }
+    // ✅ Esegui animazione fuori da Angular
+    this.ngZone.runOutsideAngular(() => {
+      if (this.Aperto) {
+        this.openAccordion(true);
+      } else {
+        this.closeAccordion(true);
+      }
+    });
 
-    this.openStateChange.emit(this.Aperto);
+    // ✅ Emetti l'evento dentro Angular zone per il change detection
+    this.ngZone.run(() => {
+      this.openStateChange.emit(this.Aperto);
+    });
   }
 
   private openAccordion(animate: boolean = true): void {
     if (!this.accordionContent || !this.accordionBody || !this.arrow) return;
 
-    // Calcola l'altezza effettiva del contenuto
     const content = this.accordionContent.nativeElement;
     const body = this.accordionBody.nativeElement;
     const arrow = this.arrow.nativeElement;
@@ -98,22 +102,24 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
       // Imposta l'altezza iniziale a 0 e overflow hidden per l'animazione
       gsap.set(body, { height: 0, overflow: 'hidden' });
       
-      // Anima l'apertura
+      // Anima l'apertura - ANIMAZIONE ORIGINALE
       this.tl
         .to(body, {
           height: contentHeight,
           duration: 0.5,
-          ease: "power2.out"
+          ease: "power2.out",
+          force3D: true // ✅ Aggiunto solo force3D
         })
         .to(arrow, {
-          rotation: -90, // Freccia verso l'alto (aperto)
+          rotation: -90,
           duration: 0.4,
-          ease: "power2.out"
-        }, "<") // "<" significa che inizia contemporaneamente all'animazione precedente
+          ease: "power2.out",
+          force3D: true // ✅ Aggiunto solo force3D
+        }, "<")
         .set(body, { 
           height: 'auto', 
           overflow: 'visible' 
-        }) // Alla fine imposta height: auto per la responsività
+        })
         .call(() => {
           this.isAnimating = false;
         });
@@ -122,7 +128,7 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
     } else {
       // Imposta direttamente senza animazione
       gsap.set(body, { height: 'auto', overflow: 'visible' });
-      gsap.set(arrow, { rotation: -90 }); // Freccia verso l'alto
+      gsap.set(arrow, { rotation: -90 });
     }
   }
 
@@ -144,17 +150,19 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
       // Imposta l'altezza corrente e overflow hidden
       gsap.set(body, { height: currentHeight, overflow: 'hidden' });
       
-      // Anima la chiusura
+      // Anima la chiusura - ANIMAZIONE ORIGINALE
       this.tl
         .to(body, {
           height: 0,
           duration: 0.5,
-          ease: "power2.out"
+          ease: "power2.out",
+          force3D: true // ✅ Aggiunto solo force3D
         })
         .to(arrow, {
-          rotation: 90, // Freccia verso il basso (chiuso)
+          rotation: 90,
           duration: 0.4,
-          ease: "power2.out"
+          ease: "power2.out",
+          force3D: true // ✅ Aggiunto solo force3D
         }, "<")
         .call(() => {
           this.isAnimating = false;
@@ -164,12 +172,11 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
     } else {
       // Imposta direttamente senza animazione
       gsap.set(body, { height: 0, overflow: 'hidden' });
-      gsap.set(arrow, { rotation: 90, overflow: 'hidden' }); // Freccia verso il basso
+      gsap.set(arrow, { rotation: 90 });
     }
   }
 
   public refresh(event: any): void {
-    // Implementazione per il refresh se necessaria
     this.refreshAccordion.emit(this.Key);
     event.stopPropagation();
   }

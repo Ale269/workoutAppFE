@@ -2,7 +2,7 @@
   <div class="all-buttons-wrapper" #allButtonsWrapper>
     <!-- Left transformation button (now positioned before static) -->
     @if(leftGroups.length > 0) {
-    <div class="transformation-button left" #leftTransformButton (click)="expandButton('left')">
+    <div class="transformation-button left" #leftTransformButton (touchstart)="expandButton('left')">
       <!-- BASIC STATE -->
       <div class="basic-setting" #leftBasicContent>
         <button [class.has-label-and-icon]="leftButtonLabel">
@@ -16,7 +16,7 @@
       <!-- EXPANDED STATE -->
       <div class="transformed-setting" #leftTransformedContent>
         <div class="transformed-setting-close-button-container">
-          <div class="delete-icon-element-container" (click)="collapseButton('left')">
+          <div class="delete-icon-element-container" (touchstart)="collapseButton('left')">
             <img src="assets/recollect/svg/google-close-icon.svg" alt="Chiudi" />
           </div>
         </div>
@@ -45,7 +45,7 @@
 
     <!-- Right transformation button -->
     @if(rightGroups.length > 0) {
-    <div class="transformation-button right" #rightTransformButton (click)="expandButton('right')">
+    <div class="transformation-button right" #rightTransformButton (touchstart)="expandButton('right')">
       <div class="basic-setting" #rightBasicContent>
         <button [class.has-label-and-icon]="rightButtonLabel">
           <span class="button-label">{{ rightButtonLabel }}</span>
@@ -54,7 +54,7 @@
 
       <div class="transformed-setting" #rightTransformedContent>
         <div class="transformed-setting-close-button-container">
-          <div class="delete-icon-element-container" (click)="collapseButton('right')">
+          <div class="delete-icon-element-container" (touchstart)="collapseButton('right')">
             <img src="assets/recollect/svg/google-close-icon.svg" alt="Chiudi" />
           </div>
         </div>

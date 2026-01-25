@@ -83,12 +83,12 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     ngAfterViewInit(): void {
-        this.positionContainerOverOriginal();
-        this.controller.notifyPositioned();
-
-        (this.exerciseDataContainer.nativeElement as HTMLElement).offsetHeight;
-
         this.ngZone.runOutsideAngular(() => {
+            this.positionContainerOverOriginal();
+            this.controller.notifyPositioned();
+
+            (this.exerciseDataContainer.nativeElement as HTMLElement).offsetHeight;
+
             requestAnimationFrame(() => {
                 this.controller.showBackdrop();
                 this.animateCardsToTop();
@@ -100,16 +100,15 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
         const container = this.exerciseDataContainer.nativeElement;
 
         if (this.containerPosition) {
-            // Impostiamo position: 'absolute' invece di 'fixed'.
-            // Essendo dentro .scrollable-container (che è relative), 
-            // questo elemento contribuirà all'altezza totale permettendo lo scroll.
+            // Usa y invece di top per la GPU
             gsap.set(container, {
                 position: 'absolute',
-                top: this.containerPosition.top,
+                y: this.containerPosition.top, // ✅ Cambiato da top a y
                 left: this.containerPosition.left,
                 width: this.containerPosition.width,
                 margin: 0,
-                zIndex: 95
+                zIndex: 95,
+                force3D: true // ✅ Forza GPU layer
             });
 
             const cardRows = container.querySelectorAll('.card-row') as NodeListOf<HTMLElement>;
@@ -120,8 +119,6 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
 
                 const BOTTOM_PADDING = 80;
 
-                // Calcoliamo e assegniamo l'altezza esplicita al container.
-                // Questo forza il .scrollable-container padre a creare la scrollbar.
                 gsap.set(container, {
                     height: (cardRows.length * rowSize) + BOTTOM_PADDING
                 });
@@ -133,7 +130,8 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
                         left: 0,
                         right: 0,
                         y: index * rowSize,
-                        zIndex: 1
+                        zIndex: 1,
+                        force3D: true // ✅ Forza GPU layer per ogni card
                     });
                 });
             }
@@ -143,17 +141,15 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
     private animateCardsToTop(): void {
         const container = this.exerciseDataContainer.nativeElement;
 
-        // Anima .exercise-data verso il top
+        // ✅ Usa y invece di top + force3D
         gsap.to(container, {
-            top: this.TARGET_TOP,
+            y: this.TARGET_TOP,
             duration: 0.4,
             ease: "power2.out",
+            force3D: true, // ✅ Forza GPU
             onComplete: () => {
                 console.log('Animazione verso top completata');
-
-                this.ngZone.runOutsideAngular(() => {
-                    this.initSortable();
-                });
+                this.initSortable();
             }
         });
 
@@ -161,7 +157,8 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
         gsap.to(dragHandles, {
             width: 28,
             duration: 0.4,
-            ease: "power2.out"
+            ease: "power2.out",
+            force3D: true // ✅ Forza GPU
         });
     }
 
@@ -216,18 +213,23 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
                 gsap.to(cardRow, {
                     y: sortable.index * rowSize,
                     duration: 0.3,
-                    ease: "power2.out"
+                    ease: "power2.out",
+                    force3D: true // ✅ GPU
                 });
             };
 
             const downAction = () => {
+                // ✅ Rimuovi box-shadow dall'animazione - usa opacity e transform
                 gsap.to(cardRow, {
                     scale: 1.02,
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
                     zIndex: 100,
                     duration: 0.2,
-                    overwrite: "auto"
+                    overwrite: "auto",
+                    force3D: true // ✅ GPU
                 });
+                
+                // ✅ Applica box-shadow statico via classe CSS invece di animarlo
+                cardRow.classList.add('dragging-shadow');
             };
 
             const dragAction = function (this: Draggable) {
@@ -238,12 +240,17 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
             };
 
             const upAction = () => {
+                // ✅ Rimuovi box-shadow dall'animazione
                 gsap.to(cardRow, {
                     scale: 1,
-                    boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
                     zIndex: 1,
-                    duration: 0.3
+                    duration: 0.3,
+                    force3D: true // ✅ GPU
                 });
+                
+                // ✅ Rimuovi classe shadow
+                cardRow.classList.remove('dragging-shadow');
+                
                 layout();
             };
 
@@ -303,10 +310,10 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
                 gsap.to(sortable.element, {
                     y: idx * rowSize,
                     scale: 1,
-                    boxShadow: "none",
                     zIndex: 1,
                     duration: 0.2,
-                    ease: "power2.out"
+                    ease: "power2.out",
+                    force3D: true // ✅ GPU
                 });
             });
         }
@@ -315,13 +322,16 @@ export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestro
         gsap.to(dragHandles, {
             width: 0,
             duration: 0.4,
-            ease: "power2.inOut"
+            ease: "power2.inOut",
+            force3D: true // ✅ GPU
         });
 
+        // ✅ Usa y invece di top
         gsap.to(container, {
-            top: targetTop,
+            y: targetTop,
             duration: 0.4,
             ease: "power2.inOut",
+            force3D: true, // ✅ GPU
             onComplete: () => {
                 const orderedIdentifiers = this.getOrderedIdentifiers();
                 console.log('Nuovo ordine da applicare:', orderedIdentifiers);

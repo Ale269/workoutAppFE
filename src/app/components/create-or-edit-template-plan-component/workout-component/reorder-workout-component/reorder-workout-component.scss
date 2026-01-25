@@ -136,3 +136,31 @@
 .icona-numero-esercizio-container img {
   width: 16px;
 }
+
+// ✅ Ottimizzazioni GPU
+.card-row {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.workout-data {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.drag-handle-container {
+  will-change: width;
+  backface-visibility: hidden;
+}
+
+.allenamento-container {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+// ✅ Shadow statico per il drag (non animato)
+.dragging-shadow {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}

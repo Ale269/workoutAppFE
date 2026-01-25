@@ -581,7 +581,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                 if (this.saveSpinnerId) {
                   await this.spinnerService.setSuccess(this.saveSpinnerId);
                 }
-                
+
                 this.idAllenamento = response.allenamentoCorrente.id;
                 this.allenamentoDTO = response.allenamentoCorrente;
                 this.initializeWorkout();
@@ -708,6 +708,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           footerCloseTemplate: this.footerCloseGoBack,
           footerConfirmTemplate: this.footerConfirmGoBack,
           onConfirm: () => {
+            this.createOrEditWorkoutExecutionService.AllenamentoForm.form.markAsPristine();
             this.PerformBackNavigate();
           },
         });

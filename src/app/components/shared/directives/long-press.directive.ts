@@ -17,6 +17,7 @@ export class LongPressDirective {
 
   private pressTimeout: any;
   private isPressed = false;
+  private longPressTriggered = false; // Flag per sapere se la long press è scattata
 
   // Coordinate iniziali del tocco
   private startX = 0;
@@ -28,19 +29,20 @@ export class LongPressDirective {
   @HostListener('touchstart', ['$event'])
   onPress(event: Event): void {
     this.isPressed = true;
+    this.longPressTriggered = false; // Reset del flag
 
     // Se è un evento touch, salviamo le coordinate iniziali
     if (event instanceof TouchEvent) {
       this.startX = event.touches[0].clientX;
       this.startY = event.touches[0].clientY;
     } else if (event instanceof MouseEvent) {
-      // Opzionale: gestire anche il movimento del mouse se necessario
       this.startX = event.clientX;
       this.startY = event.clientY;
     }
 
     this.pressTimeout = setTimeout(() => {
       if (this.isPressed) {
+        this.longPressTriggered = true; // Segna che la long press è scattata
         this.mouseLongPress.emit(event);
       }
     }, this.duration);
@@ -86,6 +88,17 @@ export class LongPressDirective {
   @HostListener('touchend')
   onRelease(): void {
     this.cancel();
+  }
+
+  // IMPORTANTE: Intercetta il click che segue il long press
+  @HostListener('click', ['$event'])
+  onClick(event: Event): void {
+    if (this.longPressTriggered) {
+      // Se la long press è scattata, previeni il click
+      event.preventDefault();
+      event.stopPropagation();
+      this.longPressTriggered = false; // Reset del flag
+    }
   }
 
   // Metodo helper per pulire lo stato

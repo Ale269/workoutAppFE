@@ -121,7 +121,7 @@
 .dati-scheda-container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
 }
 
 .delete-scheda-button-row {
@@ -189,6 +189,7 @@
   gap: 16px;
   background-color: #000;
   cursor: pointer;
+  z-index: 1;
 
   // Impedisce la selezione del testo
   user-select: none;
@@ -266,7 +267,6 @@
   visibility: hidden;
   pointer-events: none;
   cursor: pointer;
-  z-index: 10;
 
   svg {
     color: #ffffff;
