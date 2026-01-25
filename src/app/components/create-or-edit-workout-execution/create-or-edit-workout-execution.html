@@ -54,7 +54,8 @@
         [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm"
         (onDeleteExercise)="deleteEexercise($event)"
         [formEsercizio]="esercizioForm"
-        [isCompactMode]="isCompactMode">
+        [isCompactMode]="isCompactMode"
+        [historyTrainingId]="idAllenamento">
       </app-exercise-component>
     </div>
     } @empty { }

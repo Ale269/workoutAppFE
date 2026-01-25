@@ -3,7 +3,7 @@ import { CommonResponseModel } from "../base-response/common-response-status";
 export interface LastTrainingExerciseRequestModel {
   userId: number;
   exerciseId: number;
-  excludeCurrent: boolean;
+  excludeHistoryTrainingId?: number;
 }
 
 export interface LastTrainingExerciseResponseModel {

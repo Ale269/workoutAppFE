@@ -220,13 +220,19 @@ export class WorkoutService {
   getLastTrainingExercise(
     userId: number,
     exerciseId: number,
-    excludeCurrent: boolean = false
+    excludeHistoryTrainingId?: number
   ): Observable<LastTrainingExerciseResponseModel> {
+    // Query params opzionali - verranno aggiunti solo se valorizzati
+    const queryParams = excludeHistoryTrainingId && excludeHistoryTrainingId > 0
+      ? { excludeHistoryTrainingId }
+      : undefined;
+
     return this.apiCatalogService.executeApiCall(
       "training",
       "getLastTrainingExercise",
-      { userId, exerciseId, excludeCurrent },
-      null
+      { userId, exerciseId },
+      null,
+      queryParams
     );
   }
 

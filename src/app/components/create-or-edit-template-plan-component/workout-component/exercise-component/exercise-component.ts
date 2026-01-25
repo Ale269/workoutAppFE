@@ -51,6 +51,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   @Input() formAllenamento!: AllenamentoForm;
   @Input() formEsercizio!: EsercizioForm;
   @Input() isCompactMode: boolean = false;
+  @Input() historyTrainingId?: number;
 
   @ViewChild("headerDeleteWorkout") headerDeleteWorkout!: TemplateRef<any>;
   @ViewChild("bodyDeleteWorkout") bodyDeleteWorkout!: TemplateRef<any>;
@@ -311,9 +312,9 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         footerCloseTemplate: this.footerCloseHistoryTemplate,
       });
 
-      // Chiamo l'API - excludeCurrent=true perche' l'utente sta registrando un nuovo allenamento
+      // Passo l'ID dell'history training corrente (se disponibile) per escluderlo dai risultati
       this.workoutService
-        .getLastTrainingExercise(user.userId, exerciseId, true)
+        .getLastTrainingExercise(user.userId, exerciseId, this.historyTrainingId)
         .subscribe({
           next: (response) => {
             this.lastTrainingLoading = false;

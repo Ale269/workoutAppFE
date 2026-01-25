@@ -132,14 +132,20 @@ export class ApiCatalogService {
 
   /**
    * Esegue una chiamata API
+   * @param apiName Nome dell'API nel catalogo
+   * @param nameKey Nome dell'endpoint
+   * @param pathParams Parametri da sostituire nell'URL (es. :userId -> 123)
+   * @param body Body della richiesta (per POST/PUT)
+   * @param queryParams Query parameters opzionali (es. { excludeId: 123 } -> ?excludeId=123)
    */
   executeApiCall<T>(
     apiName: string,
     nameKey: string,
     pathParams?: { [key: string]: any },
-    body?: any
+    body?: any,
+    queryParams?: { [key: string]: any }
   ): Observable<T> {
-    
+
     const catalog = this.getApiCatalog();
     if (!catalog) {
       return throwError(() => new Error('API Catalog non disponibile'));
@@ -162,7 +168,7 @@ export class ApiCatalogService {
     if (endpointObject.isMocked && !environment.production) {
       return this.handleMockedCall<T>(apiName, nameKey, pathParams, endpointObject);
     } else {
-      return this.handleRealApiCall<T>(endpointObject, pathParams, body, apiName, nameKey);
+      return this.handleRealApiCall<T>(endpointObject, pathParams, body, apiName, nameKey, queryParams);
     }
   }
 
@@ -199,15 +205,28 @@ export class ApiCatalogService {
     pathParams: { [key: string]: any } | undefined,
     body: any,
     apiName: string,
-    nameKey: string
+    nameKey: string,
+    queryParams?: { [key: string]: any }
   ): Observable<T> {
-    
+
     let fullUrl = this.baseUrl + endpointObject.endpoint;
-    
+
     // Sostituisci parametri nell'URL
     if (pathParams) {
       for (const [key, value] of Object.entries(pathParams)) {
         fullUrl = fullUrl.replace(`:${key}`, String(value));
+      }
+    }
+
+    // Aggiungi query parameters se presenti
+    if (queryParams) {
+      const validParams = Object.entries(queryParams)
+        .filter(([_, value]) => value !== undefined && value !== null)
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+        .join('&');
+
+      if (validParams) {
+        fullUrl += (fullUrl.includes('?') ? '&' : '?') + validParams;
       }
     }
 

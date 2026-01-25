@@ -152,7 +152,7 @@
       },
       {
         "name": "getLastTrainingExercise",
-        "endpoint": "/history/workout/user/:userId/exercise/:exerciseId/last?excludeCurrent=:excludeCurrent",
+        "endpoint": "/history/workout/user/:userId/exercise/:exerciseId/last",
         "method": "get",
         "description": "Recupera i dati dell'ultimo allenamento svolto per un esercizio specifico.",
         "isMocked": false
