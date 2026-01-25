@@ -2,7 +2,7 @@
 <div class="menu-wrapper">
   <!-- Menu fisso in alto -->
   <div class="app-menu-container">
-    <div [class.menu-hidden]="isMenuOpen" (click)="navigateToHome()">
+    <div [class.menu-hidden]="isMenuOpen" (touchstart)="navigateToHome()">
       <h3>Home</h3>
     </div>
     <div (click)="toggleMenu()" class="menu-trigger">
@@ -18,7 +18,7 @@
   <div
     class="fullscreen-menu-overlay"
     [class.menu-open]="isMenuOpen"
-    (click)="closeMenu()"
+    (touchstart)="closeMenu()"
   >
     <div class="menu-items-container" [class.items-visible]="isMenuOpen">
       <div class="menu-item" (click)="navigateToAccount()">

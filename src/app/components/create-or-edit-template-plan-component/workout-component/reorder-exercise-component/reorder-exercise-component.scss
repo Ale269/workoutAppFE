@@ -234,3 +234,27 @@ mat-form-field {
   align-items: center;
   transition: all 0.3s ease;
 }
+
+.card-row {
+  will-change: transform; // Prenota GPU layer
+  backface-visibility: hidden; // Previene flickering
+  transform: translateZ(0); // Forza hardware acceleration
+}
+
+.exercise-data {
+  will-change: transform; // Prenota GPU layer per il container
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.drag-handle-container {
+  will-change: width; // Solo per la width che viene animata
+  backface-visibility: hidden;
+}
+
+// ✅ Classe per box-shadow statico (non animato)
+.dragging-shadow {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  // La transizione è gestita da GSAP, ma il box-shadow
+  // viene applicato/rimosso istantaneamente per evitare lag
+}

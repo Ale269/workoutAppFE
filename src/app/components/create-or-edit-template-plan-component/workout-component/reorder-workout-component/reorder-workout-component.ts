@@ -83,13 +83,12 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     ngAfterViewInit(): void {
-        this.positionContainerOverOriginal();
-        this.controller.notifyPositioned();
-
-        // Forza un reflow iniziale
-        (this.workoutDataContainer.nativeElement as HTMLElement).offsetHeight;
-
         this.ngZone.runOutsideAngular(() => {
+            this.positionContainerOverOriginal();
+            this.controller.notifyPositioned();
+
+            (this.workoutDataContainer.nativeElement as HTMLElement).offsetHeight;
+
             requestAnimationFrame(() => {
                 this.controller.showBackdrop();
                 this.animateCardsToTop();
@@ -101,19 +100,19 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
         const container = this.workoutDataContainer.nativeElement;
 
         if (this.containerPosition) {
+            // ✅ Usa y invece di top + force3D
             gsap.set(container, {
                 position: 'absolute',
-                top: this.containerPosition.top,
+                y: this.containerPosition.top,
                 left: this.containerPosition.left,
                 width: this.containerPosition.width,
                 margin: 0,
-                zIndex: 95
+                zIndex: 95,
+                force3D: true // ✅ GPU
             });
 
             const cardRows = container.querySelectorAll('.card-row') as NodeListOf<HTMLElement>;
             if (cardRows.length > 0) {
-                // Calcolo altezza iniziale approssimativa basata sulla prima card
-                // Verrà ricalcolata accuratamente dopo
                 const firstCard = cardRows[0];
                 const cardHeight = firstCard.offsetHeight;
                 const rowSize = cardHeight + this.GAP;
@@ -130,7 +129,8 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
                         left: 0,
                         right: 0,
                         y: index * rowSize,
-                        zIndex: 1
+                        zIndex: 1,
+                        force3D: true // ✅ GPU
                     });
                 });
             }
@@ -141,23 +141,23 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
         const container = this.workoutDataContainer.nativeElement;
         const dragHandles = container.querySelectorAll('.drag-handle-container');
 
-        // 1. Anima l'espansione degli handle (questo causa il text wrapping)
+        // ✅ Anima handle con force3D
         gsap.to(dragHandles, {
             width: 28,
             duration: 0.4,
-            ease: "power2.out"
+            ease: "power2.out",
+            force3D: true
         });
 
-        // 2. Anima il container verso l'alto
+        // ✅ Usa y invece di top + force3D
         gsap.to(container, {
-            top: this.TARGET_TOP,
+            y: this.TARGET_TOP,
             duration: 0.4,
             ease: "power2.out",
+            force3D: true,
             onComplete: () => {
                 console.log('Animazione verso top completata');
-                this.ngZone.runOutsideAngular(() => {
-                    this.initSortable();
-                });
+                this.initSortable();
             }
         });
     }
@@ -170,71 +170,58 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
         const totalItems = cardRows.length;
         const clampIndex = gsap.utils.clamp(0, totalItems - 1);
 
-        // --- Logica di Layout Dinamico ---
-        // Ricalcola la posizione Y di ogni elemento basandosi sull'altezza reale
-        // degli elementi che lo precedono.
         const refreshLayout = (animate = true) => {
-            // Ordiniamo l'array sortables in base al loro indice corrente
-            // (Nota: non riordiniamo l'array sortables stesso, creiamo una vista ordinata)
             const orderedSortables = [...this.sortables].sort((a, b) => a.index - b.index);
             
             let currentY = 0;
             const BOTTOM_PADDING = 80;
 
             orderedSortables.forEach((sortable) => {
-                // Se stiamo trascinando questo elemento, NON forziamo la sua Y con GSAP
-                // altrimenti combatteremmo con il Draggable.
                 if (animate && sortable.dragger && !sortable.dragger.isDragging) {
+                    // ✅ Aggiungi force3D
                     gsap.to(sortable.element, {
                         y: currentY,
                         duration: 0.3,
-                        ease: "power2.out"
+                        ease: "power2.out",
+                        force3D: true
                     });
                 } else if (!animate) {
-                     gsap.set(sortable.element, { y: currentY });
+                    gsap.set(sortable.element, { 
+                        y: currentY,
+                        force3D: true
+                    });
                 }
 
-                // Incrementiamo Y per il prossimo elemento
-                // Usiamo offsetHeight per prendere l'altezza reale (incluso padding/border)
-                // che potrebbe essere cambiata col text-wrap
                 currentY += sortable.element.offsetHeight + this.GAP;
             });
 
-            // Aggiorniamo l'altezza del container per permettere lo scroll corretto
             gsap.set(container, {
                 height: currentY + BOTTOM_PADDING
             });
             
-            return currentY; // Ritorna l'altezza totale content
+            return currentY;
         };
 
-        // --- Helper: Sposta elemento nell'array ---
         const arrayMove = (array: Sortable[], from: number, to: number) => {
             array.splice(to, 0, array.splice(from, 1)[0]);
         };
 
-        // --- Logica cambio indice ---
         const changeIndex = (item: Sortable, to: number) => {
             const fromPosition = this.sortables.indexOf(item);
             if (fromPosition === -1) return;
 
             arrayMove(this.sortables, fromPosition, to);
-            // Aggiorna la proprietà .index di tutti
             this.sortables.forEach((sortable, index) => sortable.setIndex(index));
             console.log('Ordine aggiornato:', this.sortables.map(s => s.workoutIdentifier));
         };
 
-        // --- Helper: Trova indice basato sulla posizione Y ---
-        // Con altezze variabili, non possiamo fare Math.round(y / rowSize).
-        // Dobbiamo vedere in quale "slot" cade la Y corrente.
         const getIndexFromY = (y: number): number => {
-            // Simula il layout corrente per trovare i punti di taglio
             const orderedSortables = [...this.sortables].sort((a, b) => a.index - b.index);
             let accumulateY = 0;
             
             for (let i = 0; i < orderedSortables.length; i++) {
                 const height = orderedSortables[i].element.offsetHeight;
-                const threshold = accumulateY + (height / 2); // Metà della card corrente
+                const threshold = accumulateY + (height / 2);
                 
                 if (y < threshold) {
                     return i;
@@ -244,7 +231,6 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
             return orderedSortables.length - 1;
         };
 
-        // --- Inizializzazione Cards ---
         cardRows.forEach((cardRow, index) => {
             const dragHandle = cardRow.querySelector('.drag-handle-container') as HTMLElement;
             if (!dragHandle) return;
@@ -259,7 +245,6 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
                 setIndex: () => { }
             };
 
-            // Callback per aggiornare l'indice locale e rilanciare il layout visivo
             const setIndex = (newIndex: number) => {
                 sortable.index = newIndex;
                 if (!sortable.dragger.isDragging) {
@@ -268,49 +253,53 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
             };
 
             const downAction = () => {
-                refreshLayout(false); // Assicuriamoci che tutto sia in posizione prima del drag
+                refreshLayout(false);
+                // ✅ Rimuovi box-shadow dall'animazione
                 gsap.to(cardRow, {
                     scale: 1.02,
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
                     zIndex: 100,
                     duration: 0.2,
-                    overwrite: "auto"
+                    overwrite: "auto",
+                    force3D: true
                 });
+                
+                // ✅ Applica shadow via classe CSS
+                cardRow.classList.add('dragging-shadow');
             };
 
             const dragAction = function (this: Draggable) {
-                // Usiamo la funzione custom per altezze variabili
                 const newIndex = clampIndex(getIndexFromY(this.y));
                 
                 if (newIndex !== sortable.index) {
                     changeIndex(sortable, newIndex);
-                    // Ricalcola il layout degli altri elementi (quello draggato è ignorato)
                     refreshLayout(true);
                 }
             };
 
             const upAction = () => {
+                // ✅ Rimuovi box-shadow dall'animazione
                 gsap.to(cardRow, {
                     scale: 1,
-                    boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
                     zIndex: 1,
-                    duration: 0.3
+                    duration: 0.3,
+                    force3D: true
                 });
+                
+                // ✅ Rimuovi classe shadow
+                cardRow.classList.remove('dragging-shadow');
+                
                 refreshLayout(true);
             };
 
-            // Creiamo il Draggable senza bounds rigidi su Y per ora, 
-            // gestiamo lo scroll container tramite CSS/layout
             const draggerArray = Draggable.create(cardRow, {
                 type: "y",
                 trigger: dragHandle,
                 edgeResistance: 0.85,
                 zIndexBoost: false,
-                autoScroll: 1, // Importante per liste lunghe
+                autoScroll: 1,
                 onPress: downAction,
                 onDrag: dragAction,
                 onRelease: upAction,
-                // bounds: container // Rimuoviamo bounds calcolati manualm. per evitare conflitti con altezze dinamiche
             });
 
             sortable.dragger = draggerArray[0];
@@ -319,10 +308,6 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
             this.sortables.push(sortable);
         });
 
-        // FASE CRUCIALE:
-        // Appena inizializzato, forziamo un layout. 
-        // A questo punto gli handle sono visibili (width 28px) e il testo potrebbe essere andato a capo.
-        // refreshLayout leggerà le nuove altezze reali e riposizionerà le card senza sovrapposizioni.
         refreshLayout(true);
 
         console.log('Sortable inizializzato con layout dinamico');
@@ -345,48 +330,41 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
 
     private animateCloseSequence(): void {
         const container = this.workoutDataContainer.nativeElement;
-        
-        // Prima di chiudere, nascondiamo gli handle.
-        // Questo potrebbe far "restringere" di nuovo le altezze delle card (testo torna su riga singola).
         const dragHandles = container.querySelectorAll('.drag-handle-container');
         
+        // ✅ Aggiungi force3D
         gsap.to(dragHandles, {
             width: 0,
             duration: 0.4,
-            ease: "power2.inOut"
+            ease: "power2.inOut",
+            force3D: true
         });
 
         const updatedPosition = this.controller.getUpdatedContainerPosition();
         const targetTop = updatedPosition ? updatedPosition.top : this.containerPosition.top;
 
-        // Ricalcoliamo posizioni "flat" per l'uscita
-        // Nota: durante la chiusura, siccome rimuoviamo gli handle, le altezze cambieranno ancora.
-        // Per semplicità visiva, resettiamo verso un layout standard o usiamo refreshLayout continuamente.
-        // Qui usiamo una logica semplificata per l'uscita.
-
-        // Riordiniamo visivamente per l'animazione di uscita
         const orderedSortables = [...this.sortables].sort((a, b) => a.index - b.index);
         let currentY = 0;
 
         orderedSortables.forEach((sortable) => {
-            // Prendiamo l'altezza attuale (che sta cambiando mentre gli handle si chiudono)
-            // Se vogliamo essere precisi dovremmo usare un onUpdate, ma per l'uscita veloce basta questo:
+            // ✅ Rimuovi box-shadow dall'animazione
             gsap.to(sortable.element, {
                 y: currentY,
                 scale: 1,
-                boxShadow: "none",
                 zIndex: 1,
                 duration: 0.2,
-                ease: "power2.out"
+                ease: "power2.out",
+                force3D: true
             });
-            // Usiamo l'altezza corrente approssimata o ricalcolata
-             currentY += sortable.element.offsetHeight + this.GAP;
+            currentY += sortable.element.offsetHeight + this.GAP;
         });
 
+        // ✅ Usa y invece di top + force3D
         gsap.to(container, {
-            top: targetTop,
+            y: targetTop,
             duration: 0.4,
             ease: "power2.inOut",
+            force3D: true,
             onComplete: () => {
                 const orderedIdentifiers = this.getOrderedIdentifiers();
                 console.log('Nuovo ordine da applicare:', orderedIdentifiers);
@@ -403,7 +381,6 @@ export class ReorderWorkoutComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     private getOrderedIdentifiers(): number[] {
-        // Importante riordinare l'array in base all'indice visuale prima di estrarre gli ID
         return this.sortables
             .sort((a, b) => a.index - b.index)
             .map(sortable => sortable.workoutIdentifier)

@@ -5,7 +5,7 @@
   <div #listView class="list-view">
     <div class="section-title-container close-icon-title-container">
       <div class="close-icon-section-container">
-        <div class="close-icon-trigger" (close-icon-trigger)="goBack()"></div>
+        <div class="close-icon-trigger" (touchstart)="goBack()"></div>
         <img src="assets/recollect/svg/google-close-icon.svg" />
       </div>
 

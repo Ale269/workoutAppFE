@@ -14,7 +14,7 @@
         <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
       </div>
       <div class="delete-icon-element-container">
-        <div class="close-icon-trigger" (close-icon-trigger)="close()"></div>
+        <div class="close-icon-trigger" (touchstart)="close()"></div>
         <img src="assets/recollect/svg/google-close-icon.svg" />
       </div>
     </div>
