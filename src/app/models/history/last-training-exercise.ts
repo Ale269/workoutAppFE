@@ -14,6 +14,7 @@ export interface LastTrainingExerciseResponseModel {
 export interface LastTrainingExerciseData {
   idEsercizio: number;
   icona: string;
+  dataEsecuzione: Date;
   listaSerie: LastTrainingSerieData[];
 }
 

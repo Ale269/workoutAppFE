@@ -223,6 +223,27 @@ mat-form-field {
   color: #808080;
 }
 
+.history-date {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.date-label {
+  color: #808080;
+  font-size: 14px;
+}
+
+.date-value {
+  color: #00ffe1;
+  font-weight: 600;
+  font-size: 14px;
+}
+
 .history-series-list {
   display: flex;
   flex-direction: column;

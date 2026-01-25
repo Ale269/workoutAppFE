@@ -25,6 +25,7 @@ import { ExerciseIconColorPipe } from "../../../../core/pipes/exercise-icon-colo
 import { BottomSheetService } from "src/app/components/shared/bottom-sheet/bottom-sheet-service";
 import { ExerciseService } from "src/app/core/services/exercise.service";
 import { MatInputModule } from "@angular/material/input";
+import { DatePipe } from "@angular/common";
 import { WorkoutService } from "src/app/core/services/workout.service";
 import { AuthService } from "src/app/core/services/auth.service";
 import { LastTrainingExerciseData, LastTrainingSerieData } from "src/app/models/history/last-training-exercise";
@@ -40,7 +41,8 @@ import { LastTrainingExerciseData, LastTrainingSerieData } from "src/app/models/
     MatSelectModule,
     ExerciseIconColorPipe,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    DatePipe
   ],
   templateUrl: "./exercise-component.html",
   styleUrl: "./exercise-component.scss",

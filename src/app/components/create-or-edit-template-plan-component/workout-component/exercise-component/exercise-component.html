@@ -140,6 +140,10 @@
         <span class="text-white">Nessun dato disponibile</span>
       </div>
     } @else {
+      <div class="history-date">
+        <span class="date-label">Data:</span>
+        <span class="date-value">{{ lastTrainingData.dataEsecuzione | date:'dd MMM yyyy' }}</span>
+      </div>
       <div class="history-series-list">
         @for (serie of lastTrainingData.listaSerie; track serie.id; let idx = $index) {
           <div class="history-serie-item">

@@ -1,4 +1,4 @@
-import { enableProdMode, ErrorHandler, inject } from "@angular/core";
+import { enableProdMode, ErrorHandler, inject, LOCALE_ID } from "@angular/core";
 import { environment } from "./environments/environment";
 import { bootstrapApplication, BrowserModule } from "@angular/platform-browser"; // Importa bootstrapApplication
 import { AppComponent } from "./app/app.component"; // Importa il tuo AppComponent
@@ -14,7 +14,12 @@ import { importProvidersFrom } from "@angular/core"; // Per importare moduli tra
 import { provideAppInitializer, isDevMode } from "@angular/core";
 import { provideServiceWorker } from "@angular/service-worker";
 import { ErrorHandlerService } from "./app/core/services/error-handler.service";
-import {  initializeApp } from "./app-initializers-helper";
+import { initializeApp } from "./app-initializers-helper";
+import { registerLocaleData } from "@angular/common";
+import localeIt from "@angular/common/locales/it";
+
+// Registra il locale italiano per i pipe di Angular (date, currency, number, etc.)
+registerLocaleData(localeIt, 'it-IT');
 
 // Funzione per il loader di TranslateModule
 export function HttpLoaderFactory(http: HttpClient) {
@@ -65,5 +70,8 @@ bootstrapApplication(AppComponent, {
 
     // provideAppInitializer per caricare le configurazioni prima dell'avvio dell'app
     provideAppInitializer(initializeApp()),
+
+    // Locale italiano per i pipe di Angular (date, currency, number, etc.)
+    { provide: LOCALE_ID, useValue: 'it-IT' },
   ],
 }).catch((err) => console.error(err));
