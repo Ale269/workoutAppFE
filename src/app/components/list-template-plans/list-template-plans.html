@@ -35,7 +35,7 @@
       (optionSelected)="onOptionSelected($event)"
     >
       <!-- Il pulsante statico viene proiettato qui -->
-      <button class="floating-static-button" (click)="createNewScheda()">
+      <button class="floating-static-button" (touchstart)="createNewScheda()">
         <span>Nuova scheda</span>
       </button>
     </app-multi-option-button>

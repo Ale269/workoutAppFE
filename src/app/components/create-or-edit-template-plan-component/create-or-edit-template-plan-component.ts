@@ -715,6 +715,7 @@ export class CreateOrEditTemplatePlanComponent
           footerCloseTemplate: this.footerCloseGoBack,
           footerConfirmTemplate: this.footerConfirmGoBack,
           onConfirm: () => {
+            this.createOrEditTemplatePlanService.formScheda.form.markAsPristine();
             if (this.scheda) {
               this.router.navigate([
                 "/le-mie-schede/visualizza-scheda",

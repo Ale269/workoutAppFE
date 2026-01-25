@@ -21,6 +21,7 @@
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+  z-index: 1;
 }
 
 .allenamento-container:first-of-type {
@@ -88,7 +89,6 @@
   visibility: hidden;
   pointer-events: none;
   cursor: pointer;
-  z-index: 10;
 
   svg {
     color: #ffffff;
