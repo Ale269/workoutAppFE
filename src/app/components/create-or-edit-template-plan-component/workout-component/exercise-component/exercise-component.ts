@@ -25,6 +25,9 @@ import { ExerciseIconColorPipe } from "../../../../core/pipes/exercise-icon-colo
 import { BottomSheetService } from "src/app/components/shared/bottom-sheet/bottom-sheet-service";
 import { ExerciseService } from "src/app/core/services/exercise.service";
 import { MatInputModule } from "@angular/material/input";
+import { WorkoutService } from "src/app/core/services/workout.service";
+import { AuthService } from "src/app/core/services/auth.service";
+import { LastTrainingExerciseData, LastTrainingSerieData } from "src/app/models/history/last-training-exercise";
 
 @Component({
   selector: "app-exercise-component",
@@ -54,7 +57,17 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   @ViewChild("footerConfirmDeleteWorkout")
   footerConfirmDeleteWorkout!: TemplateRef<any>;
 
+  @ViewChild("headerHistoryTemplate") headerHistoryTemplate!: TemplateRef<any>;
+  @ViewChild("bodyHistoryTemplate") bodyHistoryTemplate!: TemplateRef<any>;
+  @ViewChild("footerCloseHistoryTemplate")
+  footerCloseHistoryTemplate!: TemplateRef<any>;
+
   @Output() onDeleteExercise = new EventEmitter<number>();
+
+  // Stato per la cronologia dell'ultimo allenamento
+  public lastTrainingData: LastTrainingExerciseData | null = null;
+  public lastTrainingLoading: boolean = false;
+  public lastTrainingError: boolean = false;
 
   public idMetodologiaControl!: FormControl<number | null>;
   public idTipoEsercizioControl!: FormControl<number | null>;
@@ -69,7 +82,9 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private bottomSheetService: BottomSheetService,
     private exerciseService: ExerciseService,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private workoutService: WorkoutService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -268,6 +283,59 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       this.errorHandlerService.logError(
         error,
         "ExerciseComponent.deleteExercise"
+      );
+    }
+  }
+
+  openLastTrainingHistory() {
+    try {
+      const exerciseId = this.idTipoEsercizioControl.value;
+      const user = this.authService.getCurrentUser();
+
+      if (!exerciseId || !user) {
+        return;
+      }
+
+      // Reset dello stato
+      this.lastTrainingData = null;
+      this.lastTrainingLoading = true;
+      this.lastTrainingError = false;
+
+      // Apro il modal subito per mostrare lo stato di loading
+      this.modalService.open({
+        warning: false,
+        headerTemplate: this.headerHistoryTemplate,
+        bodyTemplate: this.bodyHistoryTemplate,
+        footerCloseTemplate: this.footerCloseHistoryTemplate,
+      });
+
+      // Chiamo l'API - excludeCurrent=true perche' l'utente sta registrando un nuovo allenamento
+      this.workoutService
+        .getLastTrainingExercise(user.userId, exerciseId, true)
+        .subscribe({
+          next: (response) => {
+            this.lastTrainingLoading = false;
+            if (response.esercizio) {
+              this.lastTrainingData = response.esercizio;
+            } else {
+              this.lastTrainingError = true;
+            }
+            this.cdr.detectChanges();
+          },
+          error: (error) => {
+            this.lastTrainingLoading = false;
+            this.lastTrainingError = true;
+            this.cdr.detectChanges();
+            this.errorHandlerService.logError(
+              error,
+              "ExerciseComponent.openLastTrainingHistory"
+            );
+          },
+        });
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "ExerciseComponent.openLastTrainingHistory"
       );
     }
   }

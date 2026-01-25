@@ -107,6 +107,57 @@
         "isMocked": false
       }
     ],
+    "training": [
+      {
+        "name": "getDatiAllenamento",
+        "endpoint": "/training/history/:idAllenamento",
+        "method": "get",
+        "description": "Recupera i dati di un allebnamento di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "getDatiTemplateNuovoAllenamento",
+        "endpoint": "/training/next/:idTemplateAllenamento",
+        "method": "get",
+        "description": "Recupera i dati del template allenamento di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "getAllenamentiSvolti",
+        "endpoint": "/training/allHistory/:userId",
+        "method": "get",
+        "description": "Recupera i dati degli allenamenti svolti di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "deleteDatiAllenamentoSvolto",
+        "endpoint": "/training/history/delete/:allenamentoId",
+        "method": "post",
+        "description": "Elimina i dati dell'allenamento di un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "registraNuovoAllenamento",
+        "endpoint": "/training/registerNewTraining",
+        "method": "post",
+        "description": "Registra i dati del nuovo allenamento nello storico.",
+        "isMocked": false
+      },
+      {
+        "name": "aggiornaAllenamentoSvolto",
+        "endpoint": "/training/updateHistoryTraining",
+        "method": "post",
+        "description": "Aggiorna i dati dell'allenamento svolto nello storico.",
+        "isMocked": false
+      },
+      {
+        "name": "getLastTrainingExercise",
+        "endpoint": "/history/workout/user/:userId/exercise/:exerciseId/last?excludeCurrent=:excludeCurrent",
+        "method": "get",
+        "description": "Recupera i dati dell'ultimo allenamento svolto per un esercizio specifico.",
+        "isMocked": false
+      }
+    ],
     "widgets": [
       {
         "name": "prossimoAllenamento",

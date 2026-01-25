@@ -156,6 +156,13 @@
         "method": "post",
         "description": "Aggiorna i dati dell'allenamento svolto nello storico.",
         "isMocked": false
+      },
+      {
+        "name": "getLastTrainingExercise",
+        "endpoint": "/history/workout/user/:userId/exercise/:exerciseId/last?excludeCurrent=:excludeCurrent",
+        "method": "get",
+        "description": "Recupera i dati dell'ultimo allenamento svolto per un esercizio specifico.",
+        "isMocked": false
       }
     ],
     "widgets": [

@@ -29,6 +29,7 @@ import {
 import { AttivaSchedaRequestModel, AttivaSchedaResponseModel } from "src/app/models/view-modifica-scheda/attivaScheda";
 import {DownloadSchedaRequestModel} from "../../models/view-modifica-scheda/downloadScheda";
 import { GetListaSchedeSvolteRequestModel, GetListaSchedeSvolteResponseModel } from "src/app/models/lista-schede-svolte/get-lista-schede-svolte";
+import { LastTrainingExerciseResponseModel } from "src/app/models/history/last-training-exercise";
 
 @Injectable({
   providedIn: "root",
@@ -212,6 +213,19 @@ export class WorkoutService {
       "workout",
       "getSchedeSvolte",
       request,
+      null
+    );
+  }
+
+  getLastTrainingExercise(
+    userId: number,
+    exerciseId: number,
+    excludeCurrent: boolean = false
+  ): Observable<LastTrainingExerciseResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "training",
+      "getLastTrainingExercise",
+      { userId, exerciseId, excludeCurrent },
       null
     );
   }

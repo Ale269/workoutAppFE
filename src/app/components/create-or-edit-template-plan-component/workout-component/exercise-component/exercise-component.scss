@@ -168,3 +168,102 @@ mat-form-field {
   align-items: center;
   transition: all 0.3s ease;
 }
+
+// Stili per il container delle azioni (history + delete)
+.exercise-actions-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.history-icon-element-container {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover img {
+    opacity: 1;
+  }
+}
+
+// Stili per il modal cronologia
+.history-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.history-modal-content {
+  padding: 8px 0;
+}
+
+.history-title {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.history-loading,
+.history-no-data {
+  text-align: center;
+  padding: 24px 0;
+  color: #808080;
+}
+
+.history-series-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-serie-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+}
+
+.serie-number {
+  color: #808080;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.serie-data {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.serie-reps {
+  color: #00ffe1;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.serie-separator {
+  color: #808080;
+  font-size: 12px;
+}
+
+.serie-weight {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}

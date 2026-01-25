@@ -12,9 +12,16 @@
       </h3>
     </div>
     @if (!isCompactMode) {
-    <div class="delete-icon-element-container">
-      <div class="close-icon-trigger" (click)="openDeleteModal()"></div>
-      <img src="assets/recollect/svg/google-close-icon.svg" />
+    <div class="exercise-actions-container">
+      @if (idTipoEsercizioControl.value) {
+      <div class="history-icon-element-container" (click)="openLastTrainingHistory()">
+        <img src="assets/recollect/svg/google-history.svg" alt="Cronologia" />
+      </div>
+      }
+      <div class="delete-icon-element-container">
+        <div class="close-icon-trigger" (click)="openDeleteModal()"></div>
+        <img src="assets/recollect/svg/google-close-icon.svg" />
+      </div>
     </div>
     }
   </div>
@@ -111,6 +118,49 @@
     <span>Elimina</span>
     <div class="text-shape-button-icon-container-danger">
       <img src="assets/recollect/svg/google-delete.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<!-- Template per il modale cronologia ultimo allenamento -->
+<ng-template #headerHistoryTemplate>
+  <img src="assets/recollect/svg/google-history.svg" alt="Cronologia" class="history-icon" />
+</ng-template>
+
+<ng-template #bodyHistoryTemplate>
+  <div class="history-modal-content">
+    <h3 class="text-white history-title">Ultimo allenamento</h3>
+
+    @if (lastTrainingLoading) {
+      <div class="history-loading">
+        <span class="text-white">Caricamento...</span>
+      </div>
+    } @else if (lastTrainingError || !lastTrainingData) {
+      <div class="history-no-data">
+        <span class="text-white">Nessun dato disponibile</span>
+      </div>
+    } @else {
+      <div class="history-series-list">
+        @for (serie of lastTrainingData.listaSerie; track serie.id; let idx = $index) {
+          <div class="history-serie-item">
+            <span class="serie-number">Serie {{ idx + 1 }}</span>
+            <div class="serie-data">
+              <span class="serie-reps">{{ serie.ripetizioni }} reps</span>
+              <span class="serie-separator">x</span>
+              <span class="serie-weight">{{ serie.carico }} kg</span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</ng-template>
+
+<ng-template #footerCloseHistoryTemplate>
+  <button class="text-shape-button-cancel">
+    <span>Chiudi</span>
+    <div class="text-shape-button-icon-container-cancel">
+      <img src="assets/recollect/svg/google-close-icon.svg" />
     </div>
   </button>
 </ng-template>
