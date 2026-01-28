@@ -48,7 +48,7 @@ export class CreateOrEditTemplatePlanService {
         listaAllenamenti: [],
         nomeScheda: schedaDTO.nomeScheda,
         schedaAttiva: schedaDTO.schedaAttiva,
-        
+        description: schedaDTO.description,
       };
 
       schedaDTO.listaAllenamenti.forEach((allenamento) => {

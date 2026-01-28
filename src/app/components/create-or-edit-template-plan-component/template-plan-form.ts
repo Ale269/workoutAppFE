@@ -58,6 +58,7 @@ export class SchedaForm {
       idTemplate: schedaDTO.idTemplate,
       nomeScheda: schedaDTO.nomeScheda,
       isActive: schedaDTO.schedaAttiva,
+      descrizioneScheda: schedaDTO.description,
     });
 
     // Pulisce gli allenamenti esistenti
@@ -274,6 +275,7 @@ export class SchedaForm {
         id: this.form.controls["idTemplate"].value || -1,
         idTemplate: this.form.controls["idTemplate"].value || 0,
         nomeScheda: this.form.controls["nomeScheda"].value || "",
+        description: this.form.controls["descrizioneScheda"].value || "",
         listaAllenamenti: [],
         schedaAttiva: this.form.controls["isActive"].value || false,
       };
