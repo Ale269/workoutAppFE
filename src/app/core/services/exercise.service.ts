@@ -9,6 +9,14 @@ import {
   MuscleGroupDTO,
 } from "src/app/models/exercise/exercisedto";
 import { getIconPathById } from "src/app/components/enums/exercise-icons";
+import {
+  CreateExerciseRequestModel,
+  CreateExerciseResponseModel,
+  DeleteExerciseResponseModel,
+  ExerciseListResponseModel,
+  UpdateExerciseRequestModel,
+  UpdateExerciseResponseModel,
+} from "src/app/models/exercise/exercise-management-models";
 
 @Injectable({
   providedIn: "root",
@@ -73,6 +81,63 @@ export class ExerciseService {
       undefined,
       null
     );
+  }
+
+  getExercisesByUser(userId: number): Observable<ExerciseListResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "exercise",
+      "getByUser",
+      { userId },
+      null
+    );
+  }
+
+  getVisibleExercises(userId: number): Observable<ExerciseListResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "exercise",
+      "getVisible",
+      { userId },
+      null
+    );
+  }
+
+  createExercise(data: CreateExerciseRequestModel): Observable<CreateExerciseResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "exercise",
+      "create",
+      undefined,
+      data
+    );
+  }
+
+  updateExercise(exerciseId: number, data: UpdateExerciseRequestModel): Observable<UpdateExerciseResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "exercise",
+      "update",
+      { exerciseId },
+      data
+    );
+  }
+
+  deleteExercise(exerciseId: number, userId: number): Observable<DeleteExerciseResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "exercise",
+      "delete",
+      { exerciseId, userId },
+      null
+    );
+  }
+
+  canUserModifyExercise(exercise: ExerciseTypeDTO, currentUserId: number, isAdmin: boolean): boolean {
+    if (exercise.isStandard) {
+      return isAdmin;
+    }
+    return exercise.createdById === currentUserId;
+  }
+
+  reloadExercises(): Promise<void> {
+    this.exercises = [];
+    return this.initializeExercises().then(() => {});
   }
 
   /**

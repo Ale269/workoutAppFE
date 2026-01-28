@@ -1,0 +1,57 @@
+<!-- admin-exercise-list.html -->
+<div class="content">
+  <div class="section-title-container">
+    <h1 class="text-title">Gestione Esercizi</h1>
+    <button mat-raised-button color="primary" (click)="createNewExercise()" class="create-button">
+      <img src="assets/recollect/svg/google-add.svg"/>
+    </button>
+  </div>
+
+  <div class="exercise-list-container">
+    @for (exercise of exerciseList; track exercise.idTipoEsercizio) {
+    <div class="exercise-card">
+      <div class="exercise-icon">
+        <img [src]="getExerciseIconPath(exercise.idIcona)" alt="Exercise icon" />
+      </div>
+
+      <div class="exercise-info">
+        <div class="exercise-main-info">
+          <h3 class="text-white">{{ exercise.nomeTipoEsercizio }}</h3>
+          @if (getMuscleNames(exercise)) {
+          <p class="text-grey">{{ getMuscleNames(exercise) }}</p>
+          }
+        </div>
+
+        <div class="exercise-badges">
+          <span [class]="'badge ' + getTypeBadgeClass(exercise.isStandard)">
+            {{ exercise.isStandard ? 'Standard' : 'Custom' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="exercise-actions">
+        @if (canModify(exercise)) {
+        <button
+          mat-icon-button
+          (click)="editExercise(exercise.idTipoEsercizio)"
+          title="Modifica esercizio"
+        >
+          <img src="assets/recollect/svg/google-edit.svg"/>
+        </button>
+
+        <button
+          mat-icon-button
+          (click)="deleteExercise(exercise.idTipoEsercizio, exercise.nomeTipoEsercizio)"
+          title="Elimina esercizio"
+          class="delete-button"
+        >
+          <img src="assets/recollect/svg/google-delete.svg" />
+        </button>
+        }
+      </div>
+    </div>
+    } @empty {
+    <h3 class="text-white">Nessun esercizio trovato</h3>
+    }
+  </div>
+</div>
