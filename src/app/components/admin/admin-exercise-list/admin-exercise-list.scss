@@ -17,6 +17,84 @@
   color: var(--text-primary, #ffffff);
 }
 
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  .results-count {
+    color: var(--text-secondary, #9e9e9e);
+    font-size: 0.9rem;
+    margin-left: auto;
+  }
+}
+
+.search-container {
+  .search-field {
+    min-width: 280px;
+  }
+
+  .clear-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.type-filter-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .filter-label {
+    color: var(--text-secondary, #9e9e9e);
+    font-size: 0.9rem;
+  }
+
+  .filter-chips {
+    display: flex;
+    gap: 8px;
+  }
+
+  .filter-chip {
+    padding: 6px 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color, #444);
+    background-color: transparent;
+    color: var(--text-secondary, #9e9e9e);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: var(--button-hover, rgba(255, 255, 255, 0.1));
+      color: var(--text-primary, #ffffff);
+    }
+
+    &.active {
+      background-color: var(--primary-color, #2196f3);
+      border-color: var(--primary-color, #2196f3);
+      color: white;
+    }
+
+    &.chip-standard.active {
+      background-color: #4caf50;
+      border-color: #4caf50;
+    }
+
+    &.chip-custom.active {
+      background-color: #2196f3;
+      border-color: #2196f3;
+    }
+  }
+}
+
 .exercise-list-container {
   display: flex;
   flex-direction: column;
@@ -130,8 +208,54 @@
   }
 }
 
+// Personalizzazione Material
+::ng-deep {
+  .search-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: var(--input-background, #2a2a2a);
+    }
+
+    .mat-mdc-form-field-label {
+      color: var(--text-secondary, #9e9e9e);
+    }
+
+    .mat-mdc-input-element {
+      color: var(--text-primary, #ffffff);
+    }
+  }
+}
+
 // Responsive
 @media (max-width: 768px) {
+  .filters-container {
+    flex-direction: column;
+    align-items: stretch;
+
+    .results-count {
+      margin-left: 0;
+      text-align: center;
+    }
+  }
+
+  .search-container {
+    width: 100%;
+
+    .search-field {
+      width: 100%;
+      min-width: unset;
+    }
+  }
+
+  .type-filter-container {
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .filter-chips {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
   .exercise-card {
     flex-direction: column;
     align-items: flex-start;

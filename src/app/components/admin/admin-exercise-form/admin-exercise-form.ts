@@ -227,6 +227,8 @@ export class AdminExerciseFormComponent implements OnInit {
         description: this.exerciseForm.form.value.description || undefined,
         iconId: this.exerciseForm.form.value.iconId || undefined,
         muscleIds: this.exerciseForm.form.value.muscleIds || undefined,
+        userId: this.currentUserId,
+        isStandard: this.exerciseForm.form.value.isStandard ?? false,
       };
 
       this.exerciseService.updateExercise(this.exerciseId, updateData).subscribe({

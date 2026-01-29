@@ -17,6 +17,8 @@ export interface UpdateExerciseRequestModel {
   description?: string;
   iconId?: number;
   muscleIds?: number[];
+  userId: number;
+  isStandard: boolean;
 }
 
 // Response per lista esercizi
