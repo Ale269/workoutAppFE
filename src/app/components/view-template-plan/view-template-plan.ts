@@ -383,8 +383,8 @@ export class ViewTemplatePlan {
 
       if (this.idScheda !== null && this.idScheda > 0 && user) {
         const request: AttivaSchedaRequestModel = {
-          idScheda: this.idScheda,
           userId: user.userId,
+          schedaDTO: this.scheda
         };
 
         this.workoutService.attivaScheda(request).subscribe({
