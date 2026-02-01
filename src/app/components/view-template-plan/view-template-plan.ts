@@ -380,12 +380,14 @@ export class ViewTemplatePlan {
         },
       );
       const user = this.authService.getCurrentUser();
-
+      
       if (this.idScheda !== null && this.idScheda > 0 && user) {
         const request: AttivaSchedaRequestModel = {
           userId: user.userId,
           schedaDTO: this.scheda
         };
+        //TODO vedere se volerlo scrivere piu bellino o no -> senza questa riga sotto nel body della scheda, il flag viene passato quello vecchio
+        request.schedaDTO.schedaAttiva = newState;
 
         this.workoutService.attivaScheda(request).subscribe({
           next: (response: AttivaSchedaResponseModel) => {
