@@ -10,6 +10,7 @@ export interface GetDatiSchedaCorrenteResponseModel
   titoloScheda: string;
   descrizioneAllenamentoPrecedente: string;
   descrizioneProssimoAllenamento: string;
+  descrizioneScheda: string;
   dataInizio: Date;
   numeroAllenamentiEffettuati: number;
 }
