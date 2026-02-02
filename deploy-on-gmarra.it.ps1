@@ -75,9 +75,16 @@ docker stop $AppName-container 2>/dev/null || true
 docker rm $AppName-container 2>/dev/null || true
 docker run -d --name $AppName-container --network gmarra-net -p ${Port}:${Port} --restart unless-stopped $AppName`:latest
 echo "Deploy completato!"
-"@ | Out-File -FilePath "deploy-package\deploy.sh" -Encoding UTF8
+"@ | Out-File -FilePath "deploy-package\deploy.sh" -Encoding ASCII
+
+# Fix line endings CRLF -> LF per Linux
+foreach ($f in @("deploy-package\Dockerfile","deploy-package\nginx.conf","deploy-package\deploy.sh")) {
+    $text = [IO.File]::ReadAllText($f) -replace "`r`n", "`n"
+    [IO.File]::WriteAllText($f, $text)
+}
 
 Write-Host "3. Transferring to server..." -ForegroundColor Green
+ssh $Server "mkdir -p /tmp/deploy-$AppName"
 scp -r deploy-package/* ${Server}:/tmp/deploy-$AppName/
 
 Write-Host "4. Deploying on server..." -ForegroundColor Green
