@@ -398,7 +398,7 @@ export class ViewTemplatePlan {
 
               this.scheda.schedaAttiva = this.Switch.isActiveInternal;
             } else {
-              this.Switch.setValue(false);
+              this.Switch.isActiveInternal = false;
               if (this.currentSpinnerId) {
                 this.spinnerService.setError(this.currentSpinnerId);
               }
@@ -409,7 +409,7 @@ export class ViewTemplatePlan {
             }
           },
           error: (error) => {
-            this.Switch.setValue(false);
+            this.Switch.isActiveInternal = false;
             if (this.currentSpinnerId) {
               this.spinnerService.setError(this.currentSpinnerId);
             }
@@ -420,7 +420,7 @@ export class ViewTemplatePlan {
           },
         });
       } else {
-        this.Switch.setValue(false);
+        this.Switch.isActiveInternal = false;
         if (this.currentSpinnerId) {
           this.spinnerService.setError(this.currentSpinnerId);
         }

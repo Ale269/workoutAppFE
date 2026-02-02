@@ -19,7 +19,7 @@
         <app-switch
           #IsActiveSwitch
           [Descrizione]="'Scheda attiva'"
-          [IsActive]="scheda ? scheda.schedaAttiva : false"
+          [IsActive]="createOrEditTemplatePlanService.formScheda.form.controls['isActive'].value ?? false"
           (stateChange)="onAttivazioneStateChange($event)"
         ></app-switch>
       </div>
