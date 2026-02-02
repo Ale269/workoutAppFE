@@ -20,6 +20,7 @@ export class SchedaCorrente {
   public titoloScheda: string | null = null;
   public descrizioneAllenamentoPrecedente: string | null = null;
   public descrizioneProssimoAllenamento: string | null = null;
+  public descrizioneScheda: string | null = null;
   public dataInizio: Date | null = null;
   public numeroAllenamentiEffettuati: number | null = null;
 
@@ -65,6 +66,8 @@ export class SchedaCorrente {
       response.descrizioneAllenamentoPrecedente;
     this.descrizioneProssimoAllenamento =
       response.descrizioneProssimoAllenamento;
+    this.descrizioneScheda =
+      response.descrizioneScheda;
     this.dataInizio = response.dataInizio;
     this.numeroAllenamentiEffettuati = response.numeroAllenamentiEffettuati;
     this.datiRecuperati = true;
