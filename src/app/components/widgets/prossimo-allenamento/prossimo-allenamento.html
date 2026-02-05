@@ -15,20 +15,20 @@
         <span>{{this.numeroGiornoAllenamentiTotali}}</span>
       </h3>
     </div>
-     <div class="nome-graphic-visualizer-container">
+    <div class="nome-graphic-visualizer-container">
       <div class="nome-allenamento-container">
         <h3 class="text-white">{{this.descrizioneAllenamentoCorrente}}</h3>
       </div>
       <div class="visualizer-allenamento-container">
         @for (giorno of giorniArray; track giorno) {
-          <div [class.current-day-visualizer]="giorno === this.numeroGiornoAllenamentoCorrente"></div>
+        <div [class.current-day-visualizer]="giorno === this.numeroGiornoAllenamentoCorrente"></div>
         }
       </div>
     </div>
   </div>
   <div class="widget-button">
     <button class="text-shape-button" (click)="NavigaARegistraAllenamento()">
-      <span>Apri allenamento</span>
+      <span>Inizia allenamento</span>
       <div class="text-shape-button-icon-container">
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
@@ -36,7 +36,7 @@
   </div>
   } @else{
   <div class="widget-data">
-    <h3 class="text-white">Nessun dato trovato</h3>
+    <h3 class="text-white">Nessuna scheda attiva</h3>
   </div>
   <div class="widget-button">
     <button class="text-shape-button" (click)="NavigaAElencoTemplateSchede()">

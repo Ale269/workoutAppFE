@@ -11,7 +11,6 @@ import { ultimeSchedeSvolteDTO } from "src/app/models/widgets/ultime-schede-svol
   styleUrl: "./ultime-schede-svolte.scss",
 })
 export class UltimeSchedeSvolte {
-  public datiRecuperati: boolean = false;
   public ultimeSchedeSvolteDTO: ultimeSchedeSvolteDTO[] = [];
 
   constructor(private widgetsService: WidgetsService) {}
@@ -30,7 +29,6 @@ export class UltimeSchedeSvolte {
             if (!response.errore?.error) {
               this.ultimeSchedeSvolteDTO =
                 response.ultimeSchedeSvolteDTO;
-              this.datiRecuperati = true;
               resolve(null);
             } else {
               reject(response.errore.error);

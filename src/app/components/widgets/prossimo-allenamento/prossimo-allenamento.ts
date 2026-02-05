@@ -75,7 +75,6 @@ export class ProssimoAllenamento implements OnInit {
           idAllenamento: null,
           idTemplateAllenamento: this.idTemplateAllenamento,
           createOrEdit: createOrEdit.create,
-          //  idTemplateAllenamento: this.idTemplateAllenamento
         },
       });
     } catch (error) {

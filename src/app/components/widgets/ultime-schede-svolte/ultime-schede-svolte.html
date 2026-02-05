@@ -7,34 +7,30 @@
       <img src="assets/recollect/images/storico-schede-icon.png" />
     </div>
   </div>
-  @if(datiRecuperati){ @for (ultimoShcede of this.ultimeSchedeSvolteDTO; track
-  ultimoShcede.id; let i = $index) {
+  @for (scheda of this.ultimeSchedeSvolteDTO; track scheda.id; let i = $index) {
   <div class="widget-data">
     <div class="descrizione-scheda-container">
-      <h3 class="text-white">{{ultimoShcede.descrizioneScheda}}</h3>
+      <h3 class="text-white">{{scheda.descrizioneScheda}}</h3>
     </div>
     <div class="giorno-data-scheda-container">
       <h3 class="text-grey">
-        Attivata il {{ ultimoShcede.dataUltimaAttivazione| date: "dd/MM/yyyy"
+        Attivata il {{ scheda.dataUltimaAttivazione| date: "dd/MM/yyyy"
         }}, attiva per
-        {{ultimoShcede.giorniDurataPeriodoAttivita}} giorni
+        {{scheda.giorniDurataPeriodoAttivita}} giorni
       </h3>
     </div>
   </div>
-  } @empty {
-  <div class="widget-data">
-    <h3 class="text-white">Nessun dato trovato</h3>
-  </div>
-  } @if(this.ultimeSchedeSvolteDTO.length > 0){
+  }
+
   <div class="widget-button">
     <button class="text-shape-button" (click)="mostraFunzionalitaInArrivo()">
-      <span>Apri schede</span>
+      <span>Visualizza schede svolte</span>
       <div class="text-shape-button-icon-container">
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
     </button>
   </div>
-  } } @else{
+  @if(this.ultimeSchedeSvolteDTO.length === 0){
   <div class="widget-data">
     <h3 class="text-white">Nessun dato trovato</h3>
   </div>
