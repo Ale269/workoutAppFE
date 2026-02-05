@@ -88,6 +88,8 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   public allenamentoDTO: AllenamentoDTO | null = null;
   public createOrEdit: createOrEdit | null = null;
 
+  public createOrEditEnum = createOrEdit;
+
   public LoadingProgressionEnum = LoadingProgression;
   public loadingProgression: LoadingProgression = LoadingProgression.none;
 
@@ -334,12 +336,15 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
             }
           } else if (this.idAllenamento) {
             this.getDatiAllenamento();
+            
           } else {
             this.loadingProgression = LoadingProgression.failed;
             throw new Error("Nessun allenamento fornito");
           }
           break;
       }
+
+
     } catch (error) {
       this.errorHandlerService.logError(
         error,
@@ -582,8 +587,19 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                   await this.spinnerService.setSuccess(this.saveSpinnerId);
                 }
 
-                this.idAllenamento = response.allenamentoCorrente.id;
-                this.allenamentoDTO = response.allenamentoCorrente;
+                // Marca il form come pristine dopo il salvataggio con successo
+                this.createOrEditWorkoutExecutionService.AllenamentoForm.form.markAsPristine();
+
+                if (response.allenamentoCorrente) {
+                  // TODO al momento il server non ci manda indietro l'allenamento corrente. Da implementare così da evitare un chiamata indietro
+                  this.idAllenamento = response.allenamentoCorrente.id;
+                  this.allenamentoDTO = response.allenamentoCorrente;
+                } else {
+                  // Se non troviamo l'allenamento, forziamo il componente ad effettuare la chiamata per recuperare l'allenamento corrente.
+                  // Se rivediamo la gestione, sarebbe da avvisare l'utente che l'allenamento non è stato trovato con un errore.
+                  this.allenamentoDTO = null;
+                }
+
                 this.initializeWorkout();
               })
               .catch(async (error) => {

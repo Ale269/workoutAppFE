@@ -5,7 +5,8 @@
       <div class="close-icon-trigger" (touchstart)="goBack()"></div>
       <img src="assets/recollect/svg/google-close-icon.svg" />
     </div>
-    <h1 class="text-title">Registra allenamento</h1>
+    <h1 class="text-title">{{ createOrEdit == createOrEditEnum.edit ? "Modifica allenamento" : "Registra allenamento" }}
+    </h1>
   </div>
 
   @if(this.createOrEditWorkoutExecutionService.AllenamentoForm.form){
@@ -16,21 +17,12 @@
       </h3>
     </div>
     <div class="date-row">
-      <form
-        [formGroup]="createOrEditWorkoutExecutionService.AllenamentoForm.form"
-      >
+      <form [formGroup]="createOrEditWorkoutExecutionService.AllenamentoForm.form">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Scegli una data</mat-label>
-          <input
-            matInput
-            [matDatepicker]="picker"
-            formControlName="dataEsecuzione"
-          />
+          <input matInput [matDatepicker]="picker" formControlName="dataEsecuzione" />
           <mat-hint>DD/MM/YYYY</mat-hint>
-          <mat-datepicker-toggle
-            matIconSuffix
-            [for]="picker"
-          ></mat-datepicker-toggle>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
@@ -40,27 +32,20 @@
       </form>
     </div>
   </div>
-  
+
   <div #exerciseDataContainer class="exercise-data">
     @for (esercizioForm of
     this.createOrEditWorkoutExecutionService.AllenamentoForm.listaEserciziForm;
     track esercizioForm.form.controls['identifier'].value) {
-    <div #exerciseCard 
-         appLongPress 
-         [duration]="500" 
-         (mouseLongPress)="toggleCompactMode()" 
-         class="exercise-wrapper">
-      <app-exercise-component
-        [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm"
-        (onDeleteExercise)="deleteEexercise($event)"
-        [formEsercizio]="esercizioForm"
-        [isCompactMode]="isCompactMode"
+    <div #exerciseCard appLongPress [duration]="500" (mouseLongPress)="toggleCompactMode()" class="exercise-wrapper">
+      <app-exercise-component [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm"
+        (onDeleteExercise)="deleteEexercise($event)" [formEsercizio]="esercizioForm" [isCompactMode]="isCompactMode"
         [historyTrainingId]="idAllenamento">
       </app-exercise-component>
     </div>
     } @empty { }
   </div>
-  
+
   <div class="add-exercise-button-row">
     <button class="text-shape-button" (click)="addNuovoEsercizio()">
       <span>Aggiungi esercizio</span>
@@ -72,37 +57,27 @@
 
   @if(this.idAllenamento){
   <div class="floating-double-buttons-container">
-    <app-multi-option-button
-      [leftGroups]="leftButtonOptionsGroup"
-      [leftButtonLabel]="''"
-      (optionSelected)="onOptionSelected($event)"
-    >
-      <button
-        class="floating-static-button"
+    <app-multi-option-button [leftGroups]="leftButtonOptionsGroup" [leftButtonLabel]="''"
+      (optionSelected)="onOptionSelected($event)">
+      <button class="floating-static-button"
         [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
-        (touchstart)="registraAllenamento()"
-      >
+        (touchstart)="registraAllenamento()">
         <span>Salva</span>
       </button>
     </app-multi-option-button>
   </div>
   }@else {
   <div class="floating-double-buttons-container">
-    <app-multi-option-button
-      [rightGroups]="rightButtonOptionsGroup"
-      [rightButtonLabel]="'Cambia'"
-      (optionSelected)="onOptionSelected($event)"
-    >
-      <button
-        class="floating-static-button"
+    <app-multi-option-button [rightGroups]="rightButtonOptionsGroup" [rightButtonLabel]="'Cambia'"
+      (optionSelected)="onOptionSelected($event)">
+      <button class="floating-static-button"
         [class.button-disabled]="!createOrEditWorkoutExecutionService.AllenamentoForm.form.valid"
-        (touchstart)="registraAllenamento()"
-      >
+        (touchstart)="registraAllenamento()">
         <span>Salva</span>
       </button>
     </app-multi-option-button>
   </div>
-  } 
+  }
   }@else {
   <h3 class="text-white">Nessun allenamento aggiunto</h3>
   }
@@ -117,11 +92,7 @@ this.loadingProgression === LoadingProgressionEnum.loading){
 
 <!-- Templates modali -->
 <ng-template #headerGoBack>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
 </ng-template>
 
 <ng-template #bodyGoBack>
