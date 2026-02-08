@@ -465,6 +465,37 @@ export class ViewTemplatePlan {
       });
     }
   }
+  
+  downloadSchedaPdf() {
+    if (this.idScheda !== null && this.idScheda > 0) {
+      const request: DownloadSchedaRequestModel = {
+        idScheda: this.idScheda,
+      };
+      
+      this.workoutService.esportaScheda(request).subscribe({
+        next: (response: any) => {
+          if (response instanceof Blob) {
+            
+            const blob = new Blob([response], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Scheda_Allenamento_${this.idScheda}.pdf`;
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            // Pulizia
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+          }
+        },
+        error: (error: any) => {
+        
+        },
+      });
+    }
+  }
 
   onOptionSelected(option: OptionSelectedEvent) {
     switch (option.side) {
@@ -473,7 +504,7 @@ export class ViewTemplatePlan {
           case 1:
             switch (option.optionId) {
               case 1:
-                this.downloadSchedaExcel();
+                this.downloadSchedaPdf();
                 break;
               case 2:
                 // this.downloadSchedaExcel();
