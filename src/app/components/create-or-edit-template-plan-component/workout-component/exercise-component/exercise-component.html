@@ -36,7 +36,7 @@
     <div class="input-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Descrizione esercizio</mat-label>
-        <input matInput [type]="'text'" formControlName="description" placeholder="Descrizione esercizio" />
+        <input matInput [type]="'text'" formControlName="description" placeholder="Descrizione esercizio" readonly />
       </mat-form-field>
     </div>
 
@@ -132,30 +132,30 @@
     <h3 class="text-white history-title">Ultimo allenamento</h3>
 
     @if (lastTrainingLoading) {
-      <div class="history-loading">
-        <span class="text-white">Caricamento...</span>
-      </div>
+    <div class="history-loading">
+      <span class="text-white">Caricamento...</span>
+    </div>
     } @else if (lastTrainingError || !lastTrainingData) {
-      <div class="history-no-data">
-        <span class="text-white">Nessun dato disponibile</span>
-      </div>
+    <div class="history-no-data">
+      <span class="text-white">Nessun dato disponibile</span>
+    </div>
     } @else {
-      <div class="history-date">
-        <span class="date-label">Data:</span>
-        <span class="date-value">{{ lastTrainingData.dataEsecuzione | date:'dd MMM yyyy' }}</span>
+    <div class="history-date">
+      <span class="date-label">Data:</span>
+      <span class="date-value">{{ lastTrainingData.dataEsecuzione | date:'dd MMM yyyy' }}</span>
+    </div>
+    <div class="history-series-list">
+      @for (serie of lastTrainingData.listaSerie; track serie.id; let idx = $index) {
+      <div class="history-serie-item">
+        <span class="serie-number">Serie {{ idx + 1 }}</span>
+        <div class="serie-data">
+          <span class="serie-reps">{{ serie.ripetizioni }} reps</span>
+          <span class="serie-separator">x</span>
+          <span class="serie-weight">{{ serie.carico }} kg</span>
+        </div>
       </div>
-      <div class="history-series-list">
-        @for (serie of lastTrainingData.listaSerie; track serie.id; let idx = $index) {
-          <div class="history-serie-item">
-            <span class="serie-number">Serie {{ idx + 1 }}</span>
-            <div class="serie-data">
-              <span class="serie-reps">{{ serie.ripetizioni }} reps</span>
-              <span class="serie-separator">x</span>
-              <span class="serie-weight">{{ serie.carico }} kg</span>
-            </div>
-          </div>
-        }
-      </div>
+      }
+    </div>
     }
   </div>
 </ng-template>
