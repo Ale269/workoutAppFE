@@ -17,6 +17,7 @@ import { ultimeSchedeSvolteDTO } from "src/app/models/widgets/ultime-schede-svol
 })
 export class UltimeSchedeSvolte {
   public ultimeSchedeSvolteDTO: ultimeSchedeSvolteDTO[] = [];
+  public datiRecuperati: boolean = false;
 
   constructor(
     private widgetsService: WidgetsService,
