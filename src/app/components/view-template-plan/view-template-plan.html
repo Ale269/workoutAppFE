@@ -10,12 +10,8 @@
     </div> -->
 
     <div class="container-switch">
-      <app-switch
-        #IsActiveSwitch
-        [Descrizione]="'Scheda attiva'"
-        [IsActive]="this.scheda.schedaAttiva"
-        (stateChange)="onAttivazioneStateChange($event)"
-      ></app-switch>
+      <app-switch #IsActiveSwitch [Descrizione]="'Scheda attiva'" [IsActive]="this.scheda.schedaAttiva"
+        (stateChange)="onAttivazioneStateChange($event)"></app-switch>
     </div>
 
     <div class="lista-template-schede-container">
@@ -30,15 +26,9 @@
           i = $index) {
           <div class="esercizio-container">
             <div class="icon-esercizio-container">
-              <div
-                class="circle-icon"
-                [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor"
-              >
-                <img
-                  [src]="esercizio.idIconaEsercizio | exerciseIcon"
-                  class="exercise-icon"
-                  [alt]="esercizio.idTipoEsercizio | exerciseName"
-                />
+              <div class="circle-icon" [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor">
+                <img [src]="esercizio.idIconaEsercizio | exerciseIcon" class="exercise-icon"
+                  [alt]="esercizio.idTipoEsercizio | exerciseName" />
               </div>
             </div>
             <div class="dati-esercizio-container">
@@ -46,6 +36,9 @@
                 <h3 class="text-white">
                   {{ esercizio.idTipoEsercizio | exerciseName }}
                 </h3>
+                <h5 class="text-grey">
+                  {{ esercizio.description }}
+                </h5>
               </div>
               <div class="chips-container">
                 @if(esercizio?.idMetodologia != null) {
@@ -73,11 +66,8 @@
   </div>
 </div>
 <div class="floating-double-buttons-container">
-  <app-multi-option-button
-    [leftButtonLabel]="''"
-    [leftGroups]="leftButtonOptionsGroup"
-    (optionSelected)="onOptionSelected($event)"
-  >
+  <app-multi-option-button [leftButtonLabel]="''" [leftGroups]="leftButtonOptionsGroup"
+    (optionSelected)="onOptionSelected($event)">
     <!-- Il pulsante statico viene proiettato qui -->
     <button class="floating-static-button" (touchstart)="modificaScheda()">
       <span>Modifica scheda</span>
@@ -97,11 +87,7 @@ this.loadingProgression === LoadingProgressionEnum.loading){
 }
 
 <ng-template #headerDeleteTemplate>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
 </ng-template>
 
 <!-- Template per il body -->
