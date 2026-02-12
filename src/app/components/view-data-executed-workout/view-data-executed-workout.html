@@ -1,97 +1,93 @@
 @if(this.loadingProgression === LoadingProgressionEnum.complete){
-<div class="content">
-  <div class="section-title-container back-icon-title-container">
-    <div class="back-icon-section-container">
-      <div class="back-icon-trigger" (touchstart)="goBack()"></div>
-      <img src="assets/recollect/svg/google-arrow.svg" />
+<div class="page-scroller">
+  <div class="content">
+    <div class="nome-scheda-data-esecuzione-container">
+      <h3 class="text-title">{{ allenamento.nomeScheda }}</h3>
+      <h3 class="text-white">
+        {{ allenamento.dataEsecuzione | date: "dd/MM/yyyy" }}
+      </h3>
     </div>
-    <h1 class="text-title">{{allenamento.nomeAllenamento}}</h1>
-  </div>
 
-  <div class="nome-scheda-data-esecuzione-container">
-    <h3 class="text-title">{{ allenamento.nomeScheda }}</h3>
-    <h3 class="text-white">
-      {{ allenamento.dataEsecuzione | date: "dd/MM/yyyy" }}
-    </h3>
-  </div>
-
-  <accordion-group>
-    @for (esercizio of allenamento.listaEsercizi; track esercizio.id; let i =
-    $index){
-    <accordion>
-      <accordion-header>
-        <div class="esercizio-container">
-          <div class="icon-esercizio-container">
-            <div
-              class="circle-icon"
-              [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor"
-            >
-              <img
-                [src]="esercizio.idIconaEsercizio | exerciseIcon"
-                class="exercise-icon"
-                [alt]="esercizio.idTipoEsercizio | exerciseName"
-              />
-            </div>
-          </div>
-          <div class="dati-esercizio-container">
-            <div class="nome-esercizio-container">
-              <h3 class="text-white">
-                {{ esercizio.idTipoEsercizio | exerciseName }}
-              </h3>
-            </div>
-            <div class="chips-container">
-              @if(esercizio?.idMetodologia != null) {
-              <div class="dati-chip-container metodologia-chip">
-                {{ esercizio.idMetodologia | trainingMethodology }}
+    <accordion-group>
+      @for (esercizio of allenamento.listaEsercizi; track esercizio.id; let i =
+      $index){
+      <accordion>
+        <accordion-header>
+          <div class="esercizio-container">
+            <div class="icon-esercizio-container">
+              <div
+                class="circle-icon"
+                [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor"
+              >
+                <img
+                  [src]="esercizio.idIconaEsercizio | exerciseIcon"
+                  class="exercise-icon"
+                  [alt]="esercizio.idTipoEsercizio | exerciseName"
+                />
               </div>
-              } @if(esercizio?.listaSerie != null && esercizio.listaSerie.length
-              > 0) {
-              <div class="dati-chip-container serie-chip">
-                {{ esercizio.listaSerie | seriesReps }}
-              </div>
-              }
             </div>
-          </div>
-        </div>
-      </accordion-header>
-      <accordion-body>
-        <div class="exercise-serie-list-container">
-          @for (serie of esercizio.listaSerie; track serie.id; let i = $index){
-          <div class="exercise-data-serie-container">
-            <div class="serie-numerator-container">
-              <h3 class="text-grey">Serie {{i+1}}</h3>
-            </div>
-            <div class="serie-data-container">
-              <div class="ripetizioni-container">
-                <h3 class="text-grey">Reps</h3>
-                <h3 class="text-white">{{serie.ripetizioni}}</h3>
+            <div class="dati-esercizio-container">
+              <div class="nome-esercizio-container">
+                <h3 class="text-white">
+                  {{ esercizio.idTipoEsercizio | exerciseName }}
+                </h3>
               </div>
-              <div class="carico-container">
-                <h3 class="text-grey">kg</h3>
-                <h3 class="text-white">{{serie.carico}}</h3>
+              <div class="chips-container">
+                @if(esercizio?.idMetodologia != null) {
+                <div class="dati-chip-container metodologia-chip">
+                  {{ esercizio.idMetodologia | trainingMethodology }}
+                </div>
+                } @if(esercizio?.listaSerie != null &&
+                esercizio.listaSerie.length > 0) {
+                <div class="dati-chip-container serie-chip">
+                  {{ esercizio.listaSerie | seriesReps }}
+                </div>
+                }
               </div>
             </div>
           </div>
-          }
-        </div>
-      </accordion-body>
-    </accordion>
-    }
-  </accordion-group>
-
-  <div class="floating-static-button-container">
-    <app-multi-option-button
-      [leftButtonLabel]="''"
-      [leftGroups]="leftButtonOptionsGroup"
-      (optionSelected)="onOptionSelected($event)"
-    >
-      <!-- Il pulsante statico viene proiettato qui -->
-      <button class="floating-static-button" (click)="modificaAllenamento()">
-        <span>Modifica allenamento </span>
-      </button>
-    </app-multi-option-button>
+        </accordion-header>
+        <accordion-body>
+          <div class="exercise-serie-list-container">
+            @for (serie of esercizio.listaSerie; track serie.id; let i =
+            $index){
+            <div class="exercise-data-serie-container">
+              <div class="serie-numerator-container">
+                <h3 class="text-grey">Serie {{i+1}}</h3>
+              </div>
+              <div class="serie-data-container">
+                <div class="ripetizioni-container">
+                  <h3 class="text-grey">Reps</h3>
+                  <h3 class="text-white">{{serie.ripetizioni}}</h3>
+                </div>
+                <div class="carico-container">
+                  <h3 class="text-grey">kg</h3>
+                  <h3 class="text-white">{{serie.carico}}</h3>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </accordion-body>
+      </accordion>
+      }
+    </accordion-group>
   </div>
 </div>
+
+<div class="floating-static-button-container">
+  <app-multi-option-button
+    [leftButtonLabel]="''"
+    [leftGroups]="leftButtonOptionsGroup"
+    (optionSelected)="onOptionSelected($event)"
+  >
+    <!-- Il pulsante statico viene proiettato qui -->
+    <button class="floating-static-button" (click)="modificaAllenamento()">
+      <span>Modifica allenamento </span>
+    </button>
+  </app-multi-option-button>
+</div>
+
 } @else if(this.loadingProgression === LoadingProgressionEnum.loading ||
 this.loadingProgression === LoadingProgressionEnum.none){
 <h3 class="text-white">Ricerca in corso</h3>

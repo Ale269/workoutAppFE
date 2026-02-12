@@ -5,15 +5,26 @@
 
 .widget-data {
   display: flex;
-  padding-top: 16px;
-  border-bottom: 1px solid #212121;
-  justify-content: space-between;
-  gap: 40px;
-  padding-bottom: 16px;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
 
-  .giorni-counter-container span {
-    font-weight: 700;
-    font-size: 20px;
+  &:active {
+    transform: scale(0.95);
+  }
+
+  .first-row {
+    display: flex;
+    padding: 16px;
+    gap: 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .second-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 16px;
   }
 
   .nome-graphic-visualizer-container {
@@ -38,5 +49,45 @@
     .current-day-visualizer {
       height: 8px;
     }
+  }
+
+  .circle-icon {
+    border: 1px solid #fff;
+    width: 24px;
+    background-color: #000;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+
+  .icon-container-accumulator {
+    width: 18px;
+    overflow-x: visible;
+  }
+
+  .icona-numero-esercizio-container {
+    display: flex;
+    align-items: center;
+    padding-top: 4px;
+  }
+
+  .icona-numero-esercizio-container img {
+    width: 16px;
+  }
+}
+
+.no-element {
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  .no-data-text {
+    display: flex;
+    flex-direction: column;
   }
 }

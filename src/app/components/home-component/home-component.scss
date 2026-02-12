@@ -9,4 +9,99 @@
 
 .widget-section {
   display: block;
+  margin-bottom: 32px;
+}
+
+.gradient-effect {
+  position: relative;
+}
+
+.ellips-1 {
+  position: absolute;
+  left: -68px;
+  bottom: -100px;
+  z-index: -1;
+  background-color: #00FFE1;
+  opacity: 20%;
+  width: 450px;
+  height: 650px;
+  border-radius: 50%;
+  transform: rotate(45deg);
+  filter: blur(120px);
+}
+
+.ellips-2 {
+  position: absolute;
+  left: 60px;
+  bottom: -72px;
+  z-index: -1;
+  background-color: #fff;
+  opacity: 5%;
+  width: 225px;
+  height: 325px;
+  border-radius: 50%;
+  transform: rotate(45deg);
+  filter: blur(120px);
+}
+
+// ============================================
+// OTTIMIZZAZIONI GPU PER PARALLAX
+// ============================================
+app-seleziona-allenamento-da-svolgere {
+  display: block;
+  // Forza creazione layer compositing per GPU
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+// Gli altri widget scrollano normalmente
+app-scheda-corrente,
+app-ultimi-allenamenti-svolti,
+app-ultime-schede-svolte {
+  display: block;
+}
+
+// ============================================
+// PAGE SCROLLER - VERSIONE JAVASCRIPT SNAP
+// ============================================
+.page-scroller {
+  // Ottimizza scroll su mobile
+  -webkit-overflow-scrolling: touch;
+  
+  // GPU acceleration per scroll container
+  transform: translateZ(0);
+  will-change: scroll-position;
+  
+  // Migliora il momentum scrolling
+  overscroll-behavior-y: contain;
+  
+  // NON usare scroll-behavior: smooth qui
+  // perché interferisce con GSAP scrollTo
+  // scroll-behavior: smooth; ❌ NON USARE
+}
+
+// ============================================
+// ACCESSIBILITÀ - RISPETTA PREFERENZE UTENTE
+// ============================================
+@media (prefers-reduced-motion: reduce) {
+  app-seleziona-allenamento-da-svolgere {
+    will-change: auto;
+  }
+  
+  .page-scroller {
+    scroll-behavior: auto;
+    will-change: auto;
+  }
+}
+
+// ============================================
+// OTTIMIZZAZIONI MOBILE
+// ============================================
+@media (max-width: 768px) {
+  app-seleziona-allenamento-da-svolgere {
+    // Riduci will-change su mobile per memoria
+    will-change: transform;
+  }
 }

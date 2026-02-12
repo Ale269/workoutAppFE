@@ -4,6 +4,8 @@ import {
   Component,
   OnInit,
   ViewChild,
+  OnDestroy,
+  ElementRef,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
@@ -16,6 +18,14 @@ import { AuthService } from "src/app/core/services/auth.service";
 import { SchedaCorrente } from "../widgets/scheda-corrente/scheda-corrente";
 import { UltimiAllenamentiSvolti } from "../widgets/ultimi-allenamenti-svolti/ultimi-allenamenti-svolti";
 import { UltimeSchedeSvolte } from "../widgets/ultime-schede-svolte/ultime-schede-svolte";
+import { MenuConfigService } from "src/app/core/services/menu-config.service";
+import { AccountInfo } from "../account-info/account-info";
+import { SelezionaAllenamentoDaSvolgere } from "../widgets/seleziona-allenamento-da-svolgere/seleziona-allenamento-da-svolgere";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Registra il plugin ScrollTrigger
+gsap.registerPlugin(ScrollTrigger);
 
 @Component({
   selector: "app-home",
@@ -27,13 +37,15 @@ import { UltimeSchedeSvolte } from "../widgets/ultime-schede-svolte/ultime-sched
     ProssimoAllenamento,
     SchedaCorrente,
     UltimiAllenamentiSvolti,
-    UltimeSchedeSvolte
+    UltimeSchedeSvolte,
+    AccountInfo,
+    SelezionaAllenamentoDaSvolgere
   ],
   templateUrl: "./home-component.html",
   styleUrls: ["./home-component.scss"],
 })
-export class HomeComponent implements OnInit, AfterViewInit {
-  @ViewChild(ProssimoAllenamento) prossimoAllenamento!: ProssimoAllenamento;
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(SelezionaAllenamentoDaSvolgere) SelezionaAllenamentoDaSvolgere!: SelezionaAllenamentoDaSvolgere;
   @ViewChild(SchedaCorrente) SchedaCorrente!: SchedaCorrente;
   @ViewChild(UltimiAllenamentiSvolti)
   UltimiAllenamentiSvolti!: UltimiAllenamentiSvolti;
@@ -41,16 +53,23 @@ export class HomeComponent implements OnInit, AfterViewInit {
   UltimeSchedeSvolte!: UltimeSchedeSvolte;
 
   private currentSpinnerId: string | null = null;
+  private scrollTriggerInstance: ScrollTrigger | null = null;
 
   constructor(
+    private menuConfigService: MenuConfigService,
     private cdr: ChangeDetectorRef,
     private errorHandlerService: ErrorHandlerService,
     private spinnerService: SpinnerService,
-    private authService: AuthService
+    private authService: AuthService,
+    private elementRef: ElementRef,
   ) {}
 
   ngOnInit() {
     try {
+      this.menuConfigService.setConfig({
+        leftButton: "none",
+      });
+      
     } catch (error) {
       this.errorHandlerService.logError(error, "HomeComponent.ngOnInit");
     }
@@ -59,11 +78,67 @@ export class HomeComponent implements OnInit, AfterViewInit {
   async ngAfterViewInit() {
     try {
       this.initializeWidgets();
+      // Inizializza l'animazione parallasse dopo un breve delay
+      // per assicurarsi che il DOM sia completamente renderizzato
+      setTimeout(() => {
+        this.initParallaxAnimation();
+      }, 100);
     } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "HomeComponent.ngAfterViewInit"
-      );
+      this.errorHandlerService.logError(error, "HomeComponent.ngAfterViewInit");
+    }
+  }
+
+  ngOnDestroy() {
+    // Pulisci l'istanza di ScrollTrigger per evitare memory leaks
+    if (this.scrollTriggerInstance) {
+      this.scrollTriggerInstance.kill();
+    }
+    // Pulisci tutte le istanze di ScrollTrigger
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  }
+
+  initParallaxAnimation() {
+    try {
+      const pageScroller = this.elementRef.nativeElement.querySelector('.page-scroller');
+      const selezionaAllenamento = this.elementRef.nativeElement.querySelector('app-seleziona-allenamento-da-svolgere');
+
+      if (!pageScroller || !selezionaAllenamento) {
+        console.warn('Elementi per parallax non trovati');
+        return;
+      }
+
+      // Configura ScrollTrigger per usare .page-scroller come scroller
+      ScrollTrigger.defaults({
+        scroller: pageScroller
+      });
+
+      // Crea l'animazione parallasse
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: selezionaAllenamento,
+          start: "top top", // Inizia quando il top dell'elemento tocca il top dello scroller
+          end: "90% top", // Finisce quando il bottom dell'elemento raggiunge il top dello scroller
+          scrub: 1, // Scrub smooth (0 = istantaneo, 1+ = più smooth)
+          invalidateOnRefresh: true, // Ricalcola su resize
+          // markers: true, // Decommentare per debug
+        }
+      });
+
+      // Animazione combinata: translateY, opacity e scale
+      timeline.to(selezionaAllenamento, {
+        yPercent: 16, // Movimento parallasse (negativo = sale più lentamente)
+        opacity: 0,
+        scale: 0.8,
+        ease: "none", // Linear per seguire esattamente lo scroll
+        force3D: true, // Forza accelerazione GPU
+        transformOrigin: "center center",
+      });
+
+      // Salva l'istanza per cleanup
+      this.scrollTriggerInstance = timeline.scrollTrigger as ScrollTrigger;
+
+    } catch (error) {
+      this.errorHandlerService.logError(error, "HomeComponent.initParallaxAnimation");
     }
   }
 
@@ -75,13 +150,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
       } else {
         this.errorHandlerService.logError(
           "nessun user trovato",
-          "HomeComponent.initializeWidgets"
+          "HomeComponent.initializeWidgets",
         );
       }
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "HomeComponent.initializeWidgets"
+        "HomeComponent.initializeWidgets",
       );
     }
   }
@@ -96,45 +171,48 @@ export class HomeComponent implements OnInit, AfterViewInit {
           errorMessage: "Errore nel processo di caricamento",
           resultDuration: 300,
           minSpinnerDuration: 300,
-        }
+        },
       );
 
       // Gestione errori per singolo widget
       const results = await Promise.allSettled([
-        this.prossimoAllenamento
+        this.SelezionaAllenamentoDaSvolgere.prossimoAllenamento
           .getDatiProssimoAllenamentoWidget(idUser)
           .catch((error) => {
             this.errorHandlerService.logError(
               error,
-              "Widget ProssimoAllenamento"
+              "Widget ProssimoAllenamento",
             );
             return null;
           }),
         this.SchedaCorrente.getDatiSchedaCorrenteWidget(idUser).catch(
           (error) => {
-            this.errorHandlerService.logError(
-              error,
-              "Widget SchedaCorrente"
-            );
+            this.errorHandlerService.logError(error, "Widget SchedaCorrente");
             return null;
-          }
+          },
         ),
         this.UltimiAllenamentiSvolti.getDatiUltimiAllenamentiSvoltiWidget(
-          idUser
+          idUser,
         ).catch((error) => {
-          this.errorHandlerService.logError(error, "Widget UltimiAllenamentiSvolti");
+          this.errorHandlerService.logError(
+            error,
+            "Widget UltimiAllenamentiSvolti",
+          );
           return null;
         }),
-        this.UltimeSchedeSvolte.getDatiUltimeSchedeSvolteWidget(
-          idUser
-        ).catch((error) => {
-          this.errorHandlerService.logError(error, "Widget UltimeSchedeSvolte");
-          return null;
-        }),
+        this.UltimeSchedeSvolte.getDatiUltimeSchedeSvolteWidget(idUser).catch(
+          (error) => {
+            this.errorHandlerService.logError(
+              error,
+              "Widget UltimeSchedeSvolte",
+            );
+            return null;
+          },
+        ),
 
         // Altri widget...
         // this.altroWidget.getDatiWidget().catch(...)
-      ])
+      ]);
 
       // Controlla quali widget sono andati in errore
       results.forEach((result, index) => {
@@ -142,11 +220,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
           console.error(`Widget ${index} fallito:`, result.reason);
         }
       });
+
+      // Refresh ScrollTrigger dopo il caricamento dei dati
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 200);
+
     } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "HomeComponent.getWidgetsData"
-      );
+      this.errorHandlerService.logError(error, "HomeComponent.getWidgetsData");
     } finally {
       setTimeout(() => {
         if (this.currentSpinnerId) {

@@ -1,12 +1,17 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
+import { MatIconRegistry, MatIcon } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 import { WidgetsService } from "src/app/core/services/widgets.service";
-import { GetDatiUltimeSchedeSvolteRequestModel, GetDatiUltimeSchedeSvolteResponseModel } from "src/app/models/widgets/ultime-schede-svolte/GetDatiUltimeSchedeSvolte";
+import {
+  GetDatiUltimeSchedeSvolteRequestModel,
+  GetDatiUltimeSchedeSvolteResponseModel,
+} from "src/app/models/widgets/ultime-schede-svolte/GetDatiUltimeSchedeSvolte";
 import { ultimeSchedeSvolteDTO } from "src/app/models/widgets/ultime-schede-svolte/ultimeSchedeSvolte";
 
 @Component({
   selector: "app-ultime-schede-svolte",
-  imports: [CommonModule],
+  imports: [CommonModule, MatIcon],
   templateUrl: "./ultime-schede-svolte.html",
   styleUrl: "./ultime-schede-svolte.scss",
 })
@@ -14,7 +19,18 @@ export class UltimeSchedeSvolte {
   public datiRecuperati: boolean = false;
   public ultimeSchedeSvolteDTO: ultimeSchedeSvolteDTO[] = [];
 
-  constructor(private widgetsService: WidgetsService) {}
+  constructor(
+    private widgetsService: WidgetsService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+  ) {
+    iconRegistry.addSvgIcon(
+      "google-arrow",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-arrow.svg",
+      ),
+    );
+  }
 
   ngOnInit() {}
 
@@ -28,8 +44,7 @@ export class UltimeSchedeSvolte {
         this.widgetsService.getDatiUltimeSchedeSvolte(request).subscribe({
           next: (response: GetDatiUltimeSchedeSvolteResponseModel) => {
             if (!response.errore?.error) {
-              this.ultimeSchedeSvolteDTO =
-                response.ultimeSchedeSvolteDTO;
+              this.ultimeSchedeSvolteDTO = response.ultimeSchedeSvolteDTO;
               this.datiRecuperati = true;
               resolve(null);
             } else {
@@ -47,6 +62,6 @@ export class UltimeSchedeSvolte {
   }
 
   mostraFunzionalitaInArrivo(): void {
-    alert('Funzionalità in arrivo');
+    alert("Funzionalità in arrivo");
   }
 }

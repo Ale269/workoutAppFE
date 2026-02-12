@@ -1,57 +1,76 @@
-<div class="content">
+<div>
   <div class="widget-title">
     <div class="section-widget-title-container">
       <h1 class="text-title">Scheda corrente</h1>
     </div>
-    <div class="icon-container">
-      <img src="assets/recollect/images/scheda-attiva-icon.png" />
-    </div>
   </div>
   @if(datiRecuperati){
-  <div class="widget-data">
-    <h3 class="text-grey">Titolo</h3>
-    <h3 class="text-white">{{titoloScheda}}</h3>
-  </div>
-  <div class="widget-data">
-    <h3 class="text-grey">Allenamento precedente</h3>
-    <h3 class="text-white">{{descrizioneAllenamentoPrecedente}}</h3>
-  </div>
-  <div class="widget-data">
-    <h3 class="text-grey">Prossimo allenamento</h3>
-    <h3 class="text-white">{{descrizioneProssimoAllenamento}}</h3>
-  </div>
-  <div class="widget-data">
-    <h3 class="text-grey">Tipo scheda</h3>
-    <h3 class="text-white">{{descrizioneScheda}}</h3>
-  </div>
-  <div class="widget-data">
-    <h3 class="text-grey">Data inizio</h3>
-    <h3 class="text-white">{{dataInizio | date: "dd/MM/yyyy" }}</h3>
-  </div>
-  <div class="widget-data">
-    <h3 class="text-grey">Allenamenti effettuati</h3>
-    <h3 class="text-white">{{numeroAllenamentiEffettuati}}</h3>
+  <div
+    class="scheda-corrente-container"
+    (click)="visualizzaDatiScheda(idScheda)"
+  >
+    <div class="first-line-scheda-corrente">
+      <div>
+        <h3 class="text-grey">Titolo</h3>
+        <h3 class="text-white">{{titoloScheda}}</h3>
+      </div>
+      <div>
+        <div class="arrow-widget-container">
+          <mat-icon svgIcon="google-arrow"></mat-icon>
+        </div>
+      </div>
+    </div>
+    <div class="widget-data">
+      <h3 class="text-grey">Tipo scheda</h3>
+      <h3 class="text-white">{{descrizioneScheda}}</h3>
+    </div>
+    <div class="double-widget-data">
+      <div>
+        <h3 class="text-grey">Allenamento precedente</h3>
+        <h3 class="text-white">{{descrizioneAllenamentoPrecedente}}</h3>
+      </div>
+      <div>
+        <h3 class="text-grey">Prossimo allenamento</h3>
+        <h3 class="text-white">{{descrizioneProssimoAllenamento}}</h3>
+      </div>
+    </div>
+    <div class="double-widget-data last-line-scheda-corrente">
+      <div>
+        <h3 class="text-grey">Data inizio</h3>
+        <h3 class="text-white">{{dataInizio | date: "dd/MM/yyyy" }}</h3>
+      </div>
+      <div>
+        <h3 class="text-grey">Allenamenti effettuati</h3>
+        <h3 class="text-white">{{numeroAllenamentiEffettuati}}</h3>
+      </div>
+    </div>
   </div>
 
-  <div class="widget-button">
-    <button class="text-shape-button"  (click)="visualizzaDatiScheda(idScheda)">
+  <!-- <div class="widget-button">
+    <button class="text-shape-button" (click)="visualizzaDatiScheda(idScheda)">
       <span>Apri scheda</span>
       <div class="text-shape-button-icon-container">
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
     </button>
-  </div>
+  </div> -->
   } @else{
-  <div class="widget-data">
-    <h3 class="text-white">Nessun dato trovato</h3>
+  <div class="no-element"  (click)="NavigaAElencoTemplateSchede()">
+    <div class="no-data-text">
+      <h3 class="text-grey">Nessun dato trovato</h3>
+      <h3 class="text-white">Attiva una scheda</h3>
+    </div>
+    <div class="arrow-widget-container">
+      <mat-icon svgIcon="google-arrow"></mat-icon>
+    </div>
   </div>
-  <div class="widget-button">
+  <!-- <div class="widget-button">
     <button class="text-shape-button" (click)="NavigaAElencoTemplateSchede()">
       <span>Attiva una scheda</span>
       <div class="text-shape-button-icon-container">
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
     </button>
-  </div>
+  </div> -->
   }
 </div>

@@ -1,8 +1,6 @@
 <div class="reorder-wrapper">
   <div class="scrollable-container">
-    <h1 class="text-title floating-text">
-      Riordina esercizi
-    </h1>
+    <h1 class="text-title floating-text">Riordina esercizi</h1>
     <div #exerciseDataContainer class="exercise-data">
       @for (esercizioForm of exercises; track
       esercizioForm.form.controls['identifier'].value) {
@@ -49,10 +47,8 @@
   </div>
 
   <div class="floating-static-button-container">
-    <div class="floating-static-button-glass">
-      <button class="floating-static-button" (click)="onConfirmClick($event)">
-        <span>Fatto</span>
-      </button>
-    </div>
+    <button class="floating-static-button" (click)="onConfirmClick($event)">
+      <span>Fatto</span>
+    </button>
   </div>
 </div>

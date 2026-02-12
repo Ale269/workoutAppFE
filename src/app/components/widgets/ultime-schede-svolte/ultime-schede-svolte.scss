@@ -3,14 +3,27 @@
   flex-direction: column;
 }
 
+.last-widget-container {
+  padding-bottom: 72px;
+}
+
+.data-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .widget-data {
   display: flex;
-  flex-flow: column;
-  padding-top: 16px;
-  border-bottom: 1px solid #212121;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
   justify-content: space-between;
-  gap: 8px;
-  padding-bottom: 16px;
+  align-items: center;
+  
+  &:active {
+    transform: scale(0.95);
+  }
 
   .giorni-counter-container span {
     font-weight: 700;

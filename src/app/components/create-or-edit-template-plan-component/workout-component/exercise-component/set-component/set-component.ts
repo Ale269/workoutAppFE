@@ -13,14 +13,12 @@ import { ErrorHandlerService } from "src/app/core/services/error-handler.service
 import { ModalService } from "src/app/core/services/modal.service";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
+import { MatIcon, MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: "app-set-component",
-  imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-  ],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatIcon],
   templateUrl: "./set-component.html",
   styleUrl: "./set-component.scss",
 })
@@ -29,8 +27,10 @@ export class SetComponent implements OnInit {
 
   @ViewChild("headerDeleteSerie") headerDeleteSerie!: TemplateRef<any>;
   @ViewChild("bodyDeleteSerie") bodyDeleteSerie!: TemplateRef<any>;
-  @ViewChild("footerCloseDeleteSerie") footerCloseDeleteSerie!: TemplateRef<any>;
-  @ViewChild("footerConfirmDeleteSerie") footerConfirmDeleteSerie!: TemplateRef<any>;
+  @ViewChild("footerCloseDeleteSerie")
+  footerCloseDeleteSerie!: TemplateRef<any>;
+  @ViewChild("footerConfirmDeleteSerie")
+  footerConfirmDeleteSerie!: TemplateRef<any>;
 
   @Output() onDeleteSerie = new EventEmitter<number>();
 
@@ -39,8 +39,17 @@ export class SetComponent implements OnInit {
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
-    private modalService: ModalService
-  ) {}
+    private modalService: ModalService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+  ) {
+    iconRegistry.addSvgIcon(
+      "google-close-icon",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-close-icon.svg",
+      ),
+    );
+  }
 
   ngOnInit(): void {
     try {
@@ -51,12 +60,8 @@ export class SetComponent implements OnInit {
       this.caricoControl = this.formSerie.form.controls[
         "carico"
       ] as FormControl<number | null>;
-
     } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "SetComponent.ngOnInit"
-      );
+      this.errorHandlerService.logError(error, "SetComponent.ngOnInit");
     }
   }
 
@@ -72,23 +77,15 @@ export class SetComponent implements OnInit {
         onClose: () => console.log("Modal closed"),
       });
     } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "SetComponent.openDeleteModal"
-      );
+      this.errorHandlerService.logError(error, "SetComponent.openDeleteModal");
     }
   }
 
   deleteSerie() {
     try {
-      this.onDeleteSerie.emit(
-        this.formSerie.form.controls["identifier"].value
-      );
+      this.onDeleteSerie.emit(this.formSerie.form.controls["identifier"].value);
     } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "SetComponent.deleteSerie"
-      );
+      this.errorHandlerService.logError(error, "SetComponent.deleteSerie");
     }
   }
 }

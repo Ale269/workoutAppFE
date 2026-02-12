@@ -2,15 +2,35 @@
 <div class="menu-wrapper">
   <!-- Menu fisso in alto -->
   <div class="app-menu-container">
-    <div [class.menu-hidden]="isMenuOpen" (touchstart)="navigateToHome()">
-      <h3>Home</h3>
-    </div>
-    <div (click)="toggleMenu()" class="menu-trigger">
-      @if(!isMenuOpen){
-      <h3 class="menu-text">Menu</h3>
-      } @if(isMenuOpen){
-      <h3 class="close-button">Chiudi</h3>
+    
+    <div
+      class="left-button"
+      [class.hidden]="isMenuOpen || menuConfig.leftButton === 'none'"
+      (click)="onLeftButtonClick()"
+    >
+      @if(menuConfig.leftButton === 'back') {
+        <div class="menu-btn-container reverse-icon">
+          <mat-icon svgIcon="google-arrow"></mat-icon>
+        </div>
+      } @else if(menuConfig.leftButton === 'close') {
+        <div class="menu-btn-container">
+          <mat-icon svgIcon="google-close"></mat-icon>
+        </div>
       }
+    </div>
+
+    <!-- Testo centrale -->
+    <div class="center-text" [class.visible]="menuConfig.centerText && !isMenuOpen">
+      <h3 class="text-white">{{ menuConfig.centerText }}</h3>
+    </div>
+
+    <div (click)="toggleMenu()" class="menu-trigger">
+      <div class="menu-btn-container">
+        <div class="icon-swap-wrapper" [class.is-active]="isMenuOpen">
+          <mat-icon class="icon-menu" svgIcon="google-menu"></mat-icon>
+          <mat-icon class="icon-close" svgIcon="google-close"></mat-icon>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -18,9 +38,13 @@
   <div
     class="fullscreen-menu-overlay"
     [class.menu-open]="isMenuOpen"
-    (touchstart)="closeMenu()"
+    (click)="closeMenu()"
   >
-    <div class="menu-items-container" [class.items-visible]="isMenuOpen">
+    <div
+      class="menu-items-container"
+      [class.items-visible]="isMenuOpen"
+      (click)="$event.stopPropagation()"
+    >
       <div class="menu-item" (click)="navigateToAccount()">
         <h3 class="text-white">Account</h3>
       </div>
@@ -36,13 +60,13 @@
       <div class="menu-item" (click)="navigateToInfo()">
         <h3 class="text-white">Info client</h3>
       </div>
-        <div class="menu-item" (click)="navigateToInfoServer()">
-            <h3 class="text-white">Info server</h3>
-        </div>
+      <div class="menu-item" (click)="navigateToInfoServer()">
+        <h3 class="text-white">Info server</h3>
+      </div>
       @if (isAdmin()) {
-        <div class="menu-item admin-item" (click)="navigateToAdminUsers()">
-          <h3 class="text-white">Gestione Utenti</h3>
-        </div>
+      <div class="menu-item admin-item" (click)="navigateToAdminUsers()">
+        <h3 class="text-white">Gestione Utenti</h3>
+      </div>
       }
       <div class="menu-item" (click)="callLogout()">
         <h3 class="text-white">Logout</h3>

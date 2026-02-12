@@ -1,8 +1,4 @@
 // Stili per le sezioni e la nuova struttura senza accordion
-.section-title {
-  padding-bottom: 16px;
-  border-bottom: 1px solid #212121;
-}
 
 .section-content {
   padding-top: 16px;
@@ -11,7 +7,6 @@
 .content {
   display: flex;
   flex-direction: column;
-  height: 100%;
   width: 100%;
   position: relative;
 }
@@ -110,14 +105,6 @@
   justify-content: flex-end;
 }
 
-// Vista dettaglio allenamento
-.workout-detail-view {
-  app-workout-component {
-    flex: 1;
-    overflow-y: auto;
-  }
-}
-
 .dati-scheda-container {
   display: flex;
   flex-direction: column;
@@ -183,27 +170,35 @@
 .allenamento-container {
   position: relative;
   display: flex;
+  justify-content: space-between;
   padding: 16px;
-  border: 1px solid #212121;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  gap: 16px;
-  background-color: #000;
   cursor: pointer;
   z-index: 1;
+  align-items: center;
 
   // Impedisce la selezione del testo
   user-select: none;
   -webkit-user-select: none;
-  
+
   // Impedisce il menu callout (copia/incolla/condividi) su iOS
   -webkit-touch-callout: none;
-  
+
   // Rimuove l'highlight al tap su mobile
   -webkit-tap-highlight-color: transparent;
+
+  .data-container {
+    display: flex;
+    gap: 16px;
+  }
 }
 
-.allenamento-container:first-of-type {
-  border-top: 1px solid #212121;
+.text-section-container {
+  padding: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .nome-datai-allenamento {

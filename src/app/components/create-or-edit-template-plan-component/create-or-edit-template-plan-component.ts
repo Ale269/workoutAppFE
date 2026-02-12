@@ -41,9 +41,11 @@ import {
 } from "../shared/multi-option-button/multi-option-button";
 import { FocusOverlayService } from "../shared/focus-overlay/focus-overlay.service";
 import { ReorderWorkoutComponent } from "./workout-component/reorder-workout-component/reorder-workout-component";
-import { LongPressDirective } from "../shared/directives/long-press.directive";
 import { Observable, Subject } from "rxjs";
 import { CanComponentDeactivate } from "src/app/core/guards/pending-changes.guard";
+import { MatIcon, MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
+import { MenuConfigService } from "src/app/core/services/menu-config.service";
 
 // Registra il plugin Draggable
 gsap.registerPlugin(Draggable);
@@ -60,13 +62,13 @@ gsap.registerPlugin(Draggable);
     Switch,
     ExerciseIconColorPipe,
     MultiOptionButton,
-    LongPressDirective,
+    MatIcon,
   ],
   templateUrl: "./create-or-edit-template-plan-component.html",
   styleUrl: "./create-or-edit-template-plan-component.scss",
 })
 export class CreateOrEditTemplatePlanComponent
-  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate  
+  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate
 {
   @ViewChild("listView") listView!: ElementRef<HTMLElement>;
   @ViewChild("detailView") detailView!: ElementRef<HTMLElement>;
@@ -146,32 +148,32 @@ export class CreateOrEditTemplatePlanComponent
   ];
 
   canDeactivate(): Observable<boolean> | boolean {
-  if (this.createOrEditTemplatePlanService.formScheda.form.pristine) {
-    return true;
-  }
-
-  // Creiamo un Subject che emetterà true (naviga) o false (resta)
-  const navigationResponse$ = new Subject<boolean>();
-
-  // Apriamo il modale
-  this.modalService.open({
-    warning: true,
-    headerTemplate: this.headerGoBack,
-    bodyTemplate: this.bodyGoBack,
-    footerCloseTemplate: this.footerCloseGoBack,
-    footerConfirmTemplate: this.footerConfirmGoBack,
-    onConfirm: () => {
-      navigationResponse$.next(true);
-      navigationResponse$.complete();
-    },
-    onClose: () => {
-      navigationResponse$.next(false);
-      navigationResponse$.complete();
+    if (this.createOrEditTemplatePlanService.formScheda.form.pristine) {
+      return true;
     }
-  });
 
-  return navigationResponse$.asObservable();
-}
+    // Creiamo un Subject che emetterà true (naviga) o false (resta)
+    const navigationResponse$ = new Subject<boolean>();
+
+    // Apriamo il modale
+    this.modalService.open({
+      warning: true,
+      headerTemplate: this.headerGoBack,
+      bodyTemplate: this.bodyGoBack,
+      footerCloseTemplate: this.footerCloseGoBack,
+      footerConfirmTemplate: this.footerConfirmGoBack,
+      onConfirm: () => {
+        navigationResponse$.next(true);
+        navigationResponse$.complete();
+      },
+      onClose: () => {
+        navigationResponse$.next(false);
+        navigationResponse$.complete();
+      },
+    });
+
+    return navigationResponse$.asObservable();
+  }
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
@@ -184,8 +186,30 @@ export class CreateOrEditTemplatePlanComponent
     private workoutService: WorkoutService,
     private exerciseService: ExerciseService,
     private focusOverlayService: FocusOverlayService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+    private menuConfigService: MenuConfigService,
   ) {
     try {
+      iconRegistry.addSvgIcon(
+        "google-arrow",
+        sanitizer.bypassSecurityTrustResourceUrl(
+          "assets/recollect/svg/google-arrow.svg",
+        ),
+      );
+      iconRegistry.addSvgIcon(
+        "google-add",
+        sanitizer.bypassSecurityTrustResourceUrl(
+          "assets/recollect/svg/google-add.svg",
+        ),
+      );
+      iconRegistry.addSvgIcon(
+        "google-reorder",
+        sanitizer.bypassSecurityTrustResourceUrl(
+          "assets/recollect/svg/google-reorder.svg",
+        ),
+      );
+
       const navigation = this.router.getCurrentNavigation();
       const state = navigation?.extras.state as { scheda: SchedaDTO };
 
@@ -202,6 +226,16 @@ export class CreateOrEditTemplatePlanComponent
 
   ngOnInit(): void {
     try {
+      let navigationText: string = "";
+
+      if (this.isNuovaScheda) {
+        navigationText = "Nuova scheda";
+      } else {
+        navigationText = "Modifica scheda";
+      }
+
+      this.menuConfigService.setCloseModal(() => this.goBack(), navigationText);
+
       this.currentSpinnerId = this.spinnerService.showWithResult(
         "Inizializzazione dati scheda",
         {
@@ -420,6 +454,12 @@ export class CreateOrEditTemplatePlanComponent
     if (this.isAnimating) return;
 
     try {
+      this.menuConfigService.setBackWithCallback(
+        () => this.backToList(),
+        "back",
+        "Modifica allenamento",
+      );
+
       this.isAnimating = true;
 
       // Chiudi tutti gli swipe aperti prima di navigare
@@ -456,6 +496,16 @@ export class CreateOrEditTemplatePlanComponent
     if (this.isAnimating) return;
 
     try {
+      let navigationText: string = "";
+
+      if (this.isNuovaScheda) {
+        navigationText = "Nuova scheda";
+      } else {
+        navigationText = "Modifica scheda";
+      }
+
+      this.menuConfigService.setCloseModal(() => this.goBack(), navigationText);
+
       this.isAnimating = true;
 
       // Fade out della vista corrente

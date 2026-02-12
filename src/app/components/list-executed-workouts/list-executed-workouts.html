@@ -1,60 +1,74 @@
-<div class="content">
-  <div class="section-title-container">
-    <h1 class="text-title">Ultimi allenamenti svolti</h1>
-  </div>
-  <div class="lista-template-allenamenti-container">
-    @for (allenamentoView of listaAllenamentiSvoltiView; track
-    allenamentoView.allenamentoSvolto.id; let i = $index) {
-    
-    <!-- Wrapper per swipe -->
-    <div class="allenamento-wrapper">
-      <div
-        #allenamentoCard
-        class="allenamento-container"
-        (click)="visualizzaDatiAllenamento(allenamentoView.allenamentoSvolto.id)"
-      >
-        <div class="graphic-data">
-          <div class="giorni-counter-container">
-            <h3 class="text-white small-text">
-              <span>{{allenamentoView.allenamentoSvolto.numeroAllenamento}}</span>
-              /
-              <span>{{allenamentoView.allenamentoSvolto.numeroTotaleAllenamentiScheda}}</span>
-            </h3>
+<div class="page-scroller">
+  <div class="content">
+    <div class="lista-template-allenamenti-container">
+      @for (allenamentoView of listaAllenamentiSvoltiView; track
+      allenamentoView.allenamentoSvolto.id; let i = $index) {
+
+      <!-- Wrapper per swipe -->
+      <div class="allenamento-wrapper">
+        <div
+          #allenamentoCard
+          class="allenamento-container"
+          (click)="visualizzaDatiAllenamento(allenamentoView.allenamentoSvolto.id)"
+        >
+          <div class="data-allenamento-svolto-container">
+            <div class="graphic-data">
+              <div class="giorni-counter-container">
+                <h3 class="text-white small-text">
+                  <span
+                    >{{allenamentoView.allenamentoSvolto.numeroAllenamento}}</span
+                  >
+                  /
+                  <span
+                    >{{allenamentoView.allenamentoSvolto.numeroTotaleAllenamentiScheda}}</span
+                  >
+                </h3>
+              </div>
+              <div class="graphic-visualizer-container">
+                <div class="visualizer-allenamento-container">
+                  @for (giorno of allenamentoView.giorniArray; track giorno) {
+                  <div
+                    [ngClass]="{'current-day-visualizer': giorno == allenamentoView.allenamentoSvolto.numeroAllenamento}"
+                  ></div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="nome-data-allenamento">
+              <h3 class="text-white">
+                {{ allenamentoView.allenamentoSvolto.nomeAllenamento }}
+              </h3>
+              <h3 class="text-grey">
+                {{ allenamentoView.allenamentoSvolto.nomeScheda }}
+              </h3>
+              <h3 class="text-grey">
+                Svolto il {{ allenamentoView.allenamentoSvolto.dataEsecuzione |
+                date: "dd/MM/yyyy" }}
+              </h3>
+            </div>
           </div>
-          <div class="graphic-visualizer-container">
-            <div class="visualizer-allenamento-container">
-              @for (giorno of allenamentoView.giorniArray; track giorno) {
-              <div
-                [ngClass]="{'current-day-visualizer': giorno == allenamentoView.allenamentoSvolto.numeroAllenamento}"
-              ></div>
-              }
+          <div>
+            <div class="arrow-widget-container">
+              <mat-icon svgIcon="google-arrow"></mat-icon>
             </div>
           </div>
         </div>
-        <div class="nome-data-allenamento">
-          <h3 class="text-white">
-            {{ allenamentoView.allenamentoSvolto.nomeAllenamento }}
-          </h3>
-          <h3 class="text-grey">
-            {{ allenamentoView.allenamentoSvolto.nomeScheda }}
-          </h3>
-          <h3 class="text-grey">
-            Svolto il {{ allenamentoView.allenamentoSvolto.dataEsecuzione | date: "dd/MM/yyyy" }}
-          </h3>
+
+        <!-- Bottone delete che appare con lo swipe -->
+        <div
+          class="delete-action"
+          (click)="openDeleteAllenamento(allenamentoView.allenamentoSvolto.id)"
+        >
+          <div class="text-shape-button-icon-container-danger">
+            <img src="assets/recollect/svg/google-delete.svg" />
+          </div>
         </div>
       </div>
-      
-      <!-- Bottone delete che appare con lo swipe -->
-      <div class="delete-action" (click)="openDeleteAllenamento(allenamentoView.allenamentoSvolto.id)">
-        <div class="text-shape-button-icon-container-danger">
-          <img src="assets/recollect/svg/google-delete.svg" />
-        </div>
-      </div>
+
+      } @empty {
+      <h3 class="text-white">Nessun allenamento svolto</h3>
+      }
     </div>
-    
-    } @empty {
-    <h3 class="text-white">Nessun allenamento svolto</h3>
-    }
   </div>
 </div>
 
@@ -68,9 +82,7 @@
 </ng-template>
 
 <ng-template #bodyDeleteTemplate>
-  <h3 class="text-white">
-    Sei sicuro di voler eliminare questo allenamento?
-  </h3>
+  <h3 class="text-white">Sei sicuro di voler eliminare questo allenamento?</h3>
   <h3 class="text-white">Questa azione non può essere annullata.</h3>
 </ng-template>
 

@@ -41,6 +41,9 @@ import { FocusOverlayService } from "../shared/focus-overlay/focus-overlay.servi
 import { ReorderExerciseComponent } from "../create-or-edit-template-plan-component/workout-component/reorder-exercise-component/reorder-exercise-component";
 import gsap from "gsap";
 import { Observable, Subject } from "rxjs";
+import { MatIcon, MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
+import { MenuConfigService } from "src/app/core/services/menu-config.service";
 
 @Component({
   selector: "app-create-or-edit-workout-execution",
@@ -54,6 +57,7 @@ import { Observable, Subject } from "rxjs";
     MatDatepickerModule,
     MatNativeDateModule,
     LongPressDirective,
+    MatIcon,
   ],
   templateUrl: "./create-or-edit-workout-execution.html",
   styleUrl: "./create-or-edit-workout-execution.scss",
@@ -149,8 +153,18 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
     public focusOverlayService: FocusOverlayService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+    private menuConfigService: MenuConfigService,
   ) {
     try {
+      iconRegistry.addSvgIcon(
+        "google-add",
+        sanitizer.bypassSecurityTrustResourceUrl(
+          "assets/recollect/svg/google-add.svg",
+        ),
+      );
+
       const navigation = this.router.getCurrentNavigation();
       const state = navigation?.extras.state as {
         idTemplateAllenamento: number;
@@ -184,6 +198,16 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     try {
+      let navigationText: string = "";
+
+      if (!this.idAllenamento) {
+        navigationText = "Nuovo allenamento";
+      } else {
+        navigationText = "Modifica allenamento";
+      }
+
+      this.menuConfigService.setCloseModal(() => this.goBack(), navigationText);
+
       this.initializeWorkout();
     } catch (error) {
       this.errorHandlerService.logError(

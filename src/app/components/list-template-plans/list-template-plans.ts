@@ -35,6 +35,9 @@ import {
   multiOptionGroup,
   OptionSelectedEvent,
 } from "../shared/multi-option-button/multi-option-button";
+import { MatIcon, MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
+import { MenuConfigService } from "src/app/core/services/menu-config.service";
 
 // Registra il plugin Draggable
 gsap.registerPlugin(Draggable);
@@ -47,6 +50,7 @@ gsap.registerPlugin(Draggable);
     MatFormFieldModule,
     MatInputModule,
     MultiOptionButton,
+    MatIcon,
   ],
   templateUrl: "./list-template-plans.html",
   styleUrl: "./list-template-plans.scss",
@@ -90,8 +94,24 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     private workoutService: WorkoutService,
     private authService: AuthService,
     private router: Router,
-    private modalService: ModalService
-  ) { }
+    private modalService: ModalService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+    private menuConfigService: MenuConfigService,
+  ) {
+    this.menuConfigService.setBackToRoute(
+      "/",
+      "back",
+      "I tuoi template scheda",
+    );
+
+    iconRegistry.addSvgIcon(
+      "google-arrow",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-arrow.svg",
+      ),
+    );
+  }
 
   ngOnInit(): void {
     try {
@@ -132,7 +152,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
           const card = cardRef.nativeElement;
           const wrapper = card.closest(".scheda-wrapper");
           const deleteButton = wrapper?.querySelector(
-            ".delete-action"
+            ".delete-action",
           ) as HTMLElement;
 
           if (!deleteButton) return;
@@ -225,7 +245,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.initializeSwipe"
+        "ListTemplatePlans.initializeSwipe",
       );
     }
   }
@@ -233,7 +253,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
   private closeSwipe(
     card: HTMLElement,
     deleteButton: Element,
-    draggable: any
+    draggable: any,
   ): void {
     gsap.to(card, {
       x: 0,
@@ -272,7 +292,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
           errorMessage: "Errore nel recupero dei dati",
           resultDuration: 250,
           minSpinnerDuration: 250,
-        }
+        },
       );
 
       const user = this.authService.getCurrentUser();
@@ -296,7 +316,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
                 }
                 this.errorHandlerService.logError(
                   response.errore.error,
-                  "ListTemplatePlans.getListaTemplateSchede"
+                  "ListTemplatePlans.getListaTemplateSchede",
                 );
               }
             } else {
@@ -305,7 +325,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
               }
               this.errorHandlerService.logError(
                 response.errore.error,
-                "ListTemplatePlans.getListaTemplateSchede"
+                "ListTemplatePlans.getListaTemplateSchede",
               );
             }
           },
@@ -315,13 +335,13 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
             }
             this.errorHandlerService.logError(
               error,
-              "ListTemplatePlans.getListaTemplateSchede"
+              "ListTemplatePlans.getListaTemplateSchede",
             );
           },
         });
       } else {
         throw new Error(
-          "ListTemplatePlans.addEsercizioForm: " + "nessun user trovato"
+          "ListTemplatePlans.addEsercizioForm: " + "nessun user trovato",
         );
       }
     } catch (error) {
@@ -330,7 +350,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
       }
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.getListaTemplateSchede"
+        "ListTemplatePlans.getListaTemplateSchede",
       );
     }
   }
@@ -342,7 +362,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.VisualizzaDatiScheda"
+        "ListTemplatePlans.VisualizzaDatiScheda",
       );
     }
   }
@@ -353,7 +373,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.VisualizzaDatiScheda"
+        "ListTemplatePlans.VisualizzaDatiScheda",
       );
     }
   }
@@ -377,7 +397,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
       error: (error: any) => {
         this.errorHandlerService.logError(
           error,
-          "ListTemplatePlans.guidaImportScheda"
+          "ListTemplatePlans.guidaImportScheda",
         );
       },
     });
@@ -400,7 +420,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.openDeleteScheda"
+        "ListTemplatePlans.openDeleteScheda",
       );
     }
   }
@@ -416,7 +436,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
           errorMessage: "Errore nell'eliminare la scheda",
           resultDuration: 250,
           minSpinnerDuration: 250,
-        }
+        },
       );
 
       if (idScheda !== null && idScheda > 0) {
@@ -437,7 +457,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
               }
               this.errorHandlerService.logError(
                 response.errore.error,
-                "ListTemplatePlans.eliminaScheda"
+                "ListTemplatePlans.eliminaScheda",
               );
             }
           },
@@ -447,7 +467,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
             }
             this.errorHandlerService.logError(
               error,
-              "ListTemplatePlans.eliminaScheda"
+              "ListTemplatePlans.eliminaScheda",
             );
           },
         });
@@ -457,7 +477,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
         }
         this.errorHandlerService.logError(
           "Nessuna scheda trovata: ",
-          "ListTemplatePlans.eliminaScheda"
+          "ListTemplatePlans.eliminaScheda",
         );
       }
     } catch (error) {
@@ -466,7 +486,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
       }
       this.errorHandlerService.logError(
         error,
-        "ListTemplatePlans.eliminaScheda"
+        "ListTemplatePlans.eliminaScheda",
       );
     }
   }

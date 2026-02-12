@@ -7,10 +7,12 @@ import {
   GetDatiProssimoAllenamentoResponseModel,
 } from "src/app/models/widgets/prossimo-allenamento/getDatiProssimoAllenamento";
 import { createOrEdit } from "../../create-or-edit-workout-execution/create-or-edit-workout-execution";
+import { MatIconRegistry, MatIcon } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: "app-prossimo-allenamento",
-  imports: [],
+  imports: [MatIcon],
   templateUrl: "./prossimo-allenamento.html",
   styleUrl: "./prossimo-allenamento.scss",
 })
@@ -26,8 +28,17 @@ export class ProssimoAllenamento implements OnInit {
   constructor(
     private widgetsService: WidgetsService,
     private errorHandlerService: ErrorHandlerService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+  ) {
+    iconRegistry.addSvgIcon(
+      "google-arrow",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-arrow.svg",
+      ),
+    );
+  }
 
   ngOnInit() {}
 
@@ -70,18 +81,21 @@ export class ProssimoAllenamento implements OnInit {
 
   NavigaARegistraAllenamento() {
     try {
-      this.router.navigate(["/registra-allenamento/", this.idTemplateAllenamento], {
-        state: {
-          idAllenamento: null,
-          idTemplateAllenamento: this.idTemplateAllenamento,
-          createOrEdit: createOrEdit.create,
-          //  idTemplateAllenamento: this.idTemplateAllenamento
+      this.router.navigate(
+        ["/registra-allenamento/", this.idTemplateAllenamento],
+        {
+          state: {
+            idAllenamento: null,
+            idTemplateAllenamento: this.idTemplateAllenamento,
+            createOrEdit: createOrEdit.create,
+            //  idTemplateAllenamento: this.idTemplateAllenamento
+          },
         },
-      });
+      );
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ProssimoAllenamento.NavigaARegistraAllenamento"
+        "ProssimoAllenamento.NavigaARegistraAllenamento",
       );
     }
   }
@@ -92,7 +106,7 @@ export class ProssimoAllenamento implements OnInit {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ProssimoAllenamento.NavigaAElencoTemplateSchede"
+        "ProssimoAllenamento.NavigaAElencoTemplateSchede",
       );
     }
   }

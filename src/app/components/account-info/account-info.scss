@@ -1,0 +1,20 @@
+.account-info-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.image-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #fff;
+
+  img {
+    width: 50px;
+  }
+}

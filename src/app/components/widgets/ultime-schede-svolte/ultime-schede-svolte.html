@@ -1,42 +1,51 @@
-<div class="content">
-  <div class="widget-title">
-    <div class="section-widget-title-container">
+<div class="last-widget-container">
+  <div class="mostra-tutti-widget">
+    <div>
       <h1 class="text-title">Ultime <br />schede svolte</h1>
     </div>
-    <div class="icon-container">
-      <img src="assets/recollect/images/storico-schede-icon.png" />
+    <div class="small-inline-button" (click)="mostraFunzionalitaInArrivo()">
+      <button>Tutti</button>
+      <mat-icon svgIcon="google-arrow"></mat-icon>
     </div>
   </div>
-  @if(datiRecuperati){ @for (ultimoShcede of this.ultimeSchedeSvolteDTO; track
-  ultimoShcede.id; let i = $index) {
-  <div class="widget-data">
-    <div class="descrizione-scheda-container">
-      <h3 class="text-white">{{ultimoShcede.descrizioneScheda}}</h3>
+  <div class="data-list">
+    @if(datiRecuperati){ @for (ultimoShcede of this.ultimeSchedeSvolteDTO; track
+    ultimoShcede.id; let i = $index) {
+    <div class="widget-data">
+      <div class="descrizione-scheda-container">
+        <h3 class="text-white">{{ultimoShcede.descrizioneScheda}}</h3>
+        <h3 class="text-grey">
+          Attivata il {{ ultimoShcede.dataUltimaAttivazione| date: "dd/MM/yyyy"
+          }}
+        </h3>
+        <h3 class="text-grey">
+          Attiva per {{ultimoShcede.giorniDurataPeriodoAttivita}} giorni
+        </h3>
+      </div>
+      <div>
+        <div class="arrow-widget-container">
+          <mat-icon svgIcon="google-arrow"></mat-icon>
+        </div>
+      </div>
     </div>
-    <div class="giorno-data-scheda-container">
-      <h3 class="text-grey">
-        Attivata il {{ ultimoShcede.dataUltimaAttivazione| date: "dd/MM/yyyy"
-        }}, attiva per
-        {{ultimoShcede.giorniDurataPeriodoAttivita}} giorni
-      </h3>
+
+    } @empty {
+    <div class="widget-data">
+      <h3 class="text-white">Nessun dato trovato</h3>
     </div>
-  </div>
-  } @empty {
-  <div class="widget-data">
-    <h3 class="text-white">Nessun dato trovato</h3>
-  </div>
-  } @if(this.ultimeSchedeSvolteDTO.length > 0){
-  <div class="widget-button">
+    } @if(this.ultimeSchedeSvolteDTO.length > 0){
+    <!-- <div class="widget-button">
     <button class="text-shape-button" (click)="mostraFunzionalitaInArrivo()">
       <span>Apri schede</span>
       <div class="text-shape-button-icon-container">
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
     </button>
+  </div> -->
+    } } @else{
+    <div class="widget-data">
+      <h3 class="text-white">Nessun dato trovato</h3>
+    </div>
+    }
   </div>
-  } } @else{
-  <div class="widget-data">
-    <h3 class="text-white">Nessun dato trovato</h3>
-  </div>
-  }
 </div>

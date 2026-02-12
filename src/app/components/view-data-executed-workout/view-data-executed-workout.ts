@@ -25,7 +25,12 @@ import {
   DeleteDatiAllenamentoRequestModel,
   DeleteDatiAllenamentoResponseModel,
 } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
-import { MultiOptionButton, multiOptionGroup, OptionSelectedEvent } from "../shared/multi-option-button/multi-option-button";
+import {
+  MultiOptionButton,
+  multiOptionGroup,
+  OptionSelectedEvent,
+} from "../shared/multi-option-button/multi-option-button";
+import { MenuConfigService } from "src/app/core/services/menu-config.service";
 
 @Component({
   selector: "app-view-data-executed-workout",
@@ -81,8 +86,14 @@ export class ViewDataExecutedWorkout {
     private router: Router,
     private workoutService: WorkoutService,
     private modalService: ModalService,
+    private menuConfigService: MenuConfigService,
   ) {
     try {
+      this.menuConfigService.setBackWithCallback(
+        () => this.goBack(),
+        "back",
+        "",
+      );
       this.idAllenamento = Number(
         this.activatedRouter.snapshot.paramMap.get("id"),
       );
@@ -132,6 +143,13 @@ export class ViewDataExecutedWorkout {
                 this.allenamento = this.ordinaAllenamento(
                   response.allenamentoCorrente,
                 );
+
+                this.menuConfigService.setBackWithCallback(
+                  () => this.goBack(),
+                  "back",
+                  this.allenamento.nomeAllenamento,
+                );
+
                 if (this.currentSpinnerId) {
                   this.spinnerService.setSuccess(this.currentSpinnerId);
                 }
@@ -333,18 +351,18 @@ export class ViewDataExecutedWorkout {
   }
 
   onOptionSelected(option: OptionSelectedEvent) {
-      switch (option.side) {
-        case "left":
-          switch (option.groupId) {
-            case 1:
-              switch (option.optionId) {
-                case 1:
-                  this.openDeleteAllenamento();
-                  break;
-              }
-              break;
-          }
-          break;
-      }
+    switch (option.side) {
+      case "left":
+        switch (option.groupId) {
+          case 1:
+            switch (option.optionId) {
+              case 1:
+                this.openDeleteAllenamento();
+                break;
+            }
+            break;
+        }
+        break;
     }
+  }
 }

@@ -1,11 +1,15 @@
 <div class="exercise-container" [class.compact-mode]="isCompactMode">
   <div class="titolo-esercizio-container">
     <div class="icona-numero-esercizio-container">
-      <div class="circle-icon"
-        [style.border-color]="this.formEsercizio.form.controls['idIconaEsercizio'].value | exerciseIconColor">
-        <img [src]="exerciseIconPath"
+      <div
+        class="circle-icon"
+        [style.border-color]="this.formEsercizio.form.controls['idIconaEsercizio'].value | exerciseIconColor"
+      >
+        <img
+          [src]="exerciseIconPath"
           [alt]="'Icona esercizio ' + this.formEsercizio.form.controls['idIconaEsercizio'].value"
-          class="exercise-icon" />
+          class="exercise-icon"
+        />
       </div>
       <h3 class="text-white">
         Esercizio {{this.formEsercizio.form.controls['ordinamento'].value}}
@@ -14,20 +18,32 @@
     @if (!isCompactMode) {
     <div class="exercise-actions-container">
       @if (idTipoEsercizioControl.value) {
-      <div class="history-icon-element-container" (click)="openLastTrainingHistory()">
-        <img src="assets/recollect/svg/google-history.svg" alt="Cronologia" />
+      <div class="delete-icon-element-container">
+        <div
+          class="close-icon-trigger"
+          (click)="openLastTrainingHistory()"
+        ></div>
+        <div class="arrow-widget-container">
+          <mat-icon svgIcon="google-history"></mat-icon>
+        </div>
       </div>
       }
       <div class="delete-icon-element-container">
         <div class="close-icon-trigger" (click)="openDeleteModal()"></div>
-        <img src="assets/recollect/svg/google-close-icon.svg" />
+        <div class="arrow-widget-container">
+          <mat-icon svgIcon="google-close-icon"></mat-icon>
+        </div>
       </div>
     </div>
     }
   </div>
   <form [formGroup]="formEsercizio.form">
     <div class="input-row">
-      <app-gym-exercise-selector [control]="this.idTipoEsercizioControl" label="Esercizio" [disabled]="isCompactMode">
+      <app-gym-exercise-selector
+        [control]="this.idTipoEsercizioControl"
+        label="Esercizio"
+        [disabled]="isCompactMode"
+      >
       </app-gym-exercise-selector>
     </div>
 
@@ -36,7 +52,12 @@
     <div class="input-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Descrizione esercizio</mat-label>
-        <input matInput [type]="'text'" formControlName="description" placeholder="Descrizione esercizio" />
+        <input
+          matInput
+          [type]="'text'"
+          formControlName="description"
+          placeholder="Descrizione esercizio"
+        />
       </mat-form-field>
     </div>
 
@@ -66,7 +87,10 @@
 
     @for (serieForm of this.formEsercizio.listaSerieForm; track
     serieForm.form.controls['identifier'].value) {
-    <app-set-component [formSerie]="serieForm" (onDeleteSerie)="deleteSerie($event)">
+    <app-set-component
+      [formSerie]="serieForm"
+      (onDeleteSerie)="deleteSerie($event)"
+    >
     </app-set-component>
 
     } @empty {
@@ -76,18 +100,14 @@
     }
 
     <div class="add-serie-button-row">
-      <button class="text-shape-button" (click)="duplicateLastSerie()">
-        <span>Duplica</span>
-        <div class="text-shape-button-icon-container">
-          <img src="assets/recollect/svg/google-copy.svg" />
-        </div>
-      </button>
-      <button class="text-shape-button" (click)="addSerie()">
-        <span>Aggiungi</span>
-        <div class="text-shape-button-icon-container">
-          <img src="assets/recollect/svg/google-add.svg" />
-        </div>
-      </button>
+      <div class="small-inline-button" (click)="duplicateLastSerie()">
+        <button>Duplica</button>
+        <mat-icon svgIcon="google-copy"></mat-icon>
+      </div>
+      <div class="small-inline-button" (click)="addSerie()">
+        <button>Aggiungi</button>
+        <mat-icon svgIcon="google-add"></mat-icon>
+      </div>
     </div>
     }
   </form>
@@ -96,7 +116,11 @@
 <!-- Template per il modale -->
 
 <ng-template #headerDeleteWorkout>
-  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
 </ng-template>
 
 <ng-template #bodyDeleteWorkout>
@@ -124,7 +148,11 @@
 
 <!-- Template per il modale cronologia ultimo allenamento -->
 <ng-template #headerHistoryTemplate>
-  <img src="assets/recollect/svg/google-history.svg" alt="Cronologia" class="history-icon" />
+  <img
+    src="assets/recollect/svg/google-history.svg"
+    alt="Cronologia"
+    class="history-icon"
+  />
 </ng-template>
 
 <ng-template #bodyHistoryTemplate>
@@ -132,30 +160,33 @@
     <h3 class="text-white history-title">Ultimo allenamento</h3>
 
     @if (lastTrainingLoading) {
-      <div class="history-loading">
-        <span class="text-white">Caricamento...</span>
-      </div>
+    <div class="history-loading">
+      <span class="text-white">Caricamento...</span>
+    </div>
     } @else if (lastTrainingError || !lastTrainingData) {
-      <div class="history-no-data">
-        <span class="text-white">Nessun dato disponibile</span>
-      </div>
+    <div class="history-no-data">
+      <span class="text-white">Nessun dato disponibile</span>
+    </div>
     } @else {
-      <div class="history-date">
-        <span class="date-label">Data:</span>
-        <span class="date-value">{{ lastTrainingData.dataEsecuzione | date:'dd MMM yyyy' }}</span>
+    <div class="history-date">
+      <span class="date-label">Data:</span>
+      <span class="date-value"
+        >{{ lastTrainingData.dataEsecuzione | date:'dd MMM yyyy' }}</span
+      >
+    </div>
+    <div class="history-series-list">
+      @for (serie of lastTrainingData.listaSerie; track serie.id; let idx =
+      $index) {
+      <div class="history-serie-item">
+        <span class="serie-number">Serie {{ idx + 1 }}</span>
+        <div class="serie-data">
+          <span class="serie-reps">{{ serie.ripetizioni }} reps</span>
+          <span class="serie-separator">x</span>
+          <span class="serie-weight">{{ serie.carico }} kg</span>
+        </div>
       </div>
-      <div class="history-series-list">
-        @for (serie of lastTrainingData.listaSerie; track serie.id; let idx = $index) {
-          <div class="history-serie-item">
-            <span class="serie-number">Serie {{ idx + 1 }}</span>
-            <div class="serie-data">
-              <span class="serie-reps">{{ serie.ripetizioni }} reps</span>
-              <span class="serie-separator">x</span>
-              <span class="serie-weight">{{ serie.carico }} kg</span>
-            </div>
-          </div>
-        }
-      </div>
+      }
+    </div>
     }
   </div>
 </ng-template>

@@ -26,6 +26,9 @@ import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { DeleteDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
 import { GetDatiAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
+import { MatIcon, MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
+import { MenuConfigService } from "src/app/core/services/menu-config.service";
 
 // Registra il plugin Draggable
 gsap.registerPlugin(Draggable);
@@ -37,7 +40,7 @@ export interface allenamentoSvoltoListaView {
 
 @Component({
   selector: "app-list-executed-workouts",
-  imports: [CommonModule],
+  imports: [CommonModule, MatIcon],
   templateUrl: "./list-executed-workouts.html",
   styleUrl: "./list-executed-workouts.scss",
 })
@@ -61,8 +64,24 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
     private workoutService: WorkoutService,
     private authService: AuthService,
     private router: Router,
-    private modalService: ModalService
-  ) {}
+    private modalService: ModalService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+    private menuConfigService: MenuConfigService,
+  ) {
+    this.menuConfigService.setBackToRoute(
+      "/",
+      "back",
+      "Ultimi allenamenti svolti",
+    );
+
+    iconRegistry.addSvgIcon(
+      "google-arrow",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-arrow.svg",
+      ),
+    );
+  }
 
   ngOnInit(): void {
     try {
@@ -80,7 +99,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListExecutedWorkouts.Initialize"
+        "ListExecutedWorkouts.Initialize",
       );
     }
   }
@@ -106,7 +125,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
           const card = cardRef.nativeElement;
           const wrapper = card.closest(".allenamento-wrapper");
           const deleteButton = wrapper?.querySelector(
-            ".delete-action"
+            ".delete-action",
           ) as HTMLElement;
 
           if (!deleteButton) return;
@@ -192,7 +211,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListExecutedWorkouts.initializeSwipe"
+        "ListExecutedWorkouts.initializeSwipe",
       );
     }
   }
@@ -200,7 +219,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
   private closeSwipe(
     card: HTMLElement,
     deleteButton: Element,
-    draggable: any
+    draggable: any,
   ): void {
     gsap.to(card, {
       x: 0,
@@ -241,7 +260,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
           errorMessage: "Errore nel recupero dei dati",
           resultDuration: 250,
           minSpinnerDuration: 250,
-        }
+        },
       );
 
       const user = this.authService.getCurrentUser();
@@ -282,7 +301,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
                 }
                 this.errorHandlerService.logError(
                   response.errore.error,
-                  "ListExecutedWorkouts.getListaAllenamentiSvolti"
+                  "ListExecutedWorkouts.getListaAllenamentiSvolti",
                 );
               }
             } else {
@@ -291,7 +310,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
               }
               this.errorHandlerService.logError(
                 response.errore.error,
-                "ListExecutedWorkouts.getListaAllenamentiSvolti"
+                "ListExecutedWorkouts.getListaAllenamentiSvolti",
               );
             }
           },
@@ -301,13 +320,13 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
             }
             this.errorHandlerService.logError(
               error,
-              "ListExecutedWorkouts.getListaAllenamentiSvolti"
+              "ListExecutedWorkouts.getListaAllenamentiSvolti",
             );
           },
         });
       } else {
         throw new Error(
-          "ListExecutedWorkouts.getListaAllenamentiSvolti: nessun user trovato"
+          "ListExecutedWorkouts.getListaAllenamentiSvolti: nessun user trovato",
         );
       }
     } catch (error) {
@@ -316,7 +335,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
       }
       this.errorHandlerService.logError(
         error,
-        "ListExecutedWorkouts.getListaAllenamentiSvolti"
+        "ListExecutedWorkouts.getListaAllenamentiSvolti",
       );
     }
   }
@@ -331,7 +350,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListExecutedWorkouts.visualizzaDatiAllenamento"
+        "ListExecutedWorkouts.visualizzaDatiAllenamento",
       );
     }
   }
@@ -349,7 +368,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ListExecutedWorkouts.openDeleteScheda"
+        "ListExecutedWorkouts.openDeleteScheda",
       );
     }
   }
@@ -365,7 +384,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
           errorMessage: "Errore nell'eliminare la scheda",
           resultDuration: 250,
           minSpinnerDuration: 250,
-        }
+        },
       );
 
       const request: DeleteDatiAllenamentoRequestModel = {
@@ -385,7 +404,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
             }
             this.errorHandlerService.logError(
               response.errore.error,
-              "ListExecutedWorkouts.modificaScheda"
+              "ListExecutedWorkouts.modificaScheda",
             );
           }
         },
@@ -395,7 +414,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
           }
           this.errorHandlerService.logError(
             error,
-            "ListExecutedWorkouts.modificaScheda"
+            "ListExecutedWorkouts.modificaScheda",
           );
         },
       });
@@ -405,7 +424,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
       }
       this.errorHandlerService.logError(
         error,
-        "CreateOrEditWorkoutExecution.ListExecutedWorkouts"
+        "CreateOrEditWorkoutExecution.ListExecutedWorkouts",
       );
     }
   }

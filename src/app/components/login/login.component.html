@@ -12,39 +12,63 @@
       <div class="form-input-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Username</mat-label>
-          <input matInput type="text" formControlName="username" placeholder="username" autocomplete="username"
+          <input
+            matInput
+            type="text"
+            formControlName="username"
+            placeholder="username"
+            autocomplete="username"
             [class.mat-form-field-invalid]="
               loginForm.form.controls['username'].invalid &&
               loginForm.form.controls['username'].touched
-            " />
-          @if (loginForm.form.controls["username"].hasError('required') &&
-          loginForm.form.controls["username"].touched) {
-          <mat-error>Campo obbligatorio</mat-error>
+            "
+          />
+          @if (
+            loginForm.form.controls["username"].hasError("required") &&
+            loginForm.form.controls["username"].touched
+          ) {
+            <mat-error>Campo obbligatorio</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ "auth.password" | translate }}</mat-label>
-          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password"
-            placeholder="La tua password" autocomplete="current-password" [class.mat-form-field-invalid]="
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            placeholder="La tua password"
+            autocomplete="current-password"
+            [class.mat-form-field-invalid]="
               loginForm.form.controls['password'].invalid &&
               loginForm.form.controls['password'].touched
-            " />
+            "
+          />
 
-          <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button" [attr.aria-label]="
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="togglePasswordVisibility()"
+            type="button"
+            [attr.aria-label]="
               hidePassword ? 'Mostra password' : 'Nascondi password'
-            ">
+            "
+          >
             <mat-icon>{{
               hidePassword ? "visibility" : "visibility_off"
-              }}</mat-icon>
+            }}</mat-icon>
           </button>
 
-          @if (loginForm.form.controls["password"].hasError('required') &&
-          loginForm.form.controls["password"].touched) {
-          <mat-error>Password è richiesta</mat-error>
-          } @else if (loginForm.form.controls["password"].hasError('minlength')
-          && loginForm.form.controls["password"].touched) {
-          <mat-error>Password deve essere di almeno 6 caratteri</mat-error>
+          @if (
+            loginForm.form.controls["password"].hasError("required") &&
+            loginForm.form.controls["password"].touched
+          ) {
+            <mat-error>Password è richiesta</mat-error>
+          } @else if (
+            loginForm.form.controls["password"].hasError("minlength") &&
+            loginForm.form.controls["password"].touched
+          ) {
+            <mat-error>Password deve essere di almeno 6 caratteri</mat-error>
           }
         </mat-form-field>
         <!-- 
@@ -57,7 +81,12 @@
       </div>
 
       <div class="recupera-password-button-row">
-        <button type="button" class="text-shape-button" (click)="onForgotPassword()" [disabled]="isLoading">
+        <button
+          type="button"
+          class="text-shape-button"
+          (click)="onForgotPassword()"
+          [disabled]="isLoading"
+        >
           <span>Password dimenticata</span>
           <div class="text-shape-button-icon-container">
             <img src="assets/recollect/svg/google-arrow.svg" alt="arrow" />
@@ -66,13 +95,15 @@
       </div>
 
       <div class="floating-static-button-container">
-        <div class="floating-static-button-glass">
-          <button type="submit" class="floating-static-button"
-            [class.button-disabled]="!loginForm.form.valid || isLoading" [disabled]="!loginForm.form.valid || isLoading"
-            (click)="onLogin()">
-            <span>{{ isLoading ? "Accesso in corso..." : "Accedi" }}</span>
-          </button>
-        </div>
+        <button
+          type="submit"
+          class="floating-static-button"
+          [class.button-disabled]="!loginForm.form.valid || isLoading"
+          [disabled]="!loginForm.form.valid || isLoading"
+          (click)="onLogin()"
+        >
+          <span>{{ isLoading ? "Accesso in corso..." : "Accedi" }}</span>
+        </button>
       </div>
 
       <!-- Pulsante registrazione opzionale
@@ -90,4 +121,4 @@
   </div>
 </div>
 
-<div style="color: yellow;">{{app_info.version}}</div>
+<div style="color: yellow">{{ app_info.version }}</div>

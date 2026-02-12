@@ -48,6 +48,7 @@
   overflow: hidden;
   flex-shrink: 0;
   cursor: grab;
+  height: 80px;
 
   &:active {
     cursor: grabbing;
@@ -65,10 +66,9 @@
   position: relative;
   display: flex;
   padding: 16px;
-  border: 1px solid #212121;
   border-radius: 16px;
   gap: 16px;
-  background-color: #000;
+  background-color: #191919;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;

@@ -7,25 +7,22 @@
 .scheda-wrapper {
   position: relative;
   overflow: hidden;
-  touch-action: pan-y; 
+  touch-action: pan-y;
 }
 
 .template-scheda {
   position: relative;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 16px;
-  border: 1px solid #212121;
   border-radius: 16px;
   gap: 16px;
-  background-color: #000;
+  background-color: #191919;
   cursor: pointer;
-  user-select: none; 
+  user-select: none;
   -webkit-user-select: none;
   z-index: 1;
-}
-
-.template-scheda:first-of-type {
-  border-top: 1px solid #212121;
 }
 
 .naviga-scheda-container {
@@ -61,8 +58,8 @@
   border: 1px solid #970000;
 
   opacity: 0;
-  visibility: hidden; 
-  pointer-events: none; 
+  visibility: hidden;
+  pointer-events: none;
   cursor: pointer;
 
   svg {

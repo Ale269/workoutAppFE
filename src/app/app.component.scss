@@ -1,13 +1,3 @@
-.app-container {
-  /* Questo è il mat-sidenav-content */
-  display: flex;
-  flex-direction: column;
-  min-height: 100%; /* Deve espandersi al 100% dell'altezza del suo genitore (mat-sidenav-container) */
-  background: transparent; /* TRASPARENTE! Il gradiente è ora sul body */
-  background-color: #000;
-  padding-top: 48px;
-}
-
 .main-content-wrapper {
   flex-grow: 1; /* Permette al contenuto principale di espandersi e riempire lo spazio rimanente */
 }

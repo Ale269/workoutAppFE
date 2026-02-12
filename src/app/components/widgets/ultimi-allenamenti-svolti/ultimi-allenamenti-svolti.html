@@ -1,10 +1,11 @@
-<div class="content">
-  <div class="widget-title">
-    <div class="section-widget-title-container">
+<div>
+  <div class="mostra-tutti-widget">
+    <div>
       <h1 class="text-title">Ultimi <br />allenamenti svolti</h1>
     </div>
-    <div class="icon-container">
-      <img src="assets/recollect/images/storico-allenamenti-icon.png" />
+    <div class="small-inline-button" (click)="NavigaAElencoAllenamentiSchede()">
+      <button>Tutti</button>
+      <mat-icon svgIcon="google-arrow"></mat-icon>
     </div>
   </div>
   @if(datiRecuperati){
@@ -21,15 +22,28 @@
             <h3 class="text-white">
               {{ultimoAllenamentoSvolto.descrizioneAllenamento}}
             </h3>
-          </div>
-          <div class="giorno-data-allenamento-container">
-            <h3 class="text-grey">
-              Giorno {{ultimoAllenamentoSvolto.giornoAllenamento}} di
-              {{ultimoAllenamentoSvolto.giorniTotaliAllenamentiScheda}}
-            </h3>
             <h3 class="text-grey">
               {{ ultimoAllenamentoSvolto.dataSvolgimento| date: "dd/MM/yyyy" }}
             </h3>
+          </div>
+          <div class="icona-numero-esercizio-container">
+            @for (ex of [0,1,2,3,4]; track ex) {
+            <div class="icon-container-accumulator">
+              <div
+                class="circle-icon"
+                [title]="'Esercizio'"
+                [style.border-color]=""
+              >
+                <img
+                  [src]="'assets/recollect/images/bicipite-icon.png'"
+                  [alt]="'Icona esercizio'"
+                />
+              </div>
+            </div>
+            }
+          </div>
+          <div class="arrow-widget-container">
+            <mat-icon svgIcon="google-arrow"></mat-icon>
           </div>
         </div>
       </div>
@@ -41,7 +55,7 @@
     }
   </div>
   @if(this.ultimiAllenamentiSvoltiDTO.length > 0){
-  <div class="widget-button">
+  <!-- <div class="widget-button">
     <button
       class="text-shape-button"
       (click)="NavigaAElencoAllenamentiSchede()"
@@ -51,18 +65,18 @@
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
     </button>
-  </div>
+  </div> -->
   } } @else{
   <div class="widget-data-no-data">
     <h3 class="text-white">Nessun dato trovato</h3>
   </div>
-  <div class="widget-button">
+  <!-- <div class="widget-button">
     <button class="text-shape-button" (click)="NavigaAElencoTemplateSchede()">
       <span>Attiva una scheda</span>
       <div class="text-shape-button-icon-container">
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
     </button>
-  </div>
+  </div> -->
   }
 </div>

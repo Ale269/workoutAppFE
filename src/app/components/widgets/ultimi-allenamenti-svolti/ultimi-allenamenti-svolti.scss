@@ -3,31 +3,32 @@
   flex-direction: column;
 }
 
-.widget-title {
-  margin-bottom: 16px;
-}
-
 .widget-data-container {
-  padding-bottom: 16px;
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid #212121;
   gap: 8px;
 }
 
 .widget-data-no-data {
-  border-bottom: 1px solid #212121;
-  padding-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
 }
 
 .widget-data {
   display: flex;
-  flex-flow: column;
-  padding: 16px;
-  border: 1px solid #212121;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 16px;
+  padding: 16px;
   justify-content: space-between;
   gap: 8px;
+
+  &:active {
+    transform: scale(0.95);
+  }
 
   .workout-info-container {
     display: flex;
@@ -38,7 +39,8 @@
   .workout-details {
     flex: 1;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
     gap: 8px;
   }
 
@@ -99,9 +101,30 @@
     }
   }
 
-  .giorno-data-allenamento-container {
+  .circle-icon {
+    border: 1px solid #fff;
+    width: 24px;
+    background-color: #000;
+    height: 24px;
+    border-radius: 50%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    transition: all 0.3s ease;
+  }
+
+  .icon-container-accumulator {
+    width: 18px;
+    overflow-x: visible;
+  }
+
+  .icona-numero-esercizio-container {
+    display: flex;
+    align-items: center;
+    padding-top: 4px;
+  }
+
+  .icona-numero-esercizio-container img {
+    width: 16px;
   }
 }

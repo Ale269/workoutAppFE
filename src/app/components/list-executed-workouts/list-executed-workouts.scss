@@ -13,26 +13,25 @@
 .allenamento-container {
   position: relative;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 16px;
-  border: 1px solid #212121;
   border-radius: 16px;
-  gap: 16px;
-  background-color: #000;
+  background-color: #191919;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
   z-index: 1;
 }
 
-.allenamento-container:first-of-type {
-  border-top: 1px solid #212121;
+.data-allenamento-svolto-container {
+  display: flex;
+  gap: 8px;
 }
 
 .nome-data-allenamento {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+  flex-direction: column;}
 
 .graphic-data {
   display: flex;

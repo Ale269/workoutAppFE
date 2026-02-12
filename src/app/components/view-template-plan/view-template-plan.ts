@@ -37,6 +37,7 @@ import {
   multiOptionGroup,
   OptionSelectedEvent,
 } from "../shared/multi-option-button/multi-option-button";
+import { MenuConfigService } from "src/app/core/services/menu-config.service";
 
 @Component({
   selector: "app-view-template-plan",
@@ -104,6 +105,7 @@ export class ViewTemplatePlan {
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
+    private menuConfigService: MenuConfigService,
   ) {
     try {
       this.idScheda = Number(this.activatedRouter.snapshot.paramMap.get("id"));
@@ -114,6 +116,11 @@ export class ViewTemplatePlan {
 
   ngOnInit(): void {
     try {
+      this.menuConfigService.setBackWithCallback(
+        () => this.goBack(),
+        "back",
+        "",
+      );
       this.getDatiScheda();
     } catch (error) {
       this.errorHandlerService.logError(error, "ViewTemplatePlan.ngOnInit");
@@ -145,6 +152,12 @@ export class ViewTemplatePlan {
             if (!response.errore?.error) {
               if (response.datiScheda) {
                 this.scheda = this.ordinaScheda(response.datiScheda);
+                
+                this.menuConfigService.setBackWithCallback(
+                  () => this.goBack(),
+                  "back",
+                  this.scheda?.nomeScheda,
+                );
 
                 if (this.currentSpinnerId) {
                   this.spinnerService.setSuccess(this.currentSpinnerId);
@@ -380,11 +393,11 @@ export class ViewTemplatePlan {
         },
       );
       const user = this.authService.getCurrentUser();
-      
+
       if (this.idScheda !== null && this.idScheda > 0 && user) {
         const request: AttivaSchedaRequestModel = {
           userId: user.userId,
-          schedaDTO: this.scheda
+          schedaDTO: this.scheda,
         };
         //TODO vedere se volerlo scrivere piu bellino o no -> senza questa riga sotto nel body della scheda, il flag viene passato quello vecchio
         request.schedaDTO.schedaAttiva = newState;

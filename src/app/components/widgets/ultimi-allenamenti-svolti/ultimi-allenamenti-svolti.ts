@@ -1,5 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject } from "@angular/core";
+import { MatIconRegistry, MatIcon } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 import { Router } from "@angular/router";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { WidgetsService } from "src/app/core/services/widgets.service";
@@ -11,7 +13,7 @@ import {
 
 @Component({
   selector: "app-ultimi-allenamenti-svolti",
-  imports: [CommonModule],
+  imports: [CommonModule, MatIcon],
   templateUrl: "./ultimi-allenamenti-svolti.html",
   styleUrl: "./ultimi-allenamenti-svolti.scss",
 })
@@ -22,7 +24,18 @@ export class UltimiAllenamentiSvolti {
   private router = inject(Router);
   private errorHandlerService = inject(ErrorHandlerService);
 
-  constructor(private widgetsService: WidgetsService) {}
+  constructor(
+    private widgetsService: WidgetsService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+  ) {
+    iconRegistry.addSvgIcon(
+      "google-arrow",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-arrow.svg",
+      ),
+    );
+  }
 
   ngOnInit() {}
 
@@ -60,7 +73,7 @@ export class UltimiAllenamentiSvolti {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "UltimiAllenamentiSvolti.NavigaAElencoAllenamentiSchede"
+        "UltimiAllenamentiSvolti.NavigaAElencoAllenamentiSchede",
       );
     }
   }
@@ -71,18 +84,21 @@ export class UltimiAllenamentiSvolti {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "UltimiAllenamentiSvolti.NavigaAElencoTemplateSchede"
+        "UltimiAllenamentiSvolti.NavigaAElencoTemplateSchede",
       );
     }
   }
 
   NavigaAVisualizzaAllenamento(idAllenamento: number) {
     try {
-      this.router.navigate(["/allenamenti-svolti/visualizza-allenamento", idAllenamento]);
+      this.router.navigate([
+        "/allenamenti-svolti/visualizza-allenamento",
+        idAllenamento,
+      ]);
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "UltimiAllenamentiSvolti.NavigaAVisualizzaAllenamento"
+        "UltimiAllenamentiSvolti.NavigaAVisualizzaAllenamento",
       );
     }
   }

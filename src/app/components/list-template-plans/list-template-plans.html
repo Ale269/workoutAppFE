@@ -1,44 +1,52 @@
-<div class="content">
-  <div class="section-title-container">
-    <h1 class="text-title">I tuoi template schede</h1>
-  </div>
-  <div class="lista-template-schede-container">
-    @for (scheda of listaSchede; track scheda.id; let i = $index) {
-    <div class="scheda-wrapper">
-      <div
-        #schedaCard
-        class="template-scheda"
-        (click)="visualizzaDatiScheda(scheda.id)"
-      >
-        <div class="nome-data-scheda">
-          <h3 class="text-white">{{ scheda.nomeScheda }}</h3>
-          <h3 class="text-grey">
-            Creata il {{ scheda.dataCreazione | date: "dd/MM/yyyy" }}
-          </h3>
+<div class="page-scroller">
+  <div class="content">
+    <div class="lista-template-schede-container">
+      @for (scheda of listaSchede; track scheda.id; let i = $index) {
+      <div class="scheda-wrapper">
+        <div
+          #schedaCard
+          class="template-scheda"
+          (click)="visualizzaDatiScheda(scheda.id)"
+        >
+          <div class="nome-data-scheda">
+            <h3 class="text-white">{{ scheda.nomeScheda }}</h3>
+            <h3 class="text-grey">
+              Creata il {{ scheda.dataCreazione | date: "dd/MM/yyyy" }}
+            </h3>
+          </div>
+          <div>
+            <div class="arrow-widget-container">
+              <mat-icon svgIcon="google-arrow"></mat-icon>
+            </div>
+          </div>
+        </div>
+        <div
+          class="delete-action"
+          tabbable
+          (click)="openDeleteScheda(scheda.id)"
+        >
+          <div class="text-shape-button-icon-container-danger">
+            <img src="assets/recollect/svg/google-delete.svg" />
+          </div>
         </div>
       </div>
-      <div class="delete-action" tabbable (click)="openDeleteScheda(scheda.id)">
-        <div class="text-shape-button-icon-container-danger">
-          <img src="assets/recollect/svg/google-delete.svg" />
-        </div>
-      </div>
+      } @empty {
+      <h3 class="text-white">Nessuna scheda aggiunta</h3>
+      }
     </div>
-    } @empty {
-    <h3 class="text-white">Nessuna scheda aggiunta</h3>
-    }
-  </div>
 
-  <div class="floating-double-buttons-container">
-    <app-multi-option-button
-      [leftButtonLabel]="''"
-      [leftGroups]="leftButtonOptionsGroup"
-      (optionSelected)="onOptionSelected($event)"
-    >
-      <!-- Il pulsante statico viene proiettato qui -->
-      <button class="floating-static-button" (touchstart)="createNewScheda()">
-        <span>Nuova scheda</span>
-      </button>
-    </app-multi-option-button>
+    <div class="floating-double-buttons-container">
+      <app-multi-option-button
+        [leftButtonLabel]="''"
+        [leftGroups]="leftButtonOptionsGroup"
+        (optionSelected)="onOptionSelected($event)"
+      >
+        <!-- Il pulsante statico viene proiettato qui -->
+        <button class="floating-static-button" (touchstart)="createNewScheda()">
+          <span>Nuova scheda</span>
+        </button>
+      </app-multi-option-button>
+    </div>
   </div>
 </div>
 
@@ -77,4 +85,3 @@
     </div>
   </button>
 </ng-template>
-

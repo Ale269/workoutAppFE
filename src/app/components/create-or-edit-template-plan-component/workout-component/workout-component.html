@@ -1,18 +1,11 @@
 <div class="workout-detail-container">
-  <!-- Header con back button e titolo -->
-  <div class="section-workout-container back-icon-title-container">
-    <div class="back-icon-section-container">
-      <div class="back-icon-trigger" (touchstart)="backToList()"></div>
-      <img src="assets/recollect/svg/google-arrow.svg" />
-    </div>
-
-    <h1 class="text-title">
-      {{formAllenamento.form.controls['nomeAllenamento'].value}}
-    </h1>
-  </div>
-
   <!-- Contenuto workout -->
   <div class="workout-content">
+    <div class="section-title">
+      <div class="text-section-container">
+        <h2 class="text-title">Dati allenamento</h2>
+      </div>
+    </div>
     <div class="workout-data">
       <div class="nome-allenamento-container">
         <form [formGroup]="formAllenamento.form">
@@ -59,16 +52,23 @@
       </div>
     </div>
 
-    <div #exerciseDataContainer class="exercise-data">
+    <div class="section-title">
+      <div class="text-section-container">
+        <h2 class="text-title">Lista esercizi</h2>
+        <div class="small-inline-button" (click)="toggleCompactMode()">
+          <button>Riordina</button>
+          <mat-icon svgIcon="google-reorder"></mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <div
+      #exerciseDataContainer
+      [class.exercise-data]="this.formAllenamento?.listaEserciziForm && this.formAllenamento.listaEserciziForm.length > 0"
+    >
       @for (esercizioForm of this.formAllenamento.listaEserciziForm; track
       esercizioForm.form.controls['identifier'].value) {
-      <div
-        #exerciseCard
-        appLongPress
-        [duration]="500"
-        (mouseLongPress)="toggleCompactMode()"
-        class="exercise-wrapper"
-      >
+      <div #exerciseCard class="exercise-wrapper">
         <app-exercise-component
           [formAllenamento]="formAllenamento"
           (onDeleteExercise)="deleteEexercise($event)"
@@ -79,12 +79,10 @@
       } @empty { }
     </div>
     <div class="add-exercise-button-row">
-      <button class="text-shape-button" (click)="addNuovoEsercizio()">
-        <span>Aggiungi esercizio</span>
-        <div class="text-shape-button-icon-container">
-          <img src="assets/recollect/svg/google-add.svg" />
-        </div>
-      </button>
+      <div class="small-inline-button" (click)="addNuovoEsercizio()">
+        <button>Aggiungi esercizio</button>
+        <mat-icon svgIcon="google-add"></mat-icon>
+      </div>
     </div>
   </div>
   <div class="floating-double-buttons-container">

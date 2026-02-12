@@ -1,50 +1,78 @@
-<div class="content">
-  <div class="widget-title">
+<div>
+  <!-- <div class="widget-title">
     <div class="section-widget-title-container">
-      <h1 class="text-title">Prossimo <br />allenamento</h1>
+      <h1 class="text-title">Prossimo allenamento</h1>
     </div>
-    <div class="icon-container">
-      <img src="assets/recollect/images/prossimo-allenamento-icon.png" />
-    </div>
-  </div>
+  </div> -->
   @if(datiRecuperati){
-  <div class="widget-data">
-    <div class="giorni-counter-container">
-      <h3 class="text-white">
-        <span>{{this.numeroGiornoAllenamentoCorrente}}</span> di
-        <span>{{this.numeroGiornoAllenamentiTotali}}</span>
-      </h3>
-    </div>
-     <div class="nome-graphic-visualizer-container">
-      <div class="nome-allenamento-container">
-        <h3 class="text-white">{{this.descrizioneAllenamentoCorrente}}</h3>
+  <div class="widget-data" (click)="NavigaARegistraAllenamento()">
+    <div class="first-row">
+      <div class="nome-graphic-visualizer-container">
+        <div class="nome-allenamento-container">
+          <h3 class="text-title">{{this.descrizioneAllenamentoCorrente}}</h3>
+        </div>
+        <div class="visualizer-allenamento-container">
+          @for (giorno of giorniArray; track giorno) {
+          <div
+            [class.current-day-visualizer]="giorno === this.numeroGiornoAllenamentoCorrente"
+          ></div>
+          }
+        </div>
       </div>
-      <div class="visualizer-allenamento-container">
-        @for (giorno of giorniArray; track giorno) {
-          <div [class.current-day-visualizer]="giorno === this.numeroGiornoAllenamentoCorrente"></div>
+      <div class="arrow-widget-container">
+        <mat-icon svgIcon="google-arrow"></mat-icon>
+      </div>
+    </div>
+    <div class="second-row">
+      <div class="giorni-counter-container">
+        <h3 class="text-white">
+          <span>Giorno {{this.numeroGiornoAllenamentoCorrente}}</span> di
+          <span>{{this.numeroGiornoAllenamentiTotali}}</span>
+        </h3>
+      </div>
+      <div class="icona-numero-esercizio-container">
+        @for (ex of [0,1,2,3,4]; track ex) {
+        <div class="icon-container-accumulator">
+          <div
+            class="circle-icon"
+            [title]="'Esercizio'"
+            [style.border-color]=""
+          >
+            <img
+              [src]="'assets/recollect/images/bicipite-icon.png'"
+              [alt]="'Icona esercizio'"
+            />
+          </div>
+        </div>
         }
       </div>
     </div>
   </div>
-  <div class="widget-button">
+  <!-- <div class="widget-button">
     <button class="text-shape-button" (click)="NavigaARegistraAllenamento()">
       <span>Apri allenamento</span>
       <div class="text-shape-button-icon-container">
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
     </button>
-  </div>
+  </div> -->
   } @else{
-  <div class="widget-data">
-    <h3 class="text-white">Nessun dato trovato</h3>
+  <div class="widget-data no-element" (click)="NavigaAElencoTemplateSchede()">
+    <div class="no-data-text">
+      <h3 class="text-grey">Nessun dato trovato</h3>
+      <h3 class="text-white">Attiva una scheda</h3>
+    </div>
+    <div class="arrow-widget-container">
+      <mat-icon svgIcon="google-arrow"></mat-icon>
+    </div>
   </div>
-  <div class="widget-button">
+  <!-- <div class="widget-button">
     <button class="text-shape-button" (click)="NavigaAElencoTemplateSchede()">
       <span>Attiva una scheda</span>
       <div class="text-shape-button-icon-container">
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
     </button>
-  </div>
+  </div> -->
   }
 </div>

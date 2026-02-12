@@ -28,7 +28,12 @@ import { MatInputModule } from "@angular/material/input";
 import { DatePipe } from "@angular/common";
 import { WorkoutService } from "src/app/core/services/workout.service";
 import { AuthService } from "src/app/core/services/auth.service";
-import { LastTrainingExerciseData, LastTrainingSerieData } from "src/app/models/history/last-training-exercise";
+import {
+  LastTrainingExerciseData,
+  LastTrainingSerieData,
+} from "src/app/models/history/last-training-exercise";
+import { DomSanitizer } from "@angular/platform-browser";
+import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 
 @Component({
   selector: "app-exercise-component",
@@ -42,7 +47,8 @@ import { LastTrainingExerciseData, LastTrainingSerieData } from "src/app/models/
     ExerciseIconColorPipe,
     MatFormFieldModule,
     MatInputModule,
-    DatePipe
+    DatePipe,
+    MatIcon
   ],
   templateUrl: "./exercise-component.html",
   styleUrl: "./exercise-component.scss",
@@ -87,8 +93,37 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     private exerciseService: ExerciseService,
     private elementRef: ElementRef,
     private workoutService: WorkoutService,
-    private authService: AuthService
-  ) {}
+    private authService: AuthService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+  ) {
+    iconRegistry.addSvgIcon(
+      "google-arrow",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-arrow.svg",
+      ),
+    );iconRegistry.addSvgIcon(
+      "google-add",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-add.svg",
+      ),
+    );iconRegistry.addSvgIcon(
+      "google-copy",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-copy.svg",
+      ),
+    );iconRegistry.addSvgIcon(
+      "google-close-icon",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-close-icon.svg",
+      ),
+    );iconRegistry.addSvgIcon(
+      "google-history",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-history.svg",
+      ),
+    );
+  }
 
   ngOnInit(): void {
     try {
@@ -131,13 +166,14 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   private updateExerciseIcon(): void {
     try {
-      this.exerciseIconPath = this.exerciseService.getExerciseIconPathByExerciseId(
-        this.idTipoEsercizioControl.value
-      );
+      this.exerciseIconPath =
+        this.exerciseService.getExerciseIconPathByExerciseId(
+          this.idTipoEsercizioControl.value,
+        );
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ExerciseComponent.updateExerciseIcon"
+        "ExerciseComponent.updateExerciseIcon",
       );
     }
   }
@@ -156,7 +192,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ExerciseComponent.openDeleteModal"
+        "ExerciseComponent.openDeleteModal",
       );
     }
   }
@@ -173,7 +209,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
       const success = this.formAllenamento.moveEsercizio(
         currentExerciseId,
-        newPosition
+        newPosition,
       );
 
       if (!success) {
@@ -184,7 +220,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ExerciseComponent.changePosition"
+        "ExerciseComponent.changePosition",
       );
     }
   }
@@ -197,31 +233,31 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     try {
       // Salva l'altezza corrente della pagina
       const heightBefore = document.documentElement.scrollHeight;
-      
+
       // Esegui l'operazione (aggiunta serie)
       callback();
-      
+
       // Forza il rilevamento dei cambiamenti
       this.cdr.detectChanges();
-      
+
       // Aspetta che il DOM sia aggiornato
-      await new Promise(resolve => setTimeout(resolve, 0));
-      
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
       // Calcola la differenza di altezza
       const heightAfter = document.documentElement.scrollHeight;
       const heightDifference = heightAfter - heightBefore;
-      
+
       // Scrolla della differenza se c'è stato un aumento di altezza
       if (heightDifference > 0) {
         window.scrollBy({
           top: heightDifference,
-          behavior: 'smooth'
+          behavior: "smooth",
         });
       }
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ExerciseComponent.maintainButtonPosition"
+        "ExerciseComponent.maintainButtonPosition",
       );
     }
   }
@@ -260,7 +296,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ExerciseComponent.duplicateLastSerie"
+        "ExerciseComponent.duplicateLastSerie",
       );
     }
   }
@@ -270,22 +306,19 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       this.formEsercizio.deleteSerie(identifier);
       this.cdr.detectChanges();
     } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "ExerciseComponent.deleteSerie"
-      );
+      this.errorHandlerService.logError(error, "ExerciseComponent.deleteSerie");
     }
   }
 
   deleteExercise() {
     try {
       this.onDeleteExercise.emit(
-        this.formEsercizio.form.controls["identifier"].value
+        this.formEsercizio.form.controls["identifier"].value,
       );
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ExerciseComponent.deleteExercise"
+        "ExerciseComponent.deleteExercise",
       );
     }
   }
@@ -314,7 +347,11 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
       // Passo l'ID dell'history training corrente (se disponibile) per escluderlo dai risultati
       this.workoutService
-        .getLastTrainingExercise(user.userId, exerciseId, this.historyTrainingId)
+        .getLastTrainingExercise(
+          user.userId,
+          exerciseId,
+          this.historyTrainingId,
+        )
         .subscribe({
           next: (response) => {
             this.lastTrainingLoading = false;
@@ -331,14 +368,14 @@ export class ExerciseComponent implements OnInit, OnDestroy {
             this.cdr.detectChanges();
             this.errorHandlerService.logError(
               error,
-              "ExerciseComponent.openLastTrainingHistory"
+              "ExerciseComponent.openLastTrainingHistory",
             );
           },
         });
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "ExerciseComponent.openLastTrainingHistory"
+        "ExerciseComponent.openLastTrainingHistory",
       );
     }
   }

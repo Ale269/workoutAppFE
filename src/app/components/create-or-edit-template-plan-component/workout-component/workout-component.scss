@@ -1,10 +1,5 @@
-.workout-content {
-  padding-top: 32px;
-}
-
 .workout-data {
   padding-bottom: 32px;
-  border-bottom: 1px solid #212121;
 }
 
 .nome-allenamento-container {
@@ -18,7 +13,17 @@
   mat-form-field {
     width: 100%;
   }
-  padding-bottom: 16px;
+}
+
+.section-title {
+  padding: 16px;
+  padding-top: 0;
+}
+
+.text-section-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .add-allenamento-button-row {
@@ -31,7 +36,7 @@
 .add-exercise-button-row {
   display: flex;
   justify-content: flex-end;
-  padding: 32px 0;
+  padding: 16px 0;
 }
 
 .delete-allenamento-button-row {
@@ -43,7 +48,7 @@
   display: flex;
   justify-content: center;
   padding: 24px 0;
-  
+
   button {
     min-width: 160px;
   }
@@ -53,7 +58,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding-top: 32px;
 }
 
 .warning-icon {

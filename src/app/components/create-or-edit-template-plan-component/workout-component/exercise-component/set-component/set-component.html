@@ -13,6 +13,7 @@
           type="number"
           formControlName="ripetizioni"
           placeholder="reps"
+          inputmode="numeric"
           min="1"
           max="999"
         />
@@ -24,6 +25,7 @@
           type="number"
           formControlName="carico"
           placeholder="Kg"
+          inputmode="numeric"
           min="1"
           max="999"
         />
@@ -31,7 +33,9 @@
     </div>
     <div class="delete-icon-element-container">
       <div class="close-icon-trigger" (click)="deleteSerie()"></div>
-      <img src="assets/recollect/svg/google-close-icon.svg" />
+      <div class="arrow-widget-container">
+        <mat-icon svgIcon="google-close-icon"></mat-icon>
+      </div>
     </div>
   </div>
 </form>

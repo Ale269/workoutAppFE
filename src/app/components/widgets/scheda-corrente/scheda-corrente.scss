@@ -3,14 +3,37 @@
   flex-direction: column;
 }
 
+.scheda-corrente-container {
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.first-line-scheda-corrente {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+  border-radius: 16px 16px 0 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.no-element {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 16px;
+}
+
 .widget-data {
   display: flex;
-  flex-flow: column;
-  padding-top: 16px;
-  border-bottom: 1px solid #212121;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 16px;
   justify-content: space-between;
-  gap: 8px;
-  padding-bottom: 16px;
 
   .giorni-counter-container span {
     font-weight: 700;
@@ -40,4 +63,23 @@
       height: 8px;
     }
   }
+}
+
+.double-widget-data {
+  display: flex;
+  gap: 16px;
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  > div {
+    width: 50%;
+  }
+}
+
+.last-line-scheda-corrente {
+  border-radius: 0 0 16px 16px;
+  border-bottom: none;
 }

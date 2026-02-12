@@ -29,7 +29,6 @@ import { MatSelectModule } from "@angular/material/select";
 import { Subject, takeUntil } from "rxjs";
 import { SchedaForm } from "../template-plan-form";
 import gsap from "gsap";
-import { LongPressDirective } from "../../shared/directives/long-press.directive";
 import { FocusOverlayService } from "../../shared/focus-overlay/focus-overlay.service";
 import { ReorderExerciseComponent } from "./reorder-exercise-component/reorder-exercise-component";
 import {
@@ -37,6 +36,8 @@ import {
   multiOptionGroup,
   OptionSelectedEvent,
 } from "../../shared/multi-option-button/multi-option-button";
+import { MatIcon, MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: "app-workout-component",
@@ -49,8 +50,8 @@ import {
     ExerciseComponent,
     MatFormFieldModule,
     MatSelectModule,
-    LongPressDirective,
     MultiOptionButton,
+    MatIcon
   ],
   templateUrl: "./workout-component.html",
   styleUrl: "./workout-component.scss",
@@ -98,7 +99,16 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     private modalService: ModalService,
     private cdr: ChangeDetectorRef,
     public focusOverlayService: FocusOverlayService,
-  ) {}
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+  ) {
+    iconRegistry.addSvgIcon(
+      "google-add",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-add.svg",
+      ),
+    );
+  }
 
   ngOnInit(): void {
     try {

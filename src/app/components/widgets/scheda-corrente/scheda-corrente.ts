@@ -1,5 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject } from "@angular/core";
+import { MatIconRegistry, MatIcon } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 import { Router } from "@angular/router";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { WidgetsService } from "src/app/core/services/widgets.service";
@@ -10,7 +12,7 @@ import {
 
 @Component({
   selector: "app-scheda-corrente",
-  imports: [CommonModule],
+  imports: [CommonModule,MatIcon],
   templateUrl: "./scheda-corrente.html",
   styleUrl: "./scheda-corrente.scss",
 })
@@ -27,7 +29,18 @@ export class SchedaCorrente {
   private router = inject(Router);
   private errorHandlerService = inject(ErrorHandlerService);
 
-  constructor(private widgetsService: WidgetsService) {}
+  constructor(
+    private widgetsService: WidgetsService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+  ) {
+    iconRegistry.addSvgIcon(
+      "google-arrow",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-arrow.svg",
+      ),
+    );
+  }
 
   ngOnInit() {}
 
@@ -66,8 +79,7 @@ export class SchedaCorrente {
       response.descrizioneAllenamentoPrecedente;
     this.descrizioneProssimoAllenamento =
       response.descrizioneProssimoAllenamento;
-    this.descrizioneScheda =
-      response.descrizioneScheda;
+    this.descrizioneScheda = response.descrizioneScheda;
     this.dataInizio = response.dataInizio;
     this.numeroAllenamentiEffettuati = response.numeroAllenamentiEffettuati;
     this.datiRecuperati = true;
@@ -88,7 +100,7 @@ export class SchedaCorrente {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "SchedaCorrente.VisualizzaDatiScheda"
+        "SchedaCorrente.VisualizzaDatiScheda",
       );
     }
   }
@@ -99,7 +111,7 @@ export class SchedaCorrente {
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "SchedaCorrente.NavigaAElencoTemplateSchede"
+        "SchedaCorrente.NavigaAElencoTemplateSchede",
       );
     }
   }
