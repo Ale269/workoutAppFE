@@ -8,14 +8,10 @@
       <mat-icon svgIcon="google-arrow"></mat-icon>
     </div>
   </div>
-  @if(datiRecuperati){
   <div class="widget-data-container">
     @for (ultimoAllenamentoSvolto of this.ultimiAllenamentiSvoltiDTO; track
     ultimoAllenamentoSvolto.id; let i = $index) {
-    <div
-      class="widget-data"
-      (click)="NavigaAVisualizzaAllenamento(ultimoAllenamentoSvolto.id)"
-    >
+    <div class="widget-data" (click)="NavigaAVisualizzaAllenamento(ultimoAllenamentoSvolto.id)">
       <div class="workout-info-container">
         <div class="workout-details">
           <div class="descrizione-allenamento-container">
@@ -48,35 +44,19 @@
         </div>
       </div>
     </div>
-    } @empty {
+    }
+    @if(this.ultimiAllenamentiSvoltiDTO.length == 0){
     <div class="widget-data-no-data">
-      <h3 class="text-white">Nessun dato trovato</h3>
+      <h3 class="text-white">Nessun allenamento svolto</h3>
     </div>
     }
   </div>
-  @if(this.ultimiAllenamentiSvoltiDTO.length > 0){
-  <!-- <div class="widget-button">
-    <button
-      class="text-shape-button"
-      (click)="NavigaAElencoAllenamentiSchede()"
-    >
-      <span>Apri allenamenti</span>
+  <div class="widget-button">
+    <button class="text-shape-button" (click)="NavigaAElencoAllenamentiSchede()">
+      <span>Visualizza allenamenti</span>
       <div class="text-shape-button-icon-container">
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
     </button>
-  </div> -->
-  } } @else{
-  <div class="widget-data-no-data">
-    <h3 class="text-white">Nessun dato trovato</h3>
   </div>
-  <!-- <div class="widget-button">
-    <button class="text-shape-button" (click)="NavigaAElencoTemplateSchede()">
-      <span>Attiva una scheda</span>
-      <div class="text-shape-button-icon-container">
-        <img src="assets/recollect/svg/google-arrow.svg" />
-      </div>
-    </button>
-  </div> -->
-  }
 </div>

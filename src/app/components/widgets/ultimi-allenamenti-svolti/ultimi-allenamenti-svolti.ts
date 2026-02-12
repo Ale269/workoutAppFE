@@ -18,7 +18,6 @@ import {
   styleUrl: "./ultimi-allenamenti-svolti.scss",
 })
 export class UltimiAllenamentiSvolti {
-  public datiRecuperati: boolean = false;
   public ultimiAllenamentiSvoltiDTO: ultimiAllenamentiSvoltiDTO[] = [];
 
   private router = inject(Router);
@@ -51,7 +50,6 @@ export class UltimiAllenamentiSvolti {
             if (!response.errore?.error) {
               this.ultimiAllenamentiSvoltiDTO =
                 response.ultimiAllenamentiSvoltiDTO;
-              this.datiRecuperati = true;
               resolve(null);
             } else {
               reject(response.errore.error);

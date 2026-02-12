@@ -16,7 +16,6 @@ import { ultimeSchedeSvolteDTO } from "src/app/models/widgets/ultime-schede-svol
   styleUrl: "./ultime-schede-svolte.scss",
 })
 export class UltimeSchedeSvolte {
-  public datiRecuperati: boolean = false;
   public ultimeSchedeSvolteDTO: ultimeSchedeSvolteDTO[] = [];
 
   constructor(

@@ -37,6 +37,10 @@ import {
   multiOptionGroup,
   OptionSelectedEvent,
 } from "../shared/multi-option-button/multi-option-button";
+import {
+  SaveDatiTemplateSchedaRequestModel,
+  SaveDatiTemplateSchedaResponseModel
+} from "../../models/view-modifica-scheda/saveDatiTemplateScheda";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
 
 @Component({
@@ -478,6 +482,128 @@ export class ViewTemplatePlan {
       });
     }
   }
+  
+  downloadSchedaPdf() {
+    
+    try {
+      // Mostra lo spinner
+      this.currentSpinnerId = this.spinnerService.showWithResult(
+        "Download scheda",
+        {
+          forceShow: true,
+          successMessage: "Scheda scaricata con successo",
+          errorMessage: "Errore nello scaricamento della scheda",
+          resultDuration: 250,
+          minSpinnerDuration: 250,
+        },
+      );
+      
+      if (this.idScheda !== null && this.idScheda > 0) {
+        const request: DownloadSchedaRequestModel = {
+          idScheda: this.idScheda,
+        };
+        
+        this.workoutService.esportaScheda(request).subscribe({
+          next: (response: any) => {
+            if (response instanceof Blob) {
+              
+              if (this.currentSpinnerId) {
+                this.spinnerService.setSuccess(this.currentSpinnerId);
+              }
+              const blob = new Blob([response], {type: 'application/pdf'});
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `Scheda_Allenamento_${this.idScheda}.pdf`;
+              
+              document.body.appendChild(link);
+              link.click();
+              
+              // Pulizia
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(url);
+            }
+          },
+          error: (error: any) => {
+            if (this.currentSpinnerId) {
+              this.spinnerService.setError(this.currentSpinnerId);
+            }
+            this.errorHandlerService.logError(
+              error,
+              "ViewTemplatePlan.DownloadSchedaPdf",
+            );
+          },
+        });
+      }
+    } catch (error) {
+      if (this.currentSpinnerId) {
+        this.spinnerService.setError(this.currentSpinnerId);
+      }
+      this.errorHandlerService.logError(
+        error,
+        "ViewTemplatePlan.DownloadSchedaPdf",
+      );
+    }
+  }
+  
+  duplicaScheda() {
+    
+    try {
+      // Mostra lo spinner
+      this.currentSpinnerId = this.spinnerService.showWithResult(
+        "Duplicazione scheda",
+        {
+          forceShow: true,
+          successMessage: "Scheda duplicata con successo",
+          errorMessage: "Errore nella duplicazione della scheda",
+          resultDuration: 250,
+          minSpinnerDuration: 250,
+        },
+      );
+      
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        const SaveDatiTemplateSchedaRequest: SaveDatiTemplateSchedaRequestModel =
+          {
+            schedaDTO: this.scheda,
+            userId: user.userId,
+          };
+        //TODO fixare meglio la risposta perche la ui sia ricettiva della nuova risposta
+        this.workoutService.addTemplateScheda(SaveDatiTemplateSchedaRequest).subscribe({
+          next: (response: SaveDatiTemplateSchedaResponseModel) => {
+            if (!response.errore?.error) {
+              if (response.datiScheda) {
+                if (this.currentSpinnerId) {
+                  this.spinnerService.setSuccess(this.currentSpinnerId);
+                }
+                //resolve(response.datiScheda);
+              } else {
+                //reject(response.errore.error);
+              }
+            } else {
+              //reject(response.errore.error);
+            }
+          },
+          error: (error) => {
+            //reject(error);
+          },
+        });
+      } else {
+        throw new Error(
+          "ViewTemplatePlan.duplicaScheda: nessun user trovato",
+        );
+      }
+    } catch (error) {
+      if (this.currentSpinnerId) {
+        this.spinnerService.setError(this.currentSpinnerId);
+      }
+      this.errorHandlerService.logError(
+        error,
+        "ViewTemplatePlan.duplicaScheda",
+      );
+    }
+    
+  }
 
   onOptionSelected(option: OptionSelectedEvent) {
     switch (option.side) {
@@ -486,10 +612,10 @@ export class ViewTemplatePlan {
           case 1:
             switch (option.optionId) {
               case 1:
-                this.downloadSchedaExcel();
+                this.downloadSchedaPdf();
                 break;
               case 2:
-                // this.downloadSchedaExcel();
+                this.duplicaScheda();
                 break;
               case 3:
                 this.openDeleteScheda();

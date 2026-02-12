@@ -197,7 +197,7 @@ export class WorkoutService {
 
   esportaScheda(
     request: DownloadSchedaRequestModel
-  ): Observable<any> {
+  ): Observable<Blob> {
     return this.apiCatalogService.executeApiCall(
       "workout",
       "exportWorkout",
