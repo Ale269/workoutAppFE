@@ -5,6 +5,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { Router } from "@angular/router";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { WidgetsService } from "src/app/core/services/widgets.service";
+import { HapticService } from "src/app/core/services/haptic.service";
 import { ultimiAllenamentiSvoltiDTO } from "src/app/models/widgets/ultimi-allenamenti-svolti/allenamentiSvolti";
 import {
   GetDatiUltimiAllenamentiSvoltiRequestModel,
@@ -22,6 +23,7 @@ export class UltimiAllenamentiSvolti {
 
   private router = inject(Router);
   private errorHandlerService = inject(ErrorHandlerService);
+  private hapticService = inject(HapticService);
 
   constructor(
     private widgetsService: WidgetsService,
@@ -36,7 +38,7 @@ export class UltimiAllenamentiSvolti {
     );
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   getDatiUltimiAllenamentiSvoltiWidget(idUtente: number): Promise<null> {
     return new Promise((resolve, reject) => {
@@ -67,6 +69,7 @@ export class UltimiAllenamentiSvolti {
 
   NavigaAElencoAllenamentiSchede() {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate(["/allenamenti-svolti"]);
     } catch (error) {
       this.errorHandlerService.logError(
@@ -78,6 +81,7 @@ export class UltimiAllenamentiSvolti {
 
   NavigaAElencoTemplateSchede() {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate(["/le-mie-schede"]);
     } catch (error) {
       this.errorHandlerService.logError(
@@ -89,6 +93,7 @@ export class UltimiAllenamentiSvolti {
 
   NavigaAVisualizzaAllenamento(idAllenamento: number) {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate([
         "/allenamenti-svolti/visualizza-allenamento",
         idAllenamento,

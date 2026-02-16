@@ -42,6 +42,7 @@ import {
   SaveDatiTemplateSchedaResponseModel
 } from "../../models/view-modifica-scheda/saveDatiTemplateScheda";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 @Component({
   selector: "app-view-template-plan",
@@ -110,6 +111,7 @@ export class ViewTemplatePlan {
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
     private menuConfigService: MenuConfigService,
+    private hapticService: HapticService,
   ) {
     try {
       this.idScheda = Number(this.activatedRouter.snapshot.paramMap.get("id"));
@@ -156,7 +158,7 @@ export class ViewTemplatePlan {
             if (!response.errore?.error) {
               if (response.datiScheda) {
                 this.scheda = this.ordinaScheda(response.datiScheda);
-                
+
                 this.menuConfigService.setBackWithCallback(
                   () => this.goBack(),
                   "back",
@@ -273,6 +275,7 @@ export class ViewTemplatePlan {
 
   modificaScheda() {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate(["/le-mie-schede/modifica-scheda/", this.idScheda], {
         state: { scheda: this.scheda },
       });
@@ -478,13 +481,13 @@ export class ViewTemplatePlan {
             window.URL.revokeObjectURL(url);
           }
         },
-        error: (error: any) => {},
+        error: (error: any) => { },
       });
     }
   }
-  
+
   downloadSchedaPdf() {
-    
+
     try {
       // Mostra lo spinner
       this.currentSpinnerId = this.spinnerService.showWithResult(
@@ -497,28 +500,28 @@ export class ViewTemplatePlan {
           minSpinnerDuration: 250,
         },
       );
-      
+
       if (this.idScheda !== null && this.idScheda > 0) {
         const request: DownloadSchedaRequestModel = {
           idScheda: this.idScheda,
         };
-        
+
         this.workoutService.esportaScheda(request).subscribe({
           next: (response: any) => {
             if (response instanceof Blob) {
-              
+
               if (this.currentSpinnerId) {
                 this.spinnerService.setSuccess(this.currentSpinnerId);
               }
-              const blob = new Blob([response], {type: 'application/pdf'});
+              const blob = new Blob([response], { type: 'application/pdf' });
               const url = window.URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = url;
               link.download = `Scheda_Allenamento_${this.idScheda}.pdf`;
-              
+
               document.body.appendChild(link);
               link.click();
-              
+
               // Pulizia
               document.body.removeChild(link);
               window.URL.revokeObjectURL(url);
@@ -545,9 +548,9 @@ export class ViewTemplatePlan {
       );
     }
   }
-  
+
   duplicaScheda() {
-    
+
     try {
       // Mostra lo spinner
       this.currentSpinnerId = this.spinnerService.showWithResult(
@@ -560,14 +563,14 @@ export class ViewTemplatePlan {
           minSpinnerDuration: 250,
         },
       );
-      
+
       const user = this.authService.getCurrentUser();
       if (user) {
         const SaveDatiTemplateSchedaRequest: SaveDatiTemplateSchedaRequestModel =
-          {
-            schedaDTO: this.scheda,
-            userId: user.userId,
-          };
+        {
+          schedaDTO: this.scheda,
+          userId: user.userId,
+        };
         //TODO fixare meglio la risposta perche la ui sia ricettiva della nuova risposta
         this.workoutService.addTemplateScheda(SaveDatiTemplateSchedaRequest).subscribe({
           next: (response: SaveDatiTemplateSchedaResponseModel) => {
@@ -602,7 +605,7 @@ export class ViewTemplatePlan {
         "ViewTemplatePlan.duplicaScheda",
       );
     }
-    
+
   }
 
   onOptionSelected(option: OptionSelectedEvent) {

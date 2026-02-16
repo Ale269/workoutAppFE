@@ -15,6 +15,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 @Component({
   selector: "app-set-component",
@@ -42,6 +43,7 @@ export class SetComponent implements OnInit {
     private modalService: ModalService,
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
+    private hapticService: HapticService,
   ) {
     iconRegistry.addSvgIcon(
       "google-close-icon",
@@ -67,6 +69,7 @@ export class SetComponent implements OnInit {
 
   openDeleteModal() {
     try {
+      this.hapticService.trigger('error');
       this.modalService.open({
         warning: true,
         headerTemplate: this.headerDeleteSerie,

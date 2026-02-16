@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { WidgetsService } from "src/app/core/services/widgets.service";
@@ -9,6 +9,7 @@ import {
 import { createOrEdit } from "../../create-or-edit-workout-execution/create-or-edit-workout-execution";
 import { MatIconRegistry, MatIcon } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 @Component({
   selector: "app-prossimo-allenamento",
@@ -25,6 +26,8 @@ export class ProssimoAllenamento implements OnInit {
 
   public giorniArray: number[] = [];
 
+  private hapticService = inject(HapticService);
+
   constructor(
     private widgetsService: WidgetsService,
     private errorHandlerService: ErrorHandlerService,
@@ -40,7 +43,7 @@ export class ProssimoAllenamento implements OnInit {
     );
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   getDatiProssimoAllenamentoWidget(idUtente: number): Promise<null> {
     return new Promise((resolve, reject) => {
@@ -81,6 +84,7 @@ export class ProssimoAllenamento implements OnInit {
 
   NavigaARegistraAllenamento() {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate(
         ["/registra-allenamento/", this.idTemplateAllenamento],
         {
@@ -102,6 +106,7 @@ export class ProssimoAllenamento implements OnInit {
 
   NavigaAElencoTemplateSchede() {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate(["/le-mie-schede"]);
     } catch (error) {
       this.errorHandlerService.logError(

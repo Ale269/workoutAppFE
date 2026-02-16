@@ -1,22 +1,26 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 import { BottomSheetConfig, BottomSheetDismissResult, BottomSheetInstance, BottomSheetRef } from './bottom-sheet-model';
+import { HapticService } from 'src/app/core/services/haptic.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BottomSheetService {
   private bottomSheets = signal<BottomSheetInstance[]>([]);
-  
+
   // Computed signal per accesso pubblico
   public readonly activeBottomSheets = computed(() => this.bottomSheets());
+
+  private hapticService = inject(HapticService);
 
   /**
    * Apre un nuovo Bottom Sheet
    */
   async open<T = any, R = any>(config: BottomSheetConfig<T>): Promise<BottomSheetRef<R>> {
+    this.hapticService.trigger('light');
     const id = this.generateUniqueId();
-    
+
     let closeResolve: ((result: BottomSheetDismissResult<R>) => void) | undefined;
     let willDismissResolve: ((result: BottomSheetDismissResult<R>) => void) | undefined;
     let didDismissResolve: ((result: BottomSheetDismissResult<R>) => void) | undefined;
@@ -38,8 +42,8 @@ export class BottomSheetService {
     const instance: BottomSheetInstance = {
       id,
       component: config.component,
-      data: { 
-        ...config.data, 
+      data: {
+        ...config.data,
         bottomSheetId: id
       },
       dismissible: config.dismissible ?? true,
@@ -69,9 +73,9 @@ export class BottomSheetService {
    */
   public async requestDismiss<T = any>(id: string, data?: T, role?: string): Promise<boolean> {
     console.log('🟣 [9] Service.requestDismiss chiamato per ID:', id);
-    
+
     const instance = this.bottomSheets().find(sheet => sheet.id === id);
-    
+
     if (!instance) {
       console.warn('⚠️ [10] Bottom sheet NON trovato:', id);
       console.warn('⚠️ Bottom sheets disponibili:', this.bottomSheets().map(s => s.id));
@@ -104,9 +108,9 @@ export class BottomSheetService {
    */
   async dismiss<T = any>(id: string, data?: T, role?: string): Promise<boolean> {
     console.log('🟣 [15] Service.dismiss EFFETTIVO chiamato per ID:', id);
-    
+
     const instance = this.bottomSheets().find(sheet => sheet.id === id);
-    
+
     if (!instance) {
       console.warn('⚠️ [16] Instance non trovata in dismiss effettivo');
       return false;
@@ -118,7 +122,7 @@ export class BottomSheetService {
 
     // Rimuovi dalla lista (questo rimuove il componente dal DOM)
     this.bottomSheets.update(sheets => sheets.filter(sheet => sheet.id !== id));
-    
+
     console.log('🟣 [18] Bottom sheet rimosso, triggering didDismiss');
 
     // Trigger didDismiss dopo la rimozione

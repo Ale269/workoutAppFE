@@ -31,6 +31,7 @@ import {
   OptionSelectedEvent,
 } from "../shared/multi-option-button/multi-option-button";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 @Component({
   selector: "app-view-data-executed-workout",
@@ -87,6 +88,7 @@ export class ViewDataExecutedWorkout {
     private workoutService: WorkoutService,
     private modalService: ModalService,
     private menuConfigService: MenuConfigService,
+    private hapticService: HapticService,
   ) {
     try {
       this.menuConfigService.setBackWithCallback(
@@ -249,6 +251,7 @@ export class ViewDataExecutedWorkout {
 
   modificaAllenamento() {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate(
         ["/allenamenti-svolti/modifica-allenamento/", this.idAllenamento],
         {

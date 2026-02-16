@@ -38,6 +38,7 @@ import {
 } from "../../shared/multi-option-button/multi-option-button";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 @Component({
   selector: "app-workout-component",
@@ -101,6 +102,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     public focusOverlayService: FocusOverlayService,
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
+    private hapticService: HapticService,
   ) {
     iconRegistry.addSvgIcon(
       "google-add",
@@ -135,6 +137,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   toggleCompactMode(): void {
     try {
+      this.hapticService.trigger('medium');
       this.isCompactMode = !this.isCompactMode;
       this.cdr.detectChanges();
 
@@ -264,6 +267,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   addNuovoEsercizio() {
     try {
+      this.hapticService.trigger('medium');
       this.formAllenamento.addEsercizioForm(undefined);
       this.cdr.detectChanges();
     } catch (error) {
@@ -276,6 +280,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   openDeleteWorkout() {
     try {
+      this.hapticService.trigger('error');
       this.modalService.open({
         warning: true,
         headerTemplate: this.headerDeleteWorkout,
@@ -307,6 +312,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   backToList() {
     try {
+      this.hapticService.trigger('light');
       this.onBackToList.emit();
     } catch (error) {
       this.errorHandlerService.logError(error, "WorkoutComponent.backToList");

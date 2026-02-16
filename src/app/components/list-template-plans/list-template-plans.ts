@@ -38,6 +38,7 @@ import {
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 // Registra il plugin Draggable
 gsap.registerPlugin(Draggable);
@@ -98,6 +99,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
     private menuConfigService: MenuConfigService,
+    private hapticService: HapticService,
   ) {
     this.menuConfigService.setBackToRoute(
       "/",
@@ -369,6 +371,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
 
   createNewScheda() {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate(["/le-mie-schede/modifica-scheda"]);
     } catch (error) {
       this.errorHandlerService.logError(

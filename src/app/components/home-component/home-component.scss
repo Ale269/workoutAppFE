@@ -27,7 +27,8 @@
   height: 650px;
   border-radius: 50%;
   transform: rotate(45deg);
-  filter: blur(120px);
+  // Ridotto da 120px a 60px — blur enormi sono molto pesanti su iOS WebKit
+  filter: blur(60px);
 }
 
 .ellips-2 {
@@ -41,19 +42,17 @@
   height: 325px;
   border-radius: 50%;
   transform: rotate(45deg);
-  filter: blur(120px);
+  // Ridotto da 120px a 60px
+  filter: blur(60px);
 }
 
 // ============================================
-// OTTIMIZZAZIONI GPU PER PARALLAX
+// LAYOUT WIDGET
 // ============================================
 app-seleziona-allenamento-da-svolgere {
   display: block;
-  // Forza creazione layer compositing per GPU
-  will-change: transform, opacity;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
+  // GSAP gestisce automaticamente will-change durante l'animazione
+  // Nessun hint GPU permanente — evita spreco VRAM su iOS
 }
 
 // Gli altri widget scrollano normalmente
@@ -64,44 +63,21 @@ app-ultime-schede-svolte {
 }
 
 // ============================================
-// PAGE SCROLLER - VERSIONE JAVASCRIPT SNAP
+// PAGE SCROLLER
 // ============================================
 .page-scroller {
   // Ottimizza scroll su mobile
   -webkit-overflow-scrolling: touch;
-  
-  // GPU acceleration per scroll container
-  transform: translateZ(0);
-  will-change: scroll-position;
-  
+
   // Migliora il momentum scrolling
   overscroll-behavior-y: contain;
-  
-  // NON usare scroll-behavior: smooth qui
-  // perché interferisce con GSAP scrollTo
-  // scroll-behavior: smooth; ❌ NON USARE
 }
 
 // ============================================
 // ACCESSIBILITÀ - RISPETTA PREFERENZE UTENTE
 // ============================================
 @media (prefers-reduced-motion: reduce) {
-  app-seleziona-allenamento-da-svolgere {
-    will-change: auto;
-  }
-  
   .page-scroller {
     scroll-behavior: auto;
-    will-change: auto;
-  }
-}
-
-// ============================================
-// OTTIMIZZAZIONI MOBILE
-// ============================================
-@media (max-width: 768px) {
-  app-seleziona-allenamento-da-svolgere {
-    // Riduci will-change su mobile per memoria
-    will-change: transform;
   }
 }

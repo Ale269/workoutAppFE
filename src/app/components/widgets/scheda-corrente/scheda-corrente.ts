@@ -4,6 +4,7 @@ import { MatIconRegistry, MatIcon } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { Router } from "@angular/router";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
+import { HapticService } from "src/app/core/services/haptic.service";
 import { WidgetsService } from "src/app/core/services/widgets.service";
 import {
   GetDatiSchedaCorrenteRequestModel,
@@ -12,7 +13,7 @@ import {
 
 @Component({
   selector: "app-scheda-corrente",
-  imports: [CommonModule,MatIcon],
+  imports: [CommonModule, MatIcon],
   templateUrl: "./scheda-corrente.html",
   styleUrl: "./scheda-corrente.scss",
 })
@@ -28,6 +29,7 @@ export class SchedaCorrente {
 
   private router = inject(Router);
   private errorHandlerService = inject(ErrorHandlerService);
+  private hapticService = inject(HapticService);
 
   constructor(
     private widgetsService: WidgetsService,
@@ -42,7 +44,7 @@ export class SchedaCorrente {
     );
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   getDatiSchedaCorrenteWidget(idUtente: number): Promise<null> {
     return new Promise((resolve, reject) => {
@@ -96,6 +98,7 @@ export class SchedaCorrente {
 
   visualizzaDatiScheda(idScheda: number) {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate(["/le-mie-schede/visualizza-scheda", idScheda]);
     } catch (error) {
       this.errorHandlerService.logError(
@@ -107,6 +110,7 @@ export class SchedaCorrente {
 
   NavigaAElencoTemplateSchede() {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate(["/le-mie-schede"]);
     } catch (error) {
       this.errorHandlerService.logError(

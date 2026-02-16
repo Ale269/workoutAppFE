@@ -1,8 +1,9 @@
-import { Component, ElementRef, QueryList, TemplateRef, ViewChild, ViewChildren } from "@angular/core";
+import { Component, ElementRef, inject, QueryList, TemplateRef, ViewChild, ViewChildren } from "@angular/core";
 import { Router } from "@angular/router";
 import { AuthService } from "src/app/core/services/auth.service";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { ModalService } from "src/app/core/services/modal.service";
+import { HapticService } from "src/app/core/services/haptic.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { WorkoutService } from "src/app/core/services/workout.service";
 import { SchedaListaDTO } from "src/app/models/lista-schede-svolte/schedalistadto";
@@ -18,6 +19,7 @@ import { GetListaSchedeSvolteRequestModel, GetListaSchedeSvolteResponseModel } f
   styleUrl: "./list-executed-plans.scss",
 })
 export class ListExecutedPlans {
+  private hapticService = inject(HapticService);
   @ViewChildren("schedaCard") schedaCards!: QueryList<ElementRef>;
   @ViewChild("headerDeleteTemplate") headerDeleteTemplate!: TemplateRef<any>;
   @ViewChild("bodyDeleteTemplate") bodyDeleteTemplate!: TemplateRef<any>;
@@ -57,7 +59,7 @@ export class ListExecutedPlans {
     private authService: AuthService,
     private router: Router,
     private modalService: ModalService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     try {
@@ -315,6 +317,7 @@ export class ListExecutedPlans {
 
   createNewScheda() {
     try {
+      this.hapticService.trigger('light');
       this.router.navigate(["/le-mie-schede/modifica-scheda"]);
     } catch (error) {
       this.errorHandlerService.logError(

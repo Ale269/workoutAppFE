@@ -1,8 +1,9 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { MatIconRegistry, MatIcon } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { WidgetsService } from "src/app/core/services/widgets.service";
+import { HapticService } from "src/app/core/services/haptic.service";
 import {
   GetDatiUltimeSchedeSvolteRequestModel,
   GetDatiUltimeSchedeSvolteResponseModel,
@@ -19,6 +20,8 @@ export class UltimeSchedeSvolte {
   public ultimeSchedeSvolteDTO: ultimeSchedeSvolteDTO[] = [];
   public datiRecuperati: boolean = false;
 
+  private hapticService = inject(HapticService);
+
   constructor(
     private widgetsService: WidgetsService,
     private iconRegistry: MatIconRegistry,
@@ -32,7 +35,7 @@ export class UltimeSchedeSvolte {
     );
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   getDatiUltimeSchedeSvolteWidget(idUtente: number): Promise<null> {
     return new Promise((resolve, reject) => {
@@ -62,6 +65,7 @@ export class UltimeSchedeSvolte {
   }
 
   mostraFunzionalitaInArrivo(): void {
+    this.hapticService.trigger('light');
     alert("Funzionalità in arrivo");
   }
 }

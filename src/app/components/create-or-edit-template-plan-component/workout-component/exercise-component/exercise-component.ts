@@ -34,6 +34,7 @@ import {
 } from "src/app/models/history/last-training-exercise";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 @Component({
   selector: "app-exercise-component",
@@ -96,28 +97,29 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
+    private hapticService: HapticService,
   ) {
     iconRegistry.addSvgIcon(
       "google-arrow",
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-arrow.svg",
       ),
-    );iconRegistry.addSvgIcon(
+    ); iconRegistry.addSvgIcon(
       "google-add",
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-add.svg",
       ),
-    );iconRegistry.addSvgIcon(
+    ); iconRegistry.addSvgIcon(
       "google-copy",
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-copy.svg",
       ),
-    );iconRegistry.addSvgIcon(
+    ); iconRegistry.addSvgIcon(
       "google-close-icon",
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-close-icon.svg",
       ),
-    );iconRegistry.addSvgIcon(
+    ); iconRegistry.addSvgIcon(
       "google-history",
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-history.svg",
@@ -180,6 +182,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   openDeleteModal() {
     try {
+      this.hapticService.trigger('error');
       this.modalService.open({
         warning: true,
         headerTemplate: this.headerDeleteWorkout,
@@ -227,12 +230,16 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   /**
    * Salva l'altezza della pagina prima di aggiungere contenuto,
-   * poi scrolla per mantenere i pulsanti nella stessa posizione visiva
+   * poi scrolla per mantenere i pulsanti nella stessa posizione visiva.
+   * Usa il .page-scroller come contenitore di scroll.
    */
   private async maintainButtonPosition(callback: () => void): Promise<void> {
     try {
-      // Salva l'altezza corrente della pagina
-      const heightBefore = document.documentElement.scrollHeight;
+      const scroller = this.elementRef.nativeElement.closest('.page-scroller') as HTMLElement | null;
+      if (!scroller) return;
+
+      // Salva l'altezza corrente del page-scroller
+      const heightBefore = scroller.scrollHeight;
 
       // Esegui l'operazione (aggiunta serie)
       callback();
@@ -244,12 +251,12 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       // Calcola la differenza di altezza
-      const heightAfter = document.documentElement.scrollHeight;
+      const heightAfter = scroller.scrollHeight;
       const heightDifference = heightAfter - heightBefore;
 
       // Scrolla della differenza se c'è stato un aumento di altezza
       if (heightDifference > 0) {
-        window.scrollBy({
+        scroller.scrollBy({
           top: heightDifference,
           behavior: "smooth",
         });
@@ -264,6 +271,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   async addSerie() {
     try {
+      this.hapticService.trigger('medium');
       await this.maintainButtonPosition(() => {
         this.formEsercizio.addSerieForm();
       });
@@ -274,6 +282,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   async duplicateLastSerie() {
     try {
+      this.hapticService.trigger('medium');
       await this.maintainButtonPosition(() => {
         const seriesList = this.formEsercizio.listaSerieForm;
 
@@ -303,6 +312,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   deleteSerie(identifier: number) {
     try {
+      this.hapticService.trigger('error');
       this.formEsercizio.deleteSerie(identifier);
       this.cdr.detectChanges();
     } catch (error) {
@@ -312,6 +322,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   deleteExercise() {
     try {
+      this.hapticService.trigger('error');
       this.onDeleteExercise.emit(
         this.formEsercizio.form.controls["identifier"].value,
       );

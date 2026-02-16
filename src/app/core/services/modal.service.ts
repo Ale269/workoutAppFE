@@ -1,5 +1,6 @@
 // modal.service.ts
-import { Injectable, TemplateRef, signal } from '@angular/core';
+import { Injectable, TemplateRef, signal, inject } from '@angular/core';
+import { HapticService } from './haptic.service';
 
 export interface ModalConfig {
   title?: string;
@@ -19,7 +20,10 @@ export interface ModalConfig {
 export class ModalService {
   modals = signal<ModalConfig[]>([]);
 
+  private hapticService = inject(HapticService);
+
   open(config: ModalConfig) {
+    this.hapticService.trigger(config.warning ? 'warning' : 'light');
     const current = this.modals();
     this.modals.set([...current, config]);
     return config;

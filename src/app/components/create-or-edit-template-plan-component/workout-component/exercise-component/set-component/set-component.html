@@ -8,27 +8,12 @@
     <div class="input-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Reps</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="ripetizioni"
-          placeholder="reps"
-          inputmode="numeric"
-          min="1"
-          max="999"
-        />
+        <input matInput type="number" formControlName="ripetizioni" placeholder="reps" inputmode="decimal" min="1"
+          max="999" />
       </mat-form-field>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Kg</mat-label>
-        <input
-          matInput
-          type="number"
-          formControlName="carico"
-          placeholder="Kg"
-          inputmode="numeric"
-          min="1"
-          max="999"
-        />
+        <input matInput type="number" formControlName="carico" placeholder="Kg" inputmode="decimal" min="1" max="999" />
       </mat-form-field>
     </div>
     <div class="delete-icon-element-container">

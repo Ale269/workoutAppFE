@@ -44,6 +44,7 @@ import { Observable, Subject } from "rxjs";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 @Component({
   selector: "app-create-or-edit-workout-execution",
@@ -158,6 +159,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
     private menuConfigService: MenuConfigService,
+    private hapticService: HapticService,
   ) {
     try {
       iconRegistry.addSvgIcon(
@@ -234,6 +236,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
    */
   toggleCompactMode(): void {
     try {
+      this.hapticService.trigger('medium');
       this.isCompactMode = !this.isCompactMode;
       this.cdr.detectChanges();
 
@@ -360,7 +363,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
             }
           } else if (this.idAllenamento) {
             this.getDatiAllenamento();
-            
+
           } else {
             this.loadingProgression = LoadingProgression.failed;
             throw new Error("Nessun allenamento fornito");
@@ -529,6 +532,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   deleteEexercise(identifier: number) {
     try {
+      this.hapticService.trigger('error');
       this.createOrEditWorkoutExecutionService.AllenamentoForm.deleteEsercizio(
         identifier,
       );
@@ -542,6 +546,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   addNuovoEsercizio() {
     try {
+      this.hapticService.trigger('medium');
       this.createOrEditWorkoutExecutionService.AllenamentoForm.addEsercizioForm(
         undefined,
       );
@@ -575,6 +580,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   registraAllenamento() {
     try {
+      this.hapticService.trigger('success');
       let allenamentoForm: AllenamentoFormDTO =
         this.createOrEditWorkoutExecutionService.AllenamentoForm.getDatiAllenamentoDaSalvare();
 
@@ -765,6 +771,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   openDeleteAllenamento() {
     try {
+      this.hapticService.trigger('error');
       this.modalService.open({
         warning: true,
         headerTemplate: this.headerDeleteTemplate,
