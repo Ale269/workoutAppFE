@@ -251,7 +251,7 @@ export class ViewDataExecutedWorkout {
 
   modificaAllenamento() {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.router.navigate(
         ["/allenamenti-svolti/modifica-allenamento/", this.idAllenamento],
         {

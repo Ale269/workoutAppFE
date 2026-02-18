@@ -29,6 +29,7 @@ import { GetDatiAllenamentoResponseModel } from "src/app/models/view-modifica-al
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 // Registra il plugin Draggable
 gsap.registerPlugin(Draggable);
@@ -68,6 +69,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
     private menuConfigService: MenuConfigService,
+    private hapticService: HapticService,
   ) {
     this.menuConfigService.setBackToRoute(
       "/",
@@ -342,6 +344,7 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
 
   visualizzaDatiAllenamento(idAllenamento: number) {
     try {
+      this.hapticService.trigger("light");
       this.closeAllSwipes();
       this.router.navigate([
         "/allenamenti-svolti/visualizza-allenamento",

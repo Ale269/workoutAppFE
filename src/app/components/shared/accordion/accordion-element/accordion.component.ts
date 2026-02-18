@@ -1,40 +1,46 @@
-import { CommonModule } from '@angular/common';
-import { 
-  Component, 
-  EventEmitter, 
-  Input, 
-  Output, 
-  ViewChild, 
-  ElementRef, 
+import { CommonModule } from "@angular/common";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+  ElementRef,
   AfterViewInit,
   OnDestroy,
-  NgZone
-} from '@angular/core';
-import { gsap } from 'gsap';
+  NgZone,
+} from "@angular/core";
+import { gsap } from "gsap";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 @Component({
-  selector: 'accordion',
-  templateUrl: './accordion.component.html',
-  standalone: true, 
-  imports: [CommonModule], 
-  styleUrls: ['./accordion.component.scss']
+  selector: "accordion",
+  templateUrl: "./accordion.component.html",
+  standalone: true,
+  imports: [CommonModule],
+  styleUrls: ["./accordion.component.scss"],
 })
 export class AccordionComponent implements AfterViewInit, OnDestroy {
-
   @Input() Key!: string;
   @Input() Aperto: boolean = false;
 
-  @Output() openStateChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() openStateChange: EventEmitter<boolean> =
+    new EventEmitter<boolean>();
   @Output() refreshAccordion: EventEmitter<string> = new EventEmitter<string>();
 
-  @ViewChild('accordionBody', { static: true }) accordionBody!: ElementRef<HTMLElement>;
-  @ViewChild('accordionContent', { static: true }) accordionContent!: ElementRef<HTMLElement>;
-  @ViewChild('arrow', { static: true }) arrow!: ElementRef<HTMLElement>;
+  @ViewChild("accordionBody", { static: true })
+  accordionBody!: ElementRef<HTMLElement>;
+  @ViewChild("accordionContent", { static: true })
+  accordionContent!: ElementRef<HTMLElement>;
+  @ViewChild("arrow", { static: true }) arrow!: ElementRef<HTMLElement>;
 
   private tl!: gsap.core.Timeline;
   private isAnimating = false;
 
-  constructor(private ngZone: NgZone) { }
+  constructor(
+    private ngZone: NgZone,
+    private hapticService: HapticService,
+  ) {}
 
   ngAfterViewInit(): void {
     // ✅ Esegui fuori da Angular per evitare change detection
@@ -63,10 +69,12 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
   }
 
   public toggleApriChiudi(): void {
+    this.hapticService.trigger("light");
+
     if (this.isAnimating) return;
 
     this.Aperto = !this.Aperto;
-    
+
     // ✅ Esegui animazione fuori da Angular
     this.ngZone.runOutsideAngular(() => {
       if (this.Aperto) {
@@ -90,35 +98,39 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
     const arrow = this.arrow.nativeElement;
 
     // Temporaneamente rendi visibile il contenuto per misurarlo
-    gsap.set(body, { height: 'auto', overflow: 'visible' });
+    gsap.set(body, { height: "auto", overflow: "visible" });
     const contentHeight = content.offsetHeight;
-    
+
     if (animate) {
       this.isAnimating = true;
-      
+
       // Reset timeline
       this.tl.clear();
-      
+
       // Imposta l'altezza iniziale a 0 e overflow hidden per l'animazione
-      gsap.set(body, { height: 0, overflow: 'hidden' });
-      
+      gsap.set(body, { height: 0, overflow: "hidden" });
+
       // Anima l'apertura - ANIMAZIONE ORIGINALE
       this.tl
         .to(body, {
           height: contentHeight,
           duration: 0.5,
           ease: "power2.out",
-          force3D: true // ✅ Aggiunto solo force3D
+          force3D: true, // ✅ Aggiunto solo force3D
         })
-        .to(arrow, {
-          rotation: -90,
-          duration: 0.4,
-          ease: "power2.out",
-          force3D: true // ✅ Aggiunto solo force3D
-        }, "<")
-        .set(body, { 
-          height: 'auto', 
-          overflow: 'visible' 
+        .to(
+          arrow,
+          {
+            rotation: -90,
+            duration: 0.4,
+            ease: "power2.out",
+            force3D: true, // ✅ Aggiunto solo force3D
+          },
+          "<",
+        )
+        .set(body, {
+          height: "auto",
+          overflow: "visible",
         })
         .call(() => {
           this.isAnimating = false;
@@ -127,7 +139,7 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
       this.tl.play();
     } else {
       // Imposta direttamente senza animazione
-      gsap.set(body, { height: 'auto', overflow: 'visible' });
+      gsap.set(body, { height: "auto", overflow: "visible" });
       gsap.set(arrow, { rotation: -90 });
     }
   }
@@ -140,30 +152,34 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
 
     if (animate) {
       this.isAnimating = true;
-      
+
       // Ottieni l'altezza corrente prima di chiudere
       const currentHeight = body.offsetHeight;
-      
+
       // Reset timeline
       this.tl.clear();
-      
+
       // Imposta l'altezza corrente e overflow hidden
-      gsap.set(body, { height: currentHeight, overflow: 'hidden' });
-      
+      gsap.set(body, { height: currentHeight, overflow: "hidden" });
+
       // Anima la chiusura - ANIMAZIONE ORIGINALE
       this.tl
         .to(body, {
           height: 0,
           duration: 0.5,
           ease: "power2.out",
-          force3D: true // ✅ Aggiunto solo force3D
+          force3D: true, // ✅ Aggiunto solo force3D
         })
-        .to(arrow, {
-          rotation: 90,
-          duration: 0.4,
-          ease: "power2.out",
-          force3D: true // ✅ Aggiunto solo force3D
-        }, "<")
+        .to(
+          arrow,
+          {
+            rotation: 90,
+            duration: 0.4,
+            ease: "power2.out",
+            force3D: true, // ✅ Aggiunto solo force3D
+          },
+          "<",
+        )
         .call(() => {
           this.isAnimating = false;
         });
@@ -171,7 +187,7 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
       this.tl.play();
     } else {
       // Imposta direttamente senza animazione
-      gsap.set(body, { height: 0, overflow: 'hidden' });
+      gsap.set(body, { height: 0, overflow: "hidden" });
       gsap.set(arrow, { rotation: 90 });
     }
   }
@@ -185,5 +201,5 @@ export class AccordionComponent implements AfterViewInit, OnDestroy {
 export enum ArrowPosition {
   NoArrow = 0,
   Left = 1,
-  Right = 2
+  Right = 2,
 }

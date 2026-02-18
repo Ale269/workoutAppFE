@@ -1,4 +1,16 @@
-import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren, ViewEncapsulation } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+  ViewEncapsulation,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { EsercizioForm } from "../../exercise-form";
@@ -8,365 +20,396 @@ import { ExerciseService } from "src/app/core/services/exercise.service";
 import { FocusOverlayController } from "../../../shared/focus-overlay/focus-overlay.controller";
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 gsap.registerPlugin(Draggable);
 
 export interface ContainerPosition {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
+  top: number;
+  left: number;
+  width: number;
+  height: number;
 }
 
 interface Sortable {
-    element: HTMLElement;
-    index: number;
-    exerciseIdentifier: number;
-    dragger: Draggable;
-    setIndex: (newIndex: number) => void;
+  element: HTMLElement;
+  index: number;
+  exerciseIdentifier: number;
+  dragger: Draggable;
+  setIndex: (newIndex: number) => void;
 }
 
 @Component({
-    selector: "app-reorder-exercise",
-    standalone: true,
-    imports: [CommonModule, GymExerciseSelectorComponent, ExerciseIconColorPipe, ReactiveFormsModule],
-    templateUrl: "./reorder-exercise-component.html",
-    styleUrls: ["./reorder-exercise-component.scss"],
-    encapsulation: ViewEncapsulation.None,
+  selector: "app-reorder-exercise",
+  standalone: true,
+  imports: [
+    CommonModule,
+    GymExerciseSelectorComponent,
+    ExerciseIconColorPipe,
+    ReactiveFormsModule,
+  ],
+  templateUrl: "./reorder-exercise-component.html",
+  styleUrls: ["./reorder-exercise-component.scss"],
+  encapsulation: ViewEncapsulation.None,
 })
-export class ReorderExerciseComponent implements OnInit, AfterViewInit, OnDestroy {
-    @Input() exercises: EsercizioForm[] = [];
-    @Input() containerPosition!: ContainerPosition;
+export class ReorderExerciseComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
+  @Input() exercises: EsercizioForm[] = [];
+  @Input() containerPosition!: ContainerPosition;
 
-    @ViewChild('exerciseDataContainer') exerciseDataContainer!: ElementRef;
-    @ViewChildren('cardElement') cardElements!: QueryList<ElementRef>;
+  @ViewChild("exerciseDataContainer") exerciseDataContainer!: ElementRef;
+  @ViewChildren("cardElement") cardElements!: QueryList<ElementRef>;
 
-    private readonly TARGET_TOP = 120;
-    private readonly GAP = 16;
-    private isAnimating = false;
-    private sortables: Sortable[] = [];
-    private savedScrollPosition = 0;
+  private readonly TARGET_TOP = 120;
+  private readonly GAP = 16;
+  private isAnimating = false;
+  private sortables: Sortable[] = [];
+  private savedScrollPosition = 0;
 
-    constructor(
-        private exerciseService: ExerciseService,
-        private controller: FocusOverlayController,
-        private ngZone: NgZone
-    ) { }
+  constructor(
+    private exerciseService: ExerciseService,
+    private controller: FocusOverlayController,
+    private ngZone: NgZone,
+    private hapticService: HapticService,
+  ) {}
 
-    ngOnInit(): void {
-        this.savedScrollPosition = window.scrollY || document.documentElement.scrollTop;
+  ngOnInit(): void {
+    this.savedScrollPosition =
+      window.scrollY || document.documentElement.scrollTop;
 
-        document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${this.savedScrollPosition}px`;
-        document.body.style.width = '100%';
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${this.savedScrollPosition}px`;
+    document.body.style.width = "100%";
 
-        this.controller.registerStartCloseAnimationFn(() => {
-            this.startCloseAnimation();
-        });
-    }
+    this.controller.registerStartCloseAnimationFn(() => {
+      this.startCloseAnimation();
+    });
+  }
 
-    ngOnDestroy(): void {
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
+  ngOnDestroy(): void {
+    document.body.style.overflow = "";
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.width = "";
 
-        window.scrollTo(0, this.savedScrollPosition);
+    window.scrollTo(0, this.savedScrollPosition);
 
-        this.sortables.forEach(sortable => {
-            if (sortable.dragger) {
-                sortable.dragger.kill();
-            }
-        });
-        this.sortables = [];
-    }
+    this.sortables.forEach((sortable) => {
+      if (sortable.dragger) {
+        sortable.dragger.kill();
+      }
+    });
+    this.sortables = [];
+  }
 
-    ngAfterViewInit(): void {
-        this.ngZone.runOutsideAngular(() => {
-            this.positionContainerOverOriginal();
-            this.controller.notifyPositioned();
+  ngAfterViewInit(): void {
+    this.ngZone.runOutsideAngular(() => {
+      this.positionContainerOverOriginal();
+      this.controller.notifyPositioned();
 
-            (this.exerciseDataContainer.nativeElement as HTMLElement).offsetHeight;
+      (this.exerciseDataContainer.nativeElement as HTMLElement).offsetHeight;
 
-            requestAnimationFrame(() => {
-                this.controller.showBackdrop();
-                this.animateCardsToTop();
-            });
-        });
-    }
+      requestAnimationFrame(() => {
+        this.controller.showBackdrop();
+        this.animateCardsToTop();
+      });
+    });
+  }
 
-    private positionContainerOverOriginal(): void {
-        const container = this.exerciseDataContainer.nativeElement;
+  private positionContainerOverOriginal(): void {
+    const container = this.exerciseDataContainer.nativeElement;
 
-        if (this.containerPosition) {
-            // Usa y invece di top per la GPU
-            gsap.set(container, {
-                position: 'absolute',
-                y: this.containerPosition.top, // ✅ Cambiato da top a y
-                left: this.containerPosition.left,
-                width: this.containerPosition.width,
-                margin: 0,
-                zIndex: 95,
-                force3D: true // ✅ Forza GPU layer
-            });
+    if (this.containerPosition) {
+      // Usa y invece di top per la GPU
+      gsap.set(container, {
+        position: "absolute",
+        y: this.containerPosition.top, // ✅ Cambiato da top a y
+        left: this.containerPosition.left,
+        width: this.containerPosition.width,
+        margin: 0,
+        zIndex: 95,
+        force3D: true, // ✅ Forza GPU layer
+      });
 
-            const cardRows = container.querySelectorAll('.card-row') as NodeListOf<HTMLElement>;
-            if (cardRows.length > 0) {
-                const firstCard = cardRows[0];
-                const cardHeight = firstCard.offsetHeight;
-                const rowSize = cardHeight + this.GAP;
-
-                const BOTTOM_PADDING = 80;
-
-                gsap.set(container, {
-                    height: (cardRows.length * rowSize) + BOTTOM_PADDING
-                });
-
-                cardRows.forEach((cardRow, index) => {
-                    gsap.set(cardRow, {
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        y: index * rowSize,
-                        zIndex: 1,
-                        force3D: true // ✅ Forza GPU layer per ogni card
-                    });
-                });
-            }
-        }
-    }
-
-    private animateCardsToTop(): void {
-        const container = this.exerciseDataContainer.nativeElement;
-
-        // ✅ Usa y invece di top + force3D
-        gsap.to(container, {
-            y: this.TARGET_TOP,
-            duration: 0.4,
-            ease: "power2.out",
-            force3D: true, // ✅ Forza GPU
-            onComplete: () => {
-                console.log('Animazione verso top completata');
-                this.initSortable();
-            }
-        });
-
-        const dragHandles = container.querySelectorAll('.drag-handle-container');
-        gsap.to(dragHandles, {
-            width: 28,
-            duration: 0.4,
-            ease: "power2.out",
-            force3D: true // ✅ Forza GPU
-        });
-    }
-
-    private initSortable(): void {
-        const container = this.exerciseDataContainer.nativeElement;
-        const cardRows = container.querySelectorAll('.card-row') as NodeListOf<HTMLElement>;
-        if (!cardRows.length) return;
-
-        const totalItems = cardRows.length;
-        const firstCard = cardRows[0] as HTMLElement;
+      const cardRows = container.querySelectorAll(
+        ".card-row",
+      ) as NodeListOf<HTMLElement>;
+      if (cardRows.length > 0) {
+        const firstCard = cardRows[0];
         const cardHeight = firstCard.offsetHeight;
         const rowSize = cardHeight + this.GAP;
 
-        const clampIndex = gsap.utils.clamp(0, totalItems - 1);
+        const BOTTOM_PADDING = 80;
 
-        const arrayMove = (array: Sortable[], from: number, to: number) => {
-            array.splice(to, 0, array.splice(from, 1)[0]);
-        };
-
-        const changeIndex = (item: Sortable, to: number) => {
-            const fromPosition = this.sortables.indexOf(item);
-            if (fromPosition === -1) return;
-
-            arrayMove(this.sortables, fromPosition, to);
-            this.sortables.forEach((sortable, index) => sortable.setIndex(index));
-
-            console.log('Ordine aggiornato:', this.sortables.map(s => s.exerciseIdentifier));
-        };
+        gsap.set(container, {
+          height: cardRows.length * rowSize + BOTTOM_PADDING,
+        });
 
         cardRows.forEach((cardRow, index) => {
-            const dragHandle = cardRow.querySelector('.drag-handle-container') as HTMLElement;
-            if (!dragHandle) return;
-
-            const exerciseIdentifier = this.exercises[index]?.form.get('identifier')?.value ?? -1;
-
-            const sortable: Sortable = {
-                element: cardRow,
-                index: index,
-                exerciseIdentifier: exerciseIdentifier,
-                dragger: null as any,
-                setIndex: () => { }
-            };
-
-            const setIndex = (newIndex: number) => {
-                sortable.index = newIndex;
-                if (!sortable.dragger.isDragging) {
-                    layout();
-                }
-            };
-
-            const layout = () => {
-                gsap.to(cardRow, {
-                    y: sortable.index * rowSize,
-                    duration: 0.3,
-                    ease: "power2.out",
-                    force3D: true // ✅ GPU
-                });
-            };
-
-            const downAction = () => {
-                // ✅ Rimuovi box-shadow dall'animazione - usa opacity e transform
-                gsap.to(cardRow, {
-                    scale: 1.02,
-                    zIndex: 100,
-                    duration: 0.2,
-                    overwrite: "auto",
-                    force3D: true // ✅ GPU
-                });
-                
-                // ✅ Applica box-shadow statico via classe CSS invece di animarlo
-                cardRow.classList.add('dragging-shadow');
-            };
-
-            const dragAction = function (this: Draggable) {
-                const newIndex = clampIndex(Math.round(this.y / rowSize));
-                if (newIndex !== sortable.index) {
-                    changeIndex(sortable, newIndex);
-                }
-            };
-
-            const upAction = () => {
-                // ✅ Rimuovi box-shadow dall'animazione
-                gsap.to(cardRow, {
-                    scale: 1,
-                    zIndex: 1,
-                    duration: 0.3,
-                    force3D: true // ✅ GPU
-                });
-                
-                // ✅ Rimuovi classe shadow
-                cardRow.classList.remove('dragging-shadow');
-                
-                layout();
-            };
-
-            const totalHeight = (totalItems - 1) * rowSize;
-
-            const draggerArray = Draggable.create(cardRow, {
-                type: "y",
-                trigger: dragHandle,
-                edgeResistance: 0.85,
-                zIndexBoost: false,
-                autoScroll: 1,
-                bounds: {
-                    minY: 0,
-                    maxY: totalHeight
-                },
-                onPress: downAction,
-                onDrag: dragAction,
-                onRelease: upAction
-            });
-
-            sortable.dragger = draggerArray[0];
-            sortable.setIndex = setIndex;
-
-            this.sortables.push(sortable);
+          gsap.set(cardRow, {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            y: index * rowSize,
+            zIndex: 1,
+            force3D: true, // ✅ Forza GPU layer per ogni card
+          });
         });
-
-        console.log('Sortable inizializzato con', this.sortables.length, 'elementi');
+      }
     }
+  }
 
-    private startCloseAnimation(): void {
-        if (this.isAnimating) return;
-        this.isAnimating = true;
+  private animateCardsToTop(): void {
+    const container = this.exerciseDataContainer.nativeElement;
 
-        this.sortables.forEach(sortable => {
-            if (sortable.dragger) {
-                sortable.dragger.kill();
-            }
-        });
+    // ✅ Usa y invece di top + force3D
+    gsap.to(container, {
+      y: this.TARGET_TOP,
+      duration: 0.4,
+      ease: "power2.out",
+      force3D: true, // ✅ Forza GPU
+      onComplete: () => {
+        console.log("Animazione verso top completata");
+        this.initSortable();
+      },
+    });
 
-        this.ngZone.runOutsideAngular(() => {
-            this.animateCloseSequence();
-        });
-    }
+    const dragHandles = container.querySelectorAll(".drag-handle-container");
+    gsap.to(dragHandles, {
+      width: 28,
+      duration: 0.4,
+      ease: "power2.out",
+      force3D: true, // ✅ Forza GPU
+    });
+  }
 
-    private animateCloseSequence(): void {
-        const container = this.exerciseDataContainer.nativeElement;
-        const cardRows = container.querySelectorAll('.card-row') as NodeListOf<HTMLElement>;
+  private initSortable(): void {
+    const container = this.exerciseDataContainer.nativeElement;
+    const cardRows = container.querySelectorAll(
+      ".card-row",
+    ) as NodeListOf<HTMLElement>;
+    if (!cardRows.length) return;
 
-        const updatedPosition = this.controller.getUpdatedContainerPosition();
-        const targetTop = updatedPosition ? updatedPosition.top : this.containerPosition.top;
+    const totalItems = cardRows.length;
+    const firstCard = cardRows[0] as HTMLElement;
+    const cardHeight = firstCard.offsetHeight;
+    const rowSize = cardHeight + this.GAP;
 
-        if (cardRows.length > 0) {
-            const cardHeight = cardRows[0].offsetHeight;
-            const rowSize = cardHeight + this.GAP;
+    const clampIndex = gsap.utils.clamp(0, totalItems - 1);
 
-            this.sortables.forEach((sortable, idx) => {
-                gsap.to(sortable.element, {
-                    y: idx * rowSize,
-                    scale: 1,
-                    zIndex: 1,
-                    duration: 0.2,
-                    ease: "power2.out",
-                    force3D: true // ✅ GPU
-                });
-            });
+    const arrayMove = (array: Sortable[], from: number, to: number) => {
+      array.splice(to, 0, array.splice(from, 1)[0]);
+    };
+
+    const changeIndex = (item: Sortable, to: number) => {
+      const fromPosition = this.sortables.indexOf(item);
+      if (fromPosition === -1) return;
+
+      arrayMove(this.sortables, fromPosition, to);
+      this.sortables.forEach((sortable, index) => sortable.setIndex(index));
+
+      console.log(
+        "Ordine aggiornato:",
+        this.sortables.map((s) => s.exerciseIdentifier),
+      );
+    };
+
+    cardRows.forEach((cardRow, index) => {
+      const dragHandle = cardRow.querySelector(
+        ".drag-handle-container",
+      ) as HTMLElement;
+      if (!dragHandle) return;
+
+      const exerciseIdentifier =
+        this.exercises[index]?.form.get("identifier")?.value ?? -1;
+
+      const sortable: Sortable = {
+        element: cardRow,
+        index: index,
+        exerciseIdentifier: exerciseIdentifier,
+        dragger: null as any,
+        setIndex: () => {},
+      };
+
+      const setIndex = (newIndex: number) => {
+        sortable.index = newIndex;
+        if (!sortable.dragger.isDragging) {
+          layout();
         }
+      };
 
-        const dragHandles = container.querySelectorAll('.drag-handle-container');
-        gsap.to(dragHandles, {
-            width: 0,
-            duration: 0.4,
-            ease: "power2.inOut",
-            force3D: true // ✅ GPU
+      const layout = () => {
+        gsap.to(cardRow, {
+          y: sortable.index * rowSize,
+          duration: 0.3,
+          ease: "power2.out",
+          force3D: true, // ✅ GPU
+        });
+      };
+
+      const downAction = () => {
+        // ✅ Rimuovi box-shadow dall'animazione - usa opacity e transform
+        gsap.to(cardRow, {
+          scale: 1.02,
+          zIndex: 100,
+          duration: 0.2,
+          overwrite: "auto",
+          force3D: true, // ✅ GPU
         });
 
-        // ✅ Usa y invece di top
-        gsap.to(container, {
-            y: targetTop,
-            duration: 0.4,
-            ease: "power2.inOut",
-            force3D: true, // ✅ GPU
-            onComplete: () => {
-                const orderedIdentifiers = this.getOrderedIdentifiers();
-                console.log('Nuovo ordine da applicare:', orderedIdentifiers);
-                this.controller.applyNewOrder(orderedIdentifiers);
+        // ✅ Applica box-shadow statico via classe CSS invece di animarlo
+        cardRow.classList.add("dragging-shadow");
+      };
 
-                this.controller.notifyReadyToShow();
-                this.controller.hideBackdrop();
+      const dragAction = function (this: Draggable) {
+        const newIndex = clampIndex(Math.round(this.y / rowSize));
+        if (newIndex !== sortable.index) {
+          changeIndex(sortable, newIndex);
+        }
+      };
 
-                setTimeout(() => {
-                    this.controller.dismiss();
-                }, 250);
-            }
+      const upAction = () => {
+        // ✅ Rimuovi box-shadow dall'animazione
+        gsap.to(cardRow, {
+          scale: 1,
+          zIndex: 1,
+          duration: 0.3,
+          force3D: true, // ✅ GPU
         });
+
+        // ✅ Rimuovi classe shadow
+        cardRow.classList.remove("dragging-shadow");
+
+        layout();
+      };
+
+      const totalHeight = (totalItems - 1) * rowSize;
+
+      const draggerArray = Draggable.create(cardRow, {
+        type: "y",
+        trigger: dragHandle,
+        edgeResistance: 0.85,
+        zIndexBoost: false,
+        autoScroll: 1,
+        bounds: {
+          minY: 0,
+          maxY: totalHeight,
+        },
+        onPress: downAction,
+        onDrag: dragAction,
+        onRelease: upAction,
+      });
+
+      sortable.dragger = draggerArray[0];
+      sortable.setIndex = setIndex;
+
+      this.sortables.push(sortable);
+    });
+
+    console.log(
+      "Sortable inizializzato con",
+      this.sortables.length,
+      "elementi",
+    );
+  }
+
+  private startCloseAnimation(): void {
+    if (this.isAnimating) return;
+    this.isAnimating = true;
+
+    this.sortables.forEach((sortable) => {
+      if (sortable.dragger) {
+        sortable.dragger.kill();
+      }
+    });
+
+    this.ngZone.runOutsideAngular(() => {
+      this.animateCloseSequence();
+    });
+  }
+
+  private animateCloseSequence(): void {
+    const container = this.exerciseDataContainer.nativeElement;
+    const cardRows = container.querySelectorAll(
+      ".card-row",
+    ) as NodeListOf<HTMLElement>;
+
+    const updatedPosition = this.controller.getUpdatedContainerPosition();
+    const targetTop = updatedPosition
+      ? updatedPosition.top
+      : this.containerPosition.top;
+
+    if (cardRows.length > 0) {
+      const cardHeight = cardRows[0].offsetHeight;
+      const rowSize = cardHeight + this.GAP;
+
+      this.sortables.forEach((sortable, idx) => {
+        gsap.to(sortable.element, {
+          y: idx * rowSize,
+          scale: 1,
+          zIndex: 1,
+          duration: 0.2,
+          ease: "power2.out",
+          force3D: true, // ✅ GPU
+        });
+      });
     }
 
-    private getOrderedIdentifiers(): number[] {
-        return this.sortables
-            .map(sortable => sortable.exerciseIdentifier)
-            .filter((id): id is number => id !== null && id !== undefined && id !== -1);
-    }
+    const dragHandles = container.querySelectorAll(".drag-handle-container");
+    gsap.to(dragHandles, {
+      width: 0,
+      duration: 0.4,
+      ease: "power2.inOut",
+      force3D: true, // ✅ GPU
+    });
 
-    onCardClick(event: Event): void {
-        event.stopPropagation();
-    }
+    // ✅ Usa y invece di top
+    gsap.to(container, {
+      y: targetTop,
+      duration: 0.4,
+      ease: "power2.inOut",
+      force3D: true, // ✅ GPU
+      onComplete: () => {
+        const orderedIdentifiers = this.getOrderedIdentifiers();
+        console.log("Nuovo ordine da applicare:", orderedIdentifiers);
+        this.controller.applyNewOrder(orderedIdentifiers);
 
-    onConfirmClick(event: Event): void {
-        event.stopPropagation();
-        this.startCloseAnimation();
-    }
+        this.controller.notifyReadyToShow();
+        this.controller.hideBackdrop();
 
-    getControl(esercizioForm: EsercizioForm, controlName: string): FormControl {
-        return esercizioForm.form.controls[controlName] as FormControl;
-    }
+        setTimeout(() => {
+          this.controller.dismiss();
+        }, 250);
+      },
+    });
+  }
 
-    getExerciseIconPath(exerciseId: number): string {
-        return this.exerciseService.getExerciseIconPathByExerciseId(exerciseId);
-    }
+  private getOrderedIdentifiers(): number[] {
+    return this.sortables
+      .map((sortable) => sortable.exerciseIdentifier)
+      .filter(
+        (id): id is number => id !== null && id !== undefined && id !== -1,
+      );
+  }
+
+  onCardClick(event: Event): void {
+    event.stopPropagation();
+  }
+
+  onConfirmClick(event: Event): void {
+    this.hapticService.trigger("light");
+    event.stopPropagation();
+    this.startCloseAnimation();
+  }
+
+  getControl(esercizioForm: EsercizioForm, controlName: string): FormControl {
+    return esercizioForm.form.controls[controlName] as FormControl;
+  }
+
+  getExerciseIconPath(exerciseId: number): string {
+    return this.exerciseService.getExerciseIconPathByExerciseId(exerciseId);
+  }
 }

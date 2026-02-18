@@ -98,7 +98,7 @@ export class SchedaCorrente {
 
   visualizzaDatiScheda(idScheda: number) {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.router.navigate(["/le-mie-schede/visualizza-scheda", idScheda]);
     } catch (error) {
       this.errorHandlerService.logError(
@@ -110,7 +110,7 @@ export class SchedaCorrente {
 
   NavigaAElencoTemplateSchede() {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.router.navigate(["/le-mie-schede"]);
     } catch (error) {
       this.errorHandlerService.logError(

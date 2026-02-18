@@ -84,7 +84,7 @@ export class ProssimoAllenamento implements OnInit {
 
   NavigaARegistraAllenamento() {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.router.navigate(
         ["/registra-allenamento/", this.idTemplateAllenamento],
         {
@@ -106,7 +106,7 @@ export class ProssimoAllenamento implements OnInit {
 
   NavigaAElencoTemplateSchede() {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.router.navigate(["/le-mie-schede"]);
     } catch (error) {
       this.errorHandlerService.logError(

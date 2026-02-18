@@ -18,7 +18,7 @@ export class BottomSheetService {
    * Apre un nuovo Bottom Sheet
    */
   async open<T = any, R = any>(config: BottomSheetConfig<T>): Promise<BottomSheetRef<R>> {
-    this.hapticService.trigger('light');
+    this.hapticService.trigger('medium');
     const id = this.generateUniqueId();
 
     let closeResolve: ((result: BottomSheetDismissResult<R>) => void) | undefined;

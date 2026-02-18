@@ -168,6 +168,12 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           "assets/recollect/svg/google-add.svg",
         ),
       );
+      iconRegistry.addSvgIcon(
+        "google-reorder",
+        sanitizer.bypassSecurityTrustResourceUrl(
+          "assets/recollect/svg/google-reorder.svg",
+        ),
+      );
 
       const navigation = this.router.getCurrentNavigation();
       const state = navigation?.extras.state as {

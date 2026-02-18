@@ -359,6 +359,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
 
   visualizzaDatiScheda(idScheda: number) {
     try {
+      this.hapticService.trigger("light");
       this.closeAllSwipes();
       this.router.navigate(["/le-mie-schede/visualizza-scheda", idScheda]);
     } catch (error) {
@@ -371,7 +372,6 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
 
   createNewScheda() {
     try {
-      this.hapticService.trigger('light');
       this.router.navigate(["/le-mie-schede/modifica-scheda"]);
     } catch (error) {
       this.errorHandlerService.logError(

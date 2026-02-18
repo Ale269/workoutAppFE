@@ -9,6 +9,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { gsap } from "gsap";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 export interface buttonOption {
   optionId: number;
@@ -61,9 +62,9 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
   private originalWidths = new Map<HTMLElement, number>();
   private naturalHeights = { left: 0, right: 0 };
 
-  constructor() { }
+  constructor(private hapticService: HapticService) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -75,12 +76,12 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
   private calculateNaturalHeights() {
     if (this.leftTransformedContent) {
       this.naturalHeights.left = this.getHiddenHeight(
-        this.leftTransformedContent.nativeElement
+        this.leftTransformedContent.nativeElement,
       );
     }
     if (this.rightTransformedContent) {
       this.naturalHeights.right = this.getHiddenHeight(
-        this.rightTransformedContent.nativeElement
+        this.rightTransformedContent.nativeElement,
       );
     }
   }
@@ -124,6 +125,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
   }
 
   onOptionClick(groupId: number, optionId: number, side: MenuSide) {
+    this.hapticService.trigger("light");
     this.optionSelected.emit({
       groupId: groupId,
       optionId: optionId,
@@ -133,6 +135,8 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
   }
 
   expandButton(side: MenuSide) {
+    this.hapticService.trigger("light");
+
     if (this.expandedSide || this.isAnimating) return;
     this.isAnimating = true;
 
@@ -156,10 +160,12 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     // Elementi da nascondere (tutti tranne quello attivo)
     const toHide: HTMLElement[] = [];
     if (side === "left") {
-      if (this.rightTransformButton) toHide.push(this.rightTransformButton.nativeElement);
+      if (this.rightTransformButton)
+        toHide.push(this.rightTransformButton.nativeElement);
       toHide.push(this.staticButton.nativeElement);
     } else {
-      if (this.leftTransformButton) toHide.push(this.leftTransformButton.nativeElement);
+      if (this.leftTransformButton)
+        toHide.push(this.leftTransformButton.nativeElement);
       toHide.push(this.staticButton.nativeElement);
     }
 
@@ -205,7 +211,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
           duration: 0.075,
           ease: "power2.in",
         },
-        "-=0.05"
+        "-=0.05",
       )
 
       // FASE 4: Espandi il wrapper e la larghezza del pulsante con bounce
@@ -216,7 +222,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
           duration: 0.15,
           ease: "back.out(1.3)",
         },
-        "-=0.05"
+        "-=0.05",
       )
       .to(
         activeBtn,
@@ -225,7 +231,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
           duration: 0.16,
           ease: "back.out(1.4)",
         },
-        "<"
+        "<",
       )
 
       // FASE 5: Aggiungi classe transformed DOPO che la larghezza è completa
@@ -242,11 +248,13 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
           duration: 0.175,
           ease: "back.out(1.5)",
         },
-        "+=0.02"
+        "+=0.02",
       );
   }
 
   collapseButton(side: MenuSide) {
+    this.hapticService.trigger("light");
+
     if (!this.expandedSide || this.isAnimating) return;
     this.isAnimating = true;
 
@@ -268,10 +276,12 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     // Elementi da ripristinare
     const toRestore: HTMLElement[] = [];
     if (side === "left") {
-      if (this.rightTransformButton) toRestore.push(this.rightTransformButton.nativeElement);
+      if (this.rightTransformButton)
+        toRestore.push(this.rightTransformButton.nativeElement);
       toRestore.push(this.staticButton.nativeElement);
     } else {
-      if (this.leftTransformButton) toRestore.push(this.leftTransformButton.nativeElement);
+      if (this.leftTransformButton)
+        toRestore.push(this.leftTransformButton.nativeElement);
       toRestore.push(this.staticButton.nativeElement);
     }
 
@@ -335,7 +345,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
           duration: 0.14,
           ease: "back.in(1.4)",
         },
-        "+=0.02"
+        "+=0.02",
       )
 
       // FASE 4: Riduci il wrapper contemporaneamente con bounce
@@ -346,7 +356,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
           duration: 0.14,
           ease: "back.in(1.3)",
         },
-        "<"
+        "<",
       )
 
       // FASE 5: Mostra il contenuto base
@@ -358,7 +368,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
           duration: 0.075,
           ease: "power2.out",
         },
-        "-=0.12"
+        "-=0.12",
       )
 
       // FASE 6: Ripristina il gap del wrapper
@@ -377,7 +387,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
             toRestore.forEach((el) => (el.style.pointerEvents = ""));
           },
         },
-        "-=0.05"
+        "-=0.05",
       )
       .to(
         toRestore,
@@ -386,7 +396,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
           duration: 0.075,
           ease: "power2.out",
         },
-        "<0.05"
+        "<0.05",
       )
       .call(() => {
         gsap.set(toRestore, { clearProps: "width" });

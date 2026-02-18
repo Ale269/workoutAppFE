@@ -312,7 +312,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   backToList() {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.onBackToList.emit();
     } catch (error) {
       this.errorHandlerService.logError(error, "WorkoutComponent.backToList");

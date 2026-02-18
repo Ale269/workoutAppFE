@@ -10,6 +10,7 @@ import {
 } from "src/app/core/services/menu-config.service";
 import { MatIconModule, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
+import { HapticService } from "src/app/core/services/haptic.service";
 
 @Component({
   selector: "app-menu-component",
@@ -28,6 +29,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     private menuConfigService: MenuConfigService,
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
+    private hapticService: HapticService,
   ) {
     iconRegistry.addSvgIcon(
       "google-menu",
@@ -62,6 +64,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   toggleMenu() {
+    this.hapticService.trigger("light");
     this.isMenuOpen = !this.isMenuOpen;
   }
 
@@ -71,11 +74,14 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   onLeftButtonClick() {
     if (this.menuConfig.onLeftButtonClick) {
+      this.hapticService.trigger("light");
       this.menuConfig.onLeftButtonClick();
     }
   }
 
   navigateToTemplateSchede() {
+    this.hapticService.trigger("light");
+
     this.closeMenu();
     setTimeout(() => {
       this.router.navigate(["/le-mie-schede"]);
@@ -83,6 +89,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   navigateToAccount() {
+    this.hapticService.trigger("light");
     this.closeMenu();
     setTimeout(() => {
       alert("Funzionalità in arrivo");
@@ -90,6 +97,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   navigateToSchedeSvolte() {
+    this.hapticService.trigger("light");
+
     this.closeMenu();
     setTimeout(() => {
       alert("Funzionalità in arrivo");
@@ -97,6 +106,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   navigateToAllenamentiSvolti() {
+    this.hapticService.trigger("light");
+
     this.closeMenu();
     setTimeout(() => {
       this.router.navigate(["/allenamenti-svolti"]);
@@ -104,6 +115,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   navigateToInfo() {
+    this.hapticService.trigger("light");
+
     this.closeMenu();
     setTimeout(() => {
       this.router.navigate(["/info"]);
@@ -111,6 +124,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   navigateToInfoServer() {
+    this.hapticService.trigger("light");
+
     this.closeMenu();
     setTimeout(() => {
       this.router.navigate(["/info-server"]);
@@ -118,6 +133,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   navigateToAdminUsers() {
+    this.hapticService.trigger("light");
+
     this.closeMenu();
     setTimeout(() => {
       this.router.navigate(["/admin/users"]);
@@ -130,6 +147,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   callLogout(): void {
+    this.hapticService.trigger("light");
+
     this.authService.logout();
   }
 }

@@ -1,7 +1,6 @@
 @if(this.loadingProgression === LoadingProgressionEnum.complete){
 <div class="page-scroller">
   <div class="content">
-
     @if(this.createOrEditWorkoutExecutionService.AllenamentoForm.form){
     <div class="workout-data">
       <div class="section-title-container">
@@ -34,7 +33,15 @@
         </form>
       </div>
     </div>
-
+    <div class="section-title">
+      <div class="text-section-container">
+        <h2 class="text-title">Lista esercizi</h2>
+        <div class="small-inline-button" (click)="toggleCompactMode()">
+          <button>Riordina</button>
+          <mat-icon svgIcon="google-reorder"></mat-icon>
+        </div>
+      </div>
+    </div>
     <div #exerciseDataContainer class="exercise-data">
       @for (esercizioForm of
       this.createOrEditWorkoutExecutionService.AllenamentoForm.listaEserciziForm;
@@ -110,7 +117,11 @@ this.loadingProgression === LoadingProgressionEnum.loading){
 
 <!-- Templates modali -->
 <ng-template #headerGoBack>
-  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
 </ng-template>
 
 <ng-template #bodyGoBack>

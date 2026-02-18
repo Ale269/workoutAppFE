@@ -275,7 +275,7 @@ export class ViewTemplatePlan {
 
   modificaScheda() {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.router.navigate(["/le-mie-schede/modifica-scheda/", this.idScheda], {
         state: { scheda: this.scheda },
       });
@@ -373,6 +373,8 @@ export class ViewTemplatePlan {
 
   onAttivazioneStateChange(newState: boolean) {
     try {
+      this.hapticService.trigger("light");
+
       this.cambiaStatoAttivazioneScheda(newState);
     } catch (error) {
       this.errorHandlerService.logError(

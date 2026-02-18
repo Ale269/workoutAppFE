@@ -317,7 +317,7 @@ export class ListExecutedPlans {
 
   createNewScheda() {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.router.navigate(["/le-mie-schede/modifica-scheda"]);
     } catch (error) {
       this.errorHandlerService.logError(

@@ -65,7 +65,7 @@ export class UltimeSchedeSvolte {
   }
 
   mostraFunzionalitaInArrivo(): void {
-    this.hapticService.trigger('light');
+    this.hapticService.trigger('medium');
     alert("Funzionalità in arrivo");
   }
 }

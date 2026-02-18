@@ -15,6 +15,17 @@ app-multi-option-button {
   width: 100%;
 }
 
+.section-title {
+  padding: 16px;
+  padding-top: 0;
+}
+
+.text-section-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .date-row {
   padding-bottom: 32px;
 

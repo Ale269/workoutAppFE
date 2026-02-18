@@ -453,6 +453,8 @@ export class CreateOrEditTemplatePlanComponent
 
   // Metodi per la navigazione animata tra viste
   public async openWorkoutDetail(workout: AllenamentoForm): Promise<void> {
+          this.hapticService.trigger('light');
+
     if (this.isAnimating) return;
 
     try {
@@ -666,6 +668,8 @@ export class CreateOrEditTemplatePlanComponent
 
   onAttivazioneStateChange(newState: boolean) {
     try {
+      this.hapticService.trigger("light");
+
       this.createOrEditTemplatePlanService.formScheda.toggleActiveState(
         newState,
       );

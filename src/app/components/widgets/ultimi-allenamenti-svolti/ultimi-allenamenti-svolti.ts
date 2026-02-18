@@ -69,7 +69,7 @@ export class UltimiAllenamentiSvolti {
 
   NavigaAElencoAllenamentiSchede() {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.router.navigate(["/allenamenti-svolti"]);
     } catch (error) {
       this.errorHandlerService.logError(
@@ -81,7 +81,7 @@ export class UltimiAllenamentiSvolti {
 
   NavigaAElencoTemplateSchede() {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.router.navigate(["/le-mie-schede"]);
     } catch (error) {
       this.errorHandlerService.logError(
@@ -93,7 +93,7 @@ export class UltimiAllenamentiSvolti {
 
   NavigaAVisualizzaAllenamento(idAllenamento: number) {
     try {
-      this.hapticService.trigger('light');
+      this.hapticService.trigger('medium');
       this.router.navigate([
         "/allenamenti-svolti/visualizza-allenamento",
         idAllenamento,
