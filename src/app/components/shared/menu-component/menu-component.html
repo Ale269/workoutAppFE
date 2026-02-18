@@ -2,20 +2,17 @@
 <div class="menu-wrapper">
   <!-- Menu fisso in alto -->
   <div class="app-menu-container">
-    
-    <div
-      class="left-button"
-      [class.hidden]="isMenuOpen || menuConfig.leftButton === 'none'"
-      (click)="onLeftButtonClick()"
-    >
+
+    <div class="left-button" [class.hidden]="isMenuOpen || menuConfig.leftButton === 'none'"
+      (click)="onLeftButtonClick()">
       @if(menuConfig.leftButton === 'back') {
-        <div class="menu-btn-container reverse-icon">
-          <mat-icon svgIcon="google-arrow"></mat-icon>
-        </div>
+      <div class="menu-btn-container reverse-icon adjust-looking-icon">
+        <mat-icon svgIcon="google-arrow"></mat-icon>
+      </div>
       } @else if(menuConfig.leftButton === 'close') {
-        <div class="menu-btn-container">
-          <mat-icon svgIcon="google-close"></mat-icon>
-        </div>
+      <div class="menu-btn-container">
+        <mat-icon svgIcon="google-close"></mat-icon>
+      </div>
       }
     </div>
 
@@ -35,16 +32,8 @@
   </div>
 
   <!-- Overlay fullscreen menu -->
-  <div
-    class="fullscreen-menu-overlay"
-    [class.menu-open]="isMenuOpen"
-    (click)="closeMenu()"
-  >
-    <div
-      class="menu-items-container"
-      [class.items-visible]="isMenuOpen"
-      (click)="$event.stopPropagation()"
-    >
+  <div class="fullscreen-menu-overlay" [class.menu-open]="isMenuOpen" (click)="closeMenu()">
+    <div class="menu-items-container" [class.items-visible]="isMenuOpen" (click)="$event.stopPropagation()">
       <div class="menu-item" (click)="navigateToAccount()">
         <h3 class="text-white">Account</h3>
       </div>

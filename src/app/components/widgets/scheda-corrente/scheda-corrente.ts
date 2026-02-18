@@ -44,7 +44,7 @@ export class SchedaCorrente {
     );
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   getDatiSchedaCorrenteWidget(idUtente: number): Promise<null> {
     return new Promise((resolve, reject) => {
@@ -98,8 +98,10 @@ export class SchedaCorrente {
 
   visualizzaDatiScheda(idScheda: number) {
     try {
-      this.hapticService.trigger('medium');
-      this.router.navigate(["/le-mie-schede/visualizza-scheda", idScheda]);
+      this.hapticService.trigger("medium");
+      this.router.navigate(["/le-mie-schede/visualizza-scheda", idScheda], {
+        state: { fromHomeWidget: true },
+      });
     } catch (error) {
       this.errorHandlerService.logError(
         error,
@@ -110,7 +112,7 @@ export class SchedaCorrente {
 
   NavigaAElencoTemplateSchede() {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       this.router.navigate(["/le-mie-schede"]);
     } catch (error) {
       this.errorHandlerService.logError(

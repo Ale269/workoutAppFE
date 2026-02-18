@@ -108,6 +108,7 @@ export class ProssimoAllenamento implements OnInit {
     try {
       this.hapticService.trigger('medium');
       this.router.navigate(["/le-mie-schede"]);
+   
     } catch (error) {
       this.errorHandlerService.logError(
         error,

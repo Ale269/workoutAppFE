@@ -66,6 +66,8 @@ export class ViewDataExecutedWorkout {
   public allenamento!: AllenamentoDTO;
   private currentSpinnerId: string | null = null;
 
+  private fromHomeWidget: boolean = false; // per il navigate back
+
   public leftButtonOptionsGroup: multiOptionGroup[] = [
     {
       id: 1,
@@ -99,6 +101,14 @@ export class ViewDataExecutedWorkout {
       this.idAllenamento = Number(
         this.activatedRouter.snapshot.paramMap.get("id"),
       );
+      const navigation = this.router.getCurrentNavigation();
+      const state = navigation?.extras.state as {
+        fromHomeWidget: boolean;
+      };
+
+      if (state?.fromHomeWidget) {
+        this.fromHomeWidget = state.fromHomeWidget;
+      }
     } catch (error) {
       this.errorHandlerService.logError(
         error,
@@ -240,7 +250,11 @@ export class ViewDataExecutedWorkout {
 
   goBack() {
     try {
-      this.router.navigate(["/allenamenti-svolti"]);
+      if (this.fromHomeWidget) {
+        this.router.navigate(["/"]);
+      } else {
+        this.router.navigate(["/allenamenti-svolti"]);
+      }
     } catch (error) {
       this.errorHandlerService.logError(
         error,
@@ -251,7 +265,7 @@ export class ViewDataExecutedWorkout {
 
   modificaAllenamento() {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       this.router.navigate(
         ["/allenamenti-svolti/modifica-allenamento/", this.idAllenamento],
         {

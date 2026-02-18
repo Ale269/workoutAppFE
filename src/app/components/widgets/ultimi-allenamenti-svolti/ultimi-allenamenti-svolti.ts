@@ -38,7 +38,7 @@ export class UltimiAllenamentiSvolti {
     );
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   getDatiUltimiAllenamentiSvoltiWidget(idUtente: number): Promise<null> {
     return new Promise((resolve, reject) => {
@@ -69,7 +69,7 @@ export class UltimiAllenamentiSvolti {
 
   NavigaAElencoAllenamentiSchede() {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       this.router.navigate(["/allenamenti-svolti"]);
     } catch (error) {
       this.errorHandlerService.logError(
@@ -81,7 +81,7 @@ export class UltimiAllenamentiSvolti {
 
   NavigaAElencoTemplateSchede() {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       this.router.navigate(["/le-mie-schede"]);
     } catch (error) {
       this.errorHandlerService.logError(
@@ -93,11 +93,13 @@ export class UltimiAllenamentiSvolti {
 
   NavigaAVisualizzaAllenamento(idAllenamento: number) {
     try {
-      this.hapticService.trigger('medium');
-      this.router.navigate([
-        "/allenamenti-svolti/visualizza-allenamento",
-        idAllenamento,
-      ]);
+      this.hapticService.trigger("medium");
+      this.router.navigate(
+        ["/allenamenti-svolti/visualizza-allenamento", idAllenamento],
+        {
+          state: { fromHomeWidget: true },
+        },
+      );
     } catch (error) {
       this.errorHandlerService.logError(
         error,
