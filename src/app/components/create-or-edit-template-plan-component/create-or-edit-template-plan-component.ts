@@ -22,7 +22,7 @@ import { MatLabel, MatFormField, MatInput } from "@angular/material/input";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
 import { SpinnerService } from "src/app/core/services/spinner.service";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { SaveDatiTemplateSchedaRequestModel } from "src/app/models/view-modifica-scheda/saveDatiTemplateScheda";
 import { AuthService } from "src/app/core/services/auth.service";
 import { WorkoutService } from "src/app/core/services/workout.service";
@@ -41,12 +41,12 @@ import {
 } from "../shared/multi-option-button/multi-option-button";
 import { FocusOverlayService } from "../shared/focus-overlay/focus-overlay.service";
 import { ReorderWorkoutComponent } from "./workout-component/reorder-workout-component/reorder-workout-component";
-import { Observable, Subject } from "rxjs";
-import { CanComponentDeactivate } from "src/app/core/guards/pending-changes.guard";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { WorkoutStorageService, TemplateStorageData } from "src/app/core/services/workout-storage.service";
+import { SchedaDTO as SchedaFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/schedadto";
 
 // Registra il plugin Draggable
 gsap.registerPlugin(Draggable);
@@ -69,7 +69,7 @@ gsap.registerPlugin(Draggable);
   styleUrl: "./create-or-edit-template-plan-component.scss",
 })
 export class CreateOrEditTemplatePlanComponent
-  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
+  implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("listView") listView!: ElementRef<HTMLElement>;
   @ViewChild("detailView") detailView!: ElementRef<HTMLElement>;
   @ViewChildren("workoutCard") allenamentoCards!: QueryList<ElementRef>;
@@ -130,6 +130,9 @@ export class CreateOrEditTemplatePlanComponent
 
   private currentSpinnerId: string | null = null;
 
+  private autoSaveIntervalId: any = null;
+  private lastSavedSnapshot: string = "";
+
   // Gestione swipe
   private draggableInstances: any[] = [];
 
@@ -147,34 +150,6 @@ export class CreateOrEditTemplatePlanComponent
     },
   ];
 
-  canDeactivate(): Observable<boolean> | boolean {
-    if (this.createOrEditTemplatePlanService.formScheda.form.pristine) {
-      return true;
-    }
-
-    // Creiamo un Subject che emetterà true (naviga) o false (resta)
-    const navigationResponse$ = new Subject<boolean>();
-
-    // Apriamo il modale
-    this.modalService.open({
-      warning: true,
-      headerTemplate: this.headerGoBack,
-      bodyTemplate: this.bodyGoBack,
-      footerCloseTemplate: this.footerCloseGoBack,
-      footerConfirmTemplate: this.footerConfirmGoBack,
-      onConfirm: () => {
-        navigationResponse$.next(true);
-        navigationResponse$.complete();
-      },
-      onClose: () => {
-        navigationResponse$.next(false);
-        navigationResponse$.complete();
-      },
-    });
-
-    return navigationResponse$.asObservable();
-  }
-
   constructor(
     private errorHandlerService: ErrorHandlerService,
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
@@ -190,6 +165,8 @@ export class CreateOrEditTemplatePlanComponent
     private sanitizer: DomSanitizer,
     private menuConfigService: MenuConfigService,
     private hapticService: HapticService,
+    private activatedRoute: ActivatedRoute,
+    private workoutStorageService: WorkoutStorageService,
   ) {
     try {
       iconRegistry.addSvgIcon(
@@ -227,6 +204,11 @@ export class CreateOrEditTemplatePlanComponent
 
   ngOnInit(): void {
     try {
+      // Se non abbiamo la scheda (PWA reload), recupera l'ID dalla URL
+      if (!this.scheda) {
+        this.recoverSchedaIdFromUrl();
+      }
+
       let navigationText: string = "";
 
       if (this.isNuovaScheda) {
@@ -237,6 +219,17 @@ export class CreateOrEditTemplatePlanComponent
 
       this.menuConfigService.setCloseModal(() => this.goBack(), navigationText);
 
+      this.loadingProgression = LoadingProgression.loading;
+
+      // Controlla se esiste una sessione in cache da recuperare
+      const schedaId = this.scheda?.id ?? -1;
+      const cachedData = this.workoutStorageService.loadTemplate();
+      if (cachedData && cachedData.schedaId === schedaId) {
+        this.restoreFromCache(cachedData);
+        this.startAutoSave();
+        return;
+      }
+
       this.currentSpinnerId = this.spinnerService.showWithResult(
         "Inizializzazione dati scheda",
         {
@@ -246,8 +239,6 @@ export class CreateOrEditTemplatePlanComponent
           minSpinnerDuration: 250,
         },
       );
-
-      this.loadingProgression = LoadingProgression.loading;
 
       if (this.scheda) {
         this.createOrEditTemplatePlanService.initializeFormWithData(
@@ -272,6 +263,8 @@ export class CreateOrEditTemplatePlanComponent
 
         this.loadingProgression = LoadingProgression.complete;
       }
+
+      this.startAutoSave();
     } catch (error) {
       setTimeout(() => {
         if (this.currentSpinnerId) {
@@ -285,6 +278,83 @@ export class CreateOrEditTemplatePlanComponent
       );
 
       this.loadingProgression = LoadingProgression.failed;
+    }
+  }
+
+  private recoverSchedaIdFromUrl(): void {
+    const url = this.router.url;
+    if (url.includes("modifica-scheda/")) {
+      const routeId = Number(this.activatedRoute.snapshot.params["id"]) || 0;
+      if (routeId > 0) {
+        // In edit mode senza navigation state, creiamo un oggetto scheda minimale
+        // per poter matchare la cache
+        this.scheda = {
+          id: routeId,
+          nomeScheda: "",
+          idTemplate: 0,
+          listaAllenamenti: [],
+          schedaAttiva: false,
+          description: "",
+        };
+      }
+    }
+  }
+
+  private restoreFromCache(data: TemplateStorageData): void {
+    try {
+      this.createOrEditTemplatePlanService.initializeFromFormDTO(data.formDTO);
+
+      // I dati recuperati sono lavoro in corso, marca come dirty
+      this.createOrEditTemplatePlanService.formScheda.form.markAsDirty();
+      this.loadingProgression = LoadingProgression.complete;
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditTemplatePlanComponent.restoreFromCache",
+      );
+      this.workoutStorageService.clearTemplate();
+      this.loadingProgression = LoadingProgression.failed;
+    }
+  }
+
+  private startAutoSave(): void {
+    this.stopAutoSave();
+    this.autoSaveIntervalId = setInterval(() => {
+      this.saveToLocalStorage();
+    }, 5000);
+  }
+
+  private stopAutoSave(): void {
+    if (this.autoSaveIntervalId) {
+      clearInterval(this.autoSaveIntervalId);
+      this.autoSaveIntervalId = null;
+    }
+  }
+
+  private saveToLocalStorage(): void {
+    try {
+      if (!this.createOrEditTemplatePlanService.formScheda) return;
+
+      const formDTO: SchedaFormDTO =
+        this.createOrEditTemplatePlanService.formScheda.getFormDTO();
+
+      const snapshot: TemplateStorageData = {
+        version: 1,
+        schedaId: this.scheda?.id ?? -1,
+        formDTO: formDTO,
+        savedAt: "",
+      };
+
+      const snapshotJson = JSON.stringify(snapshot);
+      if (snapshotJson !== this.lastSavedSnapshot) {
+        this.workoutStorageService.saveTemplate(snapshot);
+        this.lastSavedSnapshot = snapshotJson;
+      }
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditTemplatePlanComponent.saveToLocalStorage",
+      );
     }
   }
 
@@ -304,6 +374,7 @@ export class CreateOrEditTemplatePlanComponent
   }
 
   ngOnDestroy(): void {
+    this.stopAutoSave();
     if (this.initSpinnerId) {
       this.spinnerService.hide(this.initSpinnerId);
     }
@@ -714,6 +785,7 @@ export class CreateOrEditTemplatePlanComponent
         this.createOrEditTemplatePlanService
           .savePlan(SaveDatiTemplateSchedaRequest)
           .then((response) => {
+            this.workoutStorageService.clearTemplate();
             this.resetAll(response);
 
             if (this.saveSpinnerId) {
@@ -775,6 +847,7 @@ export class CreateOrEditTemplatePlanComponent
           footerConfirmTemplate: this.footerConfirmGoBack,
           onConfirm: () => {
             this.createOrEditTemplatePlanService.formScheda.form.markAsPristine();
+            this.workoutStorageService.clearTemplate();
             if (this.scheda) {
               this.router.navigate([
                 "/le-mie-schede/visualizza-scheda",
@@ -786,6 +859,7 @@ export class CreateOrEditTemplatePlanComponent
           },
         });
       } else {
+        this.workoutStorageService.clearTemplate();
         if (this.scheda) {
           this.router.navigate([
             "/le-mie-schede/visualizza-scheda",
@@ -853,6 +927,7 @@ export class CreateOrEditTemplatePlanComponent
             if (this.currentSpinnerId) {
               this.spinnerService.setSuccess(this.currentSpinnerId);
             }
+            this.workoutStorageService.clearTemplate();
             this.router.navigate(["/le-mie-schede"]);
           })
           .catch((objError) => {
@@ -865,6 +940,7 @@ export class CreateOrEditTemplatePlanComponent
             );
           });
       } else {
+        this.workoutStorageService.clearTemplate();
         this.router.navigate(["/le-mie-schede"]);
       }
     } catch (error) {

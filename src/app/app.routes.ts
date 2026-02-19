@@ -16,7 +16,7 @@ import { ViewDataExecutedWorkout } from "./components/view-data-executed-workout
 import { AdminGuard } from "./core/guards/admin.guard";
 import { AdminUserListComponent } from "./components/admin/admin-user-list/admin-user-list";
 import { AdminUserFormComponent } from "./components/admin/admin-user-form/admin-user-form";
-import { PendingChangesGuard } from "./core/guards/pending-changes.guard";
+
 
 export const routes: Routes = [
   {
@@ -59,7 +59,7 @@ export const routes: Routes = [
     path: "le-mie-schede/modifica-scheda/:id",
     component: CreateOrEditTemplatePlanComponent,
     canActivate: [AuthGuard],
-    canDeactivate: [PendingChangesGuard],
+    canDeactivate: [],
   },
   {
     path: "le-mie-schede/modifica-scheda",
@@ -71,7 +71,7 @@ export const routes: Routes = [
     path: "registra-allenamento/:id",
     component: CreateOrEditWorkoutExecution,
     canActivate: [AuthGuard],
-    canDeactivate: [PendingChangesGuard],
+    canDeactivate: [],
   },
   {
     path: "allenamenti-svolti",
@@ -89,7 +89,7 @@ export const routes: Routes = [
     path: "allenamenti-svolti/modifica-allenamento/:id",
     component: CreateOrEditWorkoutExecution,
     canActivate: [AuthGuard],
-    canDeactivate: [PendingChangesGuard],
+    canDeactivate: [],
   },
   {
     path: "error",

@@ -98,6 +98,15 @@ export class CreateOrEditTemplatePlanService {
     }
   }
 
+  initializeFromFormDTO(formDTO: SchedaFormDTO): void {
+    try {
+      this.formScheda = new SchedaForm();
+      this.formScheda.updateForm(formDTO);
+    } catch (error) {
+      throw new Error(`initializeFromFormDTO: ${error}`);
+    }
+  }
+
   initializeEmptyForm(): void {
     try {
       this.formScheda = new SchedaForm();

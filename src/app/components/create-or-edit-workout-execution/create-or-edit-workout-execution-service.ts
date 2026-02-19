@@ -232,6 +232,16 @@ export class CreateOrEditWorkoutExecutionService {
     );
   }
 
+  InitializeFromFormDTO(formDTO: AllenamentoFormDTO): void {
+    try {
+      this.AllenamentoForm = new AllenamentoForm(0, formDTO);
+    } catch (error) {
+      throw new Error(
+        "CreateOrEditWorkoutExecutionService.InitializeFromFormDTO: " + error
+      );
+    }
+  }
+
   resetData() {
     try {
       this.AllenamentoForm.resetForm();

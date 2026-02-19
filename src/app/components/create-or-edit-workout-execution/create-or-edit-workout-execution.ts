@@ -21,7 +21,7 @@ import {
   multiOptionGroup,
   OptionSelectedEvent,
 } from "../shared/multi-option-button/multi-option-button";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { AllenamentoDTO as AllenamentoFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/allenamentodto";
 import { AllenamentoDTO } from "src/app/models/view-modifica-allenamento-svolto/allenamentodto";
 import { EsercizioDTO } from "src/app/models/view-modifica-allenamento-svolto/eserciziodto";
@@ -40,11 +40,11 @@ import { LongPressDirective } from "../shared/directives/long-press.directive";
 import { FocusOverlayService } from "../shared/focus-overlay/focus-overlay.service";
 import { ReorderExerciseComponent } from "../create-or-edit-template-plan-component/workout-component/reorder-exercise-component/reorder-exercise-component";
 import gsap from "gsap";
-import { Observable, Subject } from "rxjs";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { WorkoutStorageService, WorkoutStorageData } from "src/app/core/services/workout-storage.service";
 
 @Component({
   selector: "app-create-or-edit-workout-execution",
@@ -100,6 +100,9 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   public isCompactMode: boolean = false; // Stato per modalità compatta
 
+  private autoSaveIntervalId: any = null;
+  private lastSavedSnapshot: string = "";
+
   // Definisci le opzioni del pulsante
   public rightButtonOptionsGroup: multiOptionGroup[] = [];
 
@@ -117,36 +120,6 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     },
   ];
 
-  canDeactivate(): Observable<boolean> | boolean {
-    if (
-      this.createOrEditWorkoutExecutionService.AllenamentoForm.form.pristine
-    ) {
-      return true;
-    }
-
-    // Creiamo un Subject che emetterà true (naviga) o false (resta)
-    const navigationResponse$ = new Subject<boolean>();
-
-    // Apriamo il modale
-    this.modalService.open({
-      warning: true,
-      headerTemplate: this.headerGoBack,
-      bodyTemplate: this.bodyGoBack,
-      footerCloseTemplate: this.footerCloseGoBack,
-      footerConfirmTemplate: this.footerConfirmGoBack,
-      onConfirm: () => {
-        navigationResponse$.next(true);
-        navigationResponse$.complete();
-      },
-      onClose: () => {
-        navigationResponse$.next(false);
-        navigationResponse$.complete();
-      },
-    });
-
-    return navigationResponse$.asObservable();
-  }
-
   constructor(
     private errorHandlerService: ErrorHandlerService,
     private spinnerService: SpinnerService,
@@ -160,6 +133,8 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private menuConfigService: MenuConfigService,
     private hapticService: HapticService,
+    private activatedRoute: ActivatedRoute,
+    private workoutStorageService: WorkoutStorageService,
   ) {
     try {
       iconRegistry.addSvgIcon(
@@ -228,6 +203,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.stopAutoSave();
     // Chiudi eventuali spinner attivi
     if (this.initSpinnerId) {
       this.spinnerService.hide(this.initSpinnerId);
@@ -331,6 +307,29 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     try {
       this.loadingProgression = LoadingProgression.loading;
 
+      // Se non abbiamo il mode (PWA reload), recupera da URL
+      if (!this.createOrEdit) {
+        this.recoverModeFromUrl();
+      }
+
+      if (!this.createOrEdit) {
+        this.loadingProgression = LoadingProgression.failed;
+        return;
+      }
+
+      // Controlla se esiste una sessione in cache da recuperare
+      const cachedData = this.workoutStorageService.load();
+      if (
+        cachedData &&
+        cachedData.createOrEdit === this.createOrEdit &&
+        cachedData.idTemplateAllenamento === this.idTemplateAllenamento &&
+        cachedData.idAllenamento === this.idAllenamento
+      ) {
+        this.restoreFromCache(cachedData);
+        this.startAutoSave();
+        return;
+      }
+
       switch (this.createOrEdit) {
         case createOrEdit.create:
           this.getDatiTemplateNuovoAllenamento();
@@ -357,6 +356,8 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
               if (this.initSpinnerId) {
                 this.spinnerService.setSuccess(this.initSpinnerId);
               }
+
+              this.startAutoSave();
             } catch (error) {
               if (this.initSpinnerId) {
                 this.spinnerService.setError(this.initSpinnerId);
@@ -369,15 +370,12 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
             }
           } else if (this.idAllenamento) {
             this.getDatiAllenamento();
-
           } else {
             this.loadingProgression = LoadingProgression.failed;
             throw new Error("Nessun allenamento fornito");
           }
           break;
       }
-
-
     } catch (error) {
       this.errorHandlerService.logError(
         error,
@@ -385,6 +383,117 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       );
       this.loadingProgression = LoadingProgression.failed;
     }
+  }
+
+  private recoverModeFromUrl(): void {
+    const url = this.router.url;
+    const routeId = Number(this.activatedRoute.snapshot.params["id"]) || 0;
+
+    if (url.includes("registra-allenamento")) {
+      this.createOrEdit = createOrEdit.create;
+      this.idTemplateAllenamento = routeId;
+    } else if (url.includes("modifica-allenamento")) {
+      this.createOrEdit = createOrEdit.edit;
+      this.idAllenamento = routeId;
+    }
+  }
+
+  private restoreFromCache(data: WorkoutStorageData): void {
+    try {
+      this.createOrEditWorkoutExecutionService.InitializeFromFormDTO(
+        data.formDTO,
+      );
+
+      // Ripristina lo stato dell'accordion
+      this.accordionOpenKeys = data.accordionOpenKeys || [];
+
+      // Ripristina le opzioni del pulsante destro (solo create mode)
+      if (
+        data.createOrEdit === createOrEdit.create &&
+        data.opzioniAltriAllenamenti?.length
+      ) {
+        this.rightButtonOptionsGroup = [
+          {
+            id: 1,
+            label: "",
+            options: data.opzioniAltriAllenamenti.map((o) => {
+              return {
+                description: o.description,
+                optionId: o.id,
+                color: " #fff",
+              };
+            }),
+          },
+        ];
+      }
+
+      // I dati recuperati sono lavoro in corso, marca come dirty
+      this.createOrEditWorkoutExecutionService.AllenamentoForm.form.markAsDirty();
+      this.loadingProgression = LoadingProgression.complete;
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditWorkoutExecution.restoreFromCache",
+      );
+      // Fallback: pulisci cache corrotta e carica dal server
+      this.workoutStorageService.clear();
+      this.loadingProgression = LoadingProgression.failed;
+    }
+  }
+
+  private startAutoSave(): void {
+    this.stopAutoSave();
+    this.autoSaveIntervalId = setInterval(() => {
+      this.saveToLocalStorage();
+    }, 5000);
+  }
+
+  private stopAutoSave(): void {
+    if (this.autoSaveIntervalId) {
+      clearInterval(this.autoSaveIntervalId);
+      this.autoSaveIntervalId = null;
+    }
+  }
+
+  private saveToLocalStorage(): void {
+    try {
+      if (!this.createOrEditWorkoutExecutionService.AllenamentoForm) return;
+
+      const formDTO: AllenamentoFormDTO =
+        this.createOrEditWorkoutExecutionService.AllenamentoForm.getDatiAllenamentoDaSalvare();
+
+      const snapshot: WorkoutStorageData = {
+        version: 1,
+        createOrEdit: this.createOrEdit!,
+        idTemplateAllenamento: this.idTemplateAllenamento,
+        idAllenamento: this.idAllenamento,
+        formDTO: formDTO,
+        accordionOpenKeys: this.accordionOpenKeys,
+        opzioniAltriAllenamenti: this.extractOpzioniAltriAllenamenti(),
+        savedAt: "",
+      };
+
+      const snapshotJson = JSON.stringify(snapshot);
+      if (snapshotJson !== this.lastSavedSnapshot) {
+        this.workoutStorageService.save(snapshot);
+        this.lastSavedSnapshot = snapshotJson;
+      }
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditWorkoutExecution.saveToLocalStorage",
+      );
+    }
+  }
+
+  private extractOpzioniAltriAllenamenti(): { id: number; description: string }[] {
+    if (this.createOrEdit !== createOrEdit.create) return [];
+    return this.rightButtonOptionsGroup.flatMap((group) =>
+      group.options.map((opt) => ({
+        id: opt.optionId,
+        description: opt.description,
+      })),
+    );
   }
 
   getDatiAllenamento() {
@@ -412,6 +521,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                 this.spinnerService.setSuccess(this.initSpinnerId);
               }
               this.loadingProgression = LoadingProgression.complete;
+              this.startAutoSave();
             } else {
               if (this.initSpinnerId) {
                 this.spinnerService.setError(this.initSpinnerId);
@@ -493,6 +603,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
               if (this.initSpinnerId) {
                 this.spinnerService.setSuccess(this.initSpinnerId);
               }
+              this.startAutoSave();
             } else {
               if (this.initSpinnerId) {
                 this.spinnerService.setError(this.initSpinnerId);
@@ -569,6 +680,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       case "right":
         switch (option.groupId) {
           case 1:
+            this.workoutStorageService.clear();
             this.idTemplateAllenamento = option.optionId;
             this.createOrEditWorkoutExecutionService.resetData();
             this.initializeWorkout();
@@ -625,6 +737,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
                 // Marca il form come pristine dopo il salvataggio con successo
                 this.createOrEditWorkoutExecutionService.AllenamentoForm.form.markAsPristine();
+                this.workoutStorageService.clear();
 
                 if (response.allenamentoCorrente) {
                   // TODO al momento il server non ci manda indietro l'allenamento corrente. Da implementare così da evitare un chiamata indietro
@@ -670,6 +783,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                   await this.spinnerService.setSuccess(this.saveSpinnerId);
                 }
                 this.createOrEditWorkoutExecutionService.AllenamentoForm.form.markAsPristine();
+                this.workoutStorageService.clear();
                 this.router.navigate(["/home"]);
               })
               .catch(async (error) => {
@@ -761,10 +875,12 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           footerConfirmTemplate: this.footerConfirmGoBack,
           onConfirm: () => {
             this.createOrEditWorkoutExecutionService.AllenamentoForm.form.markAsPristine();
+            this.workoutStorageService.clear();
             this.PerformBackNavigate();
           },
         });
       } else {
+        this.workoutStorageService.clear();
         this.PerformBackNavigate();
       }
     } catch (error) {
@@ -827,6 +943,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
             if (this.initSpinnerId) {
               this.spinnerService.setSuccess(this.initSpinnerId);
             }
+            this.workoutStorageService.clear();
             this.PerformDeleteNavigate();
           })
           .catch((objError) => {

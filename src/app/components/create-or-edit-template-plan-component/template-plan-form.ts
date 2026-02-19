@@ -267,6 +267,29 @@ export class SchedaForm {
     >;
   }
 
+  getFormDTO(): SchedaDTO {
+    try {
+      const formDTO: SchedaDTO = {
+        id: this.form.controls["id"].value ?? 0,
+        idTemplate: this.form.controls["idTemplate"].value ?? 0,
+        nomeScheda: this.form.controls["nomeScheda"].value || "",
+        description: this.form.controls["descrizioneScheda"].value || "",
+        listaAllenamenti: [],
+        schedaAttiva: this.form.controls["isActive"].value || false,
+      };
+
+      this.listaAllenamentiForm.forEach((allenamento) => {
+        formDTO.listaAllenamenti.push(
+          allenamento.getDatiAllenamentoDaSalvare(),
+        );
+      });
+
+      return formDTO;
+    } catch (error) {
+      throw new Error("SchedaForm.getFormDTO: " + error);
+    }
+  }
+
   getDatiSchedaDaSalvare(): SchedaDTO {
     try {
       // Raccolgo i dati della scheda
