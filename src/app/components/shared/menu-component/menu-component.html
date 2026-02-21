@@ -33,7 +33,7 @@
 
   <!-- Overlay fullscreen menu -->
   <div class="fullscreen-menu-overlay" [class.menu-open]="isMenuOpen" (click)="closeMenu()">
-    <div class="menu-items-container" [class.items-visible]="isMenuOpen" (click)="$event.stopPropagation()">
+    <div class="menu-items-container" [class.items-visible]="isMenuOpen" [class.is-animating]="isAnimating" (click)="$event.stopPropagation()">
       <div class="menu-item" (click)="navigateToAccount()">
         <h3 class="text-white">Account</h3>
       </div>

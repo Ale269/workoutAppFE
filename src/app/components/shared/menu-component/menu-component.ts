@@ -20,8 +20,10 @@ import { HapticService } from "src/app/core/services/haptic.service";
 })
 export class MenuComponent implements OnInit, OnDestroy {
   isMenuOpen = false;
+  isAnimating = false;
   menuConfig: MenuConfig = { leftButton: "none" };
   private configSubscription?: Subscription;
+  private animationTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(
     private router: Router,
@@ -61,15 +63,26 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.configSubscription?.unsubscribe();
+    clearTimeout(this.animationTimeout);
   }
 
   toggleMenu() {
     this.hapticService.trigger("light");
     this.isMenuOpen = !this.isMenuOpen;
+    this.lockDuringAnimation();
   }
 
   closeMenu() {
     this.isMenuOpen = false;
+    this.lockDuringAnimation();
+  }
+
+  private lockDuringAnimation() {
+    this.isAnimating = true;
+    clearTimeout(this.animationTimeout);
+    this.animationTimeout = setTimeout(() => {
+      this.isAnimating = false;
+    }, 500);
   }
 
   onLeftButtonClick() {
