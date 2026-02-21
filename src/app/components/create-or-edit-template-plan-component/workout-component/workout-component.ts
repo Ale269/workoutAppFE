@@ -103,6 +103,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
     private hapticService: HapticService,
+    private elementRef: ElementRef,
   ) {
     iconRegistry.addSvgIcon(
       "google-add",
@@ -265,15 +266,46 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     }
   }
 
-  addNuovoEsercizio() {
+  async addNuovoEsercizio() {
     try {
       this.hapticService.trigger('medium');
-      this.formAllenamento.addEsercizioForm(undefined);
-      this.cdr.detectChanges();
+      await this.maintainButtonPosition(() => {
+        this.formAllenamento.addEsercizioForm(undefined);
+      });
     } catch (error) {
       this.errorHandlerService.logError(
         error,
         "WorkoutComponent.addNuovoEsercizio",
+      );
+    }
+  }
+
+  private async maintainButtonPosition(callback: () => void): Promise<void> {
+    try {
+      const scroller = this.elementRef.nativeElement.closest('.page-scroller') as HTMLElement | null;
+      if (!scroller) return;
+
+      const heightBefore = scroller.scrollHeight;
+
+      callback();
+
+      this.cdr.detectChanges();
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      const heightAfter = scroller.scrollHeight;
+      const heightDifference = heightAfter - heightBefore;
+
+      if (heightDifference > 0) {
+        scroller.scrollBy({
+          top: heightDifference,
+          behavior: "smooth",
+        });
+      }
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "WorkoutComponent.maintainButtonPosition",
       );
     }
   }
