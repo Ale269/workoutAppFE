@@ -10,6 +10,11 @@
     <router-outlet></router-outlet>
   </div>
 
+  <!-- Bottom Navigation Menu -->
+  @if(this.MenuIsVisible && bottomMenuService.enabled()){
+  <app-bottom-menu></app-bottom-menu>
+  }
+
   <!-- Modal Service -->
   @for (modal of modalService.modals(); track modal) {
   <app-generic-modal
