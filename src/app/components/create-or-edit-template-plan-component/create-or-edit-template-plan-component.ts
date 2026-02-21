@@ -45,7 +45,10 @@ import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
 import { HapticService } from "src/app/core/services/haptic.service";
-import { WorkoutStorageService, TemplateStorageData } from "src/app/core/services/workout-storage.service";
+import {
+  WorkoutStorageService,
+  TemplateStorageData,
+} from "src/app/core/services/workout-storage.service";
 import { SchedaDTO as SchedaFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/schedadto";
 
 // Registra il plugin Draggable
@@ -69,7 +72,8 @@ gsap.registerPlugin(Draggable);
   styleUrl: "./create-or-edit-template-plan-component.scss",
 })
 export class CreateOrEditTemplatePlanComponent
-  implements OnInit, OnDestroy, AfterViewInit {
+  implements OnInit, OnDestroy, AfterViewInit
+{
   @ViewChild("listView") listView!: ElementRef<HTMLElement>;
   @ViewChild("detailView") detailView!: ElementRef<HTMLElement>;
   @ViewChildren("workoutCard") allenamentoCards!: QueryList<ElementRef>;
@@ -449,7 +453,7 @@ export class CreateOrEditTemplatePlanComponent
                   },
                 });
                 this.vars.isOpen = true;
-                component.hapticService.trigger('warning');
+                component.hapticService.trigger("warning");
               } else {
                 gsap.to(card, {
                   x: 0,
@@ -524,7 +528,6 @@ export class CreateOrEditTemplatePlanComponent
 
   // Metodi per la navigazione animata tra viste
   public async openWorkoutDetail(workout: AllenamentoForm): Promise<void> {
-          this.hapticService.trigger('light');
 
     if (this.isAnimating) return;
 
@@ -644,7 +647,7 @@ export class CreateOrEditTemplatePlanComponent
 
   openDeleteWorkout(identifier: number): void {
     try {
-      this.hapticService.trigger('error');
+      this.hapticService.trigger("error");
       this.modalService.open({
         warning: true,
         headerTemplate: this.headerDeleteWorkoutTemplate,
@@ -714,7 +717,7 @@ export class CreateOrEditTemplatePlanComponent
 
   addWorkout() {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       let workoutName = this.newWorkoutNameControl.value?.trim();
 
       const nextPosition =
@@ -754,7 +757,7 @@ export class CreateOrEditTemplatePlanComponent
 
   savePlan(actionId: number) {
     try {
-      this.hapticService.trigger('success');
+      this.hapticService.trigger("success");
       this.saveSpinnerId = this.spinnerService.showWithResult(
         "Salvataggio in corso",
         {
@@ -773,10 +776,10 @@ export class CreateOrEditTemplatePlanComponent
 
       if (user) {
         const SaveDatiTemplateSchedaRequest: SaveDatiTemplateSchedaRequestModel =
-        {
-          schedaDTO: this.scheda,
-          userId: user.userId,
-        };
+          {
+            schedaDTO: this.scheda,
+            userId: user.userId,
+          };
 
         if (actionId === 0) {
           SaveDatiTemplateSchedaRequest.schedaDTO.id = -1;
@@ -879,7 +882,7 @@ export class CreateOrEditTemplatePlanComponent
 
   openDeleteScheda() {
     try {
-      this.hapticService.trigger('error');
+      this.hapticService.trigger("error");
       this.modalService.open({
         warning: true,
         headerTemplate: this.headerDeleteTemplate,
@@ -988,7 +991,7 @@ export class CreateOrEditTemplatePlanComponent
 
   openWorkoutReorder(): void {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       const containerEl = this.workoutListContainer.nativeElement;
       const containerRect = containerEl.getBoundingClientRect();
       const containerPosition = {

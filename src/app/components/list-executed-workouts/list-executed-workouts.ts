@@ -344,7 +344,6 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
 
   visualizzaDatiAllenamento(idAllenamento: number) {
     try {
-      this.hapticService.trigger("light");
       this.closeAllSwipes();
       this.router.navigate([
         "/allenamenti-svolti/visualizza-allenamento",

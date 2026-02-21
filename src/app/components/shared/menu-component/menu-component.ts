@@ -161,7 +161,8 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   callLogout(): void {
     this.hapticService.trigger("light");
-
-    this.authService.logout();
+    setTimeout(() => {
+      this.authService.logout();
+    }, 100);
   }
 }
