@@ -4,11 +4,14 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild,
 } from "@angular/core";
 import { gsap } from "gsap";
+import { MatIcon, MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 import { HapticService } from "src/app/core/services/haptic.service";
 
 export interface buttonOption {
@@ -34,11 +37,11 @@ export type MenuSide = "left" | "right";
 
 @Component({
   selector: "app-multi-option-button",
-  imports: [],
+  imports: [MatIcon],
   templateUrl: "./multi-option-button.html",
   styleUrl: "./multi-option-button.scss",
 })
-export class MultiOptionButton implements OnInit, AfterViewInit {
+export class MultiOptionButton implements OnInit, AfterViewInit, OnDestroy {
   @Input() leftGroups: multiOptionGroup[] = [];
   @Input() rightGroups: multiOptionGroup[] = [];
 
@@ -61,8 +64,21 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
 
   private originalWidths = new Map<HTMLElement, number>();
   private naturalHeights = { left: 0, right: 0 };
+  private scrollHandler: (() => void) | null = null;
 
-  constructor(private hapticService: HapticService) {}
+  constructor(
+    private hapticService: HapticService,
+    private elementRef: ElementRef,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+  ) {
+    iconRegistry.addSvgIcon(
+      "google-close-icon",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-close-icon.svg",
+      ),
+    );
+  }
 
   ngOnInit() {}
 
@@ -71,6 +87,37 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
       this.calculateNaturalHeights();
       this.setInitialState();
     }, 100);
+  }
+
+  ngOnDestroy(): void {
+    this.removeScrollListener();
+  }
+
+  onOverlayClick(): void {
+    if (this.expandedSide && !this.isAnimating) {
+      this.collapseButton(this.expandedSide);
+    }
+  }
+
+  private addScrollListener(): void {
+    this.removeScrollListener();
+    const scroller = this.elementRef.nativeElement.closest(".page-scroller") as HTMLElement | null;
+    const target = scroller || window;
+    this.scrollHandler = () => {
+      if (this.expandedSide && !this.isAnimating) {
+        this.collapseButton(this.expandedSide);
+      }
+    };
+    target.addEventListener("scroll", this.scrollHandler, { passive: true });
+  }
+
+  private removeScrollListener(): void {
+    if (this.scrollHandler) {
+      const scroller = this.elementRef.nativeElement.closest(".page-scroller") as HTMLElement | null;
+      const target = scroller || window;
+      target.removeEventListener("scroll", this.scrollHandler);
+      this.scrollHandler = null;
+    }
   }
 
   private calculateNaturalHeights() {
@@ -179,6 +226,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
         gsap.set(activeContent, { height: "auto" });
         this.expandedSide = side;
         this.isAnimating = false;
+        this.addScrollListener();
       },
     });
 
@@ -306,6 +354,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
 
     const tl = gsap.timeline({
       onComplete: () => {
+        this.removeScrollListener();
         this.expandedSide = null;
         this.isAnimating = false;
 

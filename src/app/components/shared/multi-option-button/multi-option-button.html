@@ -1,3 +1,6 @@
+@if (expandedSide) {
+  <div class="multi-option-overlay" (click)="onOverlayClick()" (touchstart)="onOverlayClick()"></div>
+}
 <div class="buttons-container" #container>
   <div class="all-buttons-wrapper" #allButtonsWrapper>
     <!-- Left transformation button (now positioned before static) -->
@@ -16,8 +19,11 @@
       <!-- EXPANDED STATE -->
       <div class="transformed-setting" #leftTransformedContent>
         <div class="transformed-setting-close-button-container">
-          <div class="delete-icon-element-container" (touchstart)="collapseButton('left')">
-            <img src="assets/recollect/svg/google-close-icon.svg" alt="Chiudi" />
+          <div class="delete-icon-element-container">
+            <div class="close-icon-trigger" (touchstart)="collapseButton('left')"></div>
+            <div class="arrow-widget-container">
+              <mat-icon svgIcon="google-close-icon"></mat-icon>
+            </div>
           </div>
         </div>
 
@@ -54,8 +60,11 @@
 
       <div class="transformed-setting" #rightTransformedContent>
         <div class="transformed-setting-close-button-container">
-          <div class="delete-icon-element-container" (touchstart)="collapseButton('right')">
-            <img src="assets/recollect/svg/google-close-icon.svg" alt="Chiudi" />
+          <div class="delete-icon-element-container">
+            <div class="close-icon-trigger" (touchstart)="collapseButton('right')"></div>
+            <div class="arrow-widget-container">
+              <mat-icon svgIcon="google-close-icon"></mat-icon>
+            </div>
           </div>
         </div>
 
