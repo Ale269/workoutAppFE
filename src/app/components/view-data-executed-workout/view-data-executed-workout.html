@@ -15,15 +15,9 @@
         <accordion-header>
           <div class="esercizio-container">
             <div class="icon-esercizio-container">
-              <div
-                class="circle-icon"
-                [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor"
-              >
-                <img
-                  [src]="esercizio.idIconaEsercizio | exerciseIcon"
-                  class="exercise-icon"
-                  [alt]="esercizio.idTipoEsercizio | exerciseName"
-                />
+              <div class="circle-icon" [style.border-color]="esercizio.idIconaEsercizio | exerciseIconColor">
+                <img [src]="esercizio.idIconaEsercizio | exerciseIcon" class="exercise-icon"
+                  [alt]="esercizio.idTipoEsercizio | exerciseName" />
               </div>
             </div>
             <div class="dati-esercizio-container">
@@ -31,6 +25,9 @@
                 <h3 class="text-white">
                   {{ esercizio.idTipoEsercizio | exerciseName }}
                 </h3>
+                <h5 class="text-grey">
+                  {{ esercizio.description }}
+                </h5>
               </div>
               <div class="chips-container">
                 @if(esercizio?.idMetodologia != null) {
@@ -67,6 +64,9 @@
               </div>
             </div>
             }
+            @empty {
+            <h3 class="text-grey">Nessuna serie registrata</h3>
+            }
           </div>
         </accordion-body>
       </accordion>
@@ -76,11 +76,8 @@
 </div>
 
 <div class="floating-static-button-container">
-  <app-multi-option-button
-    [leftButtonLabel]="''"
-    [leftGroups]="leftButtonOptionsGroup"
-    (optionSelected)="onOptionSelected($event)"
-  >
+  <app-multi-option-button [leftButtonLabel]="''" [leftGroups]="leftButtonOptionsGroup"
+    (optionSelected)="onOptionSelected($event)">
     <!-- Il pulsante statico viene proiettato qui -->
     <button class="floating-static-button" (click)="modificaAllenamento()">
       <span>Modifica allenamento </span>
@@ -96,11 +93,7 @@ this.loadingProgression === LoadingProgressionEnum.none){
 }
 
 <ng-template #headerDeleteWorkout>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
+  <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
 </ng-template>
 
 <!-- Template per il body -->
