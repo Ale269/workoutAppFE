@@ -1,3 +1,7 @@
+<div class="bottom-menu-gradient"
+     [class.hidden]="!bottomMenuService.visible()"
+     [class.with-floating]="bottomMenuService.hasFloatingButtons()">
+</div>
 <nav class="bottom-menu-bar" [class.hidden]="!bottomMenuService.visible()">
   @for (item of bottomMenuService.items(); track item.label) {
     <button class="bottom-menu-item"

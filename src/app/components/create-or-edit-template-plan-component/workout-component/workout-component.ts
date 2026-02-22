@@ -39,6 +39,7 @@ import {
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
 
 @Component({
   selector: "app-workout-component",
@@ -104,6 +105,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private hapticService: HapticService,
     private elementRef: ElementRef,
+    private bottomMenuService: BottomMenuService,
   ) {
     iconRegistry.addSvgIcon(
       "google-add",
@@ -297,6 +299,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       const heightDifference = heightAfter - heightBefore;
 
       if (heightDifference > 0) {
+        this.bottomMenuService.suspendScrollDetection(600);
         scroller.scrollBy({
           top: heightDifference,
           behavior: "smooth",

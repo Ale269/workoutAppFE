@@ -36,6 +36,7 @@ import {
 import { DomSanitizer } from "@angular/platform-browser";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
 
 @Component({
   selector: "app-exercise-component",
@@ -113,6 +114,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
     private hapticService: HapticService,
+    private bottomMenuService: BottomMenuService,
   ) {
     iconRegistry.addSvgIcon(
       "google-arrow",
@@ -311,6 +313,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
       // Scrolla della differenza se c'è stato un aumento di altezza
       if (heightDifference > 0) {
+        this.bottomMenuService.suspendScrollDetection(600);
         scroller.scrollBy({
           top: heightDifference,
           behavior: "smooth",

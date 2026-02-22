@@ -25,13 +25,17 @@ export class BottomMenuService {
   private _visible = signal<boolean>(true);
   public readonly visible = this._visible.asReadonly();
 
-  public readonly MENU_HEIGHT = 64;
+  private _hasFloatingButtons = signal<boolean>(false);
+  public readonly hasFloatingButtons = this._hasFloatingButtons.asReadonly();
+
+  public readonly MENU_HEIGHT = 72;
 
   private lastScrollTop = 0;
   private scrollThreshold = 10;
   private currentScrollListener: (() => void) | null = null;
   private observer: MutationObserver | null = null;
   private currentScroller: Element | null = null;
+  private _suspended = false;
 
   constructor() {
     this.updateCssVariable(true);
@@ -58,6 +62,17 @@ export class BottomMenuService {
     this._items.set(items);
   }
 
+  /** Sospende temporaneamente lo scroll handler (per scroll programmatici) */
+  suspendScrollDetection(durationMs: number = 500): void {
+    this._suspended = true;
+    setTimeout(() => {
+      this._suspended = false;
+      if (this.currentScroller) {
+        this.lastScrollTop = (this.currentScroller as HTMLElement).scrollTop;
+      }
+    }, durationMs);
+  }
+
   setEnabled(enabled: boolean): void {
     this._enabled.set(enabled);
     if (!enabled) {
@@ -81,6 +96,13 @@ export class BottomMenuService {
   }
 
   private checkForNewScroller(): void {
+    const hasFloating = !!document.querySelector(
+      ".floating-static-button-container, .floating-double-buttons-container",
+    );
+    if (hasFloating !== this._hasFloatingButtons()) {
+      this._hasFloatingButtons.set(hasFloating);
+    }
+
     const scroller = document.querySelector(".page-scroller");
 
     if (scroller && scroller !== this.currentScroller) {
@@ -103,6 +125,8 @@ export class BottomMenuService {
     this.currentScroller = scroller;
 
     const handler = () => {
+      if (this._suspended) return;
+
       const el = scroller as HTMLElement;
       const scrollTop = el.scrollTop;
       const maxScroll = el.scrollHeight - el.clientHeight;
