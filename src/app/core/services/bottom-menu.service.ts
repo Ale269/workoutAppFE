@@ -103,7 +103,16 @@ export class BottomMenuService {
     this.currentScroller = scroller;
 
     const handler = () => {
-      const scrollTop = scroller.scrollTop;
+      const el = scroller as HTMLElement;
+      const scrollTop = el.scrollTop;
+      const maxScroll = el.scrollHeight - el.clientHeight;
+
+      // Ignore iOS rubber-band bounce at edges
+      if (scrollTop <= 0 || scrollTop >= maxScroll) {
+        this.lastScrollTop = Math.max(0, Math.min(scrollTop, maxScroll));
+        return;
+      }
+
       const delta = scrollTop - this.lastScrollTop;
 
       if (Math.abs(delta) < this.scrollThreshold) return;

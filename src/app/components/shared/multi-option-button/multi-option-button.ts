@@ -4,7 +4,6 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   ViewChild,
@@ -41,7 +40,7 @@ export type MenuSide = "left" | "right";
   templateUrl: "./multi-option-button.html",
   styleUrl: "./multi-option-button.scss",
 })
-export class MultiOptionButton implements OnInit, AfterViewInit, OnDestroy {
+export class MultiOptionButton implements OnInit, AfterViewInit {
   @Input() leftGroups: multiOptionGroup[] = [];
   @Input() rightGroups: multiOptionGroup[] = [];
 
@@ -64,13 +63,11 @@ export class MultiOptionButton implements OnInit, AfterViewInit, OnDestroy {
 
   private originalWidths = new Map<HTMLElement, number>();
   private naturalHeights = { left: 0, right: 0 };
-  private scrollHandler: (() => void) | null = null;
 
   constructor(
     private hapticService: HapticService,
-    private elementRef: ElementRef,
-    private iconRegistry: MatIconRegistry,
-    private sanitizer: DomSanitizer,
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer,
   ) {
     iconRegistry.addSvgIcon(
       "google-close-icon",
@@ -89,34 +86,9 @@ export class MultiOptionButton implements OnInit, AfterViewInit, OnDestroy {
     }, 100);
   }
 
-  ngOnDestroy(): void {
-    this.removeScrollListener();
-  }
-
   onOverlayClick(): void {
     if (this.expandedSide && !this.isAnimating) {
       this.collapseButton(this.expandedSide);
-    }
-  }
-
-  private addScrollListener(): void {
-    this.removeScrollListener();
-    const scroller = this.elementRef.nativeElement.closest(".page-scroller") as HTMLElement | null;
-    const target = scroller || window;
-    this.scrollHandler = () => {
-      if (this.expandedSide && !this.isAnimating) {
-        this.collapseButton(this.expandedSide);
-      }
-    };
-    target.addEventListener("scroll", this.scrollHandler, { passive: true });
-  }
-
-  private removeScrollListener(): void {
-    if (this.scrollHandler) {
-      const scroller = this.elementRef.nativeElement.closest(".page-scroller") as HTMLElement | null;
-      const target = scroller || window;
-      target.removeEventListener("scroll", this.scrollHandler);
-      this.scrollHandler = null;
     }
   }
 
@@ -226,7 +198,6 @@ export class MultiOptionButton implements OnInit, AfterViewInit, OnDestroy {
         gsap.set(activeContent, { height: "auto" });
         this.expandedSide = side;
         this.isAnimating = false;
-        this.addScrollListener();
       },
     });
 
@@ -354,7 +325,6 @@ export class MultiOptionButton implements OnInit, AfterViewInit, OnDestroy {
 
     const tl = gsap.timeline({
       onComplete: () => {
-        this.removeScrollListener();
         this.expandedSide = null;
         this.isAnimating = false;
 
