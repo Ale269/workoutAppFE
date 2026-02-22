@@ -77,6 +77,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   @ViewChild("bodyLastNHistoryTemplate") bodyLastNHistoryTemplate!: TemplateRef<any>;
   @ViewChild("footerCloseLastNHistoryTemplate")
   footerCloseLastNHistoryTemplate!: TemplateRef<any>;
+  @ViewChild("sessionCarousel") sessionCarouselRef!: ElementRef<HTMLElement>;
 
   @Output() onDeleteExercise = new EventEmitter<number>();
 
@@ -90,6 +91,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   public lastNTrainingsLoading: boolean = false;
   public lastNTrainingsError: boolean = false;
   public readonly lastNLimit: number = 3;
+  public activeSessionIndex: number = 0;
 
   public idMetodologiaControl!: FormControl<number | null>;
   public idTipoEsercizioControl!: FormControl<number | null>;
@@ -403,6 +405,21 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     }
   }
 
+  onSessionCarouselScroll(event: Event): void {
+    const el = event.target as HTMLElement;
+    if (el.clientWidth > 0) {
+      this.activeSessionIndex = Math.round(el.scrollLeft / el.clientWidth);
+      this.cdr.detectChanges();
+    }
+  }
+
+  scrollSession(direction: 'prev' | 'next'): void {
+    const el = this.sessionCarouselRef?.nativeElement;
+    if (!el) return;
+    const delta = direction === 'next' ? el.clientWidth : -el.clientWidth;
+    el.scrollBy({ left: delta, behavior: 'smooth' });
+  }
+
   openLastNTrainingHistory() {
     try {
       const exerciseId = this.idTipoEsercizioControl.value;
@@ -416,6 +433,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       this.lastNTrainingsData = [];
       this.lastNTrainingsLoading = true;
       this.lastNTrainingsError = false;
+      this.activeSessionIndex = 0;
 
       // Apro il modal subito per mostrare lo stato di loading
       this.modalService.open({

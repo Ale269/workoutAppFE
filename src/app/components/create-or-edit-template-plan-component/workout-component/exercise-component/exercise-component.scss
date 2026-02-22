@@ -284,14 +284,70 @@ mat-form-field {
   line-height: 1;
 }
 
-// Stili per il modal multi-sessione
-.history-sessions-list {
+// Wrapper carousel (contiene frecce + track)
+.carousel-wrapper {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  gap: 8px;
 }
 
-.history-session-block {
+.carousel-nav {
+  display: none; // nascosto su mobile/touch
+
+  @media (hover: hover) and (pointer: fine) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #2a2a2a;
+    background-color: #1a1a1a;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: #2a2a2a;
+    }
+
+    &:disabled {
+      opacity: 0.25;
+      cursor: default;
+    }
+  }
+}
+
+.carousel-arrow {
+  width: 16px;
+  height: 16px;
+  filter: invert(1);
+}
+
+.carousel-arrow-prev {
+  transform: rotate(180deg);
+}
+
+// Stili per il carousel multi-sessione
+.history-sessions-carousel {
+  display: flex;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.history-session-slide {
+  min-width: 100%;
+  scroll-snap-align: start;
+  box-sizing: border-box;
   border: 1px solid #2a2a2a;
   border-radius: 10px;
   overflow: hidden;
@@ -312,11 +368,35 @@ mat-form-field {
   font-weight: 500;
 }
 
-.history-session-block .history-series-list {
+.history-session-slide .history-series-list {
   padding: 8px;
   gap: 8px;
 }
 
-.history-session-block .history-serie-item {
+.history-session-slide .history-serie-item {
   border-radius: 6px;
+}
+
+// Dot indicators
+.session-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding-top: 14px;
+}
+
+.session-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  &.active {
+    background-color: #00ffe1;
+    border-color: #00ffe1;
+    transform: scale(1.25);
+  }
 }
