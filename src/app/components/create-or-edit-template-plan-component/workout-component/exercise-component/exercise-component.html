@@ -18,6 +18,13 @@
     @if (!isCompactMode) {
     <div class="exercise-actions-container">
       @if (idTipoEsercizioControl.value) {
+      <div class="delete-icon-element-container" (click)="openLastNTrainingHistory()">
+        <div class="close-icon-trigger"></div>
+        <div class="arrow-widget-container history-n-button">
+          <mat-icon svgIcon="google-history"></mat-icon>
+          <span class="history-n-badge">{{ lastNLimit }}</span>
+        </div>
+      </div>
       <div class="delete-icon-element-container">
         <div
           class="close-icon-trigger"
@@ -198,6 +205,63 @@
 </ng-template>
 
 <ng-template #footerCloseHistoryTemplate>
+  <button class="text-shape-button-cancel">
+    <span>Chiudi</span>
+    <div class="text-shape-button-icon-container-cancel">
+      <img src="assets/recollect/svg/google-close-icon.svg" />
+    </div>
+  </button>
+</ng-template>
+
+<!-- Template per il modale cronologia ultimi N allenamenti -->
+<ng-template #headerLastNHistoryTemplate>
+  <img
+    src="assets/recollect/svg/google-history.svg"
+    alt="Cronologia"
+    class="history-icon"
+  />
+</ng-template>
+
+<ng-template #bodyLastNHistoryTemplate>
+  <div class="history-modal-content">
+    <h3 class="text-white history-title">Ultimi {{ lastNLimit }} allenamenti</h3>
+
+    @if (lastNTrainingsLoading) {
+    <div class="history-loading">
+      <span class="text-white">Caricamento...</span>
+    </div>
+    } @else if (lastNTrainingsError || lastNTrainingsData.length === 0) {
+    <div class="history-no-data">
+      <span class="text-white">Nessun dato disponibile</span>
+    </div>
+    } @else {
+    <div class="history-sessions-list">
+      @for (esercizio of lastNTrainingsData; track esercizio.dataEsecuzione; let sessionIdx = $index) {
+      <div class="history-session-block">
+        <div class="history-session-header">
+          <span class="session-index">Sessione {{ sessionIdx + 1 }}</span>
+          <span class="date-value">{{ esercizio.dataEsecuzione | date:'dd MMM yyyy' }}</span>
+        </div>
+        <div class="history-series-list">
+          @for (serie of esercizio.listaSerie; track serie.id; let idx = $index) {
+          <div class="history-serie-item">
+            <span class="serie-number">Serie {{ idx + 1 }}</span>
+            <div class="serie-data">
+              <span class="serie-reps">{{ serie.ripetizioni }} reps</span>
+              <span class="serie-separator">x</span>
+              <span class="serie-weight">{{ serie.carico }} kg</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+</ng-template>
+
+<ng-template #footerCloseLastNHistoryTemplate>
   <button class="text-shape-button-cancel">
     <span>Chiudi</span>
     <div class="text-shape-button-icon-container-cancel">

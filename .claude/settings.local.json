@@ -5,7 +5,8 @@
       "Bash(npm run serve:*)",
       "Bash(npm run:*)",
       "Bash(npm start)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

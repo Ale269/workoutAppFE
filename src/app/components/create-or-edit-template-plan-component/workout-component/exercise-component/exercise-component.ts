@@ -31,6 +31,7 @@ import { AuthService } from "src/app/core/services/auth.service";
 import {
   LastTrainingExerciseData,
   LastTrainingSerieData,
+  LastNTrainingExercisesResponseModel,
 } from "src/app/models/history/last-training-exercise";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
@@ -72,12 +73,23 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   @ViewChild("footerCloseHistoryTemplate")
   footerCloseHistoryTemplate!: TemplateRef<any>;
 
+  @ViewChild("headerLastNHistoryTemplate") headerLastNHistoryTemplate!: TemplateRef<any>;
+  @ViewChild("bodyLastNHistoryTemplate") bodyLastNHistoryTemplate!: TemplateRef<any>;
+  @ViewChild("footerCloseLastNHistoryTemplate")
+  footerCloseLastNHistoryTemplate!: TemplateRef<any>;
+
   @Output() onDeleteExercise = new EventEmitter<number>();
 
   // Stato per la cronologia dell'ultimo allenamento
   public lastTrainingData: LastTrainingExerciseData | null = null;
   public lastTrainingLoading: boolean = false;
   public lastTrainingError: boolean = false;
+
+  // Stato per la cronologia degli ultimi N allenamenti
+  public lastNTrainingsData: LastTrainingExerciseData[] = [];
+  public lastNTrainingsLoading: boolean = false;
+  public lastNTrainingsError: boolean = false;
+  public readonly lastNLimit: number = 3;
 
   public idMetodologiaControl!: FormControl<number | null>;
   public idTipoEsercizioControl!: FormControl<number | null>;
@@ -387,6 +399,63 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       this.errorHandlerService.logError(
         error,
         "ExerciseComponent.openLastTrainingHistory",
+      );
+    }
+  }
+
+  openLastNTrainingHistory() {
+    try {
+      const exerciseId = this.idTipoEsercizioControl.value;
+      const user = this.authService.getCurrentUser();
+
+      if (!exerciseId || !user) {
+        return;
+      }
+
+      // Reset dello stato
+      this.lastNTrainingsData = [];
+      this.lastNTrainingsLoading = true;
+      this.lastNTrainingsError = false;
+
+      // Apro il modal subito per mostrare lo stato di loading
+      this.modalService.open({
+        warning: false,
+        headerTemplate: this.headerLastNHistoryTemplate,
+        bodyTemplate: this.bodyLastNHistoryTemplate,
+        footerCloseTemplate: this.footerCloseLastNHistoryTemplate,
+      });
+
+      this.workoutService
+        .getLastNTrainingsForExercise(
+          user.userId,
+          exerciseId,
+          this.lastNLimit,
+          this.historyTrainingId,
+        )
+        .subscribe({
+          next: (response) => {
+            this.lastNTrainingsLoading = false;
+            if (response.esercizi && response.esercizi.length > 0) {
+              this.lastNTrainingsData = response.esercizi;
+            } else {
+              this.lastNTrainingsError = true;
+            }
+            this.cdr.detectChanges();
+          },
+          error: (error) => {
+            this.lastNTrainingsLoading = false;
+            this.lastNTrainingsError = true;
+            this.cdr.detectChanges();
+            this.errorHandlerService.logError(
+              error,
+              "ExerciseComponent.openLastNTrainingHistory",
+            );
+          },
+        });
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "ExerciseComponent.openLastNTrainingHistory",
       );
     }
   }

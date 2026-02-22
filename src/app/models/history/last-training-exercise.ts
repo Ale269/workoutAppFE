@@ -11,6 +11,11 @@ export interface LastTrainingExerciseResponseModel {
   errore: CommonResponseModel | null;
 }
 
+export interface LastNTrainingExercisesResponseModel {
+  esercizi: LastTrainingExerciseData[];
+  errore: CommonResponseModel | null;
+}
+
 export interface LastTrainingExerciseData {
   idEsercizio: number;
   icona: string;

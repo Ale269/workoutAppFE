@@ -261,3 +261,62 @@ mat-form-field {
   font-weight: 600;
   font-size: 14px;
 }
+
+// Stili per il pulsante "Ultime N sessioni"
+.history-n-button {
+  position: relative;
+}
+
+.history-n-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background-color: #00ffe1;
+  color: #000;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+// Stili per il modal multi-sessione
+.history-sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.history-session-block {
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.history-session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: #111;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.session-index {
+  color: #808080;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.history-session-block .history-series-list {
+  padding: 8px;
+  gap: 8px;
+}
+
+.history-session-block .history-serie-item {
+  border-radius: 6px;
+}
