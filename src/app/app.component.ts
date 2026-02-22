@@ -30,6 +30,8 @@ import { gsap } from "gsap";
 import { AnimationService } from "./core/services/page-animation-service";
 import { FocusOverlayWrapperComponent } from "./components/shared/focus-overlay/focus-overlay-wrapper";
 import { FocusOverlayService } from "./components/shared/focus-overlay/focus-overlay.service";
+import { BottomMenuComponent } from "./components/shared/bottom-menu/bottom-menu";
+import { BottomMenuService } from "./core/services/bottom-menu.service";
 
 @Component({
   selector: "app-root",
@@ -46,6 +48,7 @@ import { FocusOverlayService } from "./components/shared/focus-overlay/focus-ove
     OfflineIndicatorComponent,
     BottomSheetWrapperComponent,
     FocusOverlayWrapperComponent,
+    BottomMenuComponent,
   ],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -58,6 +61,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   public bottomSheetService = inject(BottomSheetService);
   private translate = inject(TranslateService);
   private animationService = inject(AnimationService);
+  public bottomMenuService = inject(BottomMenuService);
 
   public MenuIsVisible: boolean = false;
 
@@ -68,6 +72,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor() {
     this.translate.setDefaultLang("it");
+
+    this.bottomMenuService.setItems([
+      { icon: "bottom-home", label: "Home", route: "/home" },
+      { icon: "bottom-schede", label: "Schede", route: "/le-mie-schede" },
+      { icon: "bottom-allenamenti", label: "Allenamenti", route: "/allenamenti-svolti" },
+      { icon: "bottom-account", label: "Account", route: "/account" },
+    ]);
 
     // Setup routing events - aggiorna solo la visibilità del menu
     this.router.events

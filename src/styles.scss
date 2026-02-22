@@ -96,6 +96,7 @@ body {
   // z-index: 1;
   padding: 16px;
   padding-top: 116px;
+  padding-bottom: calc(16px + var(--bottom-menu-offset, 0px));
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -273,8 +274,8 @@ body.no-scroll {
 
 .menu-btn-container {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(16px);
@@ -709,11 +710,12 @@ mat-tab-header {
   position: fixed;
   right: 0;
   left: 0;
-  bottom: 0;
+  bottom: var(--bottom-menu-offset, 0px);
   display: flex;
   padding: 16px;
   background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
   justify-content: flex-end;
+  transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .floating-static-button-glass {
@@ -730,11 +732,12 @@ mat-tab-header {
   position: fixed;
   right: 0;
   left: 0;
-  bottom: 0;
+  bottom: var(--bottom-menu-offset, 0px);
   padding: 16px;
   background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
   display: flex;
   justify-content: flex-end;
+  transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mat-mdc-form-field-subscript-wrapper {

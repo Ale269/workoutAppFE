@@ -3,7 +3,19 @@
   width: 100%;
 }
 
+.multi-option-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  background: transparent;
+}
+
 .buttons-container {
+  position: relative;
+  z-index: 1000;
   display: flex;
   width: 100%;
   justify-content: flex-end;
@@ -179,23 +191,6 @@
     padding: 16px 0;
     display: flex;
     justify-content: flex-end;
-
-    .close-icon-section-container,
-    .delete-icon-element-container {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      transition: opacity 0.2s ease;
-
-      &:hover {
-        opacity: 0.7;
-      }
-
-      img {
-        width: 20px;
-        height: 20px;
-      }
-    }
   }
 }
 

@@ -99,6 +99,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   public exerciseIconPath!: string;
 
   private destroy$ = new Subject<void>();
+  private serieSubscriptions$ = new Subject<void>();
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
@@ -170,14 +171,54 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         .subscribe(() => {
           this.updateExerciseIcon();
         });
+
+      // Sottoscrivi ai cambiamenti delle serie esistenti
+      this.subscribeToSerieChanges();
     } catch (error) {
       this.errorHandlerService.logError(error, "ExerciseComponent.ngOnInit");
     }
   }
 
   ngOnDestroy(): void {
+    this.serieSubscriptions$.next();
+    this.serieSubscriptions$.complete();
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /**
+   * Sottoscrive i valueChanges di ripetizioni e carico di ogni serie.
+   * Quando un valore cambia, lo propaga a tutte le serie successive.
+   */
+  subscribeToSerieChanges(): void {
+    // Annulla le subscription precedenti
+    this.serieSubscriptions$.next();
+
+    const serieList = this.formEsercizio.listaSerieForm;
+
+    serieList.forEach((serieForm, index) => {
+      const ripetizioniCtrl = serieForm.form.controls['ripetizioni'];
+      const caricoCtrl = serieForm.form.controls['carico'];
+
+      ripetizioniCtrl.valueChanges
+        .pipe(takeUntil(this.serieSubscriptions$), takeUntil(this.destroy$))
+        .subscribe((value) => {
+          this.propagateToNextSeries(index, 'ripetizioni', value);
+        });
+
+      caricoCtrl.valueChanges
+        .pipe(takeUntil(this.serieSubscriptions$), takeUntil(this.destroy$))
+        .subscribe((value) => {
+          this.propagateToNextSeries(index, 'carico', value);
+        });
+    });
+  }
+
+  private propagateToNextSeries(fromIndex: number, field: string, value: number | null): void {
+    const serieList = this.formEsercizio.listaSerieForm;
+    for (let i = fromIndex + 1; i < serieList.length; i++) {
+      serieList[i].form.controls[field].setValue(value, { emitEvent: false });
+    }
   }
 
   private updateExerciseIcon(): void {
@@ -289,6 +330,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       await this.maintainButtonPosition(() => {
         this.formEsercizio.addSerieForm();
       });
+      this.subscribeToSerieChanges();
     } catch (error) {
       this.errorHandlerService.logError(error, "ExerciseComponent.addSerie");
     }
@@ -316,6 +358,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
           this.formEsercizio.addSerieForm(newSerieData);
         }
       });
+      this.subscribeToSerieChanges();
     } catch (error) {
       this.errorHandlerService.logError(
         error,
@@ -328,6 +371,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     try {
       this.hapticService.trigger('error');
       this.formEsercizio.deleteSerie(identifier);
+      this.subscribeToSerieChanges();
       this.cdr.detectChanges();
     } catch (error) {
       this.errorHandlerService.logError(error, "ExerciseComponent.deleteSerie");

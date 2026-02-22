@@ -1,0 +1,10 @@
+<nav class="bottom-menu-bar" [class.hidden]="!bottomMenuService.visible()">
+  @for (item of bottomMenuService.items(); track item.label) {
+    <button class="bottom-menu-item"
+            [class.active]="isActive(item)"
+            (click)="onItemClick(item)">
+      <mat-icon [svgIcon]="item.icon"></mat-icon>
+      <span>{{ item.label }}</span>
+    </button>
+  }
+</nav>

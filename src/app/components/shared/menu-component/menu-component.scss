@@ -106,20 +106,22 @@
   background-color: rgba(0, 0, 0, 0);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
 
   &.menu-open {
     opacity: 1;
     visibility: visible;
     background-color: rgba(0, 0, 0, 1);
+    pointer-events: auto;
   }
 }
 
 /* MANTENIAMO I TUOI STILI PER IL BORDO SFUMATO */
 .menu-btn-container {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(16px);
@@ -169,6 +171,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  &.is-animating {
+    pointer-events: none;
+  }
 }
 
 .menu-item {
