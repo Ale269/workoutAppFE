@@ -261,3 +261,142 @@ mat-form-field {
   font-weight: 600;
   font-size: 14px;
 }
+
+// Stili per il pulsante "Ultime N sessioni"
+.history-n-button {
+  position: relative;
+}
+
+.history-n-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background-color: #00ffe1;
+  color: #000;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+// Wrapper carousel (contiene frecce + track)
+.carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.carousel-nav {
+  display: none; // nascosto su mobile/touch
+
+  @media (hover: hover) and (pointer: fine) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #2a2a2a;
+    background-color: #1a1a1a;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: #2a2a2a;
+    }
+
+    &:disabled {
+      opacity: 0.25;
+      cursor: default;
+    }
+  }
+}
+
+.carousel-arrow {
+  width: 16px;
+  height: 16px;
+  filter: invert(1);
+}
+
+.carousel-arrow-prev {
+  transform: rotate(180deg);
+}
+
+// Stili per il carousel multi-sessione
+.history-sessions-carousel {
+  display: flex;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.history-session-slide {
+  min-width: 100%;
+  scroll-snap-align: start;
+  box-sizing: border-box;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.history-session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: #111;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.session-index {
+  color: #808080;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.history-session-slide .history-series-list {
+  padding: 8px;
+  gap: 8px;
+}
+
+.history-session-slide .history-serie-item {
+  border-radius: 6px;
+}
+
+// Dot indicators
+.session-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding-top: 14px;
+}
+
+.session-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  &.active {
+    background-color: #00ffe1;
+    border-color: #00ffe1;
+    transform: scale(1.25);
+  }
+}

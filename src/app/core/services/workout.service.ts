@@ -29,7 +29,7 @@ import {
 import { AttivaSchedaRequestModel, AttivaSchedaResponseModel } from "src/app/models/view-modifica-scheda/attivaScheda";
 import {DownloadSchedaRequestModel} from "../../models/view-modifica-scheda/downloadScheda";
 import { GetListaSchedeSvolteRequestModel, GetListaSchedeSvolteResponseModel } from "src/app/models/lista-schede-svolte/get-lista-schede-svolte";
-import { LastTrainingExerciseResponseModel } from "src/app/models/history/last-training-exercise";
+import { LastNTrainingExercisesResponseModel, LastTrainingExerciseResponseModel } from "src/app/models/history/last-training-exercise";
 
 @Injectable({
   providedIn: "root",
@@ -230,6 +230,26 @@ export class WorkoutService {
     return this.apiCatalogService.executeApiCall(
       "training",
       "getLastTrainingExercise",
+      { userId, exerciseId },
+      null,
+      queryParams
+    );
+  }
+
+  getLastNTrainingsForExercise(
+    userId: number,
+    exerciseId: number,
+    limit: number,
+    excludeHistoryTrainingId?: number
+  ): Observable<LastNTrainingExercisesResponseModel> {
+    const queryParams: Record<string, any> = { limit };
+    if (excludeHistoryTrainingId && excludeHistoryTrainingId > 0) {
+      queryParams['excludeHistoryTrainingId'] = excludeHistoryTrainingId;
+    }
+
+    return this.apiCatalogService.executeApiCall(
+      "training",
+      "getLastNTrainingExercises",
       { userId, exerciseId },
       null,
       queryParams

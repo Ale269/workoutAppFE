@@ -171,6 +171,13 @@
         "method": "get",
         "description": "Recupera i dati dell'ultimo allenamento svolto per un esercizio specifico.",
         "isMocked": false
+      },
+      {
+        "name": "getLastNTrainingExercises",
+        "endpoint": "/history/workout/user/:userId/exercise/:exerciseId/last-n",
+        "method": "get",
+        "description": "Recupera i dati degli ultimi N allenamenti svolti per un esercizio specifico.",
+        "isMocked": false
       }
     ],
     "widgets": [
