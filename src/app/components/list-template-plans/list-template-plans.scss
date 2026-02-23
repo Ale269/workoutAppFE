@@ -38,35 +38,6 @@
   flex: 1;
 }
 
-.delete-action {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: 120px;
-  border-radius: 16px;
-  padding-left: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #ff0000;
-  background: radial-gradient(
-    circle at calc(100% - 40px) 50%,
-    rgba(255, 0, 0, 0) 0%,
-    #820000 100%
-  );
-  border: 1px solid #970000;
-
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  cursor: pointer;
-
-  svg {
-    color: #ffffff;
-  }
-}
-
 .floating-actions-workout {
   display: flex;
   flex-direction: column;

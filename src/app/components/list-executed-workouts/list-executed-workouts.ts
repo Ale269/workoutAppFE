@@ -82,6 +82,11 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-arrow.svg",
       ),
+    );iconRegistry.addSvgIcon(
+      "google-delete",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-arrow.svg",
+      ),
     );
   }
 

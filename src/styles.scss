@@ -332,16 +332,6 @@ body.no-scroll {
   // cursor: pointer;
 }
 
-.button-confirm-icon-container-danger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #ff0000;
-  border-radius: 50%;
-  height: 20px;
-  width: 20px;
-}
-
 .button-cancel {
   outline: none;
   background-color: transparent;
@@ -422,12 +412,59 @@ body.no-scroll {
   height: 16px;
 }
 
-.button-confirm-icon-container-danger img {
-  filter: brightness(0) saturate(100%) invert(15%) sepia(83%) saturate(6873%)
-    hue-rotate(360deg) brightness(106%) contrast(118%);
-  width: 16px;
-  height: 16px;
+.delete-action {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 72px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background-color: rgba(255, 0, 0, 0.2);
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  mat-icon {
+    color: #fff;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 0, 0, 0.4) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(255, 0, 0, 0.4) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#ff0000 0 0) content-box,
+      linear-gradient(#ff0000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  cursor: pointer;
+
+  .button-confirm-icon-container-danger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
+
 
 .menu-btn-container {
   position: relative;

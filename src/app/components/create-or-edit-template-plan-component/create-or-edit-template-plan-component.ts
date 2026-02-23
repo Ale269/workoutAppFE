@@ -190,6 +190,11 @@ export class CreateOrEditTemplatePlanComponent
         sanitizer.bypassSecurityTrustResourceUrl(
           "assets/recollect/svg/google-reorder.svg",
         ),
+      );iconRegistry.addSvgIcon(
+        "google-delete",
+        sanitizer.bypassSecurityTrustResourceUrl(
+          "assets/recollect/svg/google-delete.svg",
+        ),
       );
 
       const navigation = this.router.getCurrentNavigation();

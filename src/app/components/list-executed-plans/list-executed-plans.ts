@@ -11,10 +11,12 @@ import { DeleteDatiTemplateSchedaRequestModel, DeleteDatiTemplateSchedaResponseM
 import { multiOptionGroup, OptionSelectedEvent } from "../shared/multi-option-button/multi-option-button";
 import { CommonModule } from "@angular/common";
 import { GetListaSchedeSvolteRequestModel, GetListaSchedeSvolteResponseModel } from "src/app/models/lista-schede-svolte/get-lista-schede-svolte";
+import { MatIcon, MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: "app-list-executed-plans",
-  imports: [CommonModule],
+  imports: [CommonModule, MatIcon],
   templateUrl: "./list-executed-plans.html",
   styleUrl: "./list-executed-plans.scss",
 })
@@ -58,8 +60,23 @@ export class ListExecutedPlans {
     private workoutService: WorkoutService,
     private authService: AuthService,
     private router: Router,
-    private modalService: ModalService
-  ) { }
+    private modalService: ModalService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+  ) { 
+    iconRegistry.addSvgIcon(
+      "google-arrow",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-delete.svg",
+      ),
+    );
+    iconRegistry.addSvgIcon(
+      "google-delete",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-delete.svg",
+      ),
+    );
+  }
 
   ngOnInit(): void {
     try {

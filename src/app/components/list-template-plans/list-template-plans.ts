@@ -113,6 +113,18 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
         "assets/recollect/svg/google-arrow.svg",
       ),
     );
+    iconRegistry.addSvgIcon(
+      "google-arrow",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-delete.svg",
+      ),
+    );
+    iconRegistry.addSvgIcon(
+      "google-delete",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-delete.svg",
+      ),
+    );
   }
 
   ngOnInit(): void {
