@@ -131,6 +131,18 @@ export class BottomMenuService {
       const scrollTop = el.scrollTop;
       const maxScroll = el.scrollHeight - el.clientHeight;
 
+      // Se la pagina non ha abbastanza contenuto scrollabile, non nascondere il menu
+      if (maxScroll < 200) {
+        if (!this._visible()) {
+          this.ngZone.run(() => {
+            this._visible.set(true);
+            this.updateCssVariable(true);
+          });
+        }
+        this.lastScrollTop = scrollTop;
+        return;
+      }
+
       // Ignore iOS rubber-band bounce at edges
       if (scrollTop <= 0 || scrollTop >= maxScroll) {
         this.lastScrollTop = Math.max(0, Math.min(scrollTop, maxScroll));

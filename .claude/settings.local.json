@@ -6,7 +6,8 @@
       "Bash(npm run:*)",
       "Bash(npm start)",
       "Bash(mkdir:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npx ng build)"
     ],
     "deny": [],
     "ask": []

@@ -73,11 +73,14 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
-  /* HTML e BODY devono occupare il 100% dell'altezza della viewport */
   width: 100%;
-  /* E il 100% della larghezza */
   font-family:
-    Roboto, "Helvetica Neue", sans-serif; // Spostato qui per applicarlo globalmente
+    Roboto, "Helvetica Neue", sans-serif;
+  // Blocca overscroll/rubber-band su iOS e Android
+  overflow: hidden;
+  position: fixed;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: none;
 }
 
 * {
@@ -89,6 +92,12 @@ html {
 body {
   box-sizing: border-box;
   background-color: #000000;
+  // Blocca qualsiasi scroll/rubber-band del body
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overscroll-behavior: none;
 }
 
 .page-scroller {
@@ -103,6 +112,9 @@ body {
   height: 100vh;
   top: 0;
   left: 0;
+  // Previene rubber-band quando si raggiunge il limite dello scroll
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .small-inline-button {
@@ -143,6 +155,16 @@ body.no-scroll {
   overflow: hidden;
   padding-right: 15px;
   /* Adatta al tuo sistema operativo */
+}
+
+/* Impedisce che il tocco su elementi fixed propaghi scroll al body (iOS rubber-band) */
+.floating-static-button-container,
+.floating-double-buttons-container {
+  touch-action: none;
+}
+
+.modal-fullscreen {
+  overscroll-behavior: none;
 }
 
 .content {

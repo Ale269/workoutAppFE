@@ -10,6 +10,7 @@ import {
   ElementRef,
 } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
+import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { CreateOrEditWorkoutExecutionService } from "./create-or-edit-workout-execution-service";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -135,6 +136,8 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     private hapticService: HapticService,
     private activatedRoute: ActivatedRoute,
     private workoutStorageService: WorkoutStorageService,
+    private bottomMenuService: BottomMenuService,
+    private elementRef: ElementRef,
   ) {
     try {
       iconRegistry.addSvgIcon(
@@ -661,18 +664,44 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     }
   }
 
-  addNuovoEsercizio() {
+  async addNuovoEsercizio() {
     try {
       this.hapticService.trigger('medium');
-      this.createOrEditWorkoutExecutionService.AllenamentoForm.addEsercizioForm(
-        undefined,
-      );
+      await this.maintainButtonPosition(() => {
+        this.createOrEditWorkoutExecutionService.AllenamentoForm.addEsercizioForm(
+          undefined,
+        );
+      });
     } catch (error) {
       this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.addNuovoEsercizio",
       );
     }
+  }
+
+  private async maintainButtonPosition(callback: () => void): Promise<void> {
+    const scroller = this.elementRef.nativeElement.querySelector('.page-scroller');
+    if (!scroller) {
+      callback();
+      return;
+    }
+
+    const scrollHeightBefore = scroller.scrollHeight;
+    callback();
+    this.cdr.detectChanges();
+
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => {
+        const scrollHeightAfter = scroller.scrollHeight;
+        const diff = scrollHeightAfter - scrollHeightBefore;
+        if (diff > 0) {
+          this.bottomMenuService.suspendScrollDetection(600);
+          scroller.scrollBy({ top: diff, behavior: 'smooth' });
+        }
+        resolve();
+      });
+    });
   }
 
   onOptionSelected(option: OptionSelectedEvent) {
