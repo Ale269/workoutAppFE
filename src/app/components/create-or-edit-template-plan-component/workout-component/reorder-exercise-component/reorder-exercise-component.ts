@@ -9,7 +9,6 @@ import {
   QueryList,
   ViewChild,
   ViewChildren,
-  ViewEncapsulation,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
@@ -50,7 +49,6 @@ interface Sortable {
   ],
   templateUrl: "./reorder-exercise-component.html",
   styleUrls: ["./reorder-exercise-component.scss"],
-  encapsulation: ViewEncapsulation.None,
 })
 export class ReorderExerciseComponent
   implements OnInit, AfterViewInit, OnDestroy
