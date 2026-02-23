@@ -7,7 +7,7 @@
 .scheda-wrapper {
   position: relative;
   overflow: hidden;
-  touch-action: pan-y; 
+  touch-action: pan-y;
 }
 
 .executed-scheda {
@@ -19,8 +19,12 @@
   gap: 16px;
   background-color: #000;
   cursor: pointer;
-  user-select: none; 
+  user-select: none;
   -webkit-user-select: none;
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 .executed-scheda:first-of-type {

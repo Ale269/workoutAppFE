@@ -23,6 +23,10 @@
   user-select: none;
   -webkit-user-select: none;
   z-index: 1;
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 .naviga-scheda-container {
