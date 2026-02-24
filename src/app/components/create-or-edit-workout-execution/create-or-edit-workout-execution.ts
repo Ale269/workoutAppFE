@@ -58,7 +58,6 @@ import { WorkoutStorageService, WorkoutStorageData } from "src/app/core/services
     MatInput,
     MatDatepickerModule,
     MatNativeDateModule,
-    LongPressDirective,
     MatIcon,
   ],
   templateUrl: "./create-or-edit-workout-execution.html",

@@ -69,8 +69,8 @@ app-ultime-schede-svolte {
   // Ottimizza scroll su mobile
   -webkit-overflow-scrolling: touch;
 
-  // Migliora il momentum scrolling
-  overscroll-behavior-y: contain;
+  // Blocca rubber-band su iOS (ereditato dal globale come none, non usare contain)
+  overscroll-behavior-y: none;
 }
 
 // ============================================

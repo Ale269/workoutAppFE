@@ -112,13 +112,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-arrow.svg",
       ),
-    );
-    iconRegistry.addSvgIcon(
-      "google-arrow",
-      sanitizer.bypassSecurityTrustResourceUrl(
-        "assets/recollect/svg/google-delete.svg",
-      ),
-    );
+    )
     iconRegistry.addSvgIcon(
       "google-delete",
       sanitizer.bypassSecurityTrustResourceUrl(

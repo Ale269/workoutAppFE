@@ -39,6 +39,7 @@ export class BottomMenuService {
 
   constructor() {
     this.updateCssVariable(true);
+    this.updatePaddingVariable(true);
     this.startObserver();
 
     this.router.events
@@ -75,6 +76,7 @@ export class BottomMenuService {
 
   setEnabled(enabled: boolean): void {
     this._enabled.set(enabled);
+    this.updatePaddingVariable(enabled);
     if (!enabled) {
       this._visible.set(false);
       this.updateCssVariable(false);
@@ -181,5 +183,11 @@ export class BottomMenuService {
   private updateCssVariable(visible: boolean): void {
     const value = visible ? `${this.MENU_HEIGHT}px` : "0px";
     document.documentElement.style.setProperty("--bottom-menu-offset", value);
+  }
+
+  /** Variabile statica per i padding — cambia solo con enabled, non con visibilità */
+  private updatePaddingVariable(enabled: boolean): void {
+    const value = enabled ? `${this.MENU_HEIGHT}px` : "0px";
+    document.documentElement.style.setProperty("--bottom-menu-padding", value);
   }
 }
