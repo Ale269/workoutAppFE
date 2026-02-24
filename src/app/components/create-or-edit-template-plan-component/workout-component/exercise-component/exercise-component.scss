@@ -284,51 +284,6 @@ mat-form-field {
   line-height: 1;
 }
 
-// Wrapper carousel (contiene frecce + track)
-.carousel-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.carousel-nav {
-  display: none; // nascosto su mobile/touch
-
-  @media (hover: hover) and (pointer: fine) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid #2a2a2a;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: background-color 0.2s ease, opacity 0.2s ease;
-
-    &:hover:not(:disabled) {
-      background-color: #2a2a2a;
-    }
-
-    &:disabled {
-      opacity: 0.25;
-      cursor: default;
-    }
-  }
-}
-
-.carousel-arrow {
-  width: 16px;
-  height: 16px;
-  filter: invert(1);
-}
-
-.carousel-arrow-prev {
-  transform: rotate(180deg);
-}
-
 // Stili per il carousel multi-sessione
 .history-sessions-carousel {
   display: flex;

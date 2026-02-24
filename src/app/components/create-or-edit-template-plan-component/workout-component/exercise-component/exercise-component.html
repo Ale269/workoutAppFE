@@ -22,10 +22,10 @@
         <div class="close-icon-trigger"></div>
         <div class="arrow-widget-container history-n-button">
           <mat-icon svgIcon="google-history"></mat-icon>
-          <span class="history-n-badge">{{ lastNLimit }}</span>
+          <!-- <span class="history-n-badge">{{ lastNLimit }}</span> -->
         </div>
       </div>
-      <div class="delete-icon-element-container">
+      <!-- <div class="delete-icon-element-container">
         <div
           class="close-icon-trigger"
           (click)="openLastTrainingHistory()"
@@ -33,7 +33,7 @@
         <div class="arrow-widget-container">
           <mat-icon svgIcon="google-history"></mat-icon>
         </div>
-      </div>
+      </div> -->
       }
       <div class="delete-icon-element-container">
         <div class="close-icon-trigger" (click)="openDeleteModal()"></div>
@@ -235,35 +235,27 @@
       <span class="text-white">Nessun dato disponibile</span>
     </div>
     } @else {
-    <div class="carousel-wrapper">
-      <button class="carousel-nav carousel-nav-prev" (click)="scrollSession('prev')" [disabled]="activeSessionIndex === 0">
-        <img src="assets/recollect/svg/google-arrow.svg" class="carousel-arrow carousel-arrow-prev" />
-      </button>
-      <div class="history-sessions-carousel" (scroll)="onSessionCarouselScroll($event)" #sessionCarousel>
-        @for (esercizio of lastNTrainingsData; track esercizio.dataEsecuzione; let sessionIdx = $index) {
-        <div class="history-session-slide">
-          <div class="history-session-header">
-            <span class="session-index">Sessione {{ sessionIdx + 1 }}</span>
-            <span class="date-value">{{ esercizio.dataEsecuzione | date:'dd MMM yyyy' }}</span>
-          </div>
-          <div class="history-series-list">
-            @for (serie of esercizio.listaSerie; track serie.id; let idx = $index) {
-            <div class="history-serie-item">
-              <span class="serie-number">Serie {{ idx + 1 }}</span>
-              <div class="serie-data">
-                <span class="serie-reps">{{ serie.ripetizioni }} reps</span>
-                <span class="serie-separator">x</span>
-                <span class="serie-weight">{{ serie.carico }} kg</span>
-              </div>
-            </div>
-            }
-          </div>
+    <div class="history-sessions-carousel" (scroll)="onSessionCarouselScroll($event)" #sessionCarousel>
+      @for (esercizio of lastNTrainingsData; track esercizio.dataEsecuzione; let sessionIdx = $index) {
+      <div class="history-session-slide">
+        <div class="history-session-header">
+          <span class="session-index">Sessione {{ sessionIdx + 1 }}</span>
+          <span class="date-value">{{ esercizio.dataEsecuzione | date:'dd MMM yyyy' }}</span>
         </div>
-        }
+        <div class="history-series-list">
+          @for (serie of esercizio.listaSerie; track serie.id; let idx = $index) {
+          <div class="history-serie-item">
+            <span class="serie-number">Serie {{ idx + 1 }}</span>
+            <div class="serie-data">
+              <span class="serie-reps">{{ serie.ripetizioni }} reps</span>
+              <span class="serie-separator">x</span>
+              <span class="serie-weight">{{ serie.carico }} kg</span>
+            </div>
+          </div>
+          }
+        </div>
       </div>
-      <button class="carousel-nav carousel-nav-next" (click)="scrollSession('next')" [disabled]="activeSessionIndex === lastNTrainingsData.length - 1">
-        <img src="assets/recollect/svg/google-arrow.svg" class="carousel-arrow carousel-arrow-next" />
-      </button>
+      }
     </div>
     <div class="session-dots">
       @for (esercizio of lastNTrainingsData; track $index; let i = $index) {

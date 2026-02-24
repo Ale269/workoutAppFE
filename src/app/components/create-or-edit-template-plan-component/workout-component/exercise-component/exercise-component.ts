@@ -460,13 +460,6 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     }
   }
 
-  scrollSession(direction: 'prev' | 'next'): void {
-    const el = this.sessionCarouselRef?.nativeElement;
-    if (!el) return;
-    const delta = direction === 'next' ? el.clientWidth : -el.clientWidth;
-    el.scrollBy({ left: delta, behavior: 'smooth' });
-  }
-
   openLastNTrainingHistory() {
     try {
       const exerciseId = this.idTipoEsercizioControl.value;

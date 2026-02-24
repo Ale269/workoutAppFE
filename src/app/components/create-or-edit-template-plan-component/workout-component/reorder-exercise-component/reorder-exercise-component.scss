@@ -26,6 +26,10 @@
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   position: relative;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .exercise-data {
