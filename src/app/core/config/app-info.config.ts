@@ -2,7 +2,7 @@
 // Le informazioni provengono dal package.json
 
 export const APP_INFO = {
-  version: '1.1.51',
+  version: '1.1.52',
   name: 'gymshark-frontend',
-  buildDate: '2026-02-22T22:55:12.553Z'
+  buildDate: '2026-02-24T07:30:49.667Z'
 };
