@@ -91,6 +91,12 @@ export class AnimationService {
 
     this.isNavigating = false;
 
+    // Reset scroll del page-scroller prima del fade in
+    const scroller = document.querySelector('.page-scroller');
+    if (scroller) {
+      scroller.scrollTop = 0;
+    }
+
     gsap.fromTo(
       this.mainElement,
       { autoAlpha: 0 },

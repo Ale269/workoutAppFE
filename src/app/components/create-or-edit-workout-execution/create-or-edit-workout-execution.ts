@@ -185,6 +185,8 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     try {
+      this.bottomMenuService.setEnabled(false);
+
       let navigationText: string = "";
 
       if (!this.idAllenamento) {
@@ -205,6 +207,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.bottomMenuService.setEnabled(true);
     this.stopAutoSave();
     // Chiudi eventuali spinner attivi
     if (this.initSpinnerId) {

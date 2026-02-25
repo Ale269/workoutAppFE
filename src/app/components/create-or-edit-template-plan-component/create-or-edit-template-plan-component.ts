@@ -25,6 +25,7 @@ import { SpinnerService } from "src/app/core/services/spinner.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { SaveDatiTemplateSchedaRequestModel } from "src/app/models/view-modifica-scheda/saveDatiTemplateScheda";
 import { AuthService } from "src/app/core/services/auth.service";
+import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
 import { WorkoutService } from "src/app/core/services/workout.service";
 import { DeleteDatiTemplateSchedaRequestModel } from "src/app/models/view-modifica-scheda/deleteDatiTemplateScheda";
 import { LoadingProgression } from "src/app/models/enums/loading-progression";
@@ -171,6 +172,7 @@ export class CreateOrEditTemplatePlanComponent
     private hapticService: HapticService,
     private activatedRoute: ActivatedRoute,
     private workoutStorageService: WorkoutStorageService,
+    private bottomMenuService: BottomMenuService,
   ) {
     try {
       iconRegistry.addSvgIcon(
@@ -213,6 +215,8 @@ export class CreateOrEditTemplatePlanComponent
 
   ngOnInit(): void {
     try {
+      this.bottomMenuService.setEnabled(false);
+
       // Se non abbiamo la scheda (PWA reload), recupera l'ID dalla URL
       if (!this.scheda) {
         this.recoverSchedaIdFromUrl();
@@ -383,6 +387,7 @@ export class CreateOrEditTemplatePlanComponent
   }
 
   ngOnDestroy(): void {
+    this.bottomMenuService.setEnabled(true);
     this.stopAutoSave();
     if (this.initSpinnerId) {
       this.spinnerService.hide(this.initSpinnerId);
@@ -553,7 +558,9 @@ export class CreateOrEditTemplatePlanComponent
         await this.playFadeOut(this.listView.nativeElement);
       }
 
-      window.scrollTo(0, 0);
+      // Reset scroll del page-scroller
+      const scroller = document.querySelector('.page-scroller');
+      if (scroller) scroller.scrollTop = 0;
 
       // Cambia la vista
       this.selectedWorkout = workout;
@@ -596,7 +603,9 @@ export class CreateOrEditTemplatePlanComponent
         await this.playFadeOut(this.detailView.nativeElement);
       }
 
-      window.scrollTo(0, 0);
+      // Reset scroll del page-scroller
+      const scroller = document.querySelector('.page-scroller');
+      if (scroller) scroller.scrollTop = 0;
 
       // Cambia la vista
       this.selectedWorkout = null;

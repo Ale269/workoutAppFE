@@ -209,6 +209,10 @@ mat-form-field {
   // viene applicato/rimosso istantaneamente per evitare lag
 }
 
+.floating-static-button-container {
+  bottom: 0;
+}
+
 :host {
   @include mat.form-field-overrides(
     (

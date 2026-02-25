@@ -34,20 +34,20 @@
       <h3 class="text-white">Nessuna scheda aggiunta</h3>
       }
     </div>
-
-    <div class="floating-double-buttons-container">
-      <app-multi-option-button
-        [leftButtonLabel]="''"
-        [leftGroups]="leftButtonOptionsGroup"
-        (optionSelected)="onOptionSelected($event)"
-      >
-        <!-- Il pulsante statico viene proiettato qui -->
-        <button class="floating-static-button" (touchstart)="createNewScheda()">
-          <span>Nuova scheda</span>
-        </button>
-      </app-multi-option-button>
-    </div>
   </div>
+</div>
+
+<div class="floating-double-buttons-container">
+  <app-multi-option-button
+    [leftButtonLabel]="''"
+    [leftGroups]="leftButtonOptionsGroup"
+    (optionSelected)="onOptionSelected($event)"
+  >
+    <!-- Il pulsante statico viene proiettato qui -->
+    <button class="floating-static-button" (touchstart)="createNewScheda()">
+      <span>Nuova scheda</span>
+    </button>
+  </app-multi-option-button>
 </div>
 
 <ng-template #headerDeleteTemplate>

@@ -1,34 +1,36 @@
-<div class="content">
-  <div class="section-title-container">
-    <h1 class="text-title">Lista schede svolte</h1>
-  </div>
-  <div class="lista-executed-schede-container">
-    @for (scheda of listaSchede; track scheda.id; let i = $index) {
-    <div class="scheda-wrapper">
-      <div #schedaCard class="executed-scheda" (click)="visualizzaDatiScheda(scheda.id)">
-        <div class="nome-data-scheda">
-          <h3 class="text-white">{{ scheda.nomeScheda }}</h3>
-          <h3 class="text-grey">
-            Creata il {{ scheda.dataAttivazione | date: "dd/MM/yyyy" }}
-          </h3>
-        </div>
-      </div>
-      <div class="delete-action" tabbable (click)="openDeleteScheda(scheda.id)">
-        <div class="button-confirm-icon-container-danger">
-           <mat-icon svgIcon="google-delete"></mat-icon>
-        </div>
-      </div>
+<div class="page-scroller">
+  <div class="content">
+    <div class="section-title-container">
+      <h1 class="text-title">Lista schede svolte</h1>
     </div>
-    } @empty {
-    <h3 class="text-white">Nessuna scheda svolta</h3>
-    }
+    <div class="lista-executed-schede-container">
+      @for (scheda of listaSchede; track scheda.id; let i = $index) {
+      <div class="scheda-wrapper">
+        <div #schedaCard class="executed-scheda" (click)="visualizzaDatiScheda(scheda.id)">
+          <div class="nome-data-scheda">
+            <h3 class="text-white">{{ scheda.nomeScheda }}</h3>
+            <h3 class="text-grey">
+              Creata il {{ scheda.dataAttivazione | date: "dd/MM/yyyy" }}
+            </h3>
+          </div>
+        </div>
+        <div class="delete-action" tabbable (click)="openDeleteScheda(scheda.id)">
+          <div class="button-confirm-icon-container-danger">
+             <mat-icon svgIcon="google-delete"></mat-icon>
+          </div>
+        </div>
+      </div>
+      } @empty {
+      <h3 class="text-white">Nessuna scheda svolta</h3>
+      }
+    </div>
   </div>
+</div>
 
-  <div class="floating-double-buttons-container">
-      <button class="floating-static-button" (touchstart)="createNewScheda()">
-        <span>Nuova scheda</span>
-      </button>
-  </div>
+<div class="floating-double-buttons-container">
+    <button class="floating-static-button" (touchstart)="createNewScheda()">
+      <span>Nuova scheda</span>
+    </button>
 </div>
 
 <ng-template #headerDeleteTemplate>
