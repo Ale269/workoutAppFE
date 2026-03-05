@@ -28,6 +28,12 @@ export function positiveIntegerValidator() {
 export class SerieForm {
   public form: FormGroup;
 
+  // Flag per tracciare se il valore è stato impostato dall'auto-propagazione.
+  // Se true, il campo può essere sovrascritto dalla propagazione automatica.
+  // Se false, il campo è stato editato manualmente dall'utente o caricato dal server.
+  public autoFilledRipetizioni: boolean = false;
+  public autoFilledCarico: boolean = false;
+
   constructor(identifier: number, serieDTO?: SerieDTO) {
     this.form = new FormGroup<SerieFormModel>({
       identifier: new FormControl<number | null>(identifier),
@@ -44,6 +50,7 @@ export class SerieForm {
         positiveIntegerValidator(),
       ]),
     });
+    // I dati dal server/DTO mantengono autoFilled = false (non sovrascrivibili)
   }
 
   getDatiSerieDaSalvare(): SerieDTO {

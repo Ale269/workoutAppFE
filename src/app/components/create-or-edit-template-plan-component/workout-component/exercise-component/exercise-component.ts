@@ -3,6 +3,8 @@ import {
   EventEmitter,
   Input,
   OnInit,
+  OnChanges,
+  SimpleChanges,
   Output,
   TemplateRef,
   ViewChild,
@@ -56,7 +58,7 @@ import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
   templateUrl: "./exercise-component.html",
   styleUrl: "./exercise-component.scss",
 })
-export class ExerciseComponent implements OnInit, OnDestroy {
+export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   @Input() formAllenamento!: AllenamentoForm;
   @Input() formEsercizio!: EsercizioForm;
   @Input() isCompactMode: boolean = false;
@@ -146,38 +148,30 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     try {
-      this.idTipoEsercizioControl = this.formEsercizio.form.controls[
-        "idTipoEsercizio"
-      ] as FormControl<number | null>;
-
-      this.idMetodologiaControl = this.formEsercizio.form.controls[
-        "idMetodologia"
-      ] as FormControl<number | null>;
-
-      this.ordinamentoControl = this.formEsercizio.form.controls[
-        "ordinamento"
-      ] as FormControl<number | null>;
-
-      this.updateExerciseIcon();
-
-      this.ordinamentoControl.valueChanges
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((newPosition) => {
-          if (newPosition !== null && newPosition !== undefined) {
-            this.changePosition(newPosition);
-          }
-        });
-
-      this.idTipoEsercizioControl.valueChanges
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-          this.updateExerciseIcon();
-        });
-
-      // Sottoscrivi ai cambiamenti delle serie esistenti
-      this.subscribeToSerieChanges();
+      this.initFormBindings();
     } catch (error) {
       this.errorHandlerService.logError(error, "ExerciseComponent.ngOnInit");
+    }
+  }
+
+  /**
+   * Quando il form esercizio viene sostituito (es. dopo save+reinit in edit mode),
+   * Angular riusa il componente perché l'identifier ha lo stesso valore.
+   * ngOnInit non viene richiamato, ma ngOnChanges sì → ri-sottoscriviamo.
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['formEsercizio'] && !changes['formEsercizio'].firstChange) {
+      try {
+        // Annulla le subscription precedenti
+        this.serieSubscriptions$.next();
+        this.destroy$.next();
+        // Ricrea i Subject per le nuove subscription
+        this.destroy$ = new Subject<void>();
+        this.serieSubscriptions$ = new Subject<void>();
+        this.initFormBindings();
+      } catch (error) {
+        this.errorHandlerService.logError(error, "ExerciseComponent.ngOnChanges");
+      }
     }
   }
 
@@ -189,8 +183,47 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Inizializza i binding ai controlli del form e le subscription.
+   * Chiamato sia da ngOnInit che da ngOnChanges quando il form viene sostituito.
+   */
+  private initFormBindings(): void {
+    this.idTipoEsercizioControl = this.formEsercizio.form.controls[
+      "idTipoEsercizio"
+    ] as FormControl<number | null>;
+
+    this.idMetodologiaControl = this.formEsercizio.form.controls[
+      "idMetodologia"
+    ] as FormControl<number | null>;
+
+    this.ordinamentoControl = this.formEsercizio.form.controls[
+      "ordinamento"
+    ] as FormControl<number | null>;
+
+    this.updateExerciseIcon();
+
+    this.ordinamentoControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((newPosition) => {
+        if (newPosition !== null && newPosition !== undefined) {
+          this.changePosition(newPosition);
+        }
+      });
+
+    this.idTipoEsercizioControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.updateExerciseIcon();
+      });
+
+    // Sottoscrivi ai cambiamenti delle serie esistenti
+    this.subscribeToSerieChanges();
+  }
+
+  /**
    * Sottoscrive i valueChanges di ripetizioni e carico di ogni serie.
-   * Quando un valore cambia, lo propaga a tutte le serie successive.
+   * Quando un valore cambia:
+   * - Marca la serie corrente come editata manualmente (autoFilled = false)
+   * - Propaga il valore alle serie successive solo se vuote o auto-filled
    */
   subscribeToSerieChanges(): void {
     // Annulla le subscription precedenti
@@ -202,24 +235,45 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       const ripetizioniCtrl = serieForm.form.controls['ripetizioni'];
       const caricoCtrl = serieForm.form.controls['carico'];
 
+      // valueChanges si attiva solo per input utente diretto,
+      // perché propagateToNextSeries usa { emitEvent: false }
       ripetizioniCtrl.valueChanges
         .pipe(takeUntil(this.serieSubscriptions$), takeUntil(this.destroy$))
         .subscribe((value) => {
+          serieForm.autoFilledRipetizioni = false;
           this.propagateToNextSeries(index, 'ripetizioni', value);
         });
 
       caricoCtrl.valueChanges
         .pipe(takeUntil(this.serieSubscriptions$), takeUntil(this.destroy$))
         .subscribe((value) => {
+          serieForm.autoFilledCarico = false;
           this.propagateToNextSeries(index, 'carico', value);
         });
     });
   }
 
-  private propagateToNextSeries(fromIndex: number, field: string, value: number | null): void {
+  /**
+   * Propaga il valore alle serie successive solo se:
+   * - Il campo è vuoto (null/0), oppure
+   * - Il campo è stato precedentemente impostato dall'auto-propagazione (autoFilled = true)
+   *
+   * Non sovrascrive campi editati manualmente dall'utente o caricati dal server.
+   */
+  private propagateToNextSeries(fromIndex: number, field: 'ripetizioni' | 'carico', value: number | null): void {
     const serieList = this.formEsercizio.listaSerieForm;
+    const autoFilledKey = field === 'ripetizioni' ? 'autoFilledRipetizioni' : 'autoFilledCarico';
+
     for (let i = fromIndex + 1; i < serieList.length; i++) {
-      serieList[i].form.controls[field].setValue(value, { emitEvent: false });
+      const targetSerie = serieList[i];
+      const currentValue = targetSerie.form.controls[field].value;
+      const isEmpty = currentValue === null || currentValue === 0;
+      const isAutoFilled = targetSerie[autoFilledKey];
+
+      if (isEmpty || isAutoFilled) {
+        targetSerie.form.controls[field].setValue(value, { emitEvent: false });
+        targetSerie[autoFilledKey] = true;
+      }
     }
   }
 

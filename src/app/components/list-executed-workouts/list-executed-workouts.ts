@@ -153,6 +153,9 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
             inertia: true,
             dragClickables: false,
             zIndexBoost: false,
+            onDragStart: function (this: any) {
+              component.closeOtherSwipes(index);
+            },
             onDrag: function (this: any) {
               const progress = Math.abs(this.x) / DELETE_WIDTH;
               const alpha = Math.min(progress, 1);
@@ -243,8 +246,9 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
     draggable.vars.isOpen = false;
   }
 
-  private closeAllSwipes(): void {
+  private closeOtherSwipes(exceptIndex: number): void {
     this.allenamentoCards.forEach((cardRef, index) => {
+      if (index === exceptIndex) return;
       const card = cardRef.nativeElement;
       const deleteButton = card
         .closest(".allenamento-wrapper")
@@ -255,6 +259,10 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
         this.closeSwipe(card, deleteButton, draggable);
       }
     });
+  }
+
+  private closeAllSwipes(): void {
+    this.closeOtherSwipes(-1);
   }
 
   async getListaAllenamentiSvolti() {

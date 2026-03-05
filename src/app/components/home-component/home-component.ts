@@ -8,12 +8,11 @@ import {
   ElementRef,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { RouterModule } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { ProssimoAllenamento } from "../widgets/prossimo-allenamento/prossimo-allenamento";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
-import { CreateOrEditWorkoutExecution } from "../create-or-edit-workout-execution/create-or-edit-workout-execution";
 import { AuthService } from "src/app/core/services/auth.service";
 import { SchedaCorrente } from "../widgets/scheda-corrente/scheda-corrente";
 import { UltimiAllenamentiSvolti } from "../widgets/ultimi-allenamenti-svolti/ultimi-allenamenti-svolti";
@@ -24,6 +23,7 @@ import { SelezionaAllenamentoDaSvolgere } from "../widgets/seleziona-allenamento
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { WorkoutStorageService } from "src/app/core/services/workout-storage.service";
 
 // Registra il plugin ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
@@ -68,6 +68,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private elementRef: ElementRef,
     private hapticService: HapticService,
+    private workoutStorageService: WorkoutStorageService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -76,8 +78,52 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         leftButton: "none",
       });
 
+      // Controlla se ci sono dati in corso salvati in localStorage
+      // e nel caso naviga alla pagina giusta per riprendere
+      if (this.checkAndRecoverPendingWork()) {
+        return;
+      }
+
     } catch (error) {
       this.errorHandlerService.logError(error, "HomeComponent.ngOnInit");
+    }
+  }
+
+  /**
+   * Controlla se ci sono sessioni di lavoro in corso salvate in localStorage.
+   * Se trovate, naviga alla pagina corretta per riprendere il lavoro.
+   * @returns true se è stata trovata una sessione da recuperare (navigazione avviata)
+   */
+  private checkAndRecoverPendingWork(): boolean {
+    try {
+      // Controlla workout execution in corso
+      const workoutData = this.workoutStorageService.load();
+      if (workoutData) {
+        if (workoutData.createOrEdit === 1) {
+          // create mode → registra-allenamento/:idTemplate
+          this.router.navigate(["/registra-allenamento", workoutData.idTemplateAllenamento]);
+        } else {
+          // edit mode → modifica-allenamento/:idAllenamento
+          this.router.navigate(["/allenamenti-svolti/modifica-allenamento", workoutData.idAllenamento]);
+        }
+        return true;
+      }
+
+      // Controlla template plan in corso
+      const templateData = this.workoutStorageService.loadTemplate();
+      if (templateData) {
+        if (templateData.schedaId > 0) {
+          this.router.navigate(["/le-mie-schede/modifica-scheda", templateData.schedaId]);
+        } else {
+          this.router.navigate(["/le-mie-schede/modifica-scheda"]);
+        }
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      this.errorHandlerService.logError(error, "HomeComponent.checkAndRecoverPendingWork");
+      return false;
     }
   }
 
