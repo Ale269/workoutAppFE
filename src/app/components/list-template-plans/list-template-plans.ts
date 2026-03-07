@@ -183,6 +183,9 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
             inertia: true,
             dragClickables: false, // Previene conflitti con i click
             zIndexBoost: false,
+            onDragStart: function (this: any) {
+              component.closeOtherSwipes(index);
+            },
             onDrag: function (this: any) {
               const progress = Math.abs(this.x) / DELETE_WIDTH;
               const alpha = Math.min(progress, 1);
@@ -279,16 +282,21 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     draggable.vars.isOpen = false;
   }
 
-  private closeAllSwipes(): void {
+  private closeOtherSwipes(exceptIndex: number): void {
     this.schedaCards.forEach((cardRef, index) => {
+      if (index === exceptIndex) return;
       const card = cardRef.nativeElement;
       const deleteButton = card.querySelector(".delete-action");
       const draggable = this.draggableInstances[index];
 
-      if (draggable?.vars.isOpen) {
+      if (draggable?.vars.isOpen && deleteButton) {
         this.closeSwipe(card, deleteButton, draggable);
       }
     });
+  }
+
+  private closeAllSwipes(): void {
+    this.closeOtherSwipes(-1);
   }
 
   getListaTemplateSchede() {
