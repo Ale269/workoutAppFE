@@ -56,6 +56,7 @@ export class ConfigurationService {
    * Resetta lo stato delle configurazioni (es: al logout)
    */
   resetConfigurations(): void {
+    this.exerciseService.reset();
     this.configLoadedSubject.next(false);
     this.isLoading = false;
   }

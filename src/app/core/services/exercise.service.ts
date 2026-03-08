@@ -24,6 +24,7 @@ export class ExerciseService {
   private muscles: MuscleGroupDTO[] = [];
   private icons: IconExerciseDTO[] = [];
   private currentUserId: number = 0;
+  private initializationPromise: Promise<void> | null = null;
 
   private apiCatalogService = inject(ApiCatalogService)
 
@@ -48,9 +49,15 @@ export class ExerciseService {
       return Promise.resolve();
     }
 
-    return new Promise((resolve, reject) => {
+    // Se c'è già una chiamata in volo, riusa la stessa promise
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+    this.initializationPromise = new Promise((resolve, reject) => {
       this.getVisibleExercises(userId).subscribe({
         next: (response) => {
+          this.initializationPromise = null;
           if (!response.errore.error) {
             this.exercises = response.exercises;
             this.muscles = response.muscles ?? [];
@@ -61,10 +68,13 @@ export class ExerciseService {
           }
         },
         error: (error) => {
+          this.initializationPromise = null;
           reject(error);
         },
       });
     });
+
+    return this.initializationPromise;
   }
 
   getExercisesByUser(userId: number): Observable<ExerciseListResponseModel> {
@@ -119,8 +129,17 @@ export class ExerciseService {
     return exercise.createdById === currentUserId;
   }
 
+  reset(): void {
+    this.exercises = [];
+    this.muscles = [];
+    this.icons = [];
+    this.currentUserId = 0;
+    this.initializationPromise = null;
+  }
+
   reloadExercises(): Promise<void> {
     this.exercises = [];
+    this.initializationPromise = null;
     return this.initializeExercises(this.currentUserId);
   }
 
