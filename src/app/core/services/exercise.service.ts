@@ -1,7 +1,5 @@
 import { inject, Injectable } from "@angular/core";
 import { ApiCatalogService } from "./api-catalog.service";
-import { Router } from "@angular/router";
-import { GetAllExerciseTypeResponseModel } from "../../models/exercise/exercise-model";
 import { Observable } from "rxjs";
 import {
   ExerciseTypeDTO,
@@ -25,6 +23,7 @@ export class ExerciseService {
   private exercises: ExerciseTypeDTO[] = [];
   private muscles: MuscleGroupDTO[] = [];
   private icons: IconExerciseDTO[] = [];
+  private currentUserId: number = 0;
 
   private apiCatalogService = inject(ApiCatalogService)
 
@@ -41,28 +40,22 @@ export class ExerciseService {
     return this.icons;
   }
 
-  initializeExercises(): Promise<GetAllExerciseTypeResponseModel> {
+  initializeExercises(userId: number): Promise<void> {
+    this.currentUserId = userId;
+
     // Se già caricati, ritorna immediatamente (idempotente)
     if (this.exercises.length > 0) {
-      return Promise.resolve({
-        exercises: this.exercises,
-        errore: { error: false, codiceErrore: 0, messaggioErrore: '', errorMessage: ''},
-        icons: [],
-        id: '',
-        muscles: []
-      } as GetAllExerciseTypeResponseModel);
+      return Promise.resolve();
     }
 
     return new Promise((resolve, reject) => {
-      // Chiamata diretta senza aspettare authInitialized$
-      // A questo punto l'initializer ha già garantito che il token sia valido
-      this.getAllExercise().subscribe({
-        next: (response: GetAllExerciseTypeResponseModel) => {
+      this.getVisibleExercises(userId).subscribe({
+        next: (response) => {
           if (!response.errore.error) {
             this.exercises = response.exercises;
-            this.muscles = response.muscles;
-            this.icons = response.icons;
-            resolve(response);
+            this.muscles = response.muscles ?? [];
+            this.icons = response.icons ?? [];
+            resolve();
           } else {
             reject(response.errore.error);
           }
@@ -72,15 +65,6 @@ export class ExerciseService {
         },
       });
     });
-  }
-
-  getAllExercise(): Observable<GetAllExerciseTypeResponseModel> {
-    return this.apiCatalogService.executeApiCall(
-      "exercise",
-      "get-all",
-      undefined,
-      null
-    );
   }
 
   getExercisesByUser(userId: number): Observable<ExerciseListResponseModel> {
@@ -137,7 +121,7 @@ export class ExerciseService {
 
   reloadExercises(): Promise<void> {
     this.exercises = [];
-    return this.initializeExercises().then(() => {});
+    return this.initializeExercises(this.currentUserId);
   }
 
   /**
@@ -160,6 +144,7 @@ export class ExerciseService {
         idIcona: exercise.idIcona,
         iconColor: iconDetails ? iconDetails.coloreIcona : undefined,
         muscleNames: this.getMuscleNamesByIds(exercise.idMuscoli),
+        isStandard: exercise.isStandard,
       };
     });
   }
@@ -247,6 +232,7 @@ export interface ExerciseViewModel {
   idIcona: number;
   iconColor?: string;
   muscleNames?: string; // Stringa concatenata (es: "Petto, Tricipiti")
+  isStandard?: boolean;
 }
 
 export interface MuscleGroup {

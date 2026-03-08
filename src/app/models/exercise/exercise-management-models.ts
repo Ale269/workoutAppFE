@@ -1,4 +1,4 @@
-import { ExerciseTypeDTO } from './exercisedto';
+import { ExerciseTypeDTO, IconExerciseDTO, MuscleGroupDTO } from './exercisedto';
 import { BaseResponseModel } from '../base-response/base-response';
 
 // Request per creazione esercizio
@@ -24,6 +24,8 @@ export interface UpdateExerciseRequestModel {
 // Response per lista esercizi
 export interface ExerciseListResponseModel extends BaseResponseModel {
   exercises: ExerciseTypeDTO[];
+  muscles?: MuscleGroupDTO[];
+  icons?: IconExerciseDTO[];
 }
 
 // Response per singolo esercizio

@@ -6,30 +6,17 @@
     <form [formGroup]="formFiltri.form">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Cerca esercizio</mat-label>
-        <input
-          matInput
-          type="text"
-          formControlName="descrizione"
-          placeholder="Descrizione esercizio"
-        />
+        <input matInput type="text" formControlName="descrizione" placeholder="Descrizione esercizio" />
         @if (formFiltri.form.controls?.['descrizione']?.value) {
-        <button
-          class="cancel-input-button"
-          matSuffix
-          mat-icon-button
-          (click)="formFiltri.form.controls?.['descrizione']?.setValue('')"
-          type="button"
-        >
+        <button class="cancel-input-button" matSuffix mat-icon-button
+          (click)="formFiltri.form.controls?.['descrizione']?.setValue('')" type="button">
           <img src="assets/recollect/svg/google-close-icon.svg" />
         </button>
         }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Gruppo muscolare</mat-label>
-        <mat-select
-          formControlName="idMuscle"
-          [placeholder]="'Seleziona gruppo muscolare'"
-        >
+        <mat-select formControlName="idMuscle" [placeholder]="'Seleziona gruppo muscolare'">
           @for (muscle of muscleGroups; track muscle.id) {
           <mat-option [value]="muscle.id">
             <div class="custom-option">
@@ -39,13 +26,8 @@
           }
         </mat-select>
         @if (formFiltri.form.controls?.['idMuscle']?.value) {
-        <button
-          class="cancel-input-button"
-          matSuffix
-          mat-icon-button
-          (click)="$event.stopPropagation(); formFiltri.form.controls?.['idMuscle']?.setValue('')"
-          type="button"
-        >
+        <button class="cancel-input-button" matSuffix mat-icon-button
+          (click)="$event.stopPropagation(); formFiltri.form.controls?.['idMuscle']?.setValue('')" type="button">
           <img src="assets/recollect/svg/google-close-icon.svg" />
         </button>
         }
@@ -56,16 +38,14 @@
     <div class="exercise-type-container">
       @for (tipoEsercizio of filteredExercises; track tipoEsercizio.id) {
       <div class="exercise-container" (click)="selectExercise(tipoEsercizio)">
+        @if (!tipoEsercizio.isStandard) {
+        <div class="custom-badge" title="Esercizio personalizzato">
+          <img src="assets/recollect/svg/bottom-account.svg" class="custom-badge-icon" />
+        </div>
+        }
         <div class="icon-container">
-          <div
-            class="circle-icon"
-            [style.border-color]="tipoEsercizio.idIcona | exerciseIconColor"
-          >
-            <img
-              [src]="tipoEsercizio.imgPath"
-              [alt]="'Icona ' + tipoEsercizio.label"
-              class="exercise-icon"
-            />
+          <div class="circle-icon" [style.border-color]="tipoEsercizio.idIcona | exerciseIconColor">
+            <img [src]="tipoEsercizio.imgPath" [alt]="'Icona ' + tipoEsercizio.label" class="exercise-icon" />
           </div>
         </div>
 
@@ -73,10 +53,7 @@
           <h3 class="text-white">{{ tipoEsercizio.label }}</h3>
 
           @if (tipoEsercizio.muscleNames) {
-          <div
-            class="chips-container"
-            style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px"
-          >
+          <div class="chips-container" style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px">
             @for (muscle of tipoEsercizio.muscleNames.split(', '); track muscle)
             {
             <div class="dati-chip-container muscle-chip">{{ muscle }}</div>

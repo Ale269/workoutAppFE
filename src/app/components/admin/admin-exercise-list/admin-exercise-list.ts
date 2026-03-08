@@ -77,7 +77,7 @@ export class AdminExerciseListComponent implements OnInit {
           this.spinnerService.setSuccess(this.currentSpinnerId);
         }
       } else {
-        this.exerciseService.initializeExercises().then(() => {
+        this.exerciseService.initializeExercises(this.currentUserId).then(() => {
           const allExercises = this.exerciseService.getExercises() || [];
           this.exerciseList = this.filterVisibleExercises(allExercises);
           this.applySearchFilter();

@@ -24,7 +24,9 @@ export function initializeApp() {
       // Se autenticato, carica le configurazioni
       if (authService.isAuthenticated()) {
         try {
-          await configurationService.loadConfigurations();
+          const currentUser = authService.getCurrentUser();
+          const userId = currentUser?.userId || currentUser?.id || 0;
+          await configurationService.loadConfigurations(userId);
         } catch (configError) {
           // Logga ma non blocca l'app
           console.error('Errore caricamento configurazioni nell\'initializer:', configError);
