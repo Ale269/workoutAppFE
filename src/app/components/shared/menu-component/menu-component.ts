@@ -154,6 +154,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
+  navigateToAdminExercises() {
+    this.closeMenu();
+    setTimeout(() => {
+      this.router.navigate(['/admin/exercises']);
+    }, 100);
+  }
+
   isAdmin(): boolean {
     const currentUser = this.authService.getCurrentUser();
     return currentUser?.role === "ADMIN";

@@ -81,7 +81,7 @@ export class AuthService {
 
          // Carica le configurazioni dopo aver impostato lo stato
          try {
-             await this.configurationService.loadConfigurations();
+             await this.configurationService.loadConfigurations(user.userId || user.id || 0);
          } catch (error) {
              // Logga ma non blocca - l'utente è autenticato comunque
              console.error('Errore caricamento configurazioni post-login:', error);

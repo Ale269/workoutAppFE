@@ -3,6 +3,8 @@ export interface ExerciseTypeDTO {
   nomeTipoEsercizio: string;
   idMuscoli: number[];
   idIcona: number;
+  createdById: number | null;
+  isStandard: boolean;
 }
 
 export interface MuscleGroupDTO {

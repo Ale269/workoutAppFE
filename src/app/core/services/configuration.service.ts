@@ -23,7 +23,7 @@ export class ConfigurationService {
    * Carica tutte le configurazioni necessarie dopo l'autenticazione.
    * Può essere chiamato più volte senza problemi (idempotente).
    */
-  async loadConfigurations(): Promise<void> {
+  async loadConfigurations(userId: number): Promise<void> {
     // Se già caricato o in caricamento, ritorna subito
     if (this.configLoadedSubject.value || this.isLoading) {
       return;
@@ -34,7 +34,7 @@ export class ConfigurationService {
     try {
       // Carica tutte le configurazioni in parallelo
       await Promise.all([
-        this.exerciseService.initializeExercises(),
+        this.exerciseService.initializeExercises(userId),
         // Futuro: this.muscleGroupService.loadMuscleGroups(),
         // Futuro: this.iconService.loadIcons(),
         // ecc.
@@ -56,6 +56,7 @@ export class ConfigurationService {
    * Resetta lo stato delle configurazioni (es: al logout)
    */
   resetConfigurations(): void {
+    this.exerciseService.reset();
     this.configLoadedSubject.next(false);
     this.isLoading = false;
   }

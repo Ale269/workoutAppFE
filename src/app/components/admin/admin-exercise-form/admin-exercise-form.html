@@ -1,0 +1,113 @@
+<!-- admin-exercise-form.html -->
+<div class="content">
+  <div class="section-title-container">
+    <h1 class="text-title">
+      {{ isEditMode ? 'Modifica Esercizio' : 'Nuovo Esercizio' }}
+    </h1>
+  </div>
+
+  <div class="form-container">
+    <form [formGroup]="exerciseForm.form" (ngSubmit)="onSubmit()">
+      <!-- Nome esercizio -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome esercizio</mat-label>
+        <input
+          matInput
+          formControlName="name"
+          placeholder="Inserisci nome esercizio"
+          required
+        />
+        @if (exerciseForm.form.get('name')?.invalid &&
+        exerciseForm.form.get('name')?.touched) {
+        <mat-error>{{ getErrorMessage('name') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Descrizione (opzionale) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descrizione</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          placeholder="Inserisci descrizione (opzionale)"
+          rows="3"
+        ></textarea>
+      </mat-form-field>
+
+      <!-- Icona -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Icona</mat-label>
+        <mat-select formControlName="iconId" required>
+          @for (icon of iconOptions; track icon.idIcona) {
+          <mat-option [value]="icon.idIcona">
+            <div class="icon-option">
+              <img [src]="getIconPath(icon.idIcona)" class="icon-preview" />
+              <span>{{ icon.nomeIcona }}</span>
+            </div>
+          </mat-option>
+          }
+        </mat-select>
+        @if (exerciseForm.form.get('iconId')?.invalid &&
+        exerciseForm.form.get('iconId')?.touched) {
+        <mat-error>{{ getErrorMessage('iconId') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Preview icona selezionata -->
+      @if (exerciseForm.form.value.iconId) {
+      <div class="icon-preview-container">
+        <span class="preview-label">Anteprima icona:</span>
+        <div class="icon-preview-box">
+          <img [src]="getIconPath(exerciseForm.form.value.iconId)" />
+        </div>
+      </div>
+      }
+
+      <!-- Gruppi muscolari (multi-select) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Gruppi muscolari</mat-label>
+        <mat-select formControlName="muscleIds" multiple required>
+          @for (muscle of muscleOptions; track muscle.id) {
+          <mat-option [value]="muscle.id">{{ muscle.name }}</mat-option>
+          }
+        </mat-select>
+        @if (exerciseForm.form.get('muscleIds')?.invalid &&
+        exerciseForm.form.get('muscleIds')?.touched) {
+        <mat-error>{{ getErrorMessage('muscleIds') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Flag Standard (solo admin) -->
+      @if (isAdmin) {
+      <div class="toggle-field">
+        <label class="toggle-label">Esercizio standard (visibile a tutti)</label>
+        <mat-slide-toggle
+          formControlName="isStandard"
+          color="primary"
+        ></mat-slide-toggle>
+      </div>
+      }
+
+      <!-- Pulsanti azioni -->
+      <div class="form-actions">
+        <button
+          mat-raised-button
+          type="button"
+          (click)="onCancel()"
+          class="cancel-button"
+        >
+          Annulla
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!exerciseForm.form.valid"
+          class="submit-button"
+        >
+          {{ isEditMode ? 'Salva Modifiche' : 'Crea Esercizio' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

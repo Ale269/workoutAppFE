@@ -33,6 +33,41 @@
         "endpoint": "/exercise/get-all",
         "method": "get",
         "isMocked": false
+      },
+      {
+        "name": "getByUser",
+        "endpoint": "/exercise/user/:userId",
+        "method": "get",
+        "description": "Recupera gli esercizi creati da un utente.",
+        "isMocked": false
+      },
+      {
+        "name": "getVisible",
+        "endpoint": "/exercise/visible/:userId",
+        "method": "get",
+        "description": "Recupera gli esercizi visibili per un utente (standard + custom propri).",
+        "isMocked": false
+      },
+      {
+        "name": "create",
+        "endpoint": "/exercise/create",
+        "method": "post",
+        "description": "Crea un nuovo esercizio.",
+        "isMocked": false
+      },
+      {
+        "name": "update",
+        "endpoint": "/exercise/update/:exerciseId",
+        "method": "put",
+        "description": "Aggiorna un esercizio esistente.",
+        "isMocked": false
+      },
+      {
+        "name": "delete",
+        "endpoint": "/exercise/delete/:exerciseId",
+        "method": "delete",
+        "description": "Elimina un esercizio.",
+        "isMocked": false
       }
     ],
     "workout": [

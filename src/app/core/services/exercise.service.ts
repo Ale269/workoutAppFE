@@ -1,7 +1,5 @@
 import { inject, Injectable } from "@angular/core";
 import { ApiCatalogService } from "./api-catalog.service";
-import { Router } from "@angular/router";
-import { GetAllExerciseTypeResponseModel } from "../../models/exercise/exercise-model";
 import { Observable } from "rxjs";
 import {
   ExerciseTypeDTO,
@@ -9,6 +7,14 @@ import {
   MuscleGroupDTO,
 } from "src/app/models/exercise/exercisedto";
 import { getIconPathById } from "src/app/components/enums/exercise-icons";
+import {
+  CreateExerciseRequestModel,
+  CreateExerciseResponseModel,
+  DeleteExerciseResponseModel,
+  ExerciseListResponseModel,
+  UpdateExerciseRequestModel,
+  UpdateExerciseResponseModel,
+} from "src/app/models/exercise/exercise-management-models";
 
 @Injectable({
   providedIn: "root",
@@ -17,6 +23,8 @@ export class ExerciseService {
   private exercises: ExerciseTypeDTO[] = [];
   private muscles: MuscleGroupDTO[] = [];
   private icons: IconExerciseDTO[] = [];
+  private currentUserId: number = 0;
+  private initializationPromise: Promise<void> | null = null;
 
   private apiCatalogService = inject(ApiCatalogService)
 
@@ -33,46 +41,106 @@ export class ExerciseService {
     return this.icons;
   }
 
-  initializeExercises(): Promise<GetAllExerciseTypeResponseModel> {
+  initializeExercises(userId: number): Promise<void> {
+    this.currentUserId = userId;
+
     // Se già caricati, ritorna immediatamente (idempotente)
     if (this.exercises.length > 0) {
-      return Promise.resolve({
-        exercises: this.exercises,
-        errore: { error: false, codiceErrore: 0, messaggioErrore: '', errorMessage: ''},
-        icons: [],
-        id: '',
-        muscles: []
-      } as GetAllExerciseTypeResponseModel);
+      return Promise.resolve();
     }
 
-    return new Promise((resolve, reject) => {
-      // Chiamata diretta senza aspettare authInitialized$
-      // A questo punto l'initializer ha già garantito che il token sia valido
-      this.getAllExercise().subscribe({
-        next: (response: GetAllExerciseTypeResponseModel) => {
+    // Se c'è già una chiamata in volo, riusa la stessa promise
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+    this.initializationPromise = new Promise((resolve, reject) => {
+      this.getVisibleExercises(userId).subscribe({
+        next: (response) => {
+          this.initializationPromise = null;
           if (!response.errore.error) {
             this.exercises = response.exercises;
-            this.muscles = response.muscles;
-            this.icons = response.icons;
-            resolve(response);
+            this.muscles = response.muscles ?? [];
+            this.icons = response.icons ?? [];
+            resolve();
           } else {
             reject(response.errore.error);
           }
         },
         error: (error) => {
+          this.initializationPromise = null;
           reject(error);
         },
       });
     });
+
+    return this.initializationPromise;
   }
 
-  getAllExercise(): Observable<GetAllExerciseTypeResponseModel> {
+  getExercisesByUser(userId: number): Observable<ExerciseListResponseModel> {
     return this.apiCatalogService.executeApiCall(
       "exercise",
-      "get-all",
-      undefined,
+      "getByUser",
+      { userId },
       null
     );
+  }
+
+  getVisibleExercises(userId: number): Observable<ExerciseListResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "exercise",
+      "getVisible",
+      { userId },
+      null
+    );
+  }
+
+  createExercise(data: CreateExerciseRequestModel): Observable<CreateExerciseResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "exercise",
+      "create",
+      undefined,
+      data
+    );
+  }
+
+  updateExercise(exerciseId: number, data: UpdateExerciseRequestModel): Observable<UpdateExerciseResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "exercise",
+      "update",
+      { exerciseId },
+      data
+    );
+  }
+
+  deleteExercise(exerciseId: number, userId: number): Observable<DeleteExerciseResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "exercise",
+      "delete",
+      { exerciseId, userId },
+      null
+    );
+  }
+
+  canUserModifyExercise(exercise: ExerciseTypeDTO, currentUserId: number, isAdmin: boolean): boolean {
+    if (exercise.isStandard) {
+      return isAdmin;
+    }
+    return exercise.createdById === currentUserId;
+  }
+
+  reset(): void {
+    this.exercises = [];
+    this.muscles = [];
+    this.icons = [];
+    this.currentUserId = 0;
+    this.initializationPromise = null;
+  }
+
+  reloadExercises(): Promise<void> {
+    this.exercises = [];
+    this.initializationPromise = null;
+    return this.initializeExercises(this.currentUserId);
   }
 
   /**
@@ -95,6 +163,7 @@ export class ExerciseService {
         idIcona: exercise.idIcona,
         iconColor: iconDetails ? iconDetails.coloreIcona : undefined,
         muscleNames: this.getMuscleNamesByIds(exercise.idMuscoli),
+        isStandard: exercise.isStandard,
       };
     });
   }
@@ -182,6 +251,7 @@ export interface ExerciseViewModel {
   idIcona: number;
   iconColor?: string;
   muscleNames?: string; // Stringa concatenata (es: "Petto, Tricipiti")
+  isStandard?: boolean;
 }
 
 export interface MuscleGroup {
