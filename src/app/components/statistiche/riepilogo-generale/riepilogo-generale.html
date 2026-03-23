@@ -1,0 +1,20 @@
+@if (dati) {
+  <div class="riepilogo-grid">
+    <div class="stat-card">
+      <span class="stat-value">{{ dati.totaleAllenamenti }}</span>
+      <span class="stat-label">Allenamenti</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ dati.streakSettimane }}</span>
+      <span class="stat-label">Streak (settimane)</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ dati.mediaAllenamentiSettimana | number:'1.1-1' }}</span>
+      <span class="stat-label">Media/settimana</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ formatVolume(dati.volumeTotaleKg) }}</span>
+      <span class="stat-label">Volume totale (kg)</span>
+    </div>
+  </div>
+}

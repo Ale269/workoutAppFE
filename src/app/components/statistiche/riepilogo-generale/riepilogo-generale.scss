@@ -1,0 +1,55 @@
+.riepilogo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 12px;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 255, 225, 0.3) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(0, 255, 225, 0.15) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+.stat-value {
+  font-family: "poppins";
+  font-size: 28px;
+  font-weight: 700;
+  color: #00ffe1;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-family: "poppins";
+  font-size: 11px;
+  font-weight: 600;
+  color: #808080;
+  text-align: center;
+  margin-top: 4px;
+}

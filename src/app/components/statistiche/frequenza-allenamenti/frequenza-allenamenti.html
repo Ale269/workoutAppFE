@@ -1,0 +1,13 @@
+@if (dati.length > 0) {
+  <div class="chart-container">
+    <canvas baseChart
+      [data]="barChartData"
+      [options]="barChartOptions"
+      type="bar">
+    </canvas>
+  </div>
+} @else {
+  <div class="empty-state">
+    <span class="empty-text">Nessun dato disponibile</span>
+  </div>
+}

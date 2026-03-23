@@ -49,6 +49,12 @@ export class BottomMenuComponent {
         "assets/recollect/svg/bottom-account.svg",
       ),
     );
+    iconRegistry.addSvgIcon(
+      "bottom-stats",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/bottom-stats.svg",
+      ),
+    );
   }
 
   onItemClick(item: BottomMenuItem): void {

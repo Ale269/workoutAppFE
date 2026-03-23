@@ -1,0 +1,59 @@
+<div class="page-scroller">
+  <!-- Riepilogo generale -->
+  <section class="stats-section">
+    <h1 class="text-title">Riepilogo</h1>
+    <app-riepilogo-generale [dati]="riepilogo"></app-riepilogo-generale>
+  </section>
+
+  <!-- Frequenza allenamenti -->
+  <section class="stats-section">
+    <div class="section-header">
+      <h1 class="text-title">Frequenza allenamenti</h1>
+      <button class="toggle-btn" (click)="toggleFrequenzaPeriodo()">
+        {{ frequenzaPeriodo === 'settimana' ? 'Mese' : 'Settimana' }}
+      </button>
+    </div>
+    <app-frequenza-allenamenti
+      [dati]="frequenzaDati"
+      [periodo]="frequenzaPeriodo">
+    </app-frequenza-allenamenti>
+  </section>
+
+  <!-- Volume nel tempo -->
+  <section class="stats-section">
+    <div class="section-header">
+      <h1 class="text-title">Volume nel tempo</h1>
+      <button class="toggle-btn" (click)="toggleVolumePeriodo()">
+        {{ volumePeriodo === 'settimana' ? 'Mese' : 'Settimana' }}
+      </button>
+    </div>
+    <app-volume-nel-tempo [dati]="volumeDati"></app-volume-nel-tempo>
+  </section>
+
+  <!-- Progressione esercizio -->
+  <section class="stats-section">
+    <div class="section-header">
+      <h1 class="text-title">Progressione esercizio</h1>
+      <button class="toggle-btn" (click)="apriSelettoreEsercizio()">
+        {{ esercizioSelezionato ? esercizioSelezionato.label : 'Seleziona' }}
+      </button>
+    </div>
+    <app-progressione-esercizio
+      [dati]="progressioneDati"
+      [nomeEsercizio]="esercizioSelezionato?.label || ''">
+    </app-progressione-esercizio>
+  </section>
+
+  <!-- Distribuzione gruppi muscolari -->
+  <section class="stats-section">
+    <h1 class="text-title">Distribuzione muscoli</h1>
+    <span class="section-subtitle">Ultimi 90 giorni</span>
+    <app-distribuzione-muscoli [dati]="distribuzioneDati"></app-distribuzione-muscoli>
+  </section>
+
+  <!-- Record personali -->
+  <section class="stats-section stats-section-last">
+    <h1 class="text-title">Record personali</h1>
+    <app-record-personali [records]="recordDati"></app-record-personali>
+  </section>
+</div>

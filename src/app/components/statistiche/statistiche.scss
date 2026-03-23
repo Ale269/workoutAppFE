@@ -1,0 +1,53 @@
+.stats-section {
+  margin-bottom: 24px;
+
+  .text-title {
+    margin-bottom: 12px;
+  }
+}
+
+.stats-section-last {
+  padding-bottom: calc(32px + var(--bottom-menu-padding, 0px));
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  .text-title {
+    margin-bottom: 0;
+  }
+}
+
+.section-subtitle {
+  display: block;
+  font-family: "poppins";
+  font-size: 12px;
+  color: #808080;
+  margin-top: -8px;
+  margin-bottom: 12px;
+}
+
+.toggle-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  color: #fff;
+  font-family: "poppins";
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:active {
+    transform: scale(0.95);
+    background-color: rgba(0, 255, 225, 0.15);
+  }
+}

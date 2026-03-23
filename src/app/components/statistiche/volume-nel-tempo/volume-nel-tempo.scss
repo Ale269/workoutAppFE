@@ -1,0 +1,17 @@
+.chart-container {
+  height: 200px;
+  position: relative;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+}
+
+.empty-text {
+  font-family: "poppins";
+  font-size: 13px;
+  color: #808080;
+}

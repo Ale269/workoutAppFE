@@ -19,6 +19,7 @@ import { AdminUserFormComponent } from "./components/admin/admin-user-form/admin
 import { AdminExerciseListComponent } from "./components/admin/admin-exercise-list/admin-exercise-list";
 import { AdminExerciseFormComponent } from "./components/admin/admin-exercise-form/admin-exercise-form";
 import { PendingChangesGuard } from "./core/guards/pending-changes.guard";
+import { StatisticheComponent } from "./components/statistiche/statistiche";
 
 export const routes: Routes = [
   {
@@ -144,6 +145,12 @@ export const routes: Routes = [
     path: "admin/exercises/edit/:id",
     component: AdminExerciseFormComponent,
     canActivate: [AuthGuard, AdminGuard],
+    canDeactivate: [],
+  },
+  {
+    path: "statistiche",
+    component: StatisticheComponent,
+    canActivate: [AuthGuard],
     canDeactivate: [],
   },
   { path: "**", redirectTo: "home" },

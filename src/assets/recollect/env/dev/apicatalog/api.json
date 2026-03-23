@@ -297,6 +297,36 @@
         "description": "Abilita o disabilita un utente (solo ADMIN).",
         "isMocked": false
       }
+    ],
+    "stats": [
+      {
+        "name": "summary",
+        "endpoint": "/stats/summary/:userId",
+        "method": "get",
+        "description": "Recupera il riepilogo statistiche dell'utente.",
+        "isMocked": false
+      },
+      {
+        "name": "volume",
+        "endpoint": "/stats/volume/:userId",
+        "method": "get",
+        "description": "Recupera i dati di volume nel tempo dell'utente.",
+        "isMocked": false
+      },
+      {
+        "name": "muscleDistribution",
+        "endpoint": "/stats/muscle-distribution/:userId",
+        "method": "get",
+        "description": "Recupera la distribuzione dei gruppi muscolari dell'utente.",
+        "isMocked": false
+      },
+      {
+        "name": "personalRecords",
+        "endpoint": "/stats/personal-records/:userId",
+        "method": "get",
+        "description": "Recupera i record personali dell'utente.",
+        "isMocked": false
+      }
     ]
   }
 }

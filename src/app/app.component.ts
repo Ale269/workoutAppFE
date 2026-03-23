@@ -77,7 +77,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       { icon: "bottom-home", label: "Home", route: "/home" },
       { icon: "bottom-schede", label: "Schede", route: "/le-mie-schede" },
       { icon: "bottom-allenamenti", label: "Allenamenti", route: "/allenamenti-svolti" },
-      { icon: "bottom-account", label: "Account", route: "/account" },
+      { icon: "bottom-stats", label: "Statistiche", route: "/statistiche" },
     ]);
 
     // Setup routing events - aggiorna solo la visibilità del menu
