@@ -151,6 +151,12 @@ form {
 
   .mat-mdc-option {
     color: var(--text-primary, #ffffff);
+    --mat-option-label-text-color: var(--text-primary, #ffffff);
+    --mat-option-selected-state-label-text-color: var(--text-primary, #ffffff);
+
+    .mdc-list-item__primary-text {
+      color: var(--text-primary, #ffffff) !important;
+    }
 
     &:hover {
       background-color: var(--button-hover, rgba(255, 255, 255, 0.1));
