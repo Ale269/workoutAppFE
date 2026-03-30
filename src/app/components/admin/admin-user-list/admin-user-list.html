@@ -1,68 +1,60 @@
 <!-- admin-user-list.html -->
-<div class="content">
-  <div class="section-title-container">
-    <h1 class="text-title">Gestione Utenti</h1>
-    <button mat-raised-button color="primary" (click)="createNewUser()" class="create-button">
-      <img src="assets/recollect/svg/google-add.svg"/>
-    </button>
-  </div>
-
-  <div class="user-list-container">
-    @for (user of userList; track user.id || user.userId) {
-    <div class="user-card">
-      <div class="user-info">
-        <div class="user-main-info">
-          <h3 class="text-white">{{ user.username }}</h3>
-          @if (user.name || user.surname) {
-          <p class="text-grey">
-            {{ user.name }} {{ user.surname }}
-          </p>
-          }
-          @if (user.email) {
-          <p class="text-grey">{{ user.email }}</p>
-          }
-        </div>
-
-        <div class="user-badges">
-          <span [class]="'badge ' + getRoleBadgeClass(user.role)">
-            {{ user.role || 'USER' }}
-          </span>
-          <span [class]="'badge ' + getStatusBadgeClass(user.enabled)">
-            {{ user.enabled ? 'Attivo' : 'Disabilitato' }}
-          </span>
-        </div>
-      </div>
-
-      <div class="user-actions">
-        <button
-          mat-icon-button
-          (click)="editUser(user.id || user.userId)"
-          title="Modifica utente"
-        >
-          <img src="assets/recollect/svg/google-edit.svg"/>
-        </button>
-              
-
-        <button
-          mat-icon-button
-          (click)="toggleUserStatus(user.id || user.userId)"
-          [title]="user.enabled ? 'Disabilita utente' : 'Abilita utente'"
-        >
-          <img [src]="user.enabled ? 'assets/recollect/svg/google-lock.svg' : 'assets/recollect/svg/google-lock-open.svg'" />
-        </button>
-
-        <button
-          mat-icon-button
-          (click)="deleteUser(user.id || user.userId, user.username)"
-          title="Elimina utente"
-          class="delete-button"
-        >
-          <img src="assets/recollect/svg/google-delete.svg" />
-        </button>
-      </div>
+<div class="page-scroller">
+  <div class="content">
+    <div class="section-title-container">
+      <h1 class="text-title">Gestione Utenti</h1>
+      <button mat-raised-button color="primary" (click)="createNewUser()" class="create-button">
+        <img src="assets/recollect/svg/google-add.svg" />
+      </button>
     </div>
-    } @empty {
-    <h3 class="text-white">Nessun utente trovato</h3>
-    }
+
+    <div class="user-list-container">
+      @for (user of userList; track user.id || user.userId) {
+      <div class="user-card">
+        <div class="user-info">
+          <div class="user-main-info">
+            <h3 class="text-white">{{ user.username }}</h3>
+            @if (user.name || user.surname) {
+            <p class="text-grey">
+              {{ user.name }} {{ user.surname }}
+            </p>
+            }
+            @if (user.email) {
+            <p class="text-grey">{{ user.email }}</p>
+            }
+          </div>
+
+          <div class="user-badges">
+            <span [class]="'badge ' + getRoleBadgeClass(user.role)">
+              {{ user.role || 'USER' }}
+            </span>
+            <span [class]="'badge ' + getStatusBadgeClass(user.enabled)">
+              {{ user.enabled ? 'Attivo' : 'Disabilitato' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="user-actions">
+          <button mat-icon-button (click)="editUser(user.id || user.userId)" title="Modifica utente">
+            <img src="assets/recollect/svg/google-edit.svg" />
+          </button>
+
+
+          <button mat-icon-button (click)="toggleUserStatus(user.id || user.userId)"
+            [title]="user.enabled ? 'Disabilita utente' : 'Abilita utente'">
+            <img
+              [src]="user.enabled ? 'assets/recollect/svg/google-lock.svg' : 'assets/recollect/svg/google-lock-open.svg'" />
+          </button>
+
+          <button mat-icon-button (click)="deleteUser(user.id || user.userId, user.username)" title="Elimina utente"
+            class="delete-button">
+            <img src="assets/recollect/svg/google-delete.svg" />
+          </button>
+        </div>
+      </div>
+      } @empty {
+      <h3 class="text-white">Nessun utente trovato</h3>
+      }
+    </div>
   </div>
 </div>

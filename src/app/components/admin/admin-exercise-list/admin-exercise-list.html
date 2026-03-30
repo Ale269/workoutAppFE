@@ -1,108 +1,88 @@
 <!-- admin-exercise-list.html -->
-<div class="content">
-  <div class="section-title-container">
-    <h1 class="text-title">Gestione Esercizi</h1>
-    <button mat-raised-button color="primary" (click)="createNewExercise()" class="create-button">
-      <img src="assets/recollect/svg/google-add.svg"/>
-    </button>
-  </div>
-
-  <!-- Filters -->
-  <div class="filters-container">
-    <!-- Search filter -->
-    <div class="search-container">
-      <mat-form-field appearance="outline" class="search-field">
-        <mat-label>Cerca esercizio</mat-label>
-        <input
-          matInput
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="applySearchFilter()"
-          placeholder="Cerca per nome..."
-        />
-        @if (searchTerm) {
-        <button mat-icon-button matSuffix (click)="clearSearch()" title="Cancella ricerca">
-          <img src="assets/recollect/svg/google-close-icon.svg" class="clear-icon" />
-        </button>
-        }
-      </mat-form-field>
+<div class="page-scroller">
+  <div class="content">
+    <div class="section-title-container">
+      <h1 class="text-title">Gestione Esercizi</h1>
+      <button mat-raised-button color="primary" (click)="createNewExercise()" class="create-button">
+        <img src="assets/recollect/svg/google-add.svg" />
+      </button>
     </div>
 
-    <!-- Type filter -->
-    <div class="type-filter-container">
-      <span class="filter-label">Tipo:</span>
-      <div class="filter-chips">
-        <button
-          class="filter-chip"
-          [class.active]="typeFilter === 'all'"
-          (click)="setTypeFilter('all')"
-        >
-          Tutti
-        </button>
-        <button
-          class="filter-chip chip-standard"
-          [class.active]="typeFilter === 'standard'"
-          (click)="setTypeFilter('standard')"
-        >
-          Standard
-        </button>
-        <button
-          class="filter-chip chip-custom"
-          [class.active]="typeFilter === 'custom'"
-          (click)="setTypeFilter('custom')"
-        >
-          Custom
-        </button>
+    <!-- Filters -->
+    <div class="filters-container">
+      <!-- Search filter -->
+      <div class="search-container">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Cerca esercizio</mat-label>
+          <input matInput [(ngModel)]="searchTerm" (ngModelChange)="applySearchFilter()"
+            placeholder="Cerca per nome..." />
+          @if (searchTerm) {
+          <button mat-icon-button matSuffix (click)="clearSearch()" title="Cancella ricerca">
+            <img src="assets/recollect/svg/google-close-icon.svg" class="clear-icon" />
+          </button>
+          }
+        </mat-form-field>
       </div>
+
+      <!-- Type filter -->
+      <div class="type-filter-container">
+        <span class="filter-label">Tipo:</span>
+        <div class="filter-chips">
+          <button class="filter-chip" [class.active]="typeFilter === 'all'" (click)="setTypeFilter('all')">
+            Tutti
+          </button>
+          <button class="filter-chip chip-standard" [class.active]="typeFilter === 'standard'"
+            (click)="setTypeFilter('standard')">
+            Standard
+          </button>
+          <button class="filter-chip chip-custom" [class.active]="typeFilter === 'custom'"
+            (click)="setTypeFilter('custom')">
+            Custom
+          </button>
+        </div>
+      </div>
+
+      <span class="results-count">{{ filteredExerciseList.length }} esercizi trovati</span>
     </div>
 
-    <span class="results-count">{{ filteredExerciseList.length }} esercizi trovati</span>
-  </div>
+    <div class="exercise-list-container">
+      @for (exercise of filteredExerciseList; track exercise.idTipoEsercizio) {
+      <div class="exercise-card">
+        <div class="exercise-icon">
+          <img [src]="getExerciseIconPath(exercise.idIcona)" alt="Exercise icon" />
+        </div>
 
-  <div class="exercise-list-container">
-    @for (exercise of filteredExerciseList; track exercise.idTipoEsercizio) {
-    <div class="exercise-card">
-      <div class="exercise-icon">
-        <img [src]="getExerciseIconPath(exercise.idIcona)" alt="Exercise icon" />
-      </div>
+        <div class="exercise-info">
+          <div class="exercise-main-info">
+            <h3 class="text-white">{{ exercise.nomeTipoEsercizio }}</h3>
+            @if (getMuscleNames(exercise)) {
+            <p class="text-grey">{{ getMuscleNames(exercise) }}</p>
+            }
+          </div>
 
-      <div class="exercise-info">
-        <div class="exercise-main-info">
-          <h3 class="text-white">{{ exercise.nomeTipoEsercizio }}</h3>
-          @if (getMuscleNames(exercise)) {
-          <p class="text-grey">{{ getMuscleNames(exercise) }}</p>
+          <div class="exercise-badges">
+            <span [class]="'badge ' + getTypeBadgeClass(exercise.isStandard)">
+              {{ exercise.isStandard ? 'Standard' : 'Custom' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="exercise-actions">
+          @if (canModify(exercise)) {
+          <button mat-icon-button (click)="editExercise(exercise.idTipoEsercizio)" title="Modifica esercizio">
+            <img src="assets/recollect/svg/google-edit.svg" />
+          </button>
+
+          <button mat-icon-button (click)="deleteExercise(exercise.idTipoEsercizio, exercise.nomeTipoEsercizio)"
+            title="Elimina esercizio" class="delete-button">
+            <img src="assets/recollect/svg/google-delete.svg" />
+          </button>
           }
         </div>
-
-        <div class="exercise-badges">
-          <span [class]="'badge ' + getTypeBadgeClass(exercise.isStandard)">
-            {{ exercise.isStandard ? 'Standard' : 'Custom' }}
-          </span>
-        </div>
       </div>
-
-      <div class="exercise-actions">
-        @if (canModify(exercise)) {
-        <button
-          mat-icon-button
-          (click)="editExercise(exercise.idTipoEsercizio)"
-          title="Modifica esercizio"
-        >
-          <img src="assets/recollect/svg/google-edit.svg"/>
-        </button>
-
-        <button
-          mat-icon-button
-          (click)="deleteExercise(exercise.idTipoEsercizio, exercise.nomeTipoEsercizio)"
-          title="Elimina esercizio"
-          class="delete-button"
-        >
-          <img src="assets/recollect/svg/google-delete.svg" />
-        </button>
-        }
-      </div>
+      } @empty {
+      <h3 class="text-white">Nessun esercizio trovato</h3>
+      }
     </div>
-    } @empty {
-    <h3 class="text-white">Nessun esercizio trovato</h3>
-    }
   </div>
 </div>
