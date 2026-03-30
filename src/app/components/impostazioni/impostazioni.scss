@@ -16,3 +16,43 @@
   padding-left: 8px;
   opacity: 0.7;
 }
+
+.setting-label {
+  color: #ffffff;
+  font-size: 13px;
+  margin-bottom: 8px;
+  padding-left: 8px;
+  opacity: 0.85;
+}
+
+.segmented-control {
+  display: flex;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  .segment {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+
+    &:not(:last-child) {
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    &.active {
+      background: rgba(0, 255, 225, 0.15);
+      color: #00ffe1;
+      font-weight: 600;
+    }
+  }
+}

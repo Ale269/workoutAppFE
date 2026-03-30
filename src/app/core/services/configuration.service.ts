@@ -33,11 +33,10 @@ export class ConfigurationService {
     this.isLoading = true;
 
     try {
-      // Carica tutte le configurazioni in parallelo
-      await Promise.all([
-        this.exerciseService.initializeExercises(userId),
-        this.userConfigService.initializeConfig(userId),
-      ]);
+      // Carica prima la config utente (serve exerciseVisibility per gli esercizi)
+      await this.userConfigService.initializeConfig(userId);
+      const visibility = this.userConfigService.getSetting('exerciseVisibility');
+      await this.exerciseService.initializeExercises(userId, visibility);
 
       // Tutte le configurazioni caricate con successo
       this.configLoadedSubject.next(true);

@@ -10,5 +10,20 @@
       </app-switch>
     </div>
 
+    <div class="settings-section">
+      <h3 class="section-title">Esercizi</h3>
+      <p class="setting-label">Visibilità esercizi</p>
+      <div class="segmented-control">
+        @for (option of visibilityOptions; track option.value) {
+          <button
+            class="segment"
+            [class.active]="config.exerciseVisibility === option.value"
+            (click)="onVisibilityChange(option.value)">
+            {{ option.label }}
+          </button>
+        }
+      </div>
+    </div>
+
   </div>
 </div>

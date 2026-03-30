@@ -15,6 +15,7 @@ import {
   UpdateExerciseRequestModel,
   UpdateExerciseResponseModel,
 } from "src/app/models/exercise/exercise-management-models";
+import { ExerciseVisibility } from "src/app/models/user-config/user-config-model";
 
 @Injectable({
   providedIn: "root",
@@ -41,7 +42,7 @@ export class ExerciseService {
     return this.icons;
   }
 
-  initializeExercises(userId: number): Promise<void> {
+  initializeExercises(userId: number, visibility: ExerciseVisibility = 'ALL'): Promise<void> {
     this.currentUserId = userId;
 
     // Se già caricati, ritorna immediatamente (idempotente)
@@ -54,12 +55,21 @@ export class ExerciseService {
       return this.initializationPromise;
     }
 
+    const source$: Observable<ExerciseListResponseModel> =
+      visibility === 'CUSTOM_ONLY'
+        ? this.getExercisesByUser(userId)
+        : this.getVisibleExercises(userId);
+
     this.initializationPromise = new Promise((resolve, reject) => {
-      this.getVisibleExercises(userId).subscribe({
+      source$.subscribe({
         next: (response) => {
           this.initializationPromise = null;
           if (!response.errore.error) {
-            this.exercises = response.exercises;
+            let exercises = response.exercises;
+            if (visibility === 'STANDARD_ONLY') {
+              exercises = exercises.filter(e => e.isStandard);
+            }
+            this.exercises = exercises;
             this.muscles = response.muscles ?? [];
             this.icons = response.icons ?? [];
             resolve();
@@ -137,10 +147,10 @@ export class ExerciseService {
     this.initializationPromise = null;
   }
 
-  reloadExercises(): Promise<void> {
+  reloadExercises(visibility: ExerciseVisibility = 'ALL'): Promise<void> {
     this.exercises = [];
     this.initializationPromise = null;
-    return this.initializeExercises(this.currentUserId);
+    return this.initializeExercises(this.currentUserId, visibility);
   }
 
   /**
