@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ExerciseService } from './exercise.service';
+import { UserConfigService } from './user-config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,8 @@ export class ConfigurationService {
   private isLoading = false;
 
   constructor(
-    private exerciseService: ExerciseService
-    // Futuri servizi: private muscleGroupService: MuscleGroupService, ecc.
+    private exerciseService: ExerciseService,
+    private userConfigService: UserConfigService,
   ) {}
 
   /**
@@ -35,9 +36,7 @@ export class ConfigurationService {
       // Carica tutte le configurazioni in parallelo
       await Promise.all([
         this.exerciseService.initializeExercises(userId),
-        // Futuro: this.muscleGroupService.loadMuscleGroups(),
-        // Futuro: this.iconService.loadIcons(),
-        // ecc.
+        this.userConfigService.initializeConfig(userId),
       ]);
 
       // Tutte le configurazioni caricate con successo
@@ -57,6 +56,7 @@ export class ConfigurationService {
    */
   resetConfigurations(): void {
     this.exerciseService.reset();
+    this.userConfigService.reset();
     this.configLoadedSubject.next(false);
     this.isLoading = false;
   }

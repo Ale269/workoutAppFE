@@ -20,6 +20,7 @@ import { AdminExerciseListComponent } from "./components/admin/admin-exercise-li
 import { AdminExerciseFormComponent } from "./components/admin/admin-exercise-form/admin-exercise-form";
 import { PendingChangesGuard } from "./core/guards/pending-changes.guard";
 import { StatisticheComponent } from "./components/statistiche/statistiche";
+import { Impostazioni } from "./components/impostazioni/impostazioni";
 
 export const routes: Routes = [
   {
@@ -150,6 +151,12 @@ export const routes: Routes = [
   {
     path: "statistiche",
     component: StatisticheComponent,
+    canActivate: [AuthGuard],
+    canDeactivate: [],
+  },
+  {
+    path: "impostazioni",
+    component: Impostazioni,
     canActivate: [AuthGuard],
     canDeactivate: [],
   },

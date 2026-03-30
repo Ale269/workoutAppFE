@@ -46,6 +46,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
 import { HapticService } from "src/app/core/services/haptic.service";
 import { WorkoutStorageService, WorkoutStorageData } from "src/app/core/services/workout-storage.service";
+import { UserConfigService } from "src/app/core/services/user-config.service";
 
 @Component({
   selector: "app-create-or-edit-workout-execution",
@@ -137,6 +138,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     private workoutStorageService: WorkoutStorageService,
     private bottomMenuService: BottomMenuService,
     private elementRef: ElementRef,
+    private userConfigService: UserConfigService,
   ) {
     try {
       iconRegistry.addSvgIcon(
@@ -800,7 +802,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
               {
                 forceShow: true,
                 successMessage:
-                  "Salvataggio completato con successo, redirect a home",
+                  "Salvataggio completato con successo",
                 errorMessage: "Errore durante il salvataggio",
                 resultDuration: 1000,
                 minSpinnerDuration: 500,
@@ -815,7 +817,18 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
                 }
                 this.createOrEditWorkoutExecutionService.AllenamentoForm.form.markAsPristine();
                 this.workoutStorageService.clear();
-                this.router.navigate(["/home"]);
+
+                if (this.userConfigService.getSetting('navigaAllaHomeDopoPrimoSalvataggio') || !response.allenamentoCorrente) {
+                  this.router.navigate(["/home"]);
+                } else {
+                  // Reinizializza il form con i dati dal server (contengono gli ID reali)
+                  this.createOrEdit = createOrEdit.edit;
+                  this.idAllenamento = response.allenamentoCorrente.id;
+                  this.allenamentoDTO = response.allenamentoCorrente;
+                  this.createOrEditWorkoutExecutionService.InitializeAllenamento(response.allenamentoCorrente);
+                  this.menuConfigService.setCloseModal(() => this.goBack(), "Modifica allenamento");
+                  this.startAutoSave();
+                }
               })
               .catch(async (error) => {
                 if (this.saveSpinnerId) {

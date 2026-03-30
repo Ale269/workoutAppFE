@@ -145,6 +145,15 @@ export class MenuComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
+  navigateToImpostazioni() {
+    this.hapticService.trigger("light");
+
+    this.closeMenu();
+    setTimeout(() => {
+      this.router.navigate(["/impostazioni"]);
+    }, 100);
+  }
+
   navigateToAdminUsers() {
     this.hapticService.trigger("light");
 

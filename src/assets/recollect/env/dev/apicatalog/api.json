@@ -298,6 +298,22 @@
         "isMocked": false
       }
     ],
+    "userConfig": [
+      {
+        "name": "getUserConfig",
+        "endpoint": "/user-config/:userId",
+        "method": "get",
+        "description": "Recupera la configurazione dell'utente.",
+        "isMocked": false
+      },
+      {
+        "name": "updateUserConfig",
+        "endpoint": "/user-config/:userId",
+        "method": "put",
+        "description": "Aggiorna la configurazione dell'utente.",
+        "isMocked": false
+      }
+    ],
     "stats": [
       {
         "name": "summary",

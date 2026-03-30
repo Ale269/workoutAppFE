@@ -158,12 +158,12 @@ export class CreateOrEditWorkoutExecutionService {
 
   async registraAllenamento(
     savePlanRequest: RegistraAllenamentoRequestModel
-  ): Promise<void> {
+  ): Promise<RegistraAllenamentoResponseModel> {
     return new Promise((resolve, reject) => {
       try {
         console.log("REGISTRO NUOVO ALLENAMENTO:  ", savePlanRequest)
         this.workoutService.registraNuovoAllenamento(savePlanRequest).subscribe({
-          next: (response: any) => {
+          next: (response: RegistraAllenamentoResponseModel) => {
             if (!response.errore?.error) {
               console.log("RESPONSE: ", response)
               resolve(response);

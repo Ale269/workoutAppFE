@@ -1,0 +1,14 @@
+<div class="page-scroller">
+  <div class="impostazioni-container">
+
+    <div class="settings-section">
+      <h3 class="section-title">Allenamento</h3>
+      <app-switch
+        [IsActive]="config.navigaAllaHomeDopoPrimoSalvataggio"
+        [Descrizione]="'Naviga alla home dopo il salvataggio'"
+        (stateChange)="onToggle('navigaAllaHomeDopoPrimoSalvataggio', $event)">
+      </app-switch>
+    </div>
+
+  </div>
+</div>
