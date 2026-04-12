@@ -1,6 +1,14 @@
 {
   "$schema": "./node_modules/@angular/service-worker/config/schema.json",
   "index": "/index.html",
+  "navigationUrls": [
+    "/**",
+    "!/spese-di-casa/**",
+    "!/api/**",
+    "!/pgadmin/**",
+    "!/manarank/**",
+    "!/manarank/api/**"
+  ],
   "assetGroups": [
     {
       "name": "app",
