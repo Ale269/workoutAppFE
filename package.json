@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port=4202",
-    "build": "npm run generate-app-info && ng build --configuration production",
+    "build": "npm run generate-app-info && ng build --configuration production --base-href /gymshark/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",

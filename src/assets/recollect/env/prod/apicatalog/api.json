@@ -2,7 +2,7 @@
   "defaults": {
     "protocol": "https",
     "host": "gmarra.it",
-    "baseUrl": "/api",
+    "baseUrl": "/gymshark/api",
     "security": "none",
     "mocked": false
   },

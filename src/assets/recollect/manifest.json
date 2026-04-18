@@ -4,8 +4,8 @@
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#000000",
-  "scope": "/",
-  "start_url": "/",
+  "scope": "/gymshark/",
+  "start_url": "/gymshark/",
   "icons": [
     {
       "src": "assets/recollect/icons/icon-192x192.png",
