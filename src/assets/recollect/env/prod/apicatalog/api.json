@@ -334,6 +334,20 @@
         "method": "get",
         "description": "Recupera i record personali dell'utente.",
         "isMocked": false
+      },
+      {
+        "name": "snapshotWorkouts",
+        "endpoint": "/stats/snapshot-workouts/:userId",
+        "method": "get",
+        "description": "Recupera la lista delle schede snapshot dell'utente.",
+        "isMocked": false
+      },
+      {
+        "name": "workoutProgress",
+        "endpoint": "/stats/workout-progress/:snapshotWorkoutId",
+        "method": "get",
+        "description": "Recupera la progressione settimanale di una scheda.",
+        "isMocked": false
       }
     ]
   }

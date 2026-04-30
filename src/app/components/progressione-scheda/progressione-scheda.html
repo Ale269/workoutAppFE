@@ -1,0 +1,66 @@
+<div class="page-scroller">
+  <!-- Header con selettore scheda -->
+  <section class="progress-header">
+    <h1 class="text-title">Progressione scheda</h1>
+
+    @if (snapshotWorkouts.length > 0) {
+      <div class="scheda-selector">
+        @for (snapshot of snapshotWorkouts; track snapshot.id) {
+          <button
+            class="scheda-chip"
+            [class.active]="selectedSnapshot?.id === snapshot.id"
+            (click)="selezionaScheda(snapshot)">
+            <span class="scheda-name">{{ snapshot.name }}</span>
+            <span class="scheda-dates">{{ formatDateRange(snapshot) }}</span>
+          </button>
+        }
+      </div>
+    }
+  </section>
+
+  @if (progressData && progressData.trainingDays.length > 0) {
+    <!-- Pulsante stampa -->
+    <div class="print-actions no-print">
+      <button class="toggle-btn" (click)="stampa()">
+        Stampa
+      </button>
+    </div>
+
+    <!-- Print header (solo in stampa) -->
+    <div class="print-header print-only">
+      <h2>{{ progressData.workoutName }}</h2>
+      @if (selectedSnapshot) {
+        <p>{{ formatDateRange(selectedSnapshot) }}</p>
+      }
+    </div>
+
+    <!-- Tabs per giorno -->
+    <div class="no-print">
+      <custom-tab-container [(activeTabId)]="activeTabId">
+        @for (day of progressData.trainingDays; track day.dayName) {
+          <custom-tab [id]="day.dayName" [label]="day.dayName">
+            <app-progress-table [dayProgress]="day"></app-progress-table>
+          </custom-tab>
+        }
+      </custom-tab-container>
+    </div>
+
+    <!-- Print: tutte le tabelle senza tabs -->
+    <div class="print-only">
+      @for (day of progressData.trainingDays; track day.dayName) {
+        <div class="print-day-section">
+          <h3 class="print-day-title">{{ day.dayName }}</h3>
+          <app-progress-table [dayProgress]="day"></app-progress-table>
+        </div>
+      }
+    </div>
+  } @else if (selectedSnapshot) {
+    <div class="empty-state">
+      <p>Nessun allenamento registrato per questa scheda</p>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>Seleziona una scheda per visualizzare la progressione</p>
+    </div>
+  }
+</div>

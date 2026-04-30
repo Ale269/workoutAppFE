@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
 import { forkJoin } from "rxjs";
 import { Chart, registerables } from "chart.js";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
@@ -58,6 +59,7 @@ export class StatisticheComponent implements OnInit {
   private workoutService = inject(WorkoutService);
   private exerciseService = inject(ExerciseService);
   private bottomSheetService = inject(BottomSheetService);
+  private router = inject(Router);
 
   // Dati sezioni
   riepilogo: RiepilogoResponse | null = null;
@@ -216,6 +218,10 @@ export class StatisticheComponent implements OnInit {
         "StatisticheComponent.ricalcolaFrequenza"
       );
     }
+  }
+
+  apriProgressioneScheda(): void {
+    this.router.navigate(["/progressione-scheda"]);
   }
 
   private async ricaricaVolume(): Promise<void> {

@@ -1,0 +1,37 @@
+@if (dayProgress) {
+  <div class="progress-table-container">
+    <table>
+      <thead>
+        <tr>
+          <th class="exercise-col">Esercizio</th>
+          @for (week of dayProgress.weeks; track week.weekNumber) {
+            <th class="week-col">
+              <span class="week-number">W{{ week.weekNumber }}</span>
+              <span class="week-date">{{ formatDate(week.executedAt) }}</span>
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (exercise of dayProgress.exercises; track exercise.exerciseId) {
+          <tr>
+            <td class="exercise-col">{{ exercise.exerciseName }}</td>
+            @for (cell of exercise.cells; track $index) {
+              <td class="data-col">
+                @if (cell) {
+                  {{ cell.series | seriesFormat }}
+                } @else {
+                  <span class="empty-cell">-</span>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <div class="empty-state">
+    <p>Nessun dato disponibile</p>
+  </div>
+}

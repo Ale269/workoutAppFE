@@ -1,0 +1,136 @@
+.progress-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  table {
+    border-collapse: collapse;
+    min-width: 100%;
+    font-family: "Poppins", sans-serif;
+    font-size: 13px;
+
+    th,
+    td {
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      white-space: nowrap;
+      text-align: center;
+      color: #fff;
+    }
+
+    thead th {
+      background: rgba(255, 255, 255, 0.06);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    tbody tr {
+      transition: background-color 0.15s ease;
+
+      &:hover {
+        background: rgba(0, 255, 225, 0.04);
+      }
+    }
+
+    .exercise-col {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: #1a1a2e;
+      text-align: left;
+      min-width: 160px;
+      max-width: 200px;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    thead .exercise-col {
+      z-index: 3;
+      background: #1e1e35;
+    }
+
+    .week-col {
+      min-width: 90px;
+    }
+
+    .week-number {
+      display: block;
+      color: #00ffe1;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .week-date {
+      display: block;
+      color: #808080;
+      font-size: 10px;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .data-col {
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+    }
+
+    .empty-cell {
+      color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: #808080;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+}
+
+@media print {
+  .progress-table-container {
+    overflow: visible;
+    background: #fff;
+    border-color: #ccc;
+
+    table {
+      th,
+      td {
+        color: #000;
+        border-color: #ccc;
+        padding: 6px 8px;
+        font-size: 11px;
+      }
+
+      thead th {
+        background: #f0f0f0;
+      }
+
+      .exercise-col {
+        background: #fff;
+        position: static;
+      }
+
+      thead .exercise-col {
+        background: #f0f0f0;
+      }
+
+      .week-number {
+        color: #000;
+      }
+
+      .week-date {
+        color: #666;
+      }
+
+      tbody tr:hover {
+        background: none;
+      }
+    }
+  }
+}

@@ -20,6 +20,7 @@ import { AdminExerciseListComponent } from "./components/admin/admin-exercise-li
 import { AdminExerciseFormComponent } from "./components/admin/admin-exercise-form/admin-exercise-form";
 import { PendingChangesGuard } from "./core/guards/pending-changes.guard";
 import { StatisticheComponent } from "./components/statistiche/statistiche";
+import { ProgressioneSchedaComponent } from "./components/progressione-scheda/progressione-scheda";
 import { Impostazioni } from "./components/impostazioni/impostazioni";
 
 export const routes: Routes = [
@@ -151,6 +152,12 @@ export const routes: Routes = [
   {
     path: "statistiche",
     component: StatisticheComponent,
+    canActivate: [AuthGuard],
+    canDeactivate: [],
+  },
+  {
+    path: "progressione-scheda",
+    component: ProgressioneSchedaComponent,
     canActivate: [AuthGuard],
     canDeactivate: [],
   },

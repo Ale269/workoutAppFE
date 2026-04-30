@@ -9,6 +9,10 @@ import {
   FrequenzaData,
   ProgressioneData,
 } from "src/app/models/statistics/statistics-models";
+import {
+  SnapshotWorkoutsListResponse,
+  WorkoutProgressResponse,
+} from "src/app/models/statistics/workout-progress-models";
 import { AllenamentoSvoltoListaDTO } from "src/app/models/lista-allenamenti-svolti/allenamentosvoltolistadto";
 import { LastTrainingExerciseData } from "src/app/models/history/last-training-exercise";
 
@@ -55,6 +59,24 @@ export class StatisticsService {
       "stats",
       "personalRecords",
       { userId },
+      null
+    );
+  }
+
+  getSnapshotWorkouts(userId: number): Observable<SnapshotWorkoutsListResponse> {
+    return this.apiCatalogService.executeApiCall(
+      "stats",
+      "snapshotWorkouts",
+      { userId },
+      null
+    );
+  }
+
+  getWorkoutProgress(snapshotWorkoutId: number): Observable<WorkoutProgressResponse> {
+    return this.apiCatalogService.executeApiCall(
+      "stats",
+      "workoutProgress",
+      { snapshotWorkoutId },
       null
     );
   }
