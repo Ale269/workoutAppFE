@@ -96,7 +96,7 @@
   .progress-table-container {
     overflow: visible;
     background: #fff;
-    border-color: #ccc;
+    border: none;
 
     table {
       th,
@@ -107,8 +107,12 @@
         font-size: 11px;
       }
 
-      thead th {
-        background: #f0f0f0;
+      thead {
+        display: table-header-group;
+
+        th {
+          background: #f0f0f0;
+        }
       }
 
       .exercise-col {
