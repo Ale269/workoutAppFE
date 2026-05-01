@@ -20,9 +20,41 @@
       </div>
     </div>
 
-    <!-- Info supporto -->
-    <div class="error-info text-grey">
+    <!-- Info supporto (tap target per easter egg) -->
+    <div class="error-info text-grey" (click)="onInfoTap()">
       <p>Se il problema persiste, contatta il supporto tecnico</p>
     </div>
   </div>
+
+  <!-- Dettagli errore (dev o dopo 5 tap) -->
+  @if (showDetails && detailsExpanded && criticalErrors.length > 0) {
+    <div class="error-details-overlay" (click)="closeDetails()">
+      <div class="error-details-popup" (click)="$event.stopPropagation()">
+        <div class="error-details-header">
+          <span class="text-white">Dettagli Errore</span>
+          <button class="close-btn" (click)="closeDetails()">✕</button>
+        </div>
+        <div class="error-details-body">
+          @for (error of criticalErrors; track error.id) {
+            <div class="error-item">
+              <div class="error-meta">
+                <span class="error-type">{{ error.type }}</span>
+                <span class="error-time">{{ error.timestamp | date:'HH:mm:ss' }}</span>
+              </div>
+              <p class="error-message">{{ error.message }}</p>
+              @if (error.context) {
+                <p class="error-context">Contesto: {{ error.context }}</p>
+              }
+              @if (error.stack) {
+                <pre class="error-stack">{{ error.stack }}</pre>
+              }
+            </div>
+          }
+        </div>
+        <div class="error-details-footer">
+          <button class="export-btn" (click)="exportErrors()">Esporta Log</button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

@@ -19,6 +19,11 @@ export class ErrorPage implements OnInit {
   detailsExpanded: boolean = false;
   lastErrorId: string = "";
 
+  private tapCount = 0;
+  private tapTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly TAP_THRESHOLD = 5;
+  private readonly TAP_TIMEOUT_MS = 2000;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -71,10 +76,35 @@ export class ErrorPage implements OnInit {
     return error.id;
   }
 
+  onInfoTap(): void {
+    this.tapCount++;
+
+    if (this.tapTimer) {
+      clearTimeout(this.tapTimer);
+    }
+
+    if (this.tapCount >= this.TAP_THRESHOLD) {
+      this.tapCount = 0;
+      this.showDetails = true;
+      this.detailsExpanded = true;
+      return;
+    }
+
+    this.tapTimer = setTimeout(() => {
+      this.tapCount = 0;
+    }, this.TAP_TIMEOUT_MS);
+  }
+
+  closeDetails(): void {
+    this.detailsExpanded = false;
+    if (!this.isDevelopment()) {
+      this.showDetails = false;
+    }
+  }
+
   reloadApp(): void {
     this.errorHandler.clearErrors();
-
-    window.location.replace("/");
+    this.router.navigate(["/home"]);
   }
 
   exportErrors(): void {
