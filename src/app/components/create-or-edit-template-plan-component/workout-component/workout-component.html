@@ -11,13 +11,8 @@
         <form [formGroup]="formAllenamento.form">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Alias allenamento </mat-label>
-            <input
-              (change)="ifEmptySetPlaceholder($event)"
-              matInput
-              [type]="'text'"
-              formControlName="nomeAllenamento"
-              placeholder="Nome allenamento"
-            />
+            <input (change)="ifEmptySetPlaceholder($event)" matInput [type]="'text'" formControlName="nomeAllenamento"
+              placeholder="Nome allenamento" />
 
             @if
             (this.formAllenamento.form.controls['nomeAllenamento'].hasError('required'))
@@ -62,19 +57,13 @@
       </div>
     </div>
 
-    <div
-      #exerciseDataContainer
-      [class.exercise-data]="this.formAllenamento?.listaEserciziForm && this.formAllenamento.listaEserciziForm.length > 0"
-    >
+    <div #exerciseDataContainer
+      [class.exercise-data]="this.formAllenamento.listaEserciziForm && this.formAllenamento.listaEserciziForm.length > 0">
       @for (esercizioForm of this.formAllenamento.listaEserciziForm; track
       esercizioForm.form.controls['identifier'].value) {
       <div #exerciseCard class="exercise-wrapper">
-        <app-exercise-component
-          [formAllenamento]="formAllenamento"
-          (onDeleteExercise)="deleteEexercise($event)"
-          [formEsercizio]="esercizioForm"
-          [isCompactMode]="isCompactMode"
-        ></app-exercise-component>
+        <app-exercise-component [formAllenamento]="formAllenamento" (onDeleteExercise)="deleteEexercise($event)"
+          [formEsercizio]="esercizioForm" [isCompactMode]="isCompactMode"></app-exercise-component>
       </div>
       } @empty { }
     </div>
@@ -86,11 +75,8 @@
     </div>
   </div>
   <div class="floating-double-buttons-container">
-    <app-multi-option-button
-      [leftButtonLabel]="''"
-      [leftGroups]="leftButtonOptionsGroup"
-      (optionSelected)="onOptionSelected($event)"
-    >
+    <app-multi-option-button [leftButtonLabel]="''" [leftGroups]="leftButtonOptionsGroup"
+      (optionSelected)="onOptionSelected($event)">
       <!-- Il pulsante statico viene proiettato qui -->
       <button class="floating-static-button" (touchstart)="backToList()">
         <span>Torna alla scheda</span>
@@ -103,11 +89,7 @@
   <!-- Template per il modale -->
 
   <ng-template #headerDeleteWorkout>
-    <img
-      src="assets/recollect/images/icona-stop-modifica.png"
-      alt="Attenzione"
-      class="warning-icon"
-    />
+    <img src="assets/recollect/images/icona-stop-modifica.png" alt="Attenzione" class="warning-icon" />
   </ng-template>
 
   <ng-template #bodyDeleteWorkout>
@@ -136,10 +118,6 @@
   </ng-template>
 
   <ng-template #headerAddWorkout>
-    <img
-      src="assets/recollect/images/icona-add-workout.png"
-      alt="Aggiungi Allenamento"
-      class="add-workout-icon"
-    />
+    <img src="assets/recollect/images/icona-add-workout.png" alt="Aggiungi Allenamento" class="add-workout-icon" />
   </ng-template>
 </div>

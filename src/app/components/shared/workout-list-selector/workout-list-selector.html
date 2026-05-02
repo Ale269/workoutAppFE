@@ -9,7 +9,7 @@
         <input matInput type="text" formControlName="descrizione" placeholder="Descrizione esercizio" />
         @if (formFiltri.form.controls?.['descrizione']?.value) {
         <button class="cancel-input-button" matSuffix mat-icon-button
-          (click)="formFiltri.form.controls?.['descrizione']?.setValue('')" type="button">
+          (click)="formFiltri.form.controls['descrizione'].setValue('')" type="button">
           <img src="assets/recollect/svg/google-close-icon.svg" />
         </button>
         }
@@ -25,9 +25,9 @@
           </mat-option>
           }
         </mat-select>
-        @if (formFiltri.form.controls?.['idMuscle']?.value) {
+        @if (formFiltri.form.controls['idMuscle'].value) {
         <button class="cancel-input-button" matSuffix mat-icon-button
-          (click)="$event.stopPropagation(); formFiltri.form.controls?.['idMuscle']?.setValue('')" type="button">
+          (click)="$event.stopPropagation(); formFiltri.form.controls['idMuscle'].setValue('')" type="button">
           <img src="assets/recollect/svg/google-close-icon.svg" />
         </button>
         }

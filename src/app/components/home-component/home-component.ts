@@ -10,7 +10,6 @@ import {
 import { CommonModule } from "@angular/common";
 import { Router, RouterModule } from "@angular/router";
 import { FormsModule } from "@angular/forms";
-import { ProssimoAllenamento } from "../widgets/prossimo-allenamento/prossimo-allenamento";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { AuthService } from "src/app/core/services/auth.service";
@@ -18,7 +17,6 @@ import { SchedaCorrente } from "../widgets/scheda-corrente/scheda-corrente";
 import { UltimiAllenamentiSvolti } from "../widgets/ultimi-allenamenti-svolti/ultimi-allenamenti-svolti";
 import { UltimeSchedeSvolte } from "../widgets/ultime-schede-svolte/ultime-schede-svolte";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
-import { AccountInfo } from "../account-info/account-info";
 import { SelezionaAllenamentoDaSvolgere } from "../widgets/seleziona-allenamento-da-svolgere/seleziona-allenamento-da-svolgere";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -38,11 +36,9 @@ ScrollTrigger.config({ ignoreMobileResize: true });
     CommonModule,
     RouterModule,
     FormsModule,
-    ProssimoAllenamento,
     SchedaCorrente,
     UltimiAllenamentiSvolti,
     UltimeSchedeSvolte,
-    AccountInfo,
     SelezionaAllenamentoDaSvolgere
   ],
   templateUrl: "./home-component.html",
