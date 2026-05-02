@@ -28,6 +28,8 @@
     "@ngx-translate/http-loader": "^16.0.1",
     "chart.js": "^4.5.1",
     "gsap": "^3.14.2",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
     "ng2-charts": "^9.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

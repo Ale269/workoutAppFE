@@ -46,7 +46,7 @@
     </div>
 
     <!-- Print: tutte le tabelle senza tabs -->
-    <div class="print-only">
+    <div class="print-only" #printOnlyContainer>
       @for (day of progressData.trainingDays; track day.dayName) {
         <div class="print-day-section">
           <h3 class="print-day-title">{{ day.dayName }}</h3>
