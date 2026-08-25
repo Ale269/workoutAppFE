@@ -38,6 +38,7 @@ import {
 import { DomSanitizer } from "@angular/platform-browser";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { HapticSwitchDirective } from "src/app/components/shared/directives/haptic-switch.directive";
 import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
 
 @Component({
@@ -53,7 +54,8 @@ import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
     MatFormFieldModule,
     MatInputModule,
     DatePipe,
-    MatIcon
+    MatIcon,
+    HapticSwitchDirective
   ],
   templateUrl: "./exercise-component.html",
   styleUrl: "./exercise-component.scss",

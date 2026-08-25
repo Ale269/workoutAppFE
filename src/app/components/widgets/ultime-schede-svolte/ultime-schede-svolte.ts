@@ -4,6 +4,7 @@ import { MatIconRegistry, MatIcon } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { WidgetsService } from "src/app/core/services/widgets.service";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { HapticSwitchDirective } from "src/app/components/shared/directives/haptic-switch.directive";
 import {
   GetDatiUltimeSchedeSvolteRequestModel,
   GetDatiUltimeSchedeSvolteResponseModel,
@@ -12,7 +13,7 @@ import { ultimeSchedeSvolteDTO } from "src/app/models/widgets/ultime-schede-svol
 
 @Component({
   selector: "app-ultime-schede-svolte",
-  imports: [CommonModule, MatIcon],
+  imports: [CommonModule, MatIcon, HapticSwitchDirective],
   templateUrl: "./ultime-schede-svolte.html",
   styleUrl: "./ultime-schede-svolte.scss",
 })

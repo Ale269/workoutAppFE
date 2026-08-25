@@ -48,6 +48,7 @@ import {
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { HapticSwitchDirective } from "src/app/components/shared/directives/haptic-switch.directive";
 import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
 
 @Component({
@@ -64,7 +65,8 @@ import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
     MatSelectModule,
     MultiOptionButton,
     PopupOptionButton,
-    MatIcon
+    MatIcon,
+    HapticSwitchDirective
   ],
   templateUrl: "./workout-component.html",
   styleUrl: "./workout-component.scss",

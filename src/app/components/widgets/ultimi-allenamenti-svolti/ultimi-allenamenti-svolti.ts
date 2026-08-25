@@ -6,6 +6,7 @@ import { Router } from "@angular/router";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { WidgetsService } from "src/app/core/services/widgets.service";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { HapticSwitchDirective } from "src/app/components/shared/directives/haptic-switch.directive";
 import { ultimiAllenamentiSvoltiDTO } from "src/app/models/widgets/ultimi-allenamenti-svolti/allenamentiSvolti";
 import {
   GetDatiUltimiAllenamentiSvoltiRequestModel,
@@ -14,7 +15,7 @@ import {
 
 @Component({
   selector: "app-ultimi-allenamenti-svolti",
-  imports: [CommonModule, MatIcon],
+  imports: [CommonModule, MatIcon, HapticSwitchDirective],
   templateUrl: "./ultimi-allenamenti-svolti.html",
   styleUrl: "./ultimi-allenamenti-svolti.scss",
 })

@@ -54,6 +54,7 @@ import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { HapticSwitchDirective } from "src/app/components/shared/directives/haptic-switch.directive";
 import { WorkoutStorageService, WorkoutStorageData } from "src/app/core/services/workout-storage.service";
 import { UserConfigService } from "src/app/core/services/user-config.service";
 
@@ -71,6 +72,7 @@ import { UserConfigService } from "src/app/core/services/user-config.service";
     MatDatepickerModule,
     MatNativeDateModule,
     MatIcon,
+    HapticSwitchDirective,
   ],
   templateUrl: "./create-or-edit-workout-execution.html",
   styleUrl: "./create-or-edit-workout-execution.scss",

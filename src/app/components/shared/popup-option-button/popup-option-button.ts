@@ -10,6 +10,7 @@ import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import gsap from "gsap";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { HapticSwitchDirective } from "src/app/components/shared/directives/haptic-switch.directive";
 
 export interface popupOption {
   optionId: number;
@@ -26,7 +27,7 @@ export interface popupOption {
  */
 @Component({
   selector: "app-popup-option-button",
-  imports: [MatIcon],
+  imports: [MatIcon, HapticSwitchDirective],
   templateUrl: "./popup-option-button.html",
   styleUrl: "./popup-option-button.scss",
 })

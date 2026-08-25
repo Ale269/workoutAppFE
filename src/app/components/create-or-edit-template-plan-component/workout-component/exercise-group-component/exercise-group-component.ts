@@ -24,6 +24,7 @@ import { ReorderExerciseComponent } from "../reorder-exercise-component/reorder-
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { HapticSwitchDirective } from "src/app/components/shared/directives/haptic-switch.directive";
 import { FocusOverlayService } from "src/app/components/shared/focus-overlay/focus-overlay.service";
 
 /**
@@ -41,6 +42,7 @@ import { FocusOverlayService } from "src/app/components/shared/focus-overlay/foc
     MatIcon,
     ExerciseComponent,
     GroupCompactCard,
+    HapticSwitchDirective,
   ],
   templateUrl: "./exercise-group-component.html",
   styleUrl: "./exercise-group-component.scss",
