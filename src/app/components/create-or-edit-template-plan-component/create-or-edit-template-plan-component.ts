@@ -114,6 +114,9 @@ export class CreateOrEditTemplatePlanComponent
   @ViewChild("workoutListContainer", { read: ElementRef })
   workoutListContainer!: ElementRef;
 
+  // Offset orizzontale casuale del gradiente decorativo (resta in alto)
+  public gradientShiftX: number = Math.round(Math.random() * 140) - 70;
+
   // Gestione visualizzazione
   public currentView: "list" | "detail" = "list";
   public selectedWorkout: AllenamentoForm | null = null;
@@ -148,7 +151,7 @@ export class CreateOrEditTemplatePlanComponent
       options: [
         {
           optionId: 1,
-          color: "#ff0000",
+          color: "#ff6b6b",
           description: "Elimina scheda",
         },
       ],

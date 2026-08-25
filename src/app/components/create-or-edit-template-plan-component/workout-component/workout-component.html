@@ -58,20 +58,25 @@
     </div>
 
     <div #exerciseDataContainer
-      [class.exercise-data]="this.formAllenamento.listaEserciziForm && this.formAllenamento.listaEserciziForm.length > 0">
-      @for (esercizioForm of this.formAllenamento.listaEserciziForm; track
-      esercizioForm.form.controls['identifier'].value) {
+      [class.exercise-data]="this.formAllenamento.units && this.formAllenamento.units.length > 0">
+      @for (unit of this.formAllenamento.units; track trackUnit(unit)) {
+      @if (unit.kind === 'esercizio') {
       <div #exerciseCard class="exercise-wrapper">
         <app-exercise-component [formAllenamento]="formAllenamento" (onDeleteExercise)="deleteEexercise($event)"
-          [formEsercizio]="esercizioForm" [isCompactMode]="isCompactMode"></app-exercise-component>
+          [formEsercizio]="unit.esercizio" [isCompactMode]="isCompactMode"></app-exercise-component>
       </div>
-      } @empty { }
+      } @else {
+      <div #exerciseCard class="exercise-wrapper">
+        <app-exercise-group [formAllenamento]="formAllenamento" [gruppo]="unit.gruppo"
+          [numero]="unit.numero" [isCompactMode]="isCompactMode" (onDeleteExercise)="deleteEexercise($event)"
+          (addExercise)="addEsercizioToGruppo($event)"></app-exercise-group>
+      </div>
+      } } @empty { }
     </div>
     <div class="add-exercise-button-row">
-      <div class="small-inline-button" (click)="addNuovoEsercizio()">
-        <button>Aggiungi esercizio</button>
-        <mat-icon svgIcon="google-add"></mat-icon>
-      </div>
+      <app-popup-option-button [label]="'Aggiungi'" [options]="addOptions"
+        (optionSelected)="onAddOptionSelected($event)">
+      </app-popup-option-button>
     </div>
   </div>
   <div class="floating-double-buttons-container">

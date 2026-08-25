@@ -74,12 +74,14 @@ export class FocusOverlayController {
   }
 
   /**
-   * Applica il nuovo ordine degli esercizi
-   * @param orderedIdentifiers Array degli identifier nell'ordine desiderato
+   * Applica il nuovo ordine degli elementi riordinati.
+   * Generico: gli overlay di riordino esistenti passano number[] (identifier),
+   * il riordino a unit (esercizi/gruppi) passa oggetti {kind, identifier}.
+   * @param order Array degli elementi nell'ordine desiderato
    */
-  applyNewOrder(orderedIdentifiers: number[]): void {
+  applyNewOrder<T = number>(order: T[]): void {
     if (this.applyNewOrderFn) {
-      this.applyNewOrderFn(orderedIdentifiers);
+      this.applyNewOrderFn(order);
     }
   }
 
@@ -110,8 +112,8 @@ export class FocusOverlayController {
   }
 
   /** @internal */
-  public registerApplyNewOrderFn(fn: (orderedIdentifiers: number[]) => void): void {
-    this.applyNewOrderFn = fn;
+  public registerApplyNewOrderFn<T = number>(fn: (order: T[]) => void): void {
+    this.applyNewOrderFn = fn as (order: any[]) => void;
   }
 
   private showBackdropFn?: () => void;
@@ -120,5 +122,5 @@ export class FocusOverlayController {
   private getContainerPositionFn?: () => { top: number; left: number; width: number; height: number };
   private onReadyToShowFn?: () => void;
   private startCloseAnimationFn?: () => void;
-  private applyNewOrderFn?: (orderedIdentifiers: number[]) => void;
+  private applyNewOrderFn?: (order: any[]) => void;
 }

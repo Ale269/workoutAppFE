@@ -94,7 +94,7 @@ export class ViewTemplatePlan {
         },
         {
           optionId: 3,
-          color: "#ff0000",
+          color: "#ff6b6b",
           description: "Elimina allenamento",
         },
       ],
@@ -288,8 +288,12 @@ export class ViewTemplatePlan {
     }
   }
 
-  modificaScheda() {
+  modificaScheda(event?: Event) {
     try {
+      // Evita il "ghost click": navigando su touchstart, il click sintetizzato
+      // al rilascio del dito atterrerebbe sulla nuova pagina aprendo
+      // accidentalmente il dettaglio di un allenamento
+      event?.preventDefault();
       this.hapticService.trigger("medium");
       this.router.navigate(["/le-mie-schede/modifica-scheda/", this.idScheda], {
         state: { scheda: this.scheda },

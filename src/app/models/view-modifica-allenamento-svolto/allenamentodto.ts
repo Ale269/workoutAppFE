@@ -1,4 +1,5 @@
 import { EsercizioDTO } from "./eserciziodto";
+import { GruppoDTO } from "./gruppodto";
 
 export interface AllenamentoDTO {
   id: number;
@@ -9,4 +10,5 @@ export interface AllenamentoDTO {
   dataEsecuzione: Date | null;
   ordinamento: number;
   listaEsercizi: EsercizioDTO[];
+  listaGruppi?: GruppoDTO[];
 }

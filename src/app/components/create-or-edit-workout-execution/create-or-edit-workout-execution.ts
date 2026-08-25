@@ -39,7 +39,16 @@ import { DeleteDatiAllenamentoRequestModel } from "src/app/models/view-modifica-
 import { AuthService } from "../../core/services/auth.service";
 import { LongPressDirective } from "../shared/directives/long-press.directive";
 import { FocusOverlayService } from "../shared/focus-overlay/focus-overlay.service";
-import { ReorderExerciseComponent } from "../create-or-edit-template-plan-component/workout-component/reorder-exercise-component/reorder-exercise-component";
+import { ReorderUnitsComponent } from "../create-or-edit-template-plan-component/workout-component/reorder-units-component/reorder-units-component";
+import { ExerciseGroupComponent } from "../create-or-edit-template-plan-component/workout-component/exercise-group-component/exercise-group-component";
+import {
+  PopupOptionButton,
+  popupOption,
+} from "../shared/popup-option-button/popup-option-button";
+import {
+  AllenamentoUnit,
+  ReorderUnitRef,
+} from "../create-or-edit-template-plan-component/workout-form";
 import gsap from "gsap";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
@@ -55,7 +64,9 @@ import { UserConfigService } from "src/app/core/services/user-config.service";
     MatFormFieldModule,
     MatTabsModule,
     ExerciseComponent,
+    ExerciseGroupComponent,
     MultiOptionButton,
+    PopupOptionButton,
     MatInput,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -101,11 +112,21 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
   public isCompactMode: boolean = false; // Stato per modalità compatta
 
+  // Offset orizzontale casuale del gradiente decorativo (resta in alto)
+  public gradientShiftX: number = Math.round(Math.random() * 140) - 70;
+
   private autoSaveIntervalId: any = null;
   private lastSavedSnapshot: string = "";
 
   // Definisci le opzioni del pulsante
   public rightButtonOptionsGroup: multiOptionGroup[] = [];
+
+  // Opzioni del popup "Aggiungi" (esercizio / superset / circuito)
+  public addOptions: popupOption[] = [
+    { optionId: 1, description: "Aggiungi esercizio" },
+    { optionId: 2, description: "Aggiungi superset", color: "#ffb300" },
+    { optionId: 3, description: "Aggiungi circuito", color: "#3b82f6" },
+  ];
 
   public leftButtonOptionsGroup: multiOptionGroup[] = [
     {
@@ -114,7 +135,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       options: [
         {
           optionId: 1,
-          color: "#ff0000",
+          color: "#ff6b6b",
           description: "Elimina allenamento",
         },
       ],
@@ -255,16 +276,13 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       };
 
       const controller = this.focusOverlayService.open({
-        component: ReorderExerciseComponent,
+        component: ReorderUnitsComponent,
         data: {
-          exercises:
-            this.createOrEditWorkoutExecutionService.AllenamentoForm
-              .listaEserciziForm,
+          units: this.createOrEditWorkoutExecutionService.AllenamentoForm.units,
           containerPosition: containerPosition,
         },
         dismissOnBackdrop: false,
         onDismiss: () => {
-          console.log("Overlay chiuso!");
           this.isCompactMode = false;
           this.cdr.detectChanges();
         },
@@ -289,9 +307,9 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         this.setOriginalCardsVisibility(true);
       });
 
-      controller.registerApplyNewOrderFn((orderedIdentifiers: number[]) => {
-        this.createOrEditWorkoutExecutionService.AllenamentoForm.reorderExercisesByIdentifiers(
-          orderedIdentifiers,
+      controller.registerApplyNewOrderFn<ReorderUnitRef>((orderedUnits) => {
+        this.createOrEditWorkoutExecutionService.AllenamentoForm.reorderUnits(
+          orderedUnits,
         );
         this.cdr.detectChanges();
       });
@@ -684,6 +702,59 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Gestisce la selezione dal popup "Aggiungi"
+   */
+  async onAddOptionSelected(optionId: number) {
+    try {
+      this.hapticService.trigger('medium');
+      await this.maintainButtonPosition(() => {
+        const allenamentoForm =
+          this.createOrEditWorkoutExecutionService.AllenamentoForm;
+        switch (optionId) {
+          case 1:
+            allenamentoForm.addEsercizioForm(undefined);
+            break;
+          case 2:
+            allenamentoForm.addGruppoForm("SUPERSET");
+            break;
+          case 3:
+            allenamentoForm.addGruppoForm("CIRCUIT");
+            break;
+        }
+      });
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditWorkoutExecution.onAddOptionSelected",
+      );
+    }
+  }
+
+  /**
+   * Aggiunge un nuovo esercizio in coda ai membri del gruppo indicato
+   */
+  async addEsercizioToGruppo(groupIdentifier: number) {
+    try {
+      await this.maintainButtonPosition(() => {
+        this.createOrEditWorkoutExecutionService.AllenamentoForm.addEsercizioToGruppo(
+          groupIdentifier,
+        );
+      });
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditWorkoutExecution.addEsercizioToGruppo",
+      );
+    }
+  }
+
+  trackUnit(unit: AllenamentoUnit): string {
+    return unit.kind === "esercizio"
+      ? "e" + unit.esercizio.exerciseIdentifier
+      : "g" + unit.gruppo.identifier;
+  }
+
   private async maintainButtonPosition(callback: () => void): Promise<void> {
     const scroller = this.elementRef.nativeElement.querySelector('.page-scroller');
     if (!scroller) {
@@ -867,6 +938,14 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         dataEsecuzione: allenamentoForm.dataEsecuzione,
         nomeScheda: null,
         listaEsercizi: [],
+        listaGruppi: (allenamentoForm.listaGruppi || []).map((gruppoForm) => ({
+          id: gruppoForm.id,
+          idTemplate: gruppoForm.idTemplate,
+          tipoGruppo: gruppoForm.tipoGruppo,
+          tempoRecupero: gruppoForm.tempoRecupero,
+          numeroGiri: gruppoForm.numeroGiri,
+          progressivo: gruppoForm.progressivo,
+        })),
         nomeAllenamento: allenamentoForm.nomeAllenamento,
         ordinamento: allenamentoForm.ordinamento,
       };
@@ -881,6 +960,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
           idTipoEsercizio: esercizioForm.idTipoEsercizio,
           listaSerie: [],
           ordinamento: esercizioForm.ordinamento,
+          idGruppo: esercizioForm.idGruppo ?? null,
         };
 
         esercizioForm.listaSerie.forEach((serieForm) => {

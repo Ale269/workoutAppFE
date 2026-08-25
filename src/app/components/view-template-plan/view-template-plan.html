@@ -69,7 +69,7 @@
   <app-multi-option-button [leftButtonLabel]="''" [leftGroups]="leftButtonOptionsGroup"
     (optionSelected)="onOptionSelected($event)">
     <!-- Il pulsante statico viene proiettato qui -->
-    <button class="floating-static-button" (touchstart)="modificaScheda()">
+    <button class="floating-static-button" (touchstart)="modificaScheda($event)">
       <span>Modifica scheda</span>
     </button>
   </app-multi-option-button>

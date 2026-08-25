@@ -1,5 +1,12 @@
 @if(this.loadingProgression === LoadingProgressionEnum.complete){
 <div class="page-scroller">
+  <div
+    class="gradient-effect"
+    [style.transform]="'translateX(' + gradientShiftX + 'px)'"
+  >
+    <div class="ellips-1"></div>
+    <div class="ellips-2"></div>
+  </div>
   <div class="content">
     <!-- Vista Lista Allenamenti -->
     @if(currentView === 'list') {

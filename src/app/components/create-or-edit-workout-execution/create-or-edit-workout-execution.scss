@@ -1,7 +1,44 @@
+// Allineato all'indentatura orizzontale dei titoli di sezione (16px)
 .add-exercise-button-row {
   display: flex;
   justify-content: flex-end;
-  padding: 16px 0;
+  padding: 16px;
+}
+
+// Gradiente decorativo in alto: fixed (ancorato al viewport) così il
+// rubber-band dello scroll non lo trascina mostrando il taglio di fine pagina
+.gradient-effect {
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.ellips-1 {
+  position: absolute;
+  left: -68px;
+  bottom: -100px;
+  z-index: -1;
+  background-color: #00ffe1;
+  opacity: 20%;
+  width: 450px;
+  height: 650px;
+  border-radius: 50%;
+  transform: rotate(45deg);
+  filter: blur(60px);
+}
+
+.ellips-2 {
+  position: absolute;
+  left: 60px;
+  bottom: -72px;
+  z-index: -1;
+  background-color: #fff;
+  opacity: 5%;
+  width: 225px;
+  height: 325px;
+  border-radius: 50%;
+  transform: rotate(45deg);
+  filter: blur(60px);
 }
 
 .exercise-data {

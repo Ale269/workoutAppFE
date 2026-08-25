@@ -7,6 +7,7 @@ import { AllenamentoDTO } from "src/app/models/view-modifica-scheda/allenamentod
 import { AllenamentoDTO as AllenamentoFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/allenamentodto";
 import { EsercizioDTO as EsercizioFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/eserciziodto";
 import { SerieDTO as SerieFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/seriedto";
+import { GruppoDTO as GruppoFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/gruppodto";
 import { WorkoutService } from "../../core/services/workout.service";
 import {
   SaveDatiTemplateSchedaRequestModel,
@@ -57,11 +58,25 @@ export class CreateOrEditTemplatePlanService {
           dataEsecuzione: null,
           idTemplate: allenamento.id,
           listaEsercizi: [],
+          listaGruppi: [],
           nomeAllenamento: allenamento.nomeAllenamento,
           ordinamento: allenamento.ordinamento,
           description: allenamento.description
         };
         schedaFormDTO.listaAllenamenti.push(allenamentoFormDTO);
+
+        // Gruppi (superset/circuiti): id server -> idTemplate, progressivo invariato
+        (allenamento.listaGruppi || []).forEach((gruppo) => {
+          const gruppoFormDTO: GruppoFormDTO = {
+            id: 0,
+            idTemplate: gruppo.id,
+            tipoGruppo: gruppo.tipoGruppo,
+            tempoRecupero: gruppo.tempoRecupero,
+            numeroGiri: gruppo.numeroGiri,
+            progressivo: gruppo.progressivo,
+          };
+          allenamentoFormDTO.listaGruppi!.push(gruppoFormDTO);
+        });
 
         allenamento.listaEsercizi.forEach((esercizio) => {
           const esercizioFormDTO: EsercizioFormDTO = {
@@ -72,6 +87,7 @@ export class CreateOrEditTemplatePlanService {
             idMetodologia: esercizio.idMetodologia,
             idTipoEsercizio: esercizio.idTipoEsercizio,
             ordinamento: esercizio.ordinamento,
+            idGruppo: esercizio.idGruppo ?? null,
             listaSerie: [],
           };
           allenamentoFormDTO.listaEsercizi.push(esercizioFormDTO);

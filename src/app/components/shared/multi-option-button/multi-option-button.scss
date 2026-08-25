@@ -168,12 +168,12 @@
   .transformed-setting-option-container {
     width: 100%;
     border-bottom: 1px solid #212121;
-    padding: 16px 0;
+    padding: 12px 0;
 
     button {
       width: 100%;
       text-align: left;
-      padding: 8px 0;
+      padding: 4px 0;
       transition: opacity 0.2s ease;
 
       &:hover {
@@ -188,7 +188,7 @@
 
   .transformed-setting-close-button-container {
     width: 100%;
-    padding: 16px 0;
+    padding: 12px 0 4px;
     display: flex;
     justify-content: flex-end;
   }
@@ -230,7 +230,7 @@
 }
 
 .group-section {
-  padding-bottom: 32px;
+  padding-bottom: 16px;
 
   &:last-of-type {
     padding-bottom: 0;

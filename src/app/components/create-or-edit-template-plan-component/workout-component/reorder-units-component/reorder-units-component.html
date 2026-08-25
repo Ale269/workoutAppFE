@@ -1,0 +1,59 @@
+<div class="reorder-wrapper">
+  <div class="scrollable-container">
+    <h1 class="text-title floating-text">Riordina esercizi</h1>
+    <div #unitsDataContainer class="units-data">
+      @for (unit of units; track trackUnit(unit)) {
+      <div class="card-row" (click)="onCardClick($event)">
+        @if (unit.kind === 'esercizio') {
+        <div class="exercise-container compact-mode">
+          <div class="titolo-esercizio-container">
+            <div class="icona-numero-esercizio-container">
+              <div
+                class="circle-icon"
+                [style.border-color]="unit.esercizio.form.controls['idIconaEsercizio'].value | exerciseIconColor"
+              >
+                <img
+                  [src]="getExerciseIconPath(unit.esercizio.form.controls['idTipoEsercizio'].value)"
+                  [alt]="'Icona esercizio ' + unit.esercizio.form.controls['idIconaEsercizio'].value"
+                  class="exercise-icon"
+                />
+              </div>
+              <h3 class="text-white">
+                Esercizio {{unit.esercizio.form.controls['ordinamento'].value}}
+              </h3>
+            </div>
+          </div>
+          <form [formGroup]="unit.esercizio.form">
+            <div class="input-row">
+              <app-gym-exercise-selector
+                [control]="getControl(unit.esercizio, 'idTipoEsercizio')"
+                label="Esercizio"
+                [disabled]="true"
+              >
+              </app-gym-exercise-selector>
+            </div>
+          </form>
+        </div>
+        } @else {
+        <div class="group-card-container">
+          <app-group-compact-card
+            [gruppo]="unit.gruppo"
+            [esercizi]="unit.esercizi"
+            [numero]="unit.numero"
+          ></app-group-compact-card>
+        </div>
+        }
+        <div class="drag-handle-container">
+          <img src="assets/recollect/svg/google-drag-handle.svg" />
+        </div>
+      </div>
+      } @empty { }
+    </div>
+  </div>
+
+  <div class="floating-static-button-container">
+    <button class="floating-static-button" (click)="onConfirmClick($event)">
+      <span>Fatto</span>
+    </button>
+  </div>
+</div>

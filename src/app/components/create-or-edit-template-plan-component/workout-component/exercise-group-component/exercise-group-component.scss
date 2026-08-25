@@ -1,0 +1,169 @@
+@use "@angular/material" as mat;
+
+$superset-color: #ffb300;
+$circuit-color: #3b82f6;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.group-container {
+  --group-color: #{$superset-color};
+
+  &.circuit {
+    --group-color: #{$circuit-color};
+  }
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// Header e riga campi allineati all'indentatura dei titoli di sezione (16px)
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+}
+
+// Stessa taglia dei testi generici (.text-white: 14px / 700)
+.group-title {
+  color: var(--group-color);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: "poppins";
+  margin: 0;
+}
+
+// Riordina a sinistra, campi al centro (spazio restante diviso in parti
+// uguali), elimina a destra
+.group-fields-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+.group-fields {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.group-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.group-exercises {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Le card membri sono identiche a quelle di un esercizio normale:
+// il colore del gruppo è dato da una "card sottostante" (pseudo-elemento
+// CSS con bordi arrotondati, position absolute, z-index inferiore) il cui
+// bordo sinistro sbuca leggermente a sinistra della card.
+.group-exercise-wrapper {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 16px;
+    bottom: 16px;
+    left: -2px;
+    right: 0;
+    border-radius: 16px;
+    background-color: var(--group-color);
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  app-exercise-component {
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.no-exercises-message {
+  padding: 8px 16px;
+
+  h3 {
+    opacity: 0.6;
+    font-size: 14px;
+  }
+}
+
+.add-to-group-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 16px;
+}
+
+.group-accent-button {
+  button {
+    color: var(--group-color);
+  }
+
+  mat-icon {
+    color: var(--group-color);
+  }
+}
+
+.warning-icon {
+  width: 40px;
+}
+
+// Stessa ricetta della X delle card esercizio
+.delete-icon-element-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+// .close-icon-trigger {
+//   position: absolute;
+//   inset: -8px;
+//   cursor: pointer;
+//   z-index: 1;
+// }
+
+.arrow-widget-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+// Icona riordino del gruppo: stessa taglia della X, ma col colore del gruppo
+.arrow-widget-container.group-accent-icon {
+  color: var(--group-color);
+}
+
+:host {
+  @include mat.form-field-overrides(
+    (
+      outlined-outline-color: rgba(255, 255, 255, 0.3),
+      outlined-input-text-color: "#fff",
+      outlined-label-text-color: rgba(255, 255, 255, 0.6),
+      outlined-hover-outline-color: rgba(255, 255, 255, 0.3),
+      outlined-focus-outline-color: "#fff",
+      outlined-focus-label-text-color: "#fff",
+    )
+  );
+}

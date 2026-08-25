@@ -64,10 +64,14 @@ export class HapticService {
                 `<input type="checkbox" id="${id}" switch />` +
                 `<label for="${id}"></label>`;
 
+            // NB: niente visibility:hidden / display:none — alcune versioni di
+            // WebKit non emettono l'haptic se l'elemento non è "renderizzabile".
+            // Basta tenerlo fuori schermo e trasparente.
             wrapper.setAttribute('style',
                 'position:fixed;top:-9999px;left:-9999px;' +
-                'opacity:0;pointer-events:none;visibility:hidden;'
+                'opacity:0;pointer-events:none;'
             );
+            wrapper.setAttribute('aria-hidden', 'true');
 
             document.body.appendChild(wrapper);
 

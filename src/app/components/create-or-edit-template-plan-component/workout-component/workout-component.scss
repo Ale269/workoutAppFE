@@ -33,10 +33,11 @@
   padding-bottom: 32px;
 }
 
+// Allineato all'indentatura orizzontale dei titoli di sezione (16px)
 .add-exercise-button-row {
   display: flex;
   justify-content: flex-end;
-  padding: 16px 0;
+  padding: 16px;
 }
 
 .delete-allenamento-button-row {

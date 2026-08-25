@@ -75,7 +75,7 @@ export class ViewDataExecutedWorkout {
       options: [
         {
           optionId: 1,
-          color: "#ff0000",
+          color: "#ff6b6b",
           description: "Elimina allenamento svolto",
         },
       ],

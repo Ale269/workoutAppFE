@@ -20,9 +20,14 @@ import {
   MatFormField,
   MatInput,
 } from "@angular/material/input";
-import { AllenamentoForm } from "../workout-form";
+import {
+  AllenamentoForm,
+  AllenamentoUnit,
+  ReorderUnitRef,
+} from "../workout-form";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { ExerciseComponent } from "./exercise-component/exercise-component";
+import { ExerciseGroupComponent } from "./exercise-group-component/exercise-group-component";
 import { ModalService } from "src/app/core/services/modal.service";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
@@ -30,12 +35,16 @@ import { Subject, takeUntil } from "rxjs";
 import { SchedaForm } from "../template-plan-form";
 import gsap from "gsap";
 import { FocusOverlayService } from "../../shared/focus-overlay/focus-overlay.service";
-import { ReorderExerciseComponent } from "./reorder-exercise-component/reorder-exercise-component";
+import { ReorderUnitsComponent } from "./reorder-units-component/reorder-units-component";
 import {
   MultiOptionButton,
   multiOptionGroup,
   OptionSelectedEvent,
 } from "../../shared/multi-option-button/multi-option-button";
+import {
+  PopupOptionButton,
+  popupOption,
+} from "../../shared/popup-option-button/popup-option-button";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { HapticService } from "src/app/core/services/haptic.service";
@@ -50,9 +59,11 @@ import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
     MatFormField,
     MatInput,
     ExerciseComponent,
+    ExerciseGroupComponent,
     MatFormFieldModule,
     MatSelectModule,
     MultiOptionButton,
+    PopupOptionButton,
     MatIcon
   ],
   templateUrl: "./workout-component.html",
@@ -80,6 +91,13 @@ export class WorkoutComponent implements OnInit, OnDestroy {
   public ordinamentoControl!: FormControl<number | null>;
   public isCompactMode: boolean = false;
 
+  // Opzioni del popup "Aggiungi" (esercizio / superset / circuito)
+  public addOptions: popupOption[] = [
+    { optionId: 1, description: "Aggiungi esercizio" },
+    { optionId: 2, description: "Aggiungi superset", color: "#ffb300" },
+    { optionId: 3, description: "Aggiungi circuito", color: "#3b82f6" },
+  ];
+
   public leftButtonOptionsGroup: multiOptionGroup[] = [
     {
       id: 1,
@@ -87,7 +105,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       options: [
         {
           optionId: 1,
-          color: "#ff0000",
+          color: "#ff6b6b",
           description: "Elimina allenamento",
         },
       ],
@@ -167,14 +185,13 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       };
 
       const controller = this.focusOverlayService.open({
-        component: ReorderExerciseComponent,
+        component: ReorderUnitsComponent,
         data: {
-          exercises: this.formAllenamento.listaEserciziForm,
+          units: this.formAllenamento.units,
           containerPosition: containerPosition,
         },
         dismissOnBackdrop: false,
         onDismiss: () => {
-          console.log("Overlay chiuso!");
           this.isCompactMode = false;
           this.cdr.detectChanges();
         },
@@ -199,8 +216,8 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         this.setOriginalCardsVisibility(true);
       });
 
-      controller.registerApplyNewOrderFn((orderedIdentifiers: number[]) => {
-        this.formAllenamento.reorderExercisesByIdentifiers(orderedIdentifiers);
+      controller.registerApplyNewOrderFn<ReorderUnitRef>((orderedUnits) => {
+        this.formAllenamento.reorderUnits(orderedUnits);
         this.cdr.detectChanges();
       });
     }
@@ -280,6 +297,55 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         "WorkoutComponent.addNuovoEsercizio",
       );
     }
+  }
+
+  /**
+   * Gestisce la selezione dal popup "Aggiungi"
+   */
+  async onAddOptionSelected(optionId: number) {
+    try {
+      this.hapticService.trigger('medium');
+      await this.maintainButtonPosition(() => {
+        switch (optionId) {
+          case 1:
+            this.formAllenamento.addEsercizioForm(undefined);
+            break;
+          case 2:
+            this.formAllenamento.addGruppoForm("SUPERSET");
+            break;
+          case 3:
+            this.formAllenamento.addGruppoForm("CIRCUIT");
+            break;
+        }
+      });
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "WorkoutComponent.onAddOptionSelected",
+      );
+    }
+  }
+
+  /**
+   * Aggiunge un nuovo esercizio in coda ai membri del gruppo indicato
+   */
+  async addEsercizioToGruppo(groupIdentifier: number) {
+    try {
+      await this.maintainButtonPosition(() => {
+        this.formAllenamento.addEsercizioToGruppo(groupIdentifier);
+      });
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "WorkoutComponent.addEsercizioToGruppo",
+      );
+    }
+  }
+
+  trackUnit(unit: AllenamentoUnit): string {
+    return unit.kind === "esercizio"
+      ? "e" + unit.esercizio.exerciseIdentifier
+      : "g" + unit.gruppo.identifier;
   }
 
   private async maintainButtonPosition(callback: () => void): Promise<void> {

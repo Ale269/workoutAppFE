@@ -14,6 +14,10 @@ export interface EsercizioFormModel {
   listaSerie: FormArray<FormGroup<SerieFormModel>>;
   ListaSpecifiche: FormArray<FormGroup<SpecificaFormModel>>;
   ordinamento: FormControl<number | null>;
+  // identifier client del gruppo (superset/circuito) di appartenenza,
+  // null = esercizio non raggruppato. La traduzione da/verso il "progressivo"
+  // dei DTO avviene in AllenamentoForm.
+  idGruppo: FormControl<number | null>;
 }
 
 interface SpecificaFormModel {
@@ -52,6 +56,7 @@ export class EsercizioForm {
       ),
       listaSerie: new FormArray<FormGroup<SerieFormModel>>([]),
       ListaSpecifiche: new FormArray<FormGroup<SpecificaFormModel>>([]),
+      idGruppo: new FormControl<number | null>(null),
     });
 
     // Se ci sono dati DTO, popola le serie
@@ -211,5 +216,16 @@ export class EsercizioForm {
     return this.form.controls["listaSerie"] as FormArray<
       FormGroup<SerieFormModel>
     >;
+  }
+
+  // Identifier client dell'esercizio (il campo pubblico "identifier" è il
+  // contatore delle serie, non l'identifier dell'esercizio)
+  get exerciseIdentifier(): number {
+    return this.form.get("identifier")?.value ?? 0;
+  }
+
+  // Identifier client del gruppo (superset/circuito) di appartenenza
+  get idGruppo(): number | null {
+    return this.form.get("idGruppo")?.value ?? null;
   }
 }

@@ -1,5 +1,12 @@
 @if(this.loadingProgression === LoadingProgressionEnum.complete){
 <div class="page-scroller">
+  <div
+    class="gradient-effect"
+    [style.transform]="'translateX(' + gradientShiftX + 'px)'"
+  >
+    <div class="ellips-1"></div>
+    <div class="ellips-2"></div>
+  </div>
   <div class="content">
     @if(this.createOrEditWorkoutExecutionService.AllenamentoForm.form){
     <div class="workout-data">
@@ -43,30 +50,42 @@
       </div>
     </div>
     <div #exerciseDataContainer class="exercise-data">
-      @for (esercizioForm of
-      this.createOrEditWorkoutExecutionService.AllenamentoForm.listaEserciziForm;
-      track esercizioForm.form.controls['identifier'].value) {
-      <div
-        #exerciseCard
-        class="exercise-wrapper"
-      >
+      @for (unit of
+      this.createOrEditWorkoutExecutionService.AllenamentoForm.units; track
+      trackUnit(unit)) { @if (unit.kind === 'esercizio') {
+      <div #exerciseCard class="exercise-wrapper">
         <app-exercise-component
           [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm"
           (onDeleteExercise)="deleteEexercise($event)"
-          [formEsercizio]="esercizioForm"
+          [formEsercizio]="unit.esercizio"
           [isCompactMode]="isCompactMode"
           [historyTrainingId]="idAllenamento"
         >
         </app-exercise-component>
       </div>
-      } @empty { }
+      } @else {
+      <div #exerciseCard class="exercise-wrapper">
+        <app-exercise-group
+          [formAllenamento]="this.createOrEditWorkoutExecutionService.AllenamentoForm"
+          [gruppo]="unit.gruppo"
+          [numero]="unit.numero"
+          [isCompactMode]="isCompactMode"
+          [historyTrainingId]="idAllenamento"
+          (onDeleteExercise)="deleteEexercise($event)"
+          (addExercise)="addEsercizioToGruppo($event)"
+        >
+        </app-exercise-group>
+      </div>
+      } } @empty { }
     </div>
 
     <div class="add-exercise-button-row">
-      <div class="small-inline-button" (click)="addNuovoEsercizio()">
-        <button>Aggiungi esercizio</button>
-        <mat-icon svgIcon="google-add"></mat-icon>
-      </div>
+      <app-popup-option-button
+        [label]="'Aggiungi'"
+        [options]="addOptions"
+        (optionSelected)="onAddOptionSelected($event)"
+      >
+      </app-popup-option-button>
     </div>
     }@else {
     <h3 class="text-white">Nessun allenamento aggiunto</h3>

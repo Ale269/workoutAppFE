@@ -1,0 +1,114 @@
+@if (isCompactMode) {
+<app-group-compact-card
+  [gruppo]="gruppo"
+  [esercizi]="esercizi"
+  [numero]="numero"
+></app-group-compact-card>
+} @else {
+<div class="group-container" [class.circuit]="isCircuit">
+  <div class="group-header">
+    <h3 class="group-title">{{ titolo }}</h3>
+  </div>
+
+  <form [formGroup]="gruppo.form">
+    <div class="group-fields-row">
+      <div
+        class="delete-icon-element-container"
+        (click)="reorderMembers()"
+      >
+        <div class="arrow-widget-container group-accent-icon">
+          <mat-icon svgIcon="google-reorder"></mat-icon>
+        </div>
+      </div>
+      <div class="group-fields">
+        @if (isCircuit) {
+        <mat-form-field appearance="outline" class="group-field">
+          <mat-label>Giri</mat-label>
+          <input
+            matInput
+            type="number"
+            inputmode="numeric"
+            formControlName="numeroGiri"
+          />
+        </mat-form-field>
+        }
+        <mat-form-field appearance="outline" class="group-field">
+          <mat-label>Recupero (s)</mat-label>
+          <input
+            matInput
+            type="number"
+            inputmode="numeric"
+            formControlName="tempoRecupero"
+          />
+        </mat-form-field>
+      </div>
+      <div class="delete-icon-element-container">
+        <div class="close-icon-trigger" (click)="openDeleteGroupModal()"></div>
+        <div class="arrow-widget-container">
+          <mat-icon svgIcon="google-close-icon"></mat-icon>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div #groupExercisesContainer class="group-exercises">
+    @for (esercizioForm of esercizi; track
+    esercizioForm.form.controls['identifier'].value) {
+    <div class="group-exercise-wrapper">
+      <app-exercise-component
+        [formAllenamento]="formAllenamento"
+        [formEsercizio]="esercizioForm"
+        [isCompactMode]="membersCompact"
+        [historyTrainingId]="historyTrainingId"
+        (onDeleteExercise)="deleteExerciseFromGroup($event)"
+      ></app-exercise-component>
+    </div>
+    } @empty {
+    <div class="no-exercises-message">
+      <h3 class="text-white">Nessun esercizio nel gruppo</h3>
+    </div>
+    }
+  </div>
+
+  <div class="add-to-group-row">
+    <div
+      class="small-inline-button group-accent-button"
+      (click)="addEsercizio()"
+    >
+      <button>{{ addLabel }}</button>
+      <mat-icon svgIcon="google-add"></mat-icon>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Template per il modale di eliminazione gruppo -->
+<ng-template #headerDeleteGroup>
+  <img
+    src="assets/recollect/images/icona-stop-modifica.png"
+    alt="Attenzione"
+    class="warning-icon"
+  />
+</ng-template>
+
+<ng-template #bodyDeleteGroup>
+  <h3 class="text-white">
+    Sei sicuro di voler eliminare {{ isCircuit ? "questo circuito" : "questa
+    superset" }}?
+  </h3>
+  <h3 class="text-white">
+    Gli esercizi contenuti torneranno esercizi singoli.
+  </h3>
+</ng-template>
+
+<ng-template #footerCloseDeleteGroup>
+  <button class="button-cancel">
+    <span>Annulla</span>
+  </button>
+</ng-template>
+
+<ng-template #footerConfirmDeleteGroup>
+  <button class="button-danger">
+    <span>Elimina</span>
+  </button>
+</ng-template>

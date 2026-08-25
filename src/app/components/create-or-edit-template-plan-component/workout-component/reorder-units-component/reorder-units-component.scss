@@ -1,0 +1,177 @@
+@use "@angular/material" as mat;
+
+.floating-text {
+  position: absolute;
+  top: 60px;
+  left: 16px;
+  filter: drop-shadow(0 0 20px rgb(0 0 0));
+}
+
+.reorder-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.scrollable-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.units-data {
+  display: block;
+  position: relative;
+  width: 100%;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+// NB: niente touch-action:none sulla riga — bloccherebbe lo scroll touch del
+// contenitore quando lo swipe parte da una card. Il drag avviene SOLO dalla
+// maniglia (che ha touch-action:none), come nel riordino esercizi classico.
+.card-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.exercise-container,
+.group-card-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.exercise-container {
+  border-radius: 24px;
+  background-color: #191919;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.exercise-container.compact-mode {
+  .titolo-esercizio-container {
+    margin-bottom: 8px;
+  }
+
+  .input-row {
+    padding-bottom: 8px;
+  }
+
+  .circle-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  h3 {
+    font-size: 14px;
+  }
+}
+
+.input-row {
+  width: 100%;
+  padding-bottom: 16px;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+app-gym-exercise-selector {
+  width: 100%;
+}
+
+.titolo-esercizio-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.icona-numero-esercizio-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.circle-icon {
+  border: 1px solid #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+
+  img {
+    width: 24px;
+  }
+}
+
+.drag-handle-container {
+  width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: grab;
+  touch-action: none;
+  height: 80px;
+  will-change: width;
+  backface-visibility: hidden;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  img {
+    width: 24px;
+    height: 24px;
+    opacity: 0.6;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+}
+
+.dragging-shadow {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.floating-static-button-container {
+  bottom: 0;
+}
+
+:host {
+  @include mat.form-field-overrides(
+    (
+      outlined-outline-color: rgba(255, 255, 255, 0.3),
+      outlined-input-text-color: "#fff",
+      outlined-hover-outline-color: rgba(255, 255, 255, 0.3),
+      outlined-focus-outline-color: "#fff",
+      outlined-focus-label-text-color: "#fff",
+    )
+  );
+}

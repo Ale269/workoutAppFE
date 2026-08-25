@@ -1,0 +1,110 @@
+$superset-color: #ffb300;
+$circuit-color: #3b82f6;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.group-compact-container {
+  border-radius: 24px;
+  background-color: #1a1a1a;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+
+  --group-color: #{$superset-color};
+
+  &.circuit {
+    --group-color: #{$circuit-color};
+  }
+}
+
+.group-compact-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #212121;
+}
+
+// Stessa taglia dei testi generici (.text-white: 14px / 700)
+.group-compact-title {
+  color: var(--group-color);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: "poppins";
+  margin: 0;
+}
+
+.group-compact-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #212121;
+}
+
+.group-compact-values {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.value-chip {
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  padding: 6px 14px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "poppins";
+  background-color: #212121;
+}
+
+.group-compact-icons {
+  display: flex;
+  align-items: center;
+}
+
+.icon-container-accumulator {
+  width: 18px;
+  overflow-x: visible;
+}
+
+.circle-icon {
+  border: 1px solid #fff;
+  width: 26px;
+  height: 26px;
+  background-color: #000;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 16px;
+  }
+}
+
+.group-compact-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+  overflow: hidden;
+}
+
+.exercise-name-chip {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "poppins";
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+  flex-shrink: 1;
+  min-width: 0;
+}

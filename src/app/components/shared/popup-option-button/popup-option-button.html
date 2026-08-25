@@ -1,0 +1,35 @@
+@if (isOpen) {
+<div
+  class="popup-option-overlay"
+  (click)="onOverlayClick()"
+  (touchstart)="onOverlayClick()"
+></div>
+}
+
+<div class="popup-anchor">
+  <div class="small-inline-button" (click)="openPopup()">
+    <button>{{ label }}</button>
+    <mat-icon [svgIcon]="iconName"></mat-icon>
+  </div>
+
+  @if (isOpen) {
+  <div #popupPanel class="popup-panel">
+    @for (option of options; track option.optionId) {
+    <div
+      class="popup-option-container"
+      [style.color]="option.color || '#fff'"
+      (click)="onOptionClick(option.optionId)"
+    >
+      <button>
+        <span class="option-content">
+          @if (option.iconPath) {
+          <img [src]="option.iconPath" class="option-icon" alt="" />
+          }
+          <span class="option-label">{{ option.description }}</span>
+        </span>
+      </button>
+    </div>
+    }
+  </div>
+  }
+</div>

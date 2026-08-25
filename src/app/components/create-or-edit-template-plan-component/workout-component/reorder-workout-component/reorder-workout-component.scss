@@ -20,6 +20,13 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  // Fondamentale: .workout-data viene posizionato "position: absolute" da
+  // GSAP. Senza un antenato posizionato qui, l'elemento si ancora al
+  // .reorder-wrapper (position: fixed) e NON conta più nella scrollHeight
+  // di questo contenitore, che risulta privo di overflow e non scrollabile
+  // pur sembrando visivamente a posto.
+  position: relative;
   scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
@@ -32,13 +39,15 @@
   box-sizing: border-box;
 }
 
+// NB: niente touch-action:none sulla riga — bloccherebbe lo scroll touch del
+// contenitore quando lo swipe parte da una card. Il drag avviene SOLO dalla
+// maniglia (che ha touch-action:none).
 .card-row {
   position: relative;
   display: flex;
   align-items: center;
   gap: 0;
   margin-bottom: 16px;
-  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -53,6 +62,7 @@
   flex-shrink: 0;
   cursor: grab;
   height: 80px;
+  touch-action: none;
 
   &:active {
     cursor: grabbing;

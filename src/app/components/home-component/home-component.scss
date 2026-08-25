@@ -12,8 +12,13 @@
   margin-bottom: 32px;
 }
 
+// Fixed (non relative): il gradiente resta ancorato al viewport e NON viene
+// trascinato dall'animazione rubber-band dello scroll (che muove solo il
+// contenuto del page-scroller)
 .gradient-effect {
-  position: relative;
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .ellips-1 {

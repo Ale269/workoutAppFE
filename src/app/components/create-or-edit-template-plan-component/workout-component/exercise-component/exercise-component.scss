@@ -2,7 +2,10 @@
 
 .exercise-container {
   border-radius: 16px;
-  background-color: rgba(255, 255, 255, 0.1);
+  // Grigio "cablato" opaco (equivalente di rgba(255,255,255,0.1) su #000,
+  // come le card in homepage): niente trasparenza ora che dietro ci sono
+  // il colore del gruppo e il gradiente di pagina
+  background-color: #1a1a1a;
   position: relative;
   z-index: 1;
   transition: all 0.3s ease;

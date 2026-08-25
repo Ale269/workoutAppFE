@@ -29,7 +29,8 @@ export interface TemplateStorageData {
 
 const WORKOUT_KEY_PREFIX = "workout_in_progress_";
 const TEMPLATE_KEY_PREFIX = "template_in_progress_";
-const CURRENT_VERSION = 1;
+// v2: introdotti listaGruppi/idGruppo (superset e circuiti) nel formDTO
+const CURRENT_VERSION = 2;
 const MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 ore
 
 @Injectable({ providedIn: "root" })

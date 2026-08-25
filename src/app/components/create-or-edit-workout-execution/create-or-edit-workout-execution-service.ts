@@ -4,6 +4,7 @@ import { WorkoutService } from "../../core/services/workout.service";
 import { AllenamentoDTO as AllenamentoFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/allenamentodto";
 import { EsercizioDTO as EsercizioFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/eserciziodto";
 import { SerieDTO as SerieFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/seriedto";
+import { GruppoDTO as GruppoFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/gruppodto";
 import {
   GetDatiTemplateNuovoAllenamentoRequestModel,
   GetDatiTemplateNuovoAllenamentoResponseModel,
@@ -117,10 +118,24 @@ export class CreateOrEditWorkoutExecutionService {
         dataEsecuzione: allenamento.dataEsecuzione,
         idTemplate: allenamento.id,
         listaEsercizi: [],
+        listaGruppi: [],
         nomeAllenamento: allenamento.nomeAllenamento,
         description: allenamento.description,
         ordinamento: allenamento.ordinamento,
       };
+
+      // Gruppi (superset/circuiti): id server -> idTemplate, progressivo invariato
+      (allenamento.listaGruppi || []).forEach((gruppo) => {
+        const gruppoFormDTO: GruppoFormDTO = {
+          id: 0,
+          idTemplate: gruppo.id,
+          tipoGruppo: gruppo.tipoGruppo,
+          tempoRecupero: gruppo.tempoRecupero,
+          numeroGiri: gruppo.numeroGiri,
+          progressivo: gruppo.progressivo,
+        };
+        allenamentoFormDTO.listaGruppi!.push(gruppoFormDTO);
+      });
 
       allenamento.listaEsercizi.forEach((esercizio) => {
         const esercizioFormDTO: EsercizioFormDTO = {
@@ -131,6 +146,7 @@ export class CreateOrEditWorkoutExecutionService {
           idMetodologia: esercizio.idMetodologia,
           idTipoEsercizio: esercizio.idTipoEsercizio,
           ordinamento: esercizio.ordinamento,
+          idGruppo: esercizio.idGruppo ?? null,
           listaSerie: [],
         };
         allenamentoFormDTO.listaEsercizi.push(esercizioFormDTO);
