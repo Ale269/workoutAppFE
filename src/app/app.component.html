@@ -49,4 +49,9 @@
   @for (overlay of focusOverlayService.activeOverlays(); track overlay.id) {
   <app-focus-overlay-wrapper [instance]="overlay"></app-focus-overlay-wrapper>
   }
+
+  <!-- Confirm Popup -->
+  @if (confirmPopupService.active(); as confirmConfig) {
+  <app-confirm-popup [config]="confirmConfig"></app-confirm-popup>
+  }
 </div>

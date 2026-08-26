@@ -1,12 +1,12 @@
 @if(this.loadingProgression === LoadingProgressionEnum.complete){
+<div
+  class="gradient-effect"
+  [style.transform]="'translateX(' + gradientShiftX + 'px)'"
+>
+  <div class="ellips-1"></div>
+  <div class="ellips-2"></div>
+</div>
 <div class="page-scroller">
-  <div
-    class="gradient-effect"
-    [style.transform]="'translateX(' + gradientShiftX + 'px)'"
-  >
-    <div class="ellips-1"></div>
-    <div class="ellips-2"></div>
-  </div>
   <div class="content">
     <!-- Vista Lista Allenamenti -->
     @if(currentView === 'list') {
@@ -160,7 +160,7 @@
                   <div class="delete-action">
                     <div
                       class="button-confirm-icon-container-danger"
-                      (click)="openDeleteWorkout(allenamentoForm.form.controls['identifier'].value)"
+                      (click)="openDeleteWorkout(allenamentoForm.form.controls['identifier'].value, $event)"
                     >
                       <mat-icon svgIcon="google-delete"></mat-icon>
                     </div>
@@ -209,7 +209,7 @@
 </div>
 
 @if(currentView === 'list') {
-<div class="floating-double-buttons-container">
+<div class="floating-double-buttons-container" #deleteSchedaAnchor>
   <app-multi-option-button
     [leftButtonLabel]="''"
     [leftGroups]="leftButtonOptionsGroup"
@@ -277,112 +277,10 @@ this.loadingProgression === LoadingProgressionEnum.loading) {
   </button>
 </ng-template>
 
-<ng-template #headerGoBack>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
-</ng-template>
-
-<!-- Template per il body -->
-<ng-template #bodyGoBack>
-  <h3 class="text-white">Sei sicuro di voler annullare la modifica?</h3>
-  <h3 class="text-white">I dati non salvati andranno persi.</h3>
-</ng-template>
-
-<!-- Template per il bottone di chiusura -->
-<ng-template #footerCloseGoBack>
-  <button class="button-cancel">
-    <span>Annulla</span>
-    <!-- <div class="button-confirm-icon-container-cancel">
-      <img src="assets/recollect/svg/google-close-icon.svg" />
-    </div> -->
-  </button>
-</ng-template>
-
-<!-- Template per il bottone di conferma -->
-<ng-template #footerConfirmGoBack>
-  <button class="button-danger">
-    <span>Conferma</span>
-    <!-- <div class="button-confirm-icon-container-danger">
-      <img src="assets/recollect/svg/google-delete.svg" />
-    </div> -->
-  </button>
-</ng-template>
-
-<ng-template #headerDeleteTemplate>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
-</ng-template>
-
-<!-- Template per il body -->
-<ng-template #bodyDeleteTemplate>
-  <h3 class="text-white">
-    Sei sicuro di voler eliminare questo template scheda?
-  </h3>
-  <h3 class="text-white">Questa azione non può essere annullata.</h3>
-</ng-template>
-
-<!-- Template per il bottone di chiusura -->
-<ng-template #footerCloseDeleteTemplate>
-  <button class="button-cancel">
-    <span>Annulla</span>
-    <!-- <div class="button-confirm-icon-container-cancel">
-      <img src="assets/recollect/svg/google-close-icon.svg" />
-    </div> -->
-  </button>
-</ng-template>
-
-<!-- Template per il bottone di conferma -->
-<ng-template #footerConfirmDeleteTemplate>
-  <button class="button-danger">
-    <span>Elimina</span>
-    <!-- <div class="button-confirm-icon-container-danger">
-      <img src="assets/recollect/svg/google-delete.svg" />
-    </div> -->
-  </button>
-</ng-template>
-
 <ng-template #headerAddWorkout>
   <img
     src="assets/recollect/images/icona-stop-modifica.png"
     alt="Aggiungi Allenamento"
     class="add-workout-icon"
   />
-</ng-template>
-
-<!-- Templates per la modale di conferma eliminazione allenamento -->
-<ng-template #headerDeleteWorkoutTemplate>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
-</ng-template>
-
-<ng-template #bodyDeleteWorkoutTemplate>
-  <h3 class="text-white">Sei sicuro di voler eliminare questo allenamento?</h3>
-  <h3 class="text-white">Questa azione non può essere annullata.</h3>
-</ng-template>
-
-<ng-template #footerCloseDeleteWorkoutTemplate>
-  <button class="button-cancel">
-    <span>Annulla</span>
-    <!-- <div class="button-confirm-icon-container-cancel">
-      <img src="assets/recollect/svg/google-close-icon.svg" />
-    </div> -->
-  </button>
-</ng-template>
-
-<ng-template #footerConfirmDeleteWorkoutTemplate>
-  <button class="button-danger">
-    <span>Elimina</span>
-    <!-- <div class="button-confirm-icon-container-danger">
-      <img src="assets/recollect/svg/google-delete.svg" />
-    </div> -->
-  </button>
 </ng-template>

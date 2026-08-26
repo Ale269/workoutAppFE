@@ -32,6 +32,8 @@ import { FocusOverlayWrapperComponent } from "./components/shared/focus-overlay/
 import { FocusOverlayService } from "./components/shared/focus-overlay/focus-overlay.service";
 import { BottomMenuComponent } from "./components/shared/bottom-menu/bottom-menu";
 import { BottomMenuService } from "./core/services/bottom-menu.service";
+import { ConfirmPopup } from "./components/shared/confirm-popup/confirm-popup";
+import { ConfirmPopupService } from "./core/services/confirm-popup.service";
 
 @Component({
   selector: "app-root",
@@ -49,6 +51,7 @@ import { BottomMenuService } from "./core/services/bottom-menu.service";
     BottomSheetWrapperComponent,
     FocusOverlayWrapperComponent,
     BottomMenuComponent,
+    ConfirmPopup,
   ],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -59,6 +62,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   public spinnerService = inject(SpinnerService);
   public focusOverlayService = inject(FocusOverlayService);
   public bottomSheetService = inject(BottomSheetService);
+  public confirmPopupService = inject(ConfirmPopupService);
   private translate = inject(TranslateService);
   private animationService = inject(AnimationService);
   public bottomMenuService = inject(BottomMenuService);
@@ -97,9 +101,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.bottomSheetService.activeBottomSheets().length > 0;
       const hasActiveFocusOverlay =
         this.focusOverlayService.activeOverlays().length > 0;
+      const hasActiveConfirmPopup = this.confirmPopupService.active() !== null;
 
       this.toggleBodyScroll(
-        hasActiveModal || hasActiveBottomSheet || hasActiveFocusOverlay
+        hasActiveModal ||
+          hasActiveBottomSheet ||
+          hasActiveFocusOverlay ||
+          hasActiveConfirmPopup
       );
     });
   }

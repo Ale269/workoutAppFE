@@ -1,0 +1,88 @@
+:host {
+  display: contents;
+}
+
+.confirm-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: transparent;
+}
+
+// Stessa ricetta glass + bordo a gradiente di app-multi-option-button
+// (.transformation-button.transformed + il suo ::before mascherato)
+.confirm-popup-panel {
+  position: fixed;
+  z-index: 1000;
+  min-width: 240px;
+  max-width: min(320px, calc(100vw - 32px));
+  padding: 0 16px;
+  border-radius: 24px;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  visibility: hidden; // gsap autoAlpha la mostra animando
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    padding: 1px;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(255, 255, 255, 0.4) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+.confirm-popup-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: "poppins";
+  margin: 0 0 8px;
+  padding-top: 24px;
+}
+
+.confirm-popup-message {
+  color: #fff;
+  opacity: 0.7;
+  font-size: 14px;
+  font-family: "poppins";
+  margin: 0 0 24px;
+}
+
+.confirm-popup-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.confirm-popup-action {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:active {
+    opacity: 0.6;
+  }
+}
+
+.confirm-popup-cancel {
+  color: #fff;
+}

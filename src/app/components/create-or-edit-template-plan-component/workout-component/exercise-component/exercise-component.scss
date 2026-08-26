@@ -192,10 +192,15 @@ mat-form-field {
   text-align: center;
 }
 
-.history-loading,
-.history-no-data {
+.history-loading {
   text-align: center;
   padding: 24px 0;
+  color: #808080;
+}
+
+.history-no-data {
+  text-align: left;
+  padding: 16px 0 24px;
   color: #808080;
 }
 
@@ -306,55 +311,132 @@ mat-form-field {
   min-width: 100%;
   scroll-snap-align: start;
   box-sizing: border-box;
-  border: 1px solid #2a2a2a;
   border-radius: 10px;
   overflow: hidden;
 }
 
-.history-session-header {
+.history-session-date {
+  padding: 16px;
+  text-align: left;
+}
+
+// =========================================================================
+// Popup cronologia "Ultimi N allenamenti" — stessa ricetta glass + bordo a
+// gradiente di app-confirm-popup / app-popup-option-button, stessa logica
+// di posizionamento (vedi popup-positioning.ts). Nessuna icona, nessun
+// pulsante: solo visualizzazione.
+// =========================================================================
+.history-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: transparent;
+}
+
+.history-popup-panel {
+  position: fixed;
+  z-index: 1000;
+  min-width: 260px;
+  max-width: min(340px, calc(100vw - 32px));
+  padding: 0 16px;
+  border-radius: 24px;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  visibility: hidden; // gsap autoAlpha la mostra animando
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    padding: 1px;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(255, 255, 255, 0.4) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+.history-popup-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: "poppins";
+  padding: 24px 0 16px;
+  // Riga di separazione, stessa ricetta di .confirm-popup-actions
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+// Card grigie stile .exercise-data-serie-container di
+// app-view-data-executed-workout
+.history-serie-list {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 16px;
-  background-color: #111;
-  border-bottom: 1px solid #2a2a2a;
-}
-
-.session-index {
-  color: #808080;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.history-session-slide .history-series-list {
-  padding: 8px;
+  flex-direction: column;
   gap: 8px;
+  padding-bottom: 16px;
 }
 
-.history-session-slide .history-serie-item {
-  border-radius: 6px;
+.history-serie-card {
+  display: flex;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.1);
+  position: relative;
+  padding: 16px;
+  z-index: 1;
 }
 
-// Dot indicators
-.session-dots {
+.history-serie-numerator-container {
+  width: 40%;
+}
+
+.history-serie-data-container {
+  display: flex;
+  width: 60%;
+  gap: 16px;
+}
+
+.history-serie-ripetizioni-container,
+.history-serie-carico-container {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  width: 50%;
+}
+
+// Indicatore slide attiva stile .visualizer-allenamento-container
+// (variante orizzontale, come in prossimo-allenamento sulla home)
+.history-session-indicator-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 8px;
-  padding-top: 14px;
-}
-
-.session-dot {
-  width: 8px;
+  align-items: flex-end;
+  gap: 4px;
+  // Height cablata: senza, il container si ridimensiona durante la
+  // transizione dell'altezza delle barre (2px -> 8px) e il pannello del
+  // popup si ingrandisce/rimpicciolisce insieme all'animazione.
   height: 8px;
-  border-radius: 50%;
-  background-color: #2a2a2a;
-  border: 1px solid #444;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  padding: 16px 0 24px;
 
-  &.active {
-    background-color: #00ffe1;
-    border-color: #00ffe1;
-    transform: scale(1.25);
+  div {
+    flex: 1;
+    max-width: 40px;
+    height: 2px;
+    background-color: #fff;
+    border-radius: 16px;
+    transition: height 0.2s ease;
+  }
+
+  .current-session-indicator {
+    height: 8px;
+    max-width: 40px;
   }
 }

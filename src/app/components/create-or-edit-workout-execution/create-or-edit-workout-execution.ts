@@ -2,7 +2,6 @@ import {
   Component,
   OnDestroy,
   OnInit,
-  TemplateRef,
   ViewChild,
   ChangeDetectorRef,
   ViewChildren,
@@ -33,7 +32,7 @@ import { MatNativeDateModule } from "@angular/material/core";
 import { MatInput } from "@angular/material/input";
 import { GetDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
 import { GetDatiTemplateNuovoAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-template-nuovo-allenamento";
-import { ModalService } from "src/app/core/services/modal.service";
+import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
 import { LoadingProgression } from "src/app/models/enums/loading-progression";
 import { DeleteDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
 import { AuthService } from "../../core/services/auth.service";
@@ -78,19 +77,8 @@ import { UserConfigService } from "src/app/core/services/user-config.service";
   styleUrl: "./create-or-edit-workout-execution.scss",
 })
 export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
-  @ViewChild("headerGoBack") headerGoBack!: TemplateRef<any>;
-  @ViewChild("bodyGoBack") bodyGoBack!: TemplateRef<any>;
-  @ViewChild("footerCloseGoBack")
-  footerCloseGoBack!: TemplateRef<any>;
-  @ViewChild("footerConfirmGoBack")
-  footerConfirmGoBack!: TemplateRef<any>;
-
-  @ViewChild("headerDeleteTemplate") headerDeleteTemplate!: TemplateRef<any>;
-  @ViewChild("bodyDeleteTemplate") bodyDeleteTemplate!: TemplateRef<any>;
-  @ViewChild("footerCloseDeleteTemplate")
-  footerCloseDeleteTemplate!: TemplateRef<any>;
-  @ViewChild("footerConfirmDeleteTemplate")
-  footerConfirmDeleteTemplate!: TemplateRef<any>;
+  @ViewChild("deleteAllenamentoAnchor", { read: ElementRef })
+  deleteAllenamentoAnchor!: ElementRef<HTMLElement>;
 
   @ViewChildren("exerciseCard", { read: ElementRef })
   exerciseCardElements!: QueryList<ElementRef>;
@@ -149,7 +137,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     private spinnerService: SpinnerService,
     public createOrEditWorkoutExecutionService: CreateOrEditWorkoutExecutionService,
     private router: Router,
-    private modalService: ModalService,
+    private confirmPopupService: ConfirmPopupService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
     public focusOverlayService: FocusOverlayService,
@@ -993,12 +981,11 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   goBack() {
     try {
       if (this.createOrEditWorkoutExecutionService.AllenamentoForm.form.dirty) {
-        this.modalService.open({
-          warning: true,
-          headerTemplate: this.headerGoBack,
-          bodyTemplate: this.bodyGoBack,
-          footerCloseTemplate: this.footerCloseGoBack,
-          footerConfirmTemplate: this.footerConfirmGoBack,
+        this.confirmPopupService.open({
+          triggerElement: this.getHeaderCloseButtonElement(),
+          title: 'Annullare la modifica?',
+          message: 'I dati non salvati andranno persi.',
+          confirmText: 'Conferma',
           onConfirm: () => {
             this.createOrEditWorkoutExecutionService.AllenamentoForm.form.markAsPristine();
             this.workoutStorageService.clear();
@@ -1017,15 +1004,30 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Il bottone "X" di chiusura vive nell'header condiviso (app-menu-component),
+   * fuori da questa pagina: lo recuperiamo così per ancorarci il popup di conferma.
+   */
+  private getHeaderCloseButtonElement(): HTMLElement {
+    // .left-button ha padding:16px (da ".app-menu-container > div"): il suo
+    // rect è più grande dell'icona visibile. Puntiamo a .menu-btn-container
+    // (il cerchio 48x48 dell'icona) per allineare il popup esattamente su
+    // di essa, non sull'area di tap più ampia che la contiene.
+    return (
+      (document.querySelector('.left-button .menu-btn-container') as HTMLElement) ||
+      (document.querySelector('.left-button') as HTMLElement) ||
+      this.elementRef.nativeElement
+    );
+  }
+
   openDeleteAllenamento() {
     try {
       this.hapticService.trigger('error');
-      this.modalService.open({
-        warning: true,
-        headerTemplate: this.headerDeleteTemplate,
-        bodyTemplate: this.bodyDeleteTemplate,
-        footerCloseTemplate: this.footerCloseDeleteTemplate,
-        footerConfirmTemplate: this.footerConfirmDeleteTemplate,
+      this.confirmPopupService.open({
+        triggerElement: this.deleteAllenamentoAnchor.nativeElement,
+        title: 'Eliminare questo allenamento svolto?',
+        message: 'Questa azione non può essere annullata.',
+        confirmText: 'Elimina',
         onConfirm: () => this.eliminaAllenamento(),
       });
     } catch (error) {

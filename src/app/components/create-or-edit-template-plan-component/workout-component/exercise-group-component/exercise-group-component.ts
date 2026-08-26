@@ -6,7 +6,6 @@ import {
   Input,
   NgZone,
   Output,
-  TemplateRef,
   ViewChild,
 } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -22,7 +21,7 @@ import { ExerciseComponent } from "../exercise-component/exercise-component";
 import { GroupCompactCard } from "../group-compact-card/group-compact-card";
 import { ReorderExerciseComponent } from "../reorder-exercise-component/reorder-exercise-component";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
-import { ModalService } from "src/app/core/services/modal.service";
+import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
 import { HapticService } from "src/app/core/services/haptic.service";
 import { HapticSwitchDirective } from "src/app/components/shared/directives/haptic-switch.directive";
 import { FocusOverlayService } from "src/app/components/shared/focus-overlay/focus-overlay.service";
@@ -57,13 +56,6 @@ export class ExerciseGroupComponent {
   @Output() onDeleteExercise = new EventEmitter<number>();
   @Output() addExercise = new EventEmitter<number>();
 
-  @ViewChild("headerDeleteGroup") headerDeleteGroup!: TemplateRef<any>;
-  @ViewChild("bodyDeleteGroup") bodyDeleteGroup!: TemplateRef<any>;
-  @ViewChild("footerCloseDeleteGroup")
-  footerCloseDeleteGroup!: TemplateRef<any>;
-  @ViewChild("footerConfirmDeleteGroup")
-  footerConfirmDeleteGroup!: TemplateRef<any>;
-
   @ViewChild("groupExercisesContainer", { read: ElementRef })
   groupExercisesContainer!: ElementRef;
 
@@ -72,7 +64,7 @@ export class ExerciseGroupComponent {
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
-    private modalService: ModalService,
+    private confirmPopupService: ConfirmPopupService,
     private hapticService: HapticService,
     private focusOverlayService: FocusOverlayService,
     private cdr: ChangeDetectorRef,
@@ -145,15 +137,19 @@ export class ExerciseGroupComponent {
     }
   }
 
-  openDeleteGroupModal(): void {
+  openDeleteGroupModal(event: Event): void {
     try {
       this.hapticService.trigger("error");
-      this.modalService.open({
-        warning: true,
-        headerTemplate: this.headerDeleteGroup,
-        bodyTemplate: this.bodyDeleteGroup,
-        footerCloseTemplate: this.footerCloseDeleteGroup,
-        footerConfirmTemplate: this.footerConfirmDeleteGroup,
+      const trigger = ((event.currentTarget as HTMLElement).closest(
+        ".delete-icon-element-container",
+      ) || event.currentTarget) as HTMLElement;
+      this.confirmPopupService.open({
+        triggerElement: trigger,
+        title: this.isCircuit
+          ? "Eliminare questo circuito?"
+          : "Eliminare questa superset?",
+        message: "Gli esercizi contenuti torneranno esercizi singoli.",
+        confirmText: "Elimina",
         onConfirm: () => this.deleteGroup(),
       });
     } catch (error) {

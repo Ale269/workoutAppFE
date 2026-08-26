@@ -18,6 +18,7 @@ import { GymExerciseSelectorComponent } from "src/app/components/shared/app-gym-
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SetComponent } from "./set-component/set-component";
 import { ModalService } from "src/app/core/services/modal.service";
+import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { AllenamentoForm } from "../../workout-form";
@@ -40,6 +41,8 @@ import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { HapticService } from "src/app/core/services/haptic.service";
 import { HapticSwitchDirective } from "src/app/components/shared/directives/haptic-switch.directive";
 import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
+import gsap from "gsap";
+import { positionPopupPanel } from "src/app/components/shared/popup-positioning";
 
 @Component({
   selector: "app-exercise-component",
@@ -66,23 +69,13 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isCompactMode: boolean = false;
   @Input() historyTrainingId?: number;
 
-  @ViewChild("headerDeleteWorkout") headerDeleteWorkout!: TemplateRef<any>;
-  @ViewChild("bodyDeleteWorkout") bodyDeleteWorkout!: TemplateRef<any>;
-  @ViewChild("footerCloseDeleteWorkout")
-  footerCloseDeleteWorkout!: TemplateRef<any>;
-  @ViewChild("footerConfirmDeleteWorkout")
-  footerConfirmDeleteWorkout!: TemplateRef<any>;
-
   @ViewChild("headerHistoryTemplate") headerHistoryTemplate!: TemplateRef<any>;
   @ViewChild("bodyHistoryTemplate") bodyHistoryTemplate!: TemplateRef<any>;
   @ViewChild("footerCloseHistoryTemplate")
   footerCloseHistoryTemplate!: TemplateRef<any>;
 
-  @ViewChild("headerLastNHistoryTemplate") headerLastNHistoryTemplate!: TemplateRef<any>;
-  @ViewChild("bodyLastNHistoryTemplate") bodyLastNHistoryTemplate!: TemplateRef<any>;
-  @ViewChild("footerCloseLastNHistoryTemplate")
-  footerCloseLastNHistoryTemplate!: TemplateRef<any>;
   @ViewChild("sessionCarousel") sessionCarouselRef!: ElementRef<HTMLElement>;
+  @ViewChild("historyPopupPanel") historyPopupPanelRef?: ElementRef<HTMLElement>;
 
   @Output() onDeleteExercise = new EventEmitter<number>();
 
@@ -98,6 +91,13 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   public readonly lastNLimit: number = 3;
   public activeSessionIndex: number = 0;
 
+  // Popup cronologia "Ultimi N allenamenti": stesso stile/logica di
+  // posizionamento di app-confirm-popup / app-popup-option-button
+  public isHistoryPopupOpen: boolean = false;
+  private isHistoryPopupAnimating: boolean = false;
+  private historyPopupTriggerElement: HTMLElement | null = null;
+  public historyPopupTransformOrigin: string = "bottom right";
+
   public idMetodologiaControl!: FormControl<number | null>;
   public idTipoEsercizioControl!: FormControl<number | null>;
   public ordinamentoControl!: FormControl<number | null>;
@@ -109,6 +109,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private errorHandlerService: ErrorHandlerService,
     private modalService: ModalService,
+    private confirmPopupService: ConfirmPopupService,
     private cdr: ChangeDetectorRef,
     private bottomSheetService: BottomSheetService,
     private exerciseService: ExerciseService,
@@ -293,17 +294,18 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  openDeleteModal() {
+  openDeleteModal(event: Event) {
     try {
       this.hapticService.trigger('error');
-      this.modalService.open({
-        warning: true,
-        headerTemplate: this.headerDeleteWorkout,
-        bodyTemplate: this.bodyDeleteWorkout,
-        footerCloseTemplate: this.footerCloseDeleteWorkout,
-        footerConfirmTemplate: this.footerConfirmDeleteWorkout,
+      const trigger = ((event.currentTarget as HTMLElement).closest(
+        '.delete-icon-element-container',
+      ) || event.currentTarget) as HTMLElement;
+      this.confirmPopupService.open({
+        triggerElement: trigger,
+        title: 'Eliminare questo esercizio?',
+        message: 'Questa azione non può essere annullata.',
+        confirmText: 'Elimina',
         onConfirm: () => this.deleteExercise(),
-        onClose: () => console.log("Modal closed"),
       });
     } catch (error) {
       this.errorHandlerService.logError(
@@ -516,7 +518,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  openLastNTrainingHistory() {
+  openLastNTrainingHistory(event: Event) {
     try {
       const exerciseId = this.idTipoEsercizioControl.value;
       const user = this.authService.getCurrentUser();
@@ -525,19 +527,19 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         return;
       }
 
+      this.hapticService.trigger('light');
+      this.historyPopupTriggerElement = ((event.currentTarget as HTMLElement).closest(
+        '.delete-icon-element-container',
+      ) || event.currentTarget) as HTMLElement;
+
       // Reset dello stato
       this.lastNTrainingsData = [];
       this.lastNTrainingsLoading = true;
       this.lastNTrainingsError = false;
       this.activeSessionIndex = 0;
 
-      // Apro il modal subito per mostrare lo stato di loading
-      this.modalService.open({
-        warning: false,
-        headerTemplate: this.headerLastNHistoryTemplate,
-        bodyTemplate: this.bodyLastNHistoryTemplate,
-        footerCloseTemplate: this.footerCloseLastNHistoryTemplate,
-      });
+      // Apro il popup subito per mostrare lo stato di loading
+      this.openHistoryPopup();
 
       this.workoutService
         .getLastNTrainingsForExercise(
@@ -555,11 +557,14 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
               this.lastNTrainingsError = true;
             }
             this.cdr.detectChanges();
+            // Il contenuto cambia altezza (loading -> dati/errore): riposiziona
+            this.repositionHistoryPopup();
           },
           error: (error) => {
             this.lastNTrainingsLoading = false;
             this.lastNTrainingsError = true;
             this.cdr.detectChanges();
+            this.repositionHistoryPopup();
             this.errorHandlerService.logError(
               error,
               "ExerciseComponent.openLastNTrainingHistory",
@@ -572,5 +577,85 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         "ExerciseComponent.openLastNTrainingHistory",
       );
     }
+  }
+
+  private openHistoryPopup(): void {
+    if (this.isHistoryPopupOpen || this.isHistoryPopupAnimating) return;
+    this.isHistoryPopupOpen = true;
+    this.isHistoryPopupAnimating = true;
+    this.cdr.detectChanges();
+    requestAnimationFrame(() => {
+      this.positionAndAnimateHistoryPopupIn();
+    });
+  }
+
+  private positionAndAnimateHistoryPopupIn(): void {
+    const panel = this.historyPopupPanelRef?.nativeElement;
+    if (!panel || !this.historyPopupTriggerElement) {
+      this.isHistoryPopupAnimating = false;
+      return;
+    }
+
+    const { transformOrigin } = positionPopupPanel(panel, this.historyPopupTriggerElement);
+    this.historyPopupTransformOrigin = transformOrigin;
+
+    gsap.fromTo(
+      panel,
+      {
+        autoAlpha: 0,
+        scale: 0.4,
+        transformOrigin: this.historyPopupTransformOrigin,
+      },
+      {
+        autoAlpha: 1,
+        scale: 1,
+        duration: 0.25,
+        ease: "back.out(1.4)",
+        onComplete: () => {
+          this.isHistoryPopupAnimating = false;
+        },
+      },
+    );
+  }
+
+  /**
+   * Riposiziona senza ri-animare l'ingresso: il contenuto del popup cambia
+   * altezza quando i dati arrivano (stato loading -> dati/errore).
+   */
+  private repositionHistoryPopup(): void {
+    requestAnimationFrame(() => {
+      const panel = this.historyPopupPanelRef?.nativeElement;
+      if (!panel || !this.historyPopupTriggerElement || !this.isHistoryPopupOpen) {
+        return;
+      }
+      const { transformOrigin } = positionPopupPanel(panel, this.historyPopupTriggerElement);
+      this.historyPopupTransformOrigin = transformOrigin;
+    });
+  }
+
+  closeHistoryPopup(): void {
+    if (!this.isHistoryPopupOpen || this.isHistoryPopupAnimating) return;
+
+    this.isHistoryPopupAnimating = true;
+    const panel = this.historyPopupPanelRef?.nativeElement;
+
+    if (!panel) {
+      this.isHistoryPopupOpen = false;
+      this.isHistoryPopupAnimating = false;
+      return;
+    }
+
+    gsap.to(panel, {
+      autoAlpha: 0,
+      scale: 0.4,
+      transformOrigin: this.historyPopupTransformOrigin,
+      duration: 0.2,
+      ease: "back.in(1.4)",
+      onComplete: () => {
+        this.isHistoryPopupOpen = false;
+        this.isHistoryPopupAnimating = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 }

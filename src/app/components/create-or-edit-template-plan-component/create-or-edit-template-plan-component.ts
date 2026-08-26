@@ -20,6 +20,7 @@ import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatLabel, MatFormField, MatInput } from "@angular/material/input";
 import { ModalService } from "src/app/core/services/modal.service";
+import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -88,28 +89,8 @@ export class CreateOrEditTemplatePlanComponent
   @ViewChild("footerConfirmAddWorkout")
   footerConfirmAddWorkout!: TemplateRef<any>;
 
-  @ViewChild("headerGoBack") headerGoBack!: TemplateRef<any>;
-  @ViewChild("bodyGoBack") bodyGoBack!: TemplateRef<any>;
-  @ViewChild("footerCloseGoBack")
-  footerCloseGoBack!: TemplateRef<any>;
-  @ViewChild("footerConfirmGoBack")
-  footerConfirmGoBack!: TemplateRef<any>;
-
-  @ViewChild("headerDeleteTemplate") headerDeleteTemplate!: TemplateRef<any>;
-  @ViewChild("bodyDeleteTemplate") bodyDeleteTemplate!: TemplateRef<any>;
-  @ViewChild("footerCloseDeleteTemplate")
-  footerCloseDeleteTemplate!: TemplateRef<any>;
-  @ViewChild("footerConfirmDeleteTemplate")
-  footerConfirmDeleteTemplate!: TemplateRef<any>;
-
-  @ViewChild("headerDeleteWorkoutTemplate")
-  headerDeleteWorkoutTemplate!: TemplateRef<any>;
-  @ViewChild("bodyDeleteWorkoutTemplate")
-  bodyDeleteWorkoutTemplate!: TemplateRef<any>;
-  @ViewChild("footerCloseDeleteWorkoutTemplate")
-  footerCloseDeleteWorkoutTemplate!: TemplateRef<any>;
-  @ViewChild("footerConfirmDeleteWorkoutTemplate")
-  footerConfirmDeleteWorkoutTemplate!: TemplateRef<any>;
+  @ViewChild("deleteSchedaAnchor", { read: ElementRef })
+  deleteSchedaAnchor!: ElementRef<HTMLElement>;
 
   @ViewChildren("workoutCard", { read: ElementRef })
   workoutCardElements!: QueryList<ElementRef>;
@@ -164,6 +145,7 @@ export class CreateOrEditTemplatePlanComponent
     private errorHandlerService: ErrorHandlerService,
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
     private modalService: ModalService,
+    private confirmPopupService: ConfirmPopupService,
     private spinnerService: SpinnerService,
     private cdr: ChangeDetectorRef,
     private router: Router,
@@ -672,15 +654,14 @@ export class CreateOrEditTemplatePlanComponent
     return workout.listaEserciziForm.length;
   }
 
-  openDeleteWorkout(identifier: number): void {
+  openDeleteWorkout(identifier: number, event: Event): void {
     try {
       this.hapticService.trigger("error");
-      this.modalService.open({
-        warning: true,
-        headerTemplate: this.headerDeleteWorkoutTemplate,
-        bodyTemplate: this.bodyDeleteWorkoutTemplate,
-        footerCloseTemplate: this.footerCloseDeleteWorkoutTemplate,
-        footerConfirmTemplate: this.footerConfirmDeleteWorkoutTemplate,
+      this.confirmPopupService.open({
+        triggerElement: event.currentTarget as HTMLElement,
+        title: "Eliminare questo allenamento?",
+        message: "Questa azione non può essere annullata.",
+        confirmText: "Elimina",
         onConfirm: () => this.deleteWorkout(identifier),
       });
     } catch (error) {
@@ -869,12 +850,11 @@ export class CreateOrEditTemplatePlanComponent
   goBack() {
     try {
       if (this.createOrEditTemplatePlanService.formScheda.form.dirty) {
-        this.modalService.open({
-          warning: true,
-          headerTemplate: this.headerGoBack,
-          bodyTemplate: this.bodyGoBack,
-          footerCloseTemplate: this.footerCloseGoBack,
-          footerConfirmTemplate: this.footerConfirmGoBack,
+        this.confirmPopupService.open({
+          triggerElement: this.getHeaderCloseButtonElement(),
+          title: "Annullare la modifica?",
+          message: "I dati non salvati andranno persi.",
+          confirmText: "Conferma",
           onConfirm: () => {
             this.createOrEditTemplatePlanService.formScheda.form.markAsPristine();
             this.workoutStorageService.clearTemplate();
@@ -907,15 +887,30 @@ export class CreateOrEditTemplatePlanComponent
     }
   }
 
+  /**
+   * Il bottone "X" di chiusura vive nell'header condiviso (app-menu-component),
+   * fuori da questa pagina: lo recuperiamo così per ancorarci il popup di conferma.
+   */
+  private getHeaderCloseButtonElement(): HTMLElement {
+    // .left-button ha padding:16px (da ".app-menu-container > div"): il suo
+    // rect è più grande dell'icona visibile. Puntiamo a .menu-btn-container
+    // (il cerchio 48x48 dell'icona) per allineare il popup esattamente su
+    // di essa, non sull'area di tap più ampia che la contiene.
+    return (
+      (document.querySelector(".left-button .menu-btn-container") as HTMLElement) ||
+      (document.querySelector(".left-button") as HTMLElement) ||
+      document.body
+    );
+  }
+
   openDeleteScheda() {
     try {
       this.hapticService.trigger("error");
-      this.modalService.open({
-        warning: true,
-        headerTemplate: this.headerDeleteTemplate,
-        bodyTemplate: this.bodyDeleteTemplate,
-        footerCloseTemplate: this.footerCloseDeleteTemplate,
-        footerConfirmTemplate: this.footerConfirmDeleteTemplate,
+      this.confirmPopupService.open({
+        triggerElement: this.deleteSchedaAnchor.nativeElement,
+        title: "Eliminare questo template scheda?",
+        message: "Questa azione non può essere annullata.",
+        confirmText: "Elimina",
         onConfirm: () => this.eliminaScheda(),
       });
     } catch (error) {

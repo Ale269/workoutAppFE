@@ -43,7 +43,7 @@
         </mat-form-field>
       </div>
       <div class="delete-icon-element-container">
-        <div class="close-icon-trigger" (click)="openDeleteGroupModal()"></div>
+        <div class="close-icon-trigger" (click)="openDeleteGroupModal($event)"></div>
         <div class="arrow-widget-container">
           <mat-icon svgIcon="google-close-icon"></mat-icon>
         </div>
@@ -81,34 +81,3 @@
   </div>
 </div>
 }
-
-<!-- Template per il modale di eliminazione gruppo -->
-<ng-template #headerDeleteGroup>
-  <img
-    src="assets/recollect/images/icona-stop-modifica.png"
-    alt="Attenzione"
-    class="warning-icon"
-  />
-</ng-template>
-
-<ng-template #bodyDeleteGroup>
-  <h3 class="text-white">
-    Sei sicuro di voler eliminare {{ isCircuit ? "questo circuito" : "questa
-    superset" }}?
-  </h3>
-  <h3 class="text-white">
-    Gli esercizi contenuti torneranno esercizi singoli.
-  </h3>
-</ng-template>
-
-<ng-template #footerCloseDeleteGroup>
-  <button class="button-cancel">
-    <span>Annulla</span>
-  </button>
-</ng-template>
-
-<ng-template #footerConfirmDeleteGroup>
-  <button class="button-danger">
-    <span>Elimina</span>
-  </button>
-</ng-template>

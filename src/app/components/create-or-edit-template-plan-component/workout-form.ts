@@ -454,8 +454,14 @@ export class AllenamentoForm {
       ] as FormArray;
       listaGruppiFormArray.push(newGruppoForm.form, { emitEvent: false });
 
-      this.form.markAsDirty();
-      this.rebuildUnits();
+      if (!gruppoDTO) {
+        // Un gruppo creato dall'utente (non da DTO in fase di init) parte
+        // già con un esercizio all'interno, invece che vuoto
+        this.addEsercizioToGruppo(newGruppoForm.identifier);
+      } else {
+        this.form.markAsDirty();
+        this.rebuildUnits();
+      }
       return newGruppoForm;
     } catch (error) {
       throw new Error("AllenamentoForm.addGruppoForm: " + error);

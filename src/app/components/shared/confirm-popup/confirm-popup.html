@@ -1,0 +1,24 @@
+<div
+  class="confirm-popup-overlay"
+  (click)="onOverlayClick()"
+  (touchstart)="onOverlayClick()"
+></div>
+
+<div #panel class="confirm-popup-panel">
+  <h3 class="confirm-popup-title">{{ config.title }}</h3>
+  @if (config.message) {
+  <p class="confirm-popup-message">{{ config.message }}</p>
+  }
+  <div class="confirm-popup-actions">
+    <span class="confirm-popup-action confirm-popup-cancel" (click)="onCancelClick()">
+      {{ config.cancelText || "Annulla" }}
+    </span>
+    <span
+      class="confirm-popup-action confirm-popup-confirm"
+      [style.color]="config.confirmColor || '#ff6b6b'"
+      (click)="onConfirmClick()"
+    >
+      {{ config.confirmText || "Conferma" }}
+    </span>
+  </div>
+</div>

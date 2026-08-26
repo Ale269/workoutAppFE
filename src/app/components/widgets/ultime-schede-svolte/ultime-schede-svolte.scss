@@ -15,7 +15,7 @@
 
 .widget-data {
   display: flex;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #1a1a1a; // grigio cablato (era rgba(255,255,255,0.1), ora opaco come le card dell'editor scheda)
   border-radius: 16px;
   padding: 16px;
   justify-content: space-between;

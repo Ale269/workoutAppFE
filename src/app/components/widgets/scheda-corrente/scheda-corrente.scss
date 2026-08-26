@@ -14,7 +14,7 @@
   justify-content: space-between;
   padding: 16px;
   border-radius: 16px 16px 0 0;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #1a1a1a; // grigio cablato (era rgba(255,255,255,0.1), ora opaco come le card dell'editor scheda)
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -22,7 +22,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #1a1a1a; // grigio cablato (era rgba(255,255,255,0.1), ora opaco come le card dell'editor scheda)
   padding: 16px;
   border-radius: 16px;
 }
@@ -31,7 +31,7 @@
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #1a1a1a; // grigio cablato (era rgba(255,255,255,0.1), ora opaco come le card dell'editor scheda)
   padding: 16px;
   justify-content: space-between;
 
@@ -71,7 +71,7 @@
   display: flex;
   justify-content: space-between;
   padding: 16px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #1a1a1a; // grigio cablato (era rgba(255,255,255,0.1), ora opaco come le card dell'editor scheda)
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
   > div {

@@ -5,7 +5,6 @@ import {
   Input,
   input,
   Output,
-  TemplateRef,
   ViewChild,
   OnInit,
   OnDestroy,
@@ -28,7 +27,7 @@ import {
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { ExerciseComponent } from "./exercise-component/exercise-component";
 import { ExerciseGroupComponent } from "./exercise-group-component/exercise-group-component";
-import { ModalService } from "src/app/core/services/modal.service";
+import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { Subject, takeUntil } from "rxjs";
@@ -72,17 +71,12 @@ import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
   styleUrl: "./workout-component.scss",
 })
 export class WorkoutComponent implements OnInit, OnDestroy {
-  @ViewChild("headerDeleteWorkout") headerDeleteWorkout!: TemplateRef<any>;
-  @ViewChild("bodyDeleteWorkout") bodyDeleteWorkout!: TemplateRef<any>;
-  @ViewChild("footerCloseDeleteWorkout")
-  footerCloseDeleteWorkout!: TemplateRef<any>;
-  @ViewChild("footerConfirmDeleteWorkout")
-  footerConfirmDeleteWorkout!: TemplateRef<any>;
-
   @ViewChildren("exerciseCard", { read: ElementRef })
   exerciseCardElements!: QueryList<ElementRef>;
   @ViewChild("exerciseDataContainer", { read: ElementRef })
   exerciseDataContainer!: ElementRef;
+  @ViewChild("deleteWorkoutAnchor", { read: ElementRef })
+  deleteWorkoutAnchor!: ElementRef<HTMLElement>;
 
   @Input() formAllenamento!: AllenamentoForm;
   @Input() formScheda!: SchedaForm;
@@ -118,7 +112,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
-    private modalService: ModalService,
+    private confirmPopupService: ConfirmPopupService,
     private cdr: ChangeDetectorRef,
     public focusOverlayService: FocusOverlayService,
     private iconRegistry: MatIconRegistry,
@@ -384,12 +378,11 @@ export class WorkoutComponent implements OnInit, OnDestroy {
   openDeleteWorkout() {
     try {
       this.hapticService.trigger('error');
-      this.modalService.open({
-        warning: true,
-        headerTemplate: this.headerDeleteWorkout,
-        bodyTemplate: this.bodyDeleteWorkout,
-        footerCloseTemplate: this.footerCloseDeleteWorkout,
-        footerConfirmTemplate: this.footerConfirmDeleteWorkout,
+      this.confirmPopupService.open({
+        triggerElement: this.deleteWorkoutAnchor.nativeElement,
+        title: 'Eliminare questo allenamento?',
+        message: 'Questa azione non può essere annullata.',
+        confirmText: 'Elimina',
         onConfirm: () => this.deleteWorkout(),
       });
     } catch (error) {

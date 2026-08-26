@@ -106,6 +106,21 @@ export class HapticSwitchDirective implements AfterViewInit, OnDestroy {
       this.renderer.setStyle(overlayEl, "-webkit-tap-highlight-color", "transparent");
     }
 
+    // Solo la label riceve il tap reale: il click sull'input non deve mai
+    // avvenire per interazione diretta, solo per "forwarding" dalla label.
+    this.renderer.setStyle(input, "pointer-events", "none");
+
+    // Attivando una <label> il browser genera DUE eventi "click" che
+    // risalgono (bubbling) fino a questo host: quello sulla label stessa
+    // e quello "inoltrato" nativamente al control associato (l'input) —
+    // è il comportamento standard di attivazione label→control, non un
+    // bug. Senza questo stop, ogni (click) sull'host scatterebbe due
+    // volte per un solo tap reale. Blocchiamo solo l'eco sull'input:
+    // il click "vero" della label continua a risalire normalmente.
+    this.renderer.listen(input, "click", (event: Event) => {
+      event.stopPropagation();
+    });
+
     this.renderer.appendChild(host, input);
     this.renderer.appendChild(host, label);
 

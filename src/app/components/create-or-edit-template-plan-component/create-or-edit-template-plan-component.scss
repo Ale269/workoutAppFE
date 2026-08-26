@@ -274,10 +274,21 @@
   bottom: 0;
 }
 
-// Gradiente decorativo in alto: fixed (ancorato al viewport) così il
-// rubber-band dello scroll non lo trascina mostrando il taglio di fine pagina
+// Sibling di .page-scroller (non figlio): sta fuori dal contenitore che
+// scrolla, quindi il rubber-band non lo trascina. NON usare position:fixed
+// qui — iOS 26 Safari ha un bug noto di compositing GPU che con
+// fixed+blur+scroll lascia "tile" non ridisegnate (barre nere che
+// spariscono solo al repaint forzato dallo scroll). position:absolute è
+// sufficiente: si ancora comunque a <html>, che nel reset globale è già
+// position:fixed e quindi non scrolla mai.
 .gradient-effect {
-  position: fixed;
+  position: absolute;
+  // Stessa origine che aveva da figlio di .page-scroller (padding-top:
+  // 116px, padding-left: 16px) — altrimenti le ellissi (posizionate con
+  // bottom negativo) sporgono troppo in alto fuori dallo schermo e si vede
+  // solo una fetta periferica/sbiadita invece del nucleo colorato.
+  top: 116px;
+  left: 16px;
   z-index: -1;
   pointer-events: none;
 }
