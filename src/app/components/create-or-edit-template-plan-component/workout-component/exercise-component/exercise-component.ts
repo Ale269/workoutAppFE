@@ -76,6 +76,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   footerCloseHistoryTemplate!: TemplateRef<any>;
 
   @ViewChild("sessionCarousel") sessionCarouselRef!: ElementRef<HTMLElement>;
+  @ViewChild("sessionTrack") sessionTrackRef?: ElementRef<HTMLElement>;
   @ViewChild("historyPopupPanel") historyPopupPanelRef?: ElementRef<HTMLElement>;
 
   @Output() onDeleteExercise = new EventEmitter<number>();
@@ -95,6 +96,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   // posizionamento di app-confirm-popup / app-popup-option-button
   public isHistoryPopupOpen: boolean = false;
   private isHistoryPopupAnimating: boolean = false;
+  private carouselTouchCleanup?: () => void;
   /** Chiamata in corso: il popup si apre solo quando i dati sono pronti */
   private isHistoryPopupLoading: boolean = false;
   private historyPopupTriggerElement: HTMLElement | null = null;
@@ -186,6 +188,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     this.serieSubscriptions$.complete();
     this.destroy$.next();
     this.destroy$.complete();
+    this.carouselTouchCleanup?.();
   }
 
   /**
@@ -513,14 +516,6 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  onSessionCarouselScroll(event: Event): void {
-    const el = event.target as HTMLElement;
-    if (el.clientWidth > 0) {
-      this.activeSessionIndex = Math.round(el.scrollLeft / el.clientWidth);
-      this.cdr.detectChanges();
-    }
-  }
-
   openLastNTrainingHistory(event: Event) {
     try {
       const exerciseId = this.idTipoEsercizioControl.value;
@@ -615,6 +610,10 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     const { transformOrigin } = positionPopupPanel(panel, this.historyPopupTriggerElement);
     this.historyPopupTransformOrigin = transformOrigin;
 
+    if (this.sessionCarouselRef?.nativeElement) {
+      this.setupCarouselTouchHandling(this.sessionCarouselRef.nativeElement);
+    }
+
     gsap.fromTo(
       panel,
       {
@@ -635,6 +634,153 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         },
       },
     );
+  }
+
+  /**
+   * Swipe orizzontale per cambiare sessione nel popup cronologia.
+   *
+   * Il problema di partenza: il carosello scorreva in ORIZZONTALE e
+   * .history-serie-list, al suo interno, in VERTICALE — due scroller NATIVI
+   * annidati su assi diversi. Su iOS lo scroller nativo più interno tende a
+   * reclamare il gesto a prescindere dalla direzione reale, e touch-action
+   * non basta a governare l'handoff fra i due.
+   *
+   * La soluzione non è arbitrare meglio quel conflitto, ma eliminarlo: il
+   * carosello non è più uno scroller (è una viewport con overflow:hidden) e
+   * il cambio sessione avviene spostando .history-sessions-track con un
+   * transform. Resta così UN SOLO scroller nativo, quello verticale della
+   * lista, che continua a funzionare da solo con momentum e rubber-band —
+   * qui non lo tocchiamo affatto.
+   *
+   * Di conseguenza questo handler si limita a: capire al primo movimento se
+   * il gesto è orizzontale (altrimenti lascia fare al nativo), seguire il
+   * dito col transform del track, e allo stacco agganciare la sessione più
+   * vicina. Tutti i listener restano passive: non serve preventDefault,
+   * perché touch-action:pan-y sulla lista già impedisce che uno swipe
+   * orizzontale produca scroll nativo.
+   */
+  private setupCarouselTouchHandling(carousel: HTMLElement): void {
+    // Idempotente: se venisse richiamato due volte sullo stesso pannello,
+    // non accumula listener duplicati.
+    this.carouselTouchCleanup?.();
+
+    const track = this.sessionTrackRef?.nativeElement;
+    if (!track) return;
+
+    /** px di movimento prima di decidere la direzione del gesto */
+    const AXIS_LOCK_THRESHOLD = 10;
+    /** frazione di slide oltre la quale il rilascio cambia sessione */
+    const SWIPE_COMMIT_RATIO = 0.2;
+    /** quanto "frena" il trascinamento oltre la prima/ultima sessione */
+    const EDGE_RESISTANCE = 0.3;
+
+    let startX = 0;
+    let startY = 0;
+    let lockedAxis: "x" | "y" | null = null;
+    let isTracking = false;
+
+    gsap.set(track, { x: 0 });
+
+    const lastIndex = () => Math.max(0, this.lastNTrainingsData.length - 1);
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+      lockedAxis = null;
+      isTracking = true;
+      gsap.killTweensOf(track);
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (!isTracking || event.touches.length !== 1) return;
+
+      const dx = event.touches[0].clientX - startX;
+      const dy = event.touches[0].clientY - startY;
+
+      if (!lockedAxis) {
+        if (
+          Math.abs(dx) < AXIS_LOCK_THRESHOLD &&
+          Math.abs(dy) < AXIS_LOCK_THRESHOLD
+        ) {
+          return; // troppo presto per capire la direzione
+        }
+        lockedAxis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      }
+
+      // Verticale: non facciamo NULLA e non chiamiamo preventDefault — se ne
+      // occupa lo scroll nativo della lista (touch-action:pan-y). È il motivo
+      // per cui i listener possono restare tutti passive.
+      if (lockedAxis !== "x") return;
+
+      const width = carousel.clientWidth;
+      const min = -lastIndex() * width;
+      let offset = -this.activeSessionIndex * width + dx;
+
+      // Oltre i bordi il track segue il dito smorzato, invece di staccarsi
+      if (offset > 0) {
+        offset *= EDGE_RESISTANCE;
+      } else if (offset < min) {
+        offset = min + (offset - min) * EDGE_RESISTANCE;
+      }
+
+      gsap.set(track, { x: offset });
+    };
+
+    const onTouchEnd = (event: TouchEvent) => {
+      if (!isTracking) return;
+      isTracking = false;
+
+      if (lockedAxis !== "x") {
+        lockedAxis = null;
+        return;
+      }
+      lockedAxis = null;
+
+      const width = carousel.clientWidth;
+      if (width <= 0) return;
+
+      const dx = (event.changedTouches[0]?.clientX ?? startX) - startX;
+      let target = this.activeSessionIndex;
+      if (Math.abs(dx) > width * SWIPE_COMMIT_RATIO) {
+        target += dx < 0 ? 1 : -1;
+      }
+      target = Math.min(Math.max(target, 0), lastIndex());
+
+      gsap.to(track, {
+        x: -target * width,
+        duration: 0.3,
+        ease: "power2.out",
+        force3D: true,
+      });
+
+      if (target !== this.activeSessionIndex) {
+        // Rientro in zona solo qui: è l'unico punto in cui cambia uno stato
+        // legato al template (i pallini indicatore).
+        this.ngZone.run(() => {
+          this.activeSessionIndex = target;
+          this.cdr.detectChanges();
+        });
+      }
+    };
+
+    // Tutti passive: non serve preventDefault (vedi onTouchMove), e restare
+    // passive evita di interferire con lo scroll nativo della lista. Fuori
+    // dalla zona Angular perché touchmove spara a 60-120Hz e ogni evento in
+    // zona innescherebbe un ciclo di change detection sull'intera app.
+    this.ngZone.runOutsideAngular(() => {
+      carousel.addEventListener("touchstart", onTouchStart, { passive: true });
+      carousel.addEventListener("touchmove", onTouchMove, { passive: true });
+      carousel.addEventListener("touchend", onTouchEnd, { passive: true });
+      carousel.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    });
+
+    this.carouselTouchCleanup = () => {
+      carousel.removeEventListener("touchstart", onTouchStart);
+      carousel.removeEventListener("touchmove", onTouchMove);
+      carousel.removeEventListener("touchend", onTouchEnd);
+      carousel.removeEventListener("touchcancel", onTouchEnd);
+    };
   }
 
   closeHistoryPopup(): void {

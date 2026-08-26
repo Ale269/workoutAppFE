@@ -295,29 +295,53 @@ mat-form-field {
 // Stili per il carousel multi-sessione
 .history-sessions-carousel {
   display: flex;
-  overflow-x: scroll;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  gap: 0;
+  // Prende tutto lo spazio verticale residuo nel pannello (titolo e
+  // indicatore sono "flex-shrink:0", quindi fissi); min-height:0 è
+  // necessario perché un flex item possa restringersi SOTTO l'altezza del
+  // proprio contenuto — senza, flex:1 non avrebbe alcun effetto quando il
+  // contenuto è più alto dello spazio disponibile, e lo scroll interno di
+  // .history-serie-list non scatterebbe mai.
+  // Viewport, NON uno scroller: il cambio sessione sposta .history-sessions-track
+  // con un transform (vedi setupCarouselTouchHandling). In questo modo l'unico
+  // scroller nativo del popup resta .history-serie-list, e sparisce alla radice
+  // il conflitto fra due scroller nativi annidati su assi diversi — che su iOS
+  // non è risolvibile via touch-action.
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
 
-  &::-webkit-scrollbar {
-    display: none;
-  }
+// Contenitore delle slide, spostato orizzontalmente via transform.
+// NB: prende l'altezza per "stretch" essendo un flex item in flusso — non con
+// height:100%, che sarebbe circolare (l'altezza del carosello dipende a sua
+// volta dal contenuto) e collasserebbe, lasciando le slide non vincolate.
+.history-sessions-track {
+  display: flex;
+  flex: 0 0 100%;
+  min-height: 0;
+  will-change: transform;
 }
 
 .history-session-slide {
-  min-width: 100%;
-  scroll-snap-align: start;
+  // Larga quanto la viewport del carosello; le slide successive sbordano dal
+  // track e vengono ritagliate dall'overflow:hidden del carosello.
+  width: 100%;
+  flex-shrink: 0;
   box-sizing: border-box;
   border-radius: 10px;
   overflow: hidden;
+  // Colonna interna: la data resta fissa in cima, .history-serie-list
+  // (flex:1 + min-height:0 sotto) occupa il resto e scrolla da sola.
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .history-session-date {
   padding: 16px;
   text-align: left;
+  flex-shrink: 0;
 }
 
 // =========================================================================
@@ -339,10 +363,14 @@ mat-form-field {
   min-width: 260px;
   max-width: min(340px, calc(100vw - 32px));
   // max-height la imposta positionPopupPanel() in base allo spazio reale
-  // disponibile nella direzione scelta: se il contenuto è più alto scrolla
-  // qui dentro invece di uscire dallo schermo.
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  // disponibile nella direzione scelta. Il pannello stesso NON scrolla più
+  // (vedi storia sotto): è un flex-column dove titolo e indicatore sono
+  // fissi ("flex-shrink:0") e solo .history-serie-list, dentro la slide
+  // corrente, scrolla verticalmente — altrimenti uno scroll trascinava con
+  // sé anche titolo, bordo e indicatore invece delle sole serie.
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   padding: 0 16px;
   border-radius: 24px;
   background-color: rgba(0, 0, 0, 0.5);
@@ -387,6 +415,7 @@ mat-form-field {
   padding: 24px 0 16px;
   // Riga di separazione, stessa ricetta di .confirm-popup-actions
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
 }
 
 // Card grigie stile .exercise-data-serie-container di
@@ -396,6 +425,22 @@ mat-form-field {
   flex-direction: column;
   gap: 8px;
   padding-bottom: 16px;
+  // Unico scroller interno del popup: cresce fino a riempire lo spazio
+  // rimasto nella slide (che a sua volta è vincolata dal max-height del
+  // pannello); solo quando il contenuto non ci sta più, scrolla qui — mai
+  // il pannello intero.
+  flex: 1;
+  min-height: 0;
+  // Scroll verticale NATIVO (momentum e rubber-band inclusi): ora è l'unico
+  // scroller del popup, quindi non deve più contendersi il gesto con nessuno.
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  // "pan-y" dichiara che qui è consentito solo il pan verticale: uno swipe
+  // orizzontale non produce alcuno scroll nativo, ed è quindi libero di essere
+  // interpretato come cambio sessione da setupCarouselTouchHandling(), senza
+  // che i due gesti si disturbino.
+  touch-action: pan-y;
 }
 
 .history-serie-card {
@@ -437,6 +482,7 @@ mat-form-field {
   // popup si ingrandisce/rimpicciolisce insieme all'animazione.
   height: 8px;
   padding: 16px 0 24px;
+  flex-shrink: 0;
 
   div {
     flex: 1;

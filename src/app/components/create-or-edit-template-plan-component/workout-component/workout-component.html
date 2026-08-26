@@ -3,8 +3,10 @@
        (position: fixed) deve stargli FUORI, altrimenti su iOS ricade nella
        scroll view e toccarla durante uno scroll per inerzia lo blocca. -->
   <div class="page-scroller">
-    <!-- Contenuto workout -->
-    <div class="workout-content">
+    <!-- Contenuto workout — "content" (classe globale) dà il padding-bottom
+         calcolato che tiene "Aggiungi" sopra la barra di pulsanti floating,
+         esattamente come .content nell'editor allenamento -->
+    <div class="workout-content content">
     <div class="section-title">
       <div class="text-section-container">
         <h2 class="text-title">Dati allenamento</h2>

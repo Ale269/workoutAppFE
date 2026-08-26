@@ -33,7 +33,6 @@ import { FocusOverlayService } from "./components/shared/focus-overlay/focus-ove
 import { BottomMenuComponent } from "./components/shared/bottom-menu/bottom-menu";
 import { BottomMenuService } from "./core/services/bottom-menu.service";
 import { ConfirmPopup } from "./components/shared/confirm-popup/confirm-popup";
-import { ConfirmPopupService } from "./core/services/confirm-popup.service";
 import { HapticTapService } from "./core/services/haptic-tap.service";
 
 @Component({
@@ -63,7 +62,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   public spinnerService = inject(SpinnerService);
   public focusOverlayService = inject(FocusOverlayService);
   public bottomSheetService = inject(BottomSheetService);
-  public confirmPopupService = inject(ConfirmPopupService);
   private translate = inject(TranslateService);
   private animationService = inject(AnimationService);
   public bottomMenuService = inject(BottomMenuService);
@@ -96,20 +94,20 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.updateMenuVisibility(event.urlAfterRedirects || event.url);
       });
 
-    // Monitor modali, bottom sheets e focus overlays per bloccare lo scroll
+    // Monitor modali, bottom sheets e focus overlays per bloccare lo scroll.
+    // NB: confirm-popup (e il popup cronologia, che non è mai entrato qui)
+    // resta ESCLUSO di proposito: deve comportarsi come un popup "leggero",
+    // dove uno scroll/swipe sulla pagina lo chiude semplicemente (tramite il
+    // touchstart sul suo overlay full-screen) invece di essere bloccato.
     effect(() => {
       const hasActiveModal = this.modalService.modals().length > 0;
       const hasActiveBottomSheet =
         this.bottomSheetService.activeBottomSheets().length > 0;
       const hasActiveFocusOverlay =
         this.focusOverlayService.activeOverlays().length > 0;
-      const hasActiveConfirmPopup = this.confirmPopupService.active() !== null;
 
       this.toggleBodyScroll(
-        hasActiveModal ||
-          hasActiveBottomSheet ||
-          hasActiveFocusOverlay ||
-          hasActiveConfirmPopup
+        hasActiveModal || hasActiveBottomSheet || hasActiveFocusOverlay
       );
     });
   }
