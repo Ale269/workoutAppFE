@@ -193,20 +193,27 @@
     </div>
     }
 
-    <!-- Vista Dettaglio Allenamento -->
-    @if(currentView === 'detail' && selectedWorkout) {
-    <div #detailView class="workout-detail-view">
-      <app-workout-component
-        [formScheda]="this.createOrEditTemplatePlanService.formScheda"
-        (onDeleteWorkout)="deleteWorkout($event)"
-        (onBackToList)="backToList()"
-        [formAllenamento]="selectedWorkout"
-      >
-      </app-workout-component>
-    </div>
-    }
   </div>
 </div>
+
+<!-- Vista Dettaglio Allenamento — volutamente FUORI dal .page-scroller qui
+     sopra: app-workout-component ha una propria barra di pulsanti floating
+     (position: fixed) e, stando dentro il contenitore che scrolla, quella
+     barra ricadeva nella scroll view di iOS. Toccarla durante uno scroll per
+     inerzia veniva interpretato come tocco DENTRO la scroll view e fermava
+     lo scroll di colpo. Il componente porta ora il proprio .page-scroller,
+     con la barra come sibling, esattamente come tutte le altre pagine. -->
+@if(currentView === 'detail' && selectedWorkout) {
+<div #detailView class="workout-detail-view">
+  <app-workout-component
+    [formScheda]="this.createOrEditTemplatePlanService.formScheda"
+    (onDeleteWorkout)="deleteWorkout($event)"
+    (onBackToList)="backToList()"
+    [formAllenamento]="selectedWorkout"
+  >
+  </app-workout-component>
+</div>
+}
 
 @if(currentView === 'list') {
 <div class="floating-double-buttons-container" #deleteSchedaAnchor>

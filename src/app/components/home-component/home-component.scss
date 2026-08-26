@@ -29,14 +29,6 @@
   left: 16px;
   z-index: -1;
   pointer-events: none;
-  // Promozione a layer dedicato: senza, iOS RIesegue i due `filter:
-  // blur(60px)` qui sotto ogni volta che la regione va ripitturata, bloccando
-  // il compositor durante lo scroll. Rasterizzata una volta in texture, poi
-  // solo composita. Vedi stesso commento nelle pagine di editing.
-  transform: translateZ(0);
-  will-change: transform;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
 
 .ellips-1 {

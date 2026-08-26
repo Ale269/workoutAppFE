@@ -3,7 +3,9 @@ import {
   Component,
   ElementRef,
   Input,
+  NgZone,
   ViewChild,
+  inject,
 } from "@angular/core";
 import gsap from "gsap";
 import {
@@ -32,11 +34,20 @@ export class ConfirmPopup implements AfterViewInit {
 
   public transformOrigin: string = "bottom right";
 
+  private zone = inject(NgZone);
+
   constructor(private confirmPopupService: ConfirmPopupService) {}
 
   ngAfterViewInit(): void {
-    requestAnimationFrame(() => {
-      this.positionAndAnimateIn();
+    // Fuori dalla zona Angular: il ticker di GSAP gira su requestAnimationFrame,
+    // che Zone.js intercetta. Restando dentro la zona, OGNI frame del tween
+    // innescherebbe un ciclo di change detection sull'intera app — e nelle
+    // pagine di editing (centinaia di form control) costa abbastanza da far
+    // perdere frame, cioè da rendere l'animazione "a scatti".
+    this.zone.runOutsideAngular(() => {
+      requestAnimationFrame(() => {
+        this.positionAndAnimateIn();
+      });
     });
   }
 
@@ -73,14 +84,18 @@ export class ConfirmPopup implements AfterViewInit {
       return;
     }
 
-    gsap.to(panel, {
-      opacity: 0,
-      scale: 0.4,
-      transformOrigin: this.transformOrigin,
-      duration: 0.2,
-      ease: "back.in(1.4)",
-      force3D: true,
-      onComplete: afterClose,
+    this.zone.runOutsideAngular(() => {
+      gsap.to(panel, {
+        opacity: 0,
+        scale: 0.4,
+        transformOrigin: this.transformOrigin,
+        duration: 0.2,
+        ease: "back.in(1.4)",
+        force3D: true,
+        // Rientro in zona: afterClose tocca i signal del service, quindi la
+        // change detection deve ripartire.
+        onComplete: () => this.zone.run(afterClose),
+      });
     });
   }
 

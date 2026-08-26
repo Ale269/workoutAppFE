@@ -1,6 +1,10 @@
 <div class="workout-detail-container">
-  <!-- Contenuto workout -->
-  <div class="workout-content">
+  <!-- Scroller proprio della vista: la barra di pulsanti floating qui sotto
+       (position: fixed) deve stargli FUORI, altrimenti su iOS ricade nella
+       scroll view e toccarla durante uno scroll per inerzia lo blocca. -->
+  <div class="page-scroller">
+    <!-- Contenuto workout -->
+    <div class="workout-content">
     <div class="section-title">
       <div class="text-section-container">
         <h2 class="text-title">Dati allenamento</h2>
@@ -77,6 +81,7 @@
       <app-popup-option-button [label]="'Aggiungi'" [options]="addOptions"
         (optionSelected)="onAddOptionSelected($event)">
       </app-popup-option-button>
+    </div>
     </div>
   </div>
   <div class="floating-double-buttons-container" #deleteWorkoutAnchor>

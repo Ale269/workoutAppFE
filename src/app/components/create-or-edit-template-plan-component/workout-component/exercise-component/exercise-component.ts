@@ -86,7 +86,6 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
 
   // Stato per la cronologia degli ultimi N allenamenti
   public lastNTrainingsData: LastTrainingExerciseData[] = [];
-  public lastNTrainingsLoading: boolean = false;
   public lastNTrainingsError: boolean = false;
   public readonly lastNLimit: number = 3;
   public activeSessionIndex: number = 0;
@@ -95,7 +94,8 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   // posizionamento di app-confirm-popup / app-popup-option-button
   public isHistoryPopupOpen: boolean = false;
   private isHistoryPopupAnimating: boolean = false;
-  private isHistoryPopupRepositionPending: boolean = false;
+  /** Chiamata in corso: il popup si apre solo quando i dati sono pronti */
+  private isHistoryPopupLoading: boolean = false;
   private historyPopupTriggerElement: HTMLElement | null = null;
   public historyPopupTransformOrigin: string = "bottom right";
 
@@ -528,6 +528,12 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         return;
       }
 
+      // Una richiesta per volta: il popup si apre solo a dati pronti, quindi
+      // senza questa guardia un doppio tap lancerebbe due chiamate.
+      if (this.isHistoryPopupOpen || this.isHistoryPopupLoading) {
+        return;
+      }
+
       this.hapticService.trigger('light');
       this.historyPopupTriggerElement = ((event.currentTarget as HTMLElement).closest(
         '.delete-icon-element-container',
@@ -535,13 +541,17 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
 
       // Reset dello stato
       this.lastNTrainingsData = [];
-      this.lastNTrainingsLoading = true;
       this.lastNTrainingsError = false;
       this.activeSessionIndex = 0;
+      this.isHistoryPopupLoading = true;
 
-      // Apro il popup subito per mostrare lo stato di loading
-      this.openHistoryPopup();
-
+      // NB: il popup NON si apre qui. Prima si attende la risposta, così
+      // l'altezza e la larghezza misurate sono già quelle del contenuto
+      // definitivo: solo allora si decide lo spigolo di ancoraggio e la
+      // direzione dell'animazione. Aprire subito con lo stato "Caricamento"
+      // significava misurare un pannello alto pochi pixel, scegliere la
+      // direzione sbagliata e poi riposizionare a metà animazione — da cui
+      // il flash e l'espansione incoerente.
       this.workoutService
         .getLastNTrainingsForExercise(
           user.userId,
@@ -551,21 +561,18 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         )
         .subscribe({
           next: (response) => {
-            this.lastNTrainingsLoading = false;
+            this.isHistoryPopupLoading = false;
             if (response.esercizi && response.esercizi.length > 0) {
               this.lastNTrainingsData = response.esercizi;
             } else {
               this.lastNTrainingsError = true;
             }
-            this.cdr.detectChanges();
-            // Il contenuto cambia altezza (loading -> dati/errore): riposiziona
-            this.repositionHistoryPopup();
+            this.openHistoryPopup();
           },
           error: (error) => {
-            this.lastNTrainingsLoading = false;
+            this.isHistoryPopupLoading = false;
             this.lastNTrainingsError = true;
-            this.cdr.detectChanges();
-            this.repositionHistoryPopup();
+            this.openHistoryPopup();
             this.errorHandlerService.logError(
               error,
               "ExerciseComponent.openLastNTrainingHistory",
@@ -615,42 +622,9 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         force3D: true,
         onComplete: () => {
           this.isHistoryPopupAnimating = false;
-          // I dati sono arrivati mentre animavamo: riposiziona adesso
-          if (this.isHistoryPopupRepositionPending) {
-            this.isHistoryPopupRepositionPending = false;
-            this.repositionHistoryPopup();
-          }
         },
       },
     );
-  }
-
-  /**
-   * Riposiziona senza ri-animare l'ingresso: il contenuto del popup cambia
-   * altezza quando i dati arrivano (stato loading -> dati/errore).
-   *
-   * NB: mai durante l'animazione di ingresso. Cambiare spigolo di ancoraggio
-   * a metà tween fa "saltare" il pannello e lascia la transformOrigin del
-   * tween in corso incoerente col nuovo spigolo — è esattamente ciò che
-   * rendeva strana l'animazione di questo popup rispetto agli altri.
-   */
-  private repositionHistoryPopup(): void {
-    if (this.isHistoryPopupAnimating) {
-      this.isHistoryPopupRepositionPending = true;
-      return;
-    }
-
-    requestAnimationFrame(() => {
-      const panel = this.historyPopupPanelRef?.nativeElement;
-      if (!panel || !this.historyPopupTriggerElement || !this.isHistoryPopupOpen) {
-        return;
-      }
-      const { transformOrigin } = positionPopupPanel(panel, this.historyPopupTriggerElement);
-      this.historyPopupTransformOrigin = transformOrigin;
-      // Allinea anche l'origine applicata all'elemento, così l'animazione di
-      // chiusura parte dallo stesso spigolo su cui il pannello è ancorato.
-      gsap.set(panel, { transformOrigin });
-    });
   }
 
   closeHistoryPopup(): void {
@@ -675,7 +649,6 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
       onComplete: () => {
         this.isHistoryPopupOpen = false;
         this.isHistoryPopupAnimating = false;
-        this.isHistoryPopupRepositionPending = false;
         this.cdr.detectChanges();
       },
     });

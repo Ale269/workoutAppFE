@@ -10,6 +10,8 @@ export interface CornerAnchor {
 const EDGE_MARGIN = 8;
 /** Cap "di design" della larghezza, indipendente dallo spazio disponibile */
 const MAX_PANEL_WIDTH = 340;
+/** Sotto questa altezza il pannello non è più leggibile: meglio sforare di poco */
+const MIN_PANEL_HEIGHT = 120;
 
 /**
  * Logica di posizionamento condivisa dai popup ancorati stile Apple
@@ -126,6 +128,19 @@ export function positionPopupPanel(
   // Leggerlo forza anche il reflow con la larghezza appena impostata, quindi
   // il wrapping del testo è già quello definitivo.
   const vertical = computeVerticalAnchor(triggerRect, panel.offsetHeight);
+
+  // Garanzia dura contro la fuoriuscita dallo schermo: qualunque direzione sia
+  // stata scelta, il pannello non può superare lo spazio realmente disponibile
+  // da quel lato. Se il contenuto è più alto, scrolla internamente
+  // (.history-popup-panel ha overflow-y: auto) invece di uscire dal viewport.
+  const availableHeight =
+    vertical === "bottom"
+      ? triggerRect.bottom
+      : window.innerHeight - triggerRect.top;
+  panel.style.maxHeight = `${Math.max(
+    MIN_PANEL_HEIGHT,
+    availableHeight - EDGE_MARGIN,
+  )}px`;
 
   const anchor: CornerAnchor = { vertical, horizontal };
   applyCornerAnchor(panel, triggerRect, anchor);

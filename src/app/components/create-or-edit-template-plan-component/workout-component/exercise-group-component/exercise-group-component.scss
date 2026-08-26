@@ -85,10 +85,14 @@ $circuit-color: #3b82f6;
     opacity: 0.5;
   }
 
+  // NB: niente position/z-index qui. Darebbe uno stacking context all'HOST,
+  // e il popup cronologia (position: fixed, z-index 1000) che vive dentro
+  // questo componente resterebbe confinato: si ritroverebbe a competere come
+  // "z-index 1" contro il menu in alto (z-index 101), finendoci sotto.
+  // Per stare sopra la card colorata del gruppo (::before, z-index 0) basta
+  // il z-index: 1 che .exercise-container ha già al proprio interno.
   app-exercise-component {
     display: block;
-    position: relative;
-    z-index: 1;
   }
 }
 

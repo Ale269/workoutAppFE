@@ -338,6 +338,11 @@ mat-form-field {
   z-index: 1000;
   min-width: 260px;
   max-width: min(340px, calc(100vw - 32px));
+  // max-height la imposta positionPopupPanel() in base allo spazio reale
+  // disponibile nella direzione scelta: se il contenuto è più alto scrolla
+  // qui dentro invece di uscire dallo schermo.
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0 16px;
   border-radius: 24px;
   background-color: rgba(0, 0, 0, 0.5);

@@ -193,11 +193,10 @@
 <div #historyPopupPanel class="history-popup-panel">
   <h3 class="history-popup-title">Ultimi {{ lastNLimit }} allenamenti</h3>
 
-  @if (lastNTrainingsLoading) {
-  <div class="history-loading">
-    <span class="text-white">Caricamento...</span>
-  </div>
-  } @else if (lastNTrainingsError || lastNTrainingsData.length === 0) {
+  <!-- Nessuno stato "Caricamento": il popup viene aperto solo a dati già
+       ricevuti, così altezza e larghezza misurate per decidere ancoraggio e
+       direzione dell'animazione sono già quelle definitive. -->
+  @if (lastNTrainingsError || lastNTrainingsData.length === 0) {
   <div class="history-no-data">
     <span class="text-white">Nessun dato disponibile</span>
   </div>
