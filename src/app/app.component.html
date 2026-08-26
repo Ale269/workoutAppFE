@@ -50,8 +50,10 @@
   <app-focus-overlay-wrapper [instance]="overlay"></app-focus-overlay-wrapper>
   }
 
-  <!-- Confirm Popup -->
-  @if (confirmPopupService.active(); as confirmConfig) {
-  <app-confirm-popup [config]="confirmConfig"></app-confirm-popup>
-  }
+  <!-- Confirm Popup — sempre montato: gestisce l'apertura/chiusura con un @if
+       interno (vedi ConfirmPopup), non da qui. Creare/distruggere l'intero
+       componente Angular (DI, view, ngAfterViewInit) a ogni apertura, invece
+       di limitarsi a un toggle interno, concentrava tutto quel lavoro
+       proprio nel momento in cui l'animazione dovrebbe partire. -->
+  <app-confirm-popup></app-confirm-popup>
 </div>

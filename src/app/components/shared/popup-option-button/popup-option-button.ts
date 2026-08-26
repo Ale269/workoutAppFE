@@ -3,6 +3,7 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  NgZone,
   Output,
   ViewChild,
 } from "@angular/core";
@@ -45,6 +46,7 @@ export class PopupOptionButton {
 
   constructor(
     private hapticService: HapticService,
+    private ngZone: NgZone,
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
   ) {
@@ -64,32 +66,39 @@ export class PopupOptionButton {
     this.isAnimating = true;
 
     // Il pannello viene creato dall'@if: anima al frame successivo,
-    // misurando ad ogni apertura (nessuna cache di altezza)
-    requestAnimationFrame(() => {
-      const panel = this.popupPanel?.nativeElement;
-      if (!panel) {
-        this.isAnimating = false;
-        return;
-      }
+    // misurando ad ogni apertura (nessuna cache di altezza). Fuori dalla
+    // zona Angular: il ticker rAF di GSAP è intercettato da Zone.js e, se
+    // resta dentro, ogni frame del tween innesca un ciclo di change
+    // detection sull'intera app.
+    this.ngZone.runOutsideAngular(() => {
+      requestAnimationFrame(() => {
+        const panel = this.popupPanel?.nativeElement;
+        if (!panel) {
+          this.ngZone.run(() => (this.isAnimating = false));
+          return;
+        }
 
-      gsap.fromTo(
-        panel,
-        {
-          opacity: 0,
-          scale: 0.4,
-          transformOrigin: "bottom right",
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          duration: 0.25,
-          ease: "back.out(1.4)",
-          force3D: true,
-          onComplete: () => {
-            this.isAnimating = false;
+        gsap.fromTo(
+          panel,
+          {
+            opacity: 0,
+            scale: 0.4,
+            transformOrigin: "bottom right",
           },
-        },
-      );
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.25,
+            ease: "back.out(1.4)",
+            force3D: true,
+            onComplete: () => {
+              this.ngZone.run(() => {
+                this.isAnimating = false;
+              });
+            },
+          },
+        );
+      });
     });
   }
 
@@ -106,18 +115,22 @@ export class PopupOptionButton {
       return;
     }
 
-    gsap.to(panel, {
-      opacity: 0,
-      scale: 0.4,
-      transformOrigin: "bottom right",
-      duration: 0.2,
-      ease: "back.in(1.4)",
-      force3D: true,
-      onComplete: () => {
-        this.isOpen = false;
-        this.isAnimating = false;
-        if (afterClose) afterClose();
-      },
+    this.ngZone.runOutsideAngular(() => {
+      gsap.to(panel, {
+        opacity: 0,
+        scale: 0.4,
+        transformOrigin: "bottom right",
+        duration: 0.2,
+        ease: "back.in(1.4)",
+        force3D: true,
+        onComplete: () => {
+          this.ngZone.run(() => {
+            this.isOpen = false;
+            this.isAnimating = false;
+            if (afterClose) afterClose();
+          });
+        },
+      });
     });
   }
 

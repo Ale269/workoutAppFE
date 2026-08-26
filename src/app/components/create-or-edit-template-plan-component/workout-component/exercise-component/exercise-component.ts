@@ -11,6 +11,7 @@ import {
   OnDestroy,
   ChangeDetectorRef,
   ElementRef,
+  NgZone,
 } from "@angular/core";
 import { EsercizioForm } from "../../exercise-form";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
@@ -121,6 +122,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     private sanitizer: DomSanitizer,
     private hapticService: HapticService,
     private bottomMenuService: BottomMenuService,
+    private ngZone: NgZone,
   ) {
     iconRegistry.addSvgIcon(
       "google-arrow",
@@ -592,8 +594,14 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     this.isHistoryPopupOpen = true;
     this.isHistoryPopupAnimating = true;
     this.cdr.detectChanges();
-    requestAnimationFrame(() => {
-      this.positionAndAnimateHistoryPopupIn();
+    // Fuori dalla zona Angular: il ticker rAF di GSAP è intercettato da
+    // Zone.js e, se resta dentro, ogni frame del tween innesca un ciclo di
+    // change detection sull'intera app — pagine di editing con centinaia di
+    // form control ne risentono, causando gli scatti visti sul confirm-popup.
+    this.ngZone.runOutsideAngular(() => {
+      requestAnimationFrame(() => {
+        this.positionAndAnimateHistoryPopupIn();
+      });
     });
   }
 
@@ -621,7 +629,9 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         ease: "back.out(1.4)",
         force3D: true,
         onComplete: () => {
-          this.isHistoryPopupAnimating = false;
+          this.ngZone.run(() => {
+            this.isHistoryPopupAnimating = false;
+          });
         },
       },
     );
@@ -639,18 +649,22 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    gsap.to(panel, {
-      opacity: 0,
-      scale: 0.4,
-      transformOrigin: this.historyPopupTransformOrigin,
-      duration: 0.2,
-      ease: "back.in(1.4)",
-      force3D: true,
-      onComplete: () => {
-        this.isHistoryPopupOpen = false;
-        this.isHistoryPopupAnimating = false;
-        this.cdr.detectChanges();
-      },
+    this.ngZone.runOutsideAngular(() => {
+      gsap.to(panel, {
+        opacity: 0,
+        scale: 0.4,
+        transformOrigin: this.historyPopupTransformOrigin,
+        duration: 0.2,
+        ease: "back.in(1.4)",
+        force3D: true,
+        onComplete: () => {
+          this.ngZone.run(() => {
+            this.isHistoryPopupOpen = false;
+            this.isHistoryPopupAnimating = false;
+            this.cdr.detectChanges();
+          });
+        },
+      });
     });
   }
 }
