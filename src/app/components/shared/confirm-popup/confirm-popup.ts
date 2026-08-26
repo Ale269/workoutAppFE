@@ -52,15 +52,16 @@ export class ConfirmPopup implements AfterViewInit {
     gsap.fromTo(
       panel,
       {
-        autoAlpha: 0,
+        opacity: 0,
         scale: 0.4,
         transformOrigin: this.transformOrigin,
       },
       {
-        autoAlpha: 1,
+        opacity: 1,
         scale: 1,
         duration: 0.25,
         ease: "back.out(1.4)",
+        force3D: true,
       },
     );
   }
@@ -73,11 +74,12 @@ export class ConfirmPopup implements AfterViewInit {
     }
 
     gsap.to(panel, {
-      autoAlpha: 0,
+      opacity: 0,
       scale: 0.4,
       transformOrigin: this.transformOrigin,
       duration: 0.2,
       ease: "back.in(1.4)",
+      force3D: true,
       onComplete: afterClose,
     });
   }

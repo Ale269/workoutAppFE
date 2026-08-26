@@ -34,6 +34,7 @@ import { BottomMenuComponent } from "./components/shared/bottom-menu/bottom-menu
 import { BottomMenuService } from "./core/services/bottom-menu.service";
 import { ConfirmPopup } from "./components/shared/confirm-popup/confirm-popup";
 import { ConfirmPopupService } from "./core/services/confirm-popup.service";
+import { HapticTapService } from "./core/services/haptic-tap.service";
 
 @Component({
   selector: "app-root",
@@ -66,6 +67,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private translate = inject(TranslateService);
   private animationService = inject(AnimationService);
   public bottomMenuService = inject(BottomMenuService);
+  private hapticTapService = inject(HapticTapService);
 
   public MenuIsVisible: boolean = false;
 
@@ -114,6 +116,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     console.log("✅ AppComponent inizializzato");
+
+    // Feedback aptico su tutti i pulsanti e le card cliccabili dell'app
+    this.hapticTapService.init();
 
     // CONTROLLO ERRORI CRITICI: Se ci sono errori critici dal bootstrap, naviga subito
     if (this.errorHandler.hasCriticalErrors()) {

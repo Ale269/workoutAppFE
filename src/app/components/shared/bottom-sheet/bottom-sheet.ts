@@ -15,11 +15,12 @@ import { CommonModule } from "@angular/common";
 
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
+import { InertiaPlugin } from "gsap/InertiaPlugin";
 import { BottomSheetController } from "./bottom-sheet-controller";
 import { BottomSheetInstance } from "./bottom-sheet-model";
 import { BottomSheetService } from "./bottom-sheet-service";
 
-gsap.registerPlugin(Draggable);
+gsap.registerPlugin(Draggable, InertiaPlugin);
 
 @Component({
   selector: "app-bottom-sheet-wrapper",
@@ -69,6 +70,9 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
     if (this.draggableInstance) {
       this.draggableInstance[0].kill();
     }
+    if (this.container?.nativeElement) {
+      InertiaPlugin.untrack(this.container.nativeElement, "y");
+    }
     document.body.style.overflow = "auto";
   }
 
@@ -108,11 +112,19 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
     const backdrop = this.backdrop.nativeElement;
     const vh20 = window.innerHeight * 0.2;
 
+    // Tracciamo "y" esplicitamente per poter leggere la velocità reale del
+    // dito al rilascio. NB: inertia è volutamente DISATTIVATA sul Draggable —
+    // altrimenti al rilascio GSAP lancerebbe un proprio tween di inerzia
+    // (fino a bounds.maxY) che entra in conflitto con il tween di chiusura
+    // gestito qui in onDragEnd: i due si sovrascrivono a vicenda e la sheet
+    // "rimbalza" tornando visibile prima di sparire.
+    InertiaPlugin.track(container, "y");
+
     this.draggableInstance = Draggable.create(container, {
       type: "y",
       trigger: this.handle.nativeElement,
       bounds: { minY: vh20, maxY: window.innerHeight + vh20 },
-      inertia: true,
+      inertia: false,
       zIndexBoost: false,
       onDrag: function() {
         const dragAmount = this["y"] - vh20;
@@ -122,29 +134,47 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
       },
       onDragEnd: () => {
         const dragAmount = (gsap.getProperty(container, "y") as number) - vh20;
-        
-        if (dragAmount > this.closeThreshold) {
-          this.close();
+        // Velocità reale del dito al rilascio (px/s): Draggable con
+        // inertia:true traccia "y" con InertiaPlugin internamente, quindi è
+        // già disponibile qui senza bisogno di calcoli manuali.
+        const velocityY = InertiaPlugin.getVelocity(container, "y");
+        // Proietta dove finirebbe lo swipe continuando con l'inerzia attuale
+        // per ~0.2s, invece di guardare solo la posizione al momento del
+        // rilascio: così uno swipe veloce lasciato a metà schermo chiude
+        // comunque il pannello invece di "pensarci" e fermarsi.
+        const projectedDragAmount = dragAmount + velocityY * 0.2;
+
+        if (projectedDragAmount > this.closeThreshold) {
+          this.close(undefined, undefined, velocityY);
         } else {
-          this.snapBack();
+          this.snapBack(velocityY);
         }
       }
     });
   }
 
-  private snapBack(): void {
-    const tl = gsap.timeline();
-    
-    tl.to(this.container.nativeElement, {
-      y: "20vh",
-      duration: 0.4,
-      ease: "back.out(1.7)"
-    })
-    .to(this.backdrop.nativeElement, {
-      opacity: 1,
-      duration: 0.3,
-      ease: "power2.out"
-    }, "<");
+  private snapBack(velocityY: number = 0): void {
+    const container = this.container.nativeElement;
+    const backdrop = this.backdrop.nativeElement;
+    const vh20 = window.innerHeight * 0.2;
+    const startY = (gsap.getProperty(container, "y") as number) || 0;
+    const startOpacity = (gsap.getProperty(backdrop, "opacity") as number) ?? 0;
+    const span = startY - vh20 || 1;
+
+    gsap.to(container, {
+      inertia: {
+        duration: { min: 0.25, max: 0.6 },
+        y: {
+          velocity: velocityY,
+          end: vh20,
+        },
+      },
+      onUpdate: () => {
+        const y = gsap.getProperty(container, "y") as number;
+        const progress = gsap.utils.clamp(0, 1, (startY - y) / span);
+        gsap.set(backdrop, { opacity: startOpacity + (1 - startOpacity) * progress });
+      },
+    });
   }
 
   private openBottomSheet(): void {
@@ -183,45 +213,54 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
       }, "-=0.2");
   }
 
-  private closeBottomSheet(data?: any, role?: string): void {
+  private closeBottomSheet(data?: any, role?: string, velocityY: number = 0): void {
     if (this.isAnimating) return;
-    
-    console.log('🔵 Starting close animation...');
+
     this.isAnimating = true;
     this.pendingClose = true;
 
-    const containerHeight = this.container.nativeElement.offsetHeight;
-    
-    const tl = gsap.timeline({
+    const container = this.container.nativeElement;
+    const backdrop = this.backdrop.nativeElement;
+    const containerHeight = container.offsetHeight;
+    const startY = (gsap.getProperty(container, "y") as number) || 0;
+    const startOpacity = (gsap.getProperty(backdrop, "opacity") as number) ?? 1;
+    const span = containerHeight - startY || 1;
+
+    // Chiusura con inerzia MA senza overshoot. Un tween "inertia" può
+    // superare il punto finale e poi rientrarci: dato che il punto finale è
+    // già fuori schermo, il rientro rendeva la sheet di nuovo visibile per
+    // un frame (il "flash"). Usiamo invece un ease monotono (power2.out, che
+    // non torna mai indietro) e ricaviamo la DURATA dalla velocità reale del
+    // dito: per power2.out la velocità iniziale è 2*distanza/durata, quindi
+    // durata = 2*distanza/velocità mantiene la continuità col gesto.
+    const duration =
+      velocityY > 0
+        ? gsap.utils.clamp(0.18, 0.45, (2 * span) / velocityY)
+        : 0.45;
+
+    gsap.to(container, {
+      y: containerHeight,
+      duration,
+      ease: "power2.out",
+      onUpdate: () => {
+        const y = gsap.getProperty(container, "y") as number;
+        const progress = gsap.utils.clamp(0, 1, (y - startY) / span);
+        gsap.set(backdrop, { opacity: startOpacity * (1 - progress) });
+      },
       onComplete: () => {
-        console.log('✅ Close animation completed, now dismissing...');
         this.isAnimating = false;
         this.pendingClose = false;
         document.body.style.overflow = "auto";
-        
-        // Rimuovi pointer-events
-        this.backdrop.nativeElement.classList.remove('visible');
-        
+
+        backdrop.classList.remove("visible");
+
         // IMPORTANTE: Chiama dismiss DOPO che l'animazione è finita
         // Usa setTimeout per assicurarti che l'animazione sia completamente finita
         setTimeout(() => {
           this.bottomSheetService.dismiss(this.instance.id, data, role);
         }, 50);
-      }
+      },
     });
-
-    // Anima prima il container verso il basso
-    tl.to(this.container.nativeElement, {
-      y: containerHeight,
-      duration: 0.4,
-      ease: "power2.in"
-    })
-    // Poi dissolvi il backdrop
-    .to(this.backdrop.nativeElement, {
-      opacity: 0,
-      duration: 0.3,
-      ease: "power2.in"
-    }, "<");
   }
 
   onBackdropClick(): void {
@@ -230,7 +269,7 @@ export class BottomSheetWrapperComponent implements OnInit, AfterViewInit {
     }
   }
 
-  async close(data?: any, role?: string): Promise<void> {
-    this.closeBottomSheet(data, role);
+  async close(data?: any, role?: string, velocityY: number = 0): Promise<void> {
+    this.closeBottomSheet(data, role, velocityY);
   }
 }

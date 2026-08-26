@@ -75,15 +75,16 @@ export class PopupOptionButton {
       gsap.fromTo(
         panel,
         {
-          autoAlpha: 0,
+          opacity: 0,
           scale: 0.4,
           transformOrigin: "bottom right",
         },
         {
-          autoAlpha: 1,
+          opacity: 1,
           scale: 1,
           duration: 0.25,
           ease: "back.out(1.4)",
+          force3D: true,
           onComplete: () => {
             this.isAnimating = false;
           },
@@ -106,11 +107,12 @@ export class PopupOptionButton {
     }
 
     gsap.to(panel, {
-      autoAlpha: 0,
+      opacity: 0,
       scale: 0.4,
       transformOrigin: "bottom right",
       duration: 0.2,
       ease: "back.in(1.4)",
+      force3D: true,
       onComplete: () => {
         this.isOpen = false;
         this.isAnimating = false;

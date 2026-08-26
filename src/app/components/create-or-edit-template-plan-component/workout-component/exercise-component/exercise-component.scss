@@ -344,7 +344,14 @@ mat-form-field {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  visibility: hidden; // gsap autoAlpha la mostra animando
+  // opacity (non visibility): su Safari il toggle di visibility fa
+  // ricalcolare il layer del backdrop-filter, con uno sfarfallio di un frame.
+  opacity: 0; // gsap la mostra animando
+  // Promuove il layer PRIMA dell'animazione: se Safari lo promuove a metà
+  // tween (per via di scale + backdrop-filter) si vede un salto.
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 
   &::before {
     content: "";

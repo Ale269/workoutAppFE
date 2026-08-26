@@ -28,7 +28,8 @@ const MAX_PANEL_WIDTH = 340;
  * far fuoriuscire il pannello dallo schermo una volta che il testo va a
  * capo su più righe con la larghezza corretta.
  * Uso previsto: computeHorizontalAnchor -> applica maxWidth al pannello ->
- * misura panelRect.height (ora accurata) -> computeVerticalAnchor.
+ * misura panel.offsetHeight (ora accurata) -> computeVerticalAnchor.
+ * Vedi positionPopupPanel(), che orchestra la sequenza.
  */
 
 /**
@@ -116,11 +117,15 @@ export function positionPopupPanel(
   const { horizontal, maxWidth } = computeHorizontalAnchor(triggerRect);
   panel.style.maxWidth = `${maxWidth}px`;
 
-  // Forza il reflow con la larghezza definitiva prima di leggere l'altezza:
-  // senza questo, panelRect.height rifletterebbe ancora il wrapping del
-  // testo con la larghezza precedente (es. quella statica da CSS).
-  const panelRect = panel.getBoundingClientRect();
-  const vertical = computeVerticalAnchor(triggerRect, panelRect.height);
+  // Altezza dal box di LAYOUT, non da getBoundingClientRect(): quest'ultimo
+  // restituisce il box TRASFORMATO, quindi se un tween di scale è in corso
+  // (es. il popup viene riposizionato mentre l'animazione di ingresso da
+  // scale 0.4 sta ancora girando) l'altezza risulterebbe fino al 60% più
+  // piccola del reale, e computeVerticalAnchor sceglierebbe la direzione
+  // sbagliata. offsetHeight ignora i transform ed è quello che ci serve.
+  // Leggerlo forza anche il reflow con la larghezza appena impostata, quindi
+  // il wrapping del testo è già quello definitivo.
+  const vertical = computeVerticalAnchor(triggerRect, panel.offsetHeight);
 
   const anchor: CornerAnchor = { vertical, horizontal };
   applyCornerAnchor(panel, triggerRect, anchor);

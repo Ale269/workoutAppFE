@@ -95,6 +95,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   // posizionamento di app-confirm-popup / app-popup-option-button
   public isHistoryPopupOpen: boolean = false;
   private isHistoryPopupAnimating: boolean = false;
+  private isHistoryPopupRepositionPending: boolean = false;
   private historyPopupTriggerElement: HTMLElement | null = null;
   public historyPopupTransformOrigin: string = "bottom right";
 
@@ -602,17 +603,23 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     gsap.fromTo(
       panel,
       {
-        autoAlpha: 0,
+        opacity: 0,
         scale: 0.4,
         transformOrigin: this.historyPopupTransformOrigin,
       },
       {
-        autoAlpha: 1,
+        opacity: 1,
         scale: 1,
         duration: 0.25,
         ease: "back.out(1.4)",
+        force3D: true,
         onComplete: () => {
           this.isHistoryPopupAnimating = false;
+          // I dati sono arrivati mentre animavamo: riposiziona adesso
+          if (this.isHistoryPopupRepositionPending) {
+            this.isHistoryPopupRepositionPending = false;
+            this.repositionHistoryPopup();
+          }
         },
       },
     );
@@ -621,8 +628,18 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Riposiziona senza ri-animare l'ingresso: il contenuto del popup cambia
    * altezza quando i dati arrivano (stato loading -> dati/errore).
+   *
+   * NB: mai durante l'animazione di ingresso. Cambiare spigolo di ancoraggio
+   * a metà tween fa "saltare" il pannello e lascia la transformOrigin del
+   * tween in corso incoerente col nuovo spigolo — è esattamente ciò che
+   * rendeva strana l'animazione di questo popup rispetto agli altri.
    */
   private repositionHistoryPopup(): void {
+    if (this.isHistoryPopupAnimating) {
+      this.isHistoryPopupRepositionPending = true;
+      return;
+    }
+
     requestAnimationFrame(() => {
       const panel = this.historyPopupPanelRef?.nativeElement;
       if (!panel || !this.historyPopupTriggerElement || !this.isHistoryPopupOpen) {
@@ -630,6 +647,9 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
       }
       const { transformOrigin } = positionPopupPanel(panel, this.historyPopupTriggerElement);
       this.historyPopupTransformOrigin = transformOrigin;
+      // Allinea anche l'origine applicata all'elemento, così l'animazione di
+      // chiusura parte dallo stesso spigolo su cui il pannello è ancorato.
+      gsap.set(panel, { transformOrigin });
     });
   }
 
@@ -646,14 +666,16 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     gsap.to(panel, {
-      autoAlpha: 0,
+      opacity: 0,
       scale: 0.4,
       transformOrigin: this.historyPopupTransformOrigin,
       duration: 0.2,
       ease: "back.in(1.4)",
+      force3D: true,
       onComplete: () => {
         this.isHistoryPopupOpen = false;
         this.isHistoryPopupAnimating = false;
+        this.isHistoryPopupRepositionPending = false;
         this.cdr.detectChanges();
       },
     });

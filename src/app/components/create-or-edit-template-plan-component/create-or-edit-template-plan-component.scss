@@ -291,6 +291,19 @@
   left: 16px;
   z-index: -1;
   pointer-events: none;
+  // Promozione a layer dedicato: i due `filter: blur(60px)` qui sotto sono
+  // enormi, e senza un layer proprio iOS deve RIeseguire la sfocatura ogni
+  // volta che la regione va ripitturata — anche solo perché il pulsante
+  // floating (position:fixed, che sta sopra questa zona) cambia stato al
+  // tocco. Il risultato era che toccare il multi-option durante uno scroll
+  // per inerzia bloccava il compositor e lo scroll si fermava di colpo.
+  // Promuovendo, la sfocatura viene rasterizzata UNA volta in texture e poi
+  // solo composita. NB: app-view-template-plan non ha questo gradiente, ed
+  // è infatti l'unica pagina dove il problema non si presentava.
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .ellips-1 {

@@ -18,6 +18,13 @@ export type HapticType = 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 
 @Injectable({ providedIn: 'root' })
 export class HapticService {
 
+    /**
+     * True se un trigger "semantico" (medium/error/success/...) è stato
+     * chiamato da un handler durante il gesto corrente. Serve a far vincere
+     * il feedback esplicito su quello generico del tap — vedi triggerTap().
+     */
+    private explicitDuringGesture = false;
+
     /** Pattern di vibrazione per ogni tipo (in millisecondi) */
     private readonly patterns: Record<HapticType, number | number[]> = {
         light: 10,
@@ -34,6 +41,7 @@ export class HapticService {
      * non supporta né Vibration API né il fallback iOS, non fa nulla.
      */
     trigger(type: HapticType = 'light'): void {
+        this.explicitDuringGesture = true;
         try {
             if (this.supportsVibration()) {
                 navigator.vibrate(this.patterns[type]);
@@ -43,6 +51,25 @@ export class HapticService {
         } catch {
             // Silently ignore — haptic feedback is non-critical
         }
+    }
+
+    /**
+     * Feedback generico di "tap", usato dal listener delegato di
+     * HapticTapService per coprire tutti i pulsanti e le card cliccabili.
+     *
+     * Viene rimandato di un tick perché il listener delegato gira in fase di
+     * CAPTURE, quindi prima degli handler (click) di Angular: se l'handler
+     * chiama a sua volta trigger() con un tipo semantico ('error', 'success',
+     * ...), quello vince e il tap generico viene soppresso. Così non si
+     * ottengono due vibrazioni in fila per una sola interazione.
+     */
+    triggerTap(): void {
+        this.explicitDuringGesture = false;
+        setTimeout(() => {
+            if (!this.explicitDuringGesture) {
+                this.trigger('light');
+            }
+        }, 0);
     }
 
     /** Controlla se il browser supporta la Vibration API */
