@@ -320,6 +320,15 @@ mat-form-field {
   display: flex;
   flex: 0 0 100%;
   min-height: 0;
+  // Il carosello è orizzontale (flex di RIGA): qui l'asse principale è la
+  // larghezza, non l'altezza. Il track contiene le slide affiancate, ognuna
+  // larga "100%" — senza min-width:0 il browser può usare come minimo la
+  // somma delle larghezze di TUTTE le slide (300%+ con 3 sessioni) invece
+  // del 100% dichiarato da flex-basis, sballando la larghezza reale del
+  // track e con essa tutta la matematica delle percentuali dentro le card
+  // (esattamente lo stesso bug già risolto su .history-session-slide, qui
+  // però sull'asse orizzontale del contenitore che lo racchiude).
+  min-width: 0;
   will-change: transform;
 }
 
