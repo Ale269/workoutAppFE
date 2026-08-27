@@ -18,6 +18,14 @@ import { HapticService } from "./haptic.service";
  * Dove una classe è ambigua fra componenti diversi la si qualifica con il tag
  * del componente (es. `.exercise-container` esiste sia come card selezionabile
  * nel selector sia come card dell'editor, che invece è piena di form field).
+ *
+ * VINCOLO da rispettare quando si aggiunge un selettore: il binding `(click)`
+ * deve stare sull'elemento che il selettore individua, MAI su un suo
+ * discendente. L'overlay (`<label>` a tutta area, `inset: 0`) è figlio
+ * dell'host: il click risale fino all'host e oltre, ma NON attraversa i figli
+ * dell'host, che restano coperti. Un handler su un discendente non viene mai
+ * raggiunto e il pulsante smette silenziosamente di funzionare — è quanto
+ * successo a `.delete-action` nella pagina di modifica scheda.
  */
 const TAPPABLE_SELECTORS = [
   // Pulsanti generici / globali
@@ -121,25 +129,99 @@ export class HapticTapService {
     });
   }
 
-  /** Coalescing: al massimo una scansione per frame, solo se il DOM è cambiato */
+  /** Coalescing: al massimo una scansione in coda, solo se il DOM è cambiato */
   private scheduleScan(): void {
     if (this.scanScheduled) {
       return;
     }
     this.scanScheduled = true;
-    requestAnimationFrame(() => {
+    // requestIdleCallback e NON requestAnimationFrame: con rAF la scansione
+    // finiva dentro il frame successivo alla mutazione, cioè esattamente nei
+    // frame in cui l'app sta animando (chiusura di un popup, ritorno dal
+    // riordino) — il momento peggiore possibile. In idle il browser la
+    // esegue quando ha tempo libero; il timeout garantisce che non slitti
+    // all'infinito su una pagina sempre occupata.
+    this.scheduleIdle(() => {
       this.scanScheduled = false;
       this.scanAndAttach();
     });
   }
 
+  private scheduleIdle(fn: () => void): void {
+    const idle = (
+      window as unknown as {
+        requestIdleCallback?: (
+          cb: () => void,
+          opts?: { timeout: number },
+        ) => number;
+      }
+    ).requestIdleCallback;
+
+    if (typeof idle === "function") {
+      idle(fn, { timeout: 500 });
+    } else {
+      setTimeout(fn, 0);
+    }
+  }
+
+  /**
+   * Scansione in DUE FASI: prima tutte le letture, poi tutte le scritture.
+   *
+   * Prima erano interlacciate: per ogni elemento nuovo si leggeva
+   * getBoundingClientRect() e getComputedStyle() (letture, che costringono il
+   * browser a calcolare il layout) e subito dopo si scriveva style.position e
+   * si facevano due appendChild() (scritture, che il layout lo invalidano).
+   * Alla lettura successiva il layout andava quindi ricalcolato da capo: con
+   * N elementi nuovi, N layout sincroni sull'INTERO documento — il classico
+   * "layout thrashing", costo quadratico di fatto.
+   *
+   * Si vedeva solo in chiusura e mai in apertura, e il motivo è semplice:
+   * passando a compact gli elementi SPARISCONO (nessun candidato nuovo, la
+   * scansione non fa nulla), tornando a normale ne compaiono decine tutti
+   * insieme. Da qui il blocco di oltre un secondo al ritorno dal riordino.
+   *
+   * Separando le fasi il layout viene calcolato UNA volta sola.
+   */
   private scanAndAttach(): void {
     try {
+      if (!this.isIos()) {
+        return;
+      }
+
       const candidates =
         document.querySelectorAll<HTMLElement>(TAPPABLE_SELECTORS);
+
+      // ---- FASE 1: sole letture ----
+      // setAttribute su un data-attribute non invalida il layout (nessuna
+      // regola CSS ci si aggancia), quindi marcare gli "skip" qui è sicuro.
+      const viewportArea = window.innerWidth * window.innerHeight;
+      const toAttach: HTMLElement[] = [];
+
       for (const candidate of Array.from(candidates)) {
-        this.attach(candidate);
+        if (candidate.hasAttribute(ATTACHED_ATTR)) {
+          continue;
+        }
+        if (this.shouldSkip(candidate, viewportArea)) {
+          candidate.setAttribute(ATTACHED_ATTR, "skip");
+          continue;
+        }
+        toAttach.push(candidate);
       }
+
+      if (toAttach.length === 0) {
+        return;
+      }
+
+      // Ultima lettura, ancora prima di qualsiasi scrittura
+      const needsRelative = toAttach.map(
+        (host) => getComputedStyle(host).position === "static",
+      );
+
+      // ---- FASE 2: sole scritture ----
+      toAttach.forEach((host, i) => {
+        host.setAttribute(ATTACHED_ATTR, "");
+        this.attachSwitchOverlay(host, needsRelative[i]);
+      });
     } catch {
       // Il feedback aptico non è mai critico per il funzionamento dell'app
     }
@@ -148,6 +230,8 @@ export class HapticTapService {
   /**
    * Applica l'overlay switch a un elemento. Idempotente: può essere chiamata
    * più volte sullo stesso elemento (anche dalla HapticSwitchDirective).
+   * Percorso a elemento singolo: qui l'interlacciamento lettura/scrittura non
+   * è un problema, è un solo layout.
    */
   attach(host: HTMLElement): void {
     // Gli overlay switch servono solo su iOS: altrove la Vibration API è
@@ -156,16 +240,19 @@ export class HapticTapService {
       return;
     }
 
-    if (this.shouldSkip(host)) {
+    if (this.shouldSkip(host, window.innerWidth * window.innerHeight)) {
       host.setAttribute(ATTACHED_ATTR, "skip");
       return;
     }
 
     host.setAttribute(ATTACHED_ATTR, "");
-    this.attachSwitchOverlay(host);
+    this.attachSwitchOverlay(
+      host,
+      getComputedStyle(host).position === "static",
+    );
   }
 
-  private shouldSkip(host: HTMLElement): boolean {
+  private shouldSkip(host: HTMLElement, viewportArea: number): boolean {
     // 1. Contiene un altro elemento tappabile: l'overlay coprirebbe il figlio
     //    e ne ucciderebbe il click (l'overlay ha z-index e viene dopo nel DOM).
     //    Si aggancia quindi solo al match più interno.
@@ -181,7 +268,6 @@ export class HapticTapService {
 
     // 3. Occupa (quasi) tutto il viewport: è un backdrop, non un pulsante.
     const rect = host.getBoundingClientRect();
-    const viewportArea = window.innerWidth * window.innerHeight;
     if (viewportArea > 0 && rect.width * rect.height > viewportArea * 0.8) {
       return true;
     }
@@ -202,8 +288,11 @@ export class HapticTapService {
    * resta antenato dell'elemento toccato e i suoi stili `:active`
    * (es. `transform: scale(0.95)`) continuano ad applicarsi.
    */
-  private attachSwitchOverlay(host: HTMLElement): void {
-    if (getComputedStyle(host).position === "static") {
+  private attachSwitchOverlay(host: HTMLElement, needsRelative: boolean): void {
+    // needsRelative arriva già calcolato dal chiamante: la lettura di
+    // getComputedStyle() deve avvenire nella fase di sola lettura, mai qui in
+    // mezzo alle scritture (vedi scanAndAttach).
+    if (needsRelative) {
       host.style.position = "relative";
     }
 

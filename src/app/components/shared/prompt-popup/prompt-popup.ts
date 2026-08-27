@@ -126,8 +126,11 @@ export class PromptPopup {
                 // Azzerato PRIMA di avvisare il service: quando l'effect rivede
                 // active()===null non c'è più nulla da chiudere.
                 this.activeConfig = null;
-                afterClose();
+                // detectChanges() prima di afterClose(): vedi ConfirmPopup —
+                // smonta l'overlay prima del lavoro applicativo, che altrimenti
+                // lo tiene agganciato e blocca lo scroll a popup già sparito.
                 this.cdr.detectChanges();
+                afterClose();
               });
             });
           });

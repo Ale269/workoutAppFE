@@ -273,8 +273,16 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
         },
         dismissOnBackdrop: false,
         onDismiss: () => {
-          this.isCompactMode = false;
-          this.cdr.detectChanges();
+          // Vedi il commento gemello in WorkoutComponent: il ritorno da
+          // compact a normale ricrea l'intero template di ogni esercizio in
+          // una detectChanges() sincrona, e qui finirebbe sopra la dissolvenza
+          // del backdrop. Due frame di respiro.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              this.isCompactMode = false;
+              this.cdr.detectChanges();
+            });
+          });
         },
       });
 

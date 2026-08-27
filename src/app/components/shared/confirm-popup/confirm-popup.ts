@@ -165,8 +165,15 @@ export class ConfirmPopup {
                 // Azzerato PRIMA di avvisare il service: quando l'effect rivede
                 // active()===null non c'è più nulla da chiudere.
                 this.activeConfig = null;
-                afterClose();
+                // detectChanges() PRIMA di afterClose(): smonta subito overlay
+                // e pannello, così l'overlay a tutto schermo smette di
+                // intercettare i tocchi prima ancora che parta il lavoro della
+                // callback (che può essere pesante: cancellare un esercizio,
+                // ricostruire un FormArray...). Al contrario, l'overlay restava
+                // agganciato per tutta la durata di quel lavoro e lo scroll
+                // sembrava bloccato per un secondo a popup già sparito.
                 this.cdr.detectChanges();
+                afterClose();
               });
             });
           });

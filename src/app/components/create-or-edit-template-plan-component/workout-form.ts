@@ -249,15 +249,32 @@ export class AllenamentoForm {
       "listaEsercizi"
     ] as FormArray;
 
-    // Pulisce il FormArray senza emettere eventi per evitare loop infiniti
-    while (listaEserciziFormArray.length !== 0) {
-      listaEserciziFormArray.removeAt(0, { emitEvent: false });
+    // Riordino dei controlli in blocco, con UNA SOLA updateValueAndValidity().
+    //
+    // Prima c'era un ciclo di removeAt() seguito da un ciclo di push(), tutti
+    // con { emitEvent: false }. Quell'opzione però sopprime solo l'EMISSIONE di
+    // valueChanges/statusChanges: NON impedisce che ogni singola removeAt() e
+    // ogni singola push() chiamino updateValueAndValidity(). E quella, ogni
+    // volta, ricalcola il valore dell'array iterando tutti i controlli rimasti
+    // e poi RISALE fino alla radice, rifacendo da capo il valore dell'intero
+    // form dell'allenamento — che contiene ogni esercizio con tutte le sue
+    // serie.
+    //
+    // Con N esercizi erano quindi 2N ricalcoli completi dell'albero: costo
+    // quadratico, pagato a ogni cancellazione, aggiunta o riordino. È questo
+    // che teneva bloccato il main thread per circa un secondo dopo la conferma
+    // del popup di eliminazione (e che, di riflesso, impediva lo scroll e
+    // ritardava la sparizione della card dallo schermo).
+    //
+    // Toccando direttamente `controls` e validando una volta sola alla fine il
+    // costo torna lineare. I controlli sono gli stessi oggetti di prima, solo
+    // riordinati: nessuno viene creato o distrutto.
+    listaEserciziFormArray.controls.length = 0;
+    for (const esercizio of this.listaEserciziForm) {
+      esercizio.form.setParent(listaEserciziFormArray);
+      listaEserciziFormArray.controls.push(esercizio.form);
     }
-
-    // Riaggiunge al FormArray nell'ordine corretto
-    this.listaEserciziForm.forEach((esercizio) => {
-      listaEserciziFormArray.push(esercizio.form, { emitEvent: false });
-    });
+    listaEserciziFormArray.updateValueAndValidity({ emitEvent: false });
   }
 
   moveEsercizio(exerciseIdentifier: number, newPosition: number): boolean {

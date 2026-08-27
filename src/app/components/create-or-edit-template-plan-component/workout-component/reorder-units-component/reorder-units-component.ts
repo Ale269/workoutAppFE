@@ -390,15 +390,25 @@ export class ReorderUnitsComponent implements OnInit, AfterViewInit, OnDestroy {
       ease: "power2.inOut",
       force3D: true,
       onComplete: () => {
-        const orderedUnits = this.getOrderedUnits();
-        this.controller.applyNewOrder<ReorderUnitRef>(orderedUnits);
+        // Stesso problema (e stessa cura) di ConfirmPopup.animateOutAndThen():
+        // questo callback gira dentro il rAF del ticker GSAP, cioè nel frame
+        // in cui va ancora dipinto l'ultimo fotogramma della chiusura.
+        // applyNewOrder() ricostruisce il FormArray dell'allenamento e lancia
+        // una detectChanges() sull'intera pagina: eseguirlo qui gli ruba quel
+        // frame. Due frame di respiro, poi si procede.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const orderedUnits = this.getOrderedUnits();
+            this.controller.applyNewOrder<ReorderUnitRef>(orderedUnits);
 
-        this.controller.notifyReadyToShow();
-        this.controller.hideBackdrop();
+            this.controller.notifyReadyToShow();
+            this.controller.hideBackdrop();
 
-        setTimeout(() => {
-          this.controller.dismiss();
-        }, 250);
+            setTimeout(() => {
+              this.controller.dismiss();
+            }, 250);
+          });
+        });
       },
     });
   }

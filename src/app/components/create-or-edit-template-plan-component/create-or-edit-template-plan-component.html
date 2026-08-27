@@ -156,12 +156,20 @@
                     </div>
                   </div>
 
-                  <!-- Bottone delete che appare con lo swipe -->
-                  <div class="delete-action">
-                    <div
-                      class="button-confirm-icon-container-danger"
-                      (click)="openDeleteWorkout(allenamentoForm.form.controls['identifier'].value, $event)"
-                    >
+                  <!-- Bottone delete che appare con lo swipe.
+                       Il (click) va su .delete-action, NON sul div interno:
+                       .delete-action è fra i selettori del feedback aptico, che
+                       gli inserisce dentro una <label> invisibile a tutta area
+                       per ottenere il tap nativo. Quella label copre il figlio,
+                       quindi un handler messo sul div interno non veniva mai
+                       raggiunto e il delete non partiva. Le altre tre liste
+                       (schede eseguite, allenamenti svolti, schede template)
+                       hanno sempre avuto il click qui: questa era l'eccezione. -->
+                  <div
+                    class="delete-action"
+                    (click)="openDeleteWorkout(allenamentoForm.form.controls['identifier'].value, $event)"
+                  >
+                    <div class="button-confirm-icon-container-danger">
                       <mat-icon svgIcon="google-delete"></mat-icon>
                     </div>
                   </div>

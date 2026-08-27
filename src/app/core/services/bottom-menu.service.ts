@@ -34,6 +34,7 @@ export class BottomMenuService {
   private scrollThreshold = 10;
   private currentScrollListener: (() => void) | null = null;
   private observer: MutationObserver | null = null;
+  private checkScheduled = false;
   private currentScroller: Element | null = null;
   private _suspended = false;
 
@@ -84,17 +85,49 @@ export class BottomMenuService {
   }
 
   private startObserver(): void {
-    this.observer = new MutationObserver(() => {
+    // FUORI dalla zona Angular, e con coalescing. Prima l'observer veniva
+    // creato dentro la zona (il service è providedIn:'root', istanziato al
+    // bootstrap): Zone.js patcha il callback di MutationObserver, quindi ogni
+    // singola mutazione del DOM faceva scattare un ApplicationRef.tick()
+    // sull'INTERA app. E siccome quel tick ri-renderizza, e ri-renderizzare
+    // muta il DOM, l'observer scattava di nuovo: una reazione a catena che si
+    // fermava solo quando il DOM smetteva di cambiare, pagando una change
+    // detection completa a ogni giro.
+    //
+    // Si vedeva alla chiusura di ogni popup — smontare overlay e pannello è
+    // una mutazione childList — e poi di nuovo a ogni render innescato dalla
+    // callback di conferma: da qui lo schermo congelato per un istante dopo
+    // la chiusura, con scroll bloccato e paint in ritardo su qualunque cosa
+    // seguisse.
+    //
+    // Nota: l'observer NON osserva gli attributi, quindi il toggle della
+    // classe di scroll-lock sul body non lo tocca; a farlo scattare sono le
+    // aggiunte/rimozioni di nodi.
+    this.ngZone.runOutsideAngular(() => {
+      this.observer = new MutationObserver(() => {
+        this.scheduleCheck();
+      });
+
+      this.observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+
+      // Check immediately in case page-scroller already exists
       this.checkForNewScroller();
     });
+  }
 
-    this.observer.observe(document.body, {
-      childList: true,
-      subtree: true,
+  /** Al massimo un controllo per frame, per quante mutazioni arrivino */
+  private scheduleCheck(): void {
+    if (this.checkScheduled) {
+      return;
+    }
+    this.checkScheduled = true;
+    requestAnimationFrame(() => {
+      this.checkScheduled = false;
+      this.checkForNewScroller();
     });
-
-    // Check immediately in case page-scroller already exists
-    this.checkForNewScroller();
   }
 
   private checkForNewScroller(): void {

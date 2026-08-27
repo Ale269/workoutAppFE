@@ -188,8 +188,21 @@ export class WorkoutComponent implements OnInit, OnDestroy {
         },
         dismissOnBackdrop: false,
         onDismiss: () => {
-          this.isCompactMode = false;
-          this.cdr.detectChanges();
+          // Il ritorno da compact a normale ricrea l'INTERO template di ogni
+          // esercizio (mat-form-field, mat-select, app-set-component per ogni
+          // serie): centinaia di componenti Material istanziate in una sola
+          // detectChanges() sincrona. Farlo qui significa farlo mentre il
+          // backdrop sta ancora sfumando, rubandogli i frame finali — è il
+          // freeze che si vedeva solo in chiusura e mai in apertura (andando
+          // verso compact il template si SEMPLIFICA, non si espande).
+          // Due frame di respiro: l'overlay è ormai smontato e non c'è più
+          // nulla in animazione a cui sottrarre tempo.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              this.isCompactMode = false;
+              this.cdr.detectChanges();
+            });
+          });
         },
       });
 

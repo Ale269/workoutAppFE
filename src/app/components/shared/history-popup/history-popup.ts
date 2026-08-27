@@ -304,8 +304,10 @@ export class HistoryPopup {
                 // Azzerato PRIMA di avvisare il service: quando l'effect rivede
                 // active()===null non c'è più nulla da chiudere.
                 this.activeConfig = null;
-                this.historyPopupService.close();
+                // detectChanges() prima di avvisare il service: vedi
+                // ConfirmPopup — l'overlay va smontato prima del resto.
                 this.cdr.detectChanges();
+                this.historyPopupService.close();
               });
             });
           });
