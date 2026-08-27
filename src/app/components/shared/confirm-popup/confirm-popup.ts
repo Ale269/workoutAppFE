@@ -14,35 +14,6 @@ import {
 } from "src/app/core/services/confirm-popup.service";
 import { positionPopupPanel } from "src/app/components/shared/popup-positioning";
 
-// --- Istrumentazione DIAGNOSTICA temporanea (da rimuovere a test finito) ---
-// Stessa chiave/formato di HapticTapService.debugLog(): il pannello già
-// presente sulla home page mostra automaticamente anche questi eventi.
-// TODO: rimuovere questa funzione e le sue chiamate in animateOutAndThen().
-const DEBUG_LOG_KEY = "__hapticDebugLog";
-const DEBUG_LOG_MAX = 60;
-
-function debugLog(event: string, host: HTMLElement): void {
-  try {
-    const raw = localStorage.getItem(DEBUG_LOG_KEY);
-    const log: Array<{ t: number; event: string; el: string }> = raw
-      ? JSON.parse(raw)
-      : [];
-    const cls = (host.className || "").toString().trim().split(/\s+/)[0];
-    log.push({
-      t: Math.round(performance.now()),
-      event,
-      el: cls || host.tagName.toLowerCase(),
-    });
-    while (log.length > DEBUG_LOG_MAX) {
-      log.shift();
-    }
-    localStorage.setItem(DEBUG_LOG_KEY, JSON.stringify(log));
-  } catch {
-    // diagnostico, non deve mai rompere l'app
-  }
-}
-// --- fine istrumentazione ---
-
 /**
  * Pannello del popup di conferma: si posiziona in "position: fixed" ancorato
  * al triggerElement passato in config, scegliendo l'angolo (alto/basso +
@@ -94,6 +65,10 @@ export class ConfirmPopup {
 
   private open(config: ConfirmPopupConfig): void {
     if (this.isAnimating) return;
+    // Lock per tutta la durata dell'apertura (mancava: senza, non c'era un
+    // vero blocco contro un secondo open() concorrente durante l'animazione
+    // di entrata, a differenza della chiusura che invece lo fa già).
+    this.isAnimating = true;
     this.activeConfig = config;
     this.cdr.detectChanges();
 
@@ -110,6 +85,7 @@ export class ConfirmPopup {
   private positionAndAnimateIn(): void {
     const panel = this.panelRef?.nativeElement;
     if (!panel || !this.activeConfig?.triggerElement) {
+      this.isAnimating = false;
       return;
     }
 
@@ -129,6 +105,11 @@ export class ConfirmPopup {
         duration: 0.25,
         ease: "back.out(1.4)",
         force3D: true,
+        onComplete: () => {
+          this.zone.run(() => {
+            this.isAnimating = false;
+          });
+        },
       },
     );
   }
@@ -145,14 +126,6 @@ export class ConfirmPopup {
 
     this.isAnimating = true;
 
-    // --- Istrumentazione DIAGNOSTICA temporanea (da rimuovere a test finito) ---
-    // TODO: rimuovere insieme a debugLog() e alle chiamate onUpdate/onInterrupt
-    // qui sotto. Traccia il valore REALE di opacity/scale a ogni tick e se
-    // onComplete scatta davvero, per capire se il tween di chiusura viene
-    // interrotto (killato) prima di finire invece di completare normalmente.
-    debugLog("close-start", panel);
-    // --- fine istrumentazione ---
-
     this.zone.runOutsideAngular(() => {
       gsap.to(panel, {
         opacity: 0,
@@ -161,17 +134,7 @@ export class ConfirmPopup {
         duration: 0.2,
         ease: "back.in(1.4)",
         force3D: true,
-        onUpdate: () => {
-          debugLog(
-            `close-tick op=${(gsap.getProperty(panel, "opacity") as number).toFixed(2)} sc=${(gsap.getProperty(panel, "scale") as number).toFixed(2)}`,
-            panel,
-          );
-        },
-        onInterrupt: () => {
-          debugLog("close-INTERROTTO (killato prima del completamento)", panel);
-        },
         onComplete: () => {
-          debugLog("close-onComplete (tween arrivato in fondo)", panel);
           this.zone.run(() => {
             this.isAnimating = false;
             // Azzerato PRIMA di avvisare il service: quando l'effect rivede
@@ -179,7 +142,6 @@ export class ConfirmPopup {
             this.activeConfig = null;
             afterClose();
             this.cdr.detectChanges();
-            debugLog("close-activeConfig-azzerato (@if rimuove il pannello)", panel);
           });
         },
       });

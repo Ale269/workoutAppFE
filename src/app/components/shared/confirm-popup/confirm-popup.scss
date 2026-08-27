@@ -33,6 +33,7 @@
   will-change: transform, opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  overflow: hidden;
 
   &::before {
     content: "";
@@ -53,6 +54,7 @@
     mask-composite: exclude;
     pointer-events: none;
   }
+
 }
 
 .confirm-popup-title {

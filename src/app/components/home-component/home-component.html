@@ -4,34 +4,6 @@
   <div class="ellips-blur"></div>
 </div>
 
-<!-- Pannello diagnostico TEMPORANEO per il feedback aptico su iOS — solo
-     sulla home page. Rimuovere insieme a HapticTapService.debugLog() a test
-     concluso. -->
-<div class="haptic-debug-toggle" (click)="toggleHapticDebugPanel()">
-  {{ hapticDebugPanelOpen ? '✕' : '🔧' }}
-</div>
-@if (hapticDebugPanelOpen) {
-<div class="haptic-debug-panel">
-  <div class="haptic-debug-header">
-    <span>Log aptico ({{ hapticDebugLog.length }})</span>
-    <div class="haptic-debug-actions">
-      <span (click)="refreshHapticDebugLog()">Aggiorna</span>
-      <span (click)="clearHapticDebugLog()">Cancella</span>
-    </div>
-  </div>
-  <div class="haptic-debug-list">
-    @for (entry of hapticDebugLog; track $index) {
-    <div class="haptic-debug-entry">
-      <span class="haptic-debug-t">{{ entry.t }}ms</span>
-      <span class="haptic-debug-event">{{ entry.event }}</span>
-      <span class="haptic-debug-el">{{ entry.el }}</span>
-    </div>
-    } @empty {
-    <div class="haptic-debug-empty">Nessun log. Tocca un elemento e torna qui.</div>
-    }
-  </div>
-</div>
-}
 <div class="page-scroller">
   <!-- <app-account-info class="widget-section"></app-account-info> -->
 
