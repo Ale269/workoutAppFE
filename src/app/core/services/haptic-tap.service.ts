@@ -242,8 +242,55 @@ export class HapticTapService {
     // scatterebbe due volte per un solo tap. Blocchiamo solo l'eco sull'input.
     input.addEventListener("click", (event) => event.stopPropagation());
 
+    // --- Istrumentazione DIAGNOSTICA temporanea (da rimuovere a test finito) ---
+    // "tap-su-label" = il dito ha davvero toccato l'overlay (evento sempre
+    // presente se il tap è arrivato qui). "checkbox-attivato" = il browser ha
+    // effettivamente eseguito il toggle nativo dello switch (il "comportamento
+    // di attivazione" della label/checkbox, a cui è legato il Taptic Engine).
+    // Se per un elemento che naviga vediamo SEMPRE "tap-su-label" ma MAI
+    // "checkbox-attivato", conferma che la navigazione interrompe il toggle
+    // prima che il browser arrivi a eseguirlo.
+    label.addEventListener("click", () => this.debugLog("tap-su-label", host));
+    input.addEventListener("change", () => this.debugLog("checkbox-attivato", host));
+    this.debugLog("overlay-agganciato", host);
+    // --- fine istrumentazione ---
+
     host.appendChild(input);
     host.appendChild(label);
+  }
+
+  // =======================================================================
+  // Log diagnostico temporaneo — persiste su localStorage (sopravvive alla
+  // navigazione, che distrugge il componente sorgente prima che l'utente
+  // possa leggerlo) e viene mostrato da un pannello sulla home page.
+  // TODO: rimuovere debugLog() e le sue tre chiamate sopra a test concluso.
+  // =======================================================================
+  private static readonly DEBUG_LOG_KEY = "__hapticDebugLog";
+  private static readonly DEBUG_LOG_MAX = 60;
+
+  private debugLog(event: string, host: HTMLElement): void {
+    try {
+      const raw = localStorage.getItem(HapticTapService.DEBUG_LOG_KEY);
+      const log: Array<{ t: number; event: string; el: string }> = raw
+        ? JSON.parse(raw)
+        : [];
+      log.push({
+        t: Math.round(performance.now()),
+        event,
+        el: this.describeElement(host),
+      });
+      while (log.length > HapticTapService.DEBUG_LOG_MAX) {
+        log.shift();
+      }
+      localStorage.setItem(HapticTapService.DEBUG_LOG_KEY, JSON.stringify(log));
+    } catch {
+      // diagnostico, non deve mai rompere l'app
+    }
+  }
+
+  private describeElement(el: HTMLElement): string {
+    const cls = (el.className || "").toString().trim().split(/\s+/)[0];
+    return cls || el.tagName.toLowerCase();
   }
 
   // =======================================================================

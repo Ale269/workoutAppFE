@@ -56,6 +56,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private scrollTriggerInstance: ScrollTrigger | null = null;
   private lastHapticState: 'visible' | 'hidden' | null = null;
 
+  // --- Pannello diagnostico temporaneo per il feedback aptico su iOS ---
+  // TODO: rimuovere insieme a HapticTapService.debugLog() a test concluso.
+  public hapticDebugLog: Array<{ t: number; event: string; el: string }> = [];
+  public hapticDebugPanelOpen: boolean = false;
+  private static readonly DEBUG_LOG_KEY = "__hapticDebugLog";
+
   constructor(
     private menuConfigService: MenuConfigService,
     private cdr: ChangeDetectorRef,
@@ -73,6 +79,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       this.menuConfigService.setConfig({
         leftButton: "none",
       });
+
+      this.refreshHapticDebugLog();
 
       // Controlla se ci sono dati in corso salvati in localStorage
       // e nel caso naviga alla pagina giusta per riprendere
@@ -307,5 +315,34 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // Metodo per ricaricare i dati (utile per refresh button)
   async refreshWidgets() {
     this.initializeWidgets();
+  }
+
+  // --- Pannello diagnostico temporaneo per il feedback aptico su iOS ---
+
+  toggleHapticDebugPanel(): void {
+    this.hapticDebugPanelOpen = !this.hapticDebugPanelOpen;
+    if (this.hapticDebugPanelOpen) {
+      this.refreshHapticDebugLog();
+    }
+  }
+
+  refreshHapticDebugLog(): void {
+    try {
+      const raw = localStorage.getItem(HomeComponent.DEBUG_LOG_KEY);
+      const log = raw ? JSON.parse(raw) : [];
+      // Più recente in cima
+      this.hapticDebugLog = Array.isArray(log) ? [...log].reverse() : [];
+    } catch {
+      this.hapticDebugLog = [];
+    }
+  }
+
+  clearHapticDebugLog(): void {
+    try {
+      localStorage.removeItem(HomeComponent.DEBUG_LOG_KEY);
+    } catch {
+      // diagnostico, non deve mai rompere l'app
+    }
+    this.hapticDebugLog = [];
   }
 }
