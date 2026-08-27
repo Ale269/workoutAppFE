@@ -33,6 +33,9 @@ import { FocusOverlayService } from "./components/shared/focus-overlay/focus-ove
 import { BottomMenuComponent } from "./components/shared/bottom-menu/bottom-menu";
 import { BottomMenuService } from "./core/services/bottom-menu.service";
 import { ConfirmPopup } from "./components/shared/confirm-popup/confirm-popup";
+import { ConfirmPopupService } from "./core/services/confirm-popup.service";
+import { PromptPopup } from "./components/shared/prompt-popup/prompt-popup";
+import { PromptPopupService } from "./core/services/prompt-popup.service";
 import { HapticTapService } from "./core/services/haptic-tap.service";
 
 @Component({
@@ -52,6 +55,7 @@ import { HapticTapService } from "./core/services/haptic-tap.service";
     FocusOverlayWrapperComponent,
     BottomMenuComponent,
     ConfirmPopup,
+    PromptPopup,
   ],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -62,6 +66,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   public spinnerService = inject(SpinnerService);
   public focusOverlayService = inject(FocusOverlayService);
   public bottomSheetService = inject(BottomSheetService);
+  public confirmPopupService = inject(ConfirmPopupService);
+  public promptPopupService = inject(PromptPopupService);
   private translate = inject(TranslateService);
   private animationService = inject(AnimationService);
   public bottomMenuService = inject(BottomMenuService);
@@ -94,20 +100,28 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.updateMenuVisibility(event.urlAfterRedirects || event.url);
       });
 
-    // Monitor modali, bottom sheets e focus overlays per bloccare lo scroll.
-    // NB: confirm-popup (e il popup cronologia, che non è mai entrato qui)
-    // resta ESCLUSO di proposito: deve comportarsi come un popup "leggero",
-    // dove uno scroll/swipe sulla pagina lo chiude semplicemente (tramite il
-    // touchstart sul suo overlay full-screen) invece di essere bloccato.
+    // Monitor modali, bottom sheets, focus overlays e confirm-popup per
+    // bloccare lo scroll. Senza il blocco, un tocco/scroll che parte su una
+    // parte non interattiva del popup (es. il padding del pannello, non
+    // l'overlay trasparente attorno) risale come scroll nativo al
+    // .page-scroller sottostante: la pagina scrolla mentre il popup resta
+    // visivamente aperto. Il popup cronologia usa lo stesso blocco, gestito
+    // localmente in ExerciseComponent (il suo stato non è un service globale).
     effect(() => {
       const hasActiveModal = this.modalService.modals().length > 0;
       const hasActiveBottomSheet =
         this.bottomSheetService.activeBottomSheets().length > 0;
       const hasActiveFocusOverlay =
         this.focusOverlayService.activeOverlays().length > 0;
+      const hasActiveConfirmPopup = this.confirmPopupService.active() !== null;
+      const hasActivePromptPopup = this.promptPopupService.active() !== null;
 
       this.toggleBodyScroll(
-        hasActiveModal || hasActiveBottomSheet || hasActiveFocusOverlay
+        hasActiveModal ||
+          hasActiveBottomSheet ||
+          hasActiveFocusOverlay ||
+          hasActiveConfirmPopup ||
+          hasActivePromptPopup
       );
     });
   }

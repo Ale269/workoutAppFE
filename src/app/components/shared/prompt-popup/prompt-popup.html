@@ -1,0 +1,38 @@
+@if (activeConfig; as activeConfig) {
+<div class="prompt-popup-overlay" (click)="onOverlayClick()">
+  <div #panel class="prompt-popup-panel" (click)="$event.stopPropagation()">
+    <h3 class="prompt-popup-title">{{ activeConfig.title }}</h3>
+
+    <div class="prompt-popup-input-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ activeConfig.inputLabel }}</mat-label>
+        <input
+          #inputEl
+          matInput
+          type="text"
+          [formControl]="inputControl"
+          [placeholder]="activeConfig.placeholder || ''"
+          maxlength="50"
+          (keydown.enter)="onConfirmClick()"
+        />
+      </mat-form-field>
+      @if (activeConfig.hint) {
+      <div class="prompt-popup-hint">{{ activeConfig.hint }}</div>
+      }
+    </div>
+
+    <div class="prompt-popup-actions">
+      <span class="prompt-popup-action prompt-popup-cancel" (click)="onCancelClick()">
+        {{ activeConfig.cancelText || "Annulla" }}
+      </span>
+      <span
+        class="prompt-popup-action prompt-popup-confirm"
+        [style.color]="activeConfig.confirmColor || '#00ffe1'"
+        (click)="onConfirmClick()"
+      >
+        {{ activeConfig.confirmText || "Aggiungi" }}
+      </span>
+    </div>
+  </div>
+</div>
+}

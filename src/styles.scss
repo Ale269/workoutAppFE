@@ -155,7 +155,15 @@ body {
 }
 
 /* Regola per bloccare lo scroll del body quando il modale è aperto */
-body.no-scroll {
+// .history-popup-lock è una classe SEPARATA (non "no-scroll"), gestita in
+// locale da ExerciseComponent invece che dall'effect condiviso di
+// AppComponent: quell'effect ricalcola e riscrive "no-scroll" ogni volta che
+// UNA delle sue condizioni cambia (modal/bottomSheet/focusOverlay/confirm-
+// popup), e History non è fra queste (il suo stato è locale al componente,
+// non un signal globale) — condividere la stessa classe rischierebbe che
+// l'effect la rimuova mentre il popup cronologia è ancora aperto.
+body.no-scroll,
+body.history-popup-lock {
   overflow: hidden;
   padding-right: 15px;
   /* Adatta al tuo sistema operativo */

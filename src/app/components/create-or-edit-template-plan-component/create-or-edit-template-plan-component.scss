@@ -23,10 +23,6 @@
   width: 40px;
 }
 
-.add-workout-icon {
-  width: 40px;
-}
-
 // Container degli allenamenti
 .workouts-container {
   display: flex;
@@ -140,21 +136,6 @@
 // Switch container
 .container-switch {
   margin-bottom: 2rem;
-}
-
-// Modal body styling
-.add-workout-modal-description {
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.workout-name-input-container {
-  width: 100%;
-  display: flex;
-
-  mat-form-field {
-    width: 100%;
-  }
 }
 
 .section-container {
@@ -293,36 +274,18 @@
   pointer-events: none;
 }
 
-// Bagliore sfocato reso con radial-gradient invece di filter:blur(60px) su
-// una forma piena: filter:blur è un passaggio di rendering separato (deve
-// campionare pixel intorno a ogni pixel per ~60px di raggio), mentre un
-// gradiente è un normale paint di background. La differenza pratica: QUALSIASI
-// backdrop-filter disegnato sopra questa zona (i popup di conferma con la X,
-// il popup cronologia) doveva prima ricampionare questo layer GIÀ sfocato —
-// un "blur di blur" ricalcolato a ogni frame di scale/opacity del popup, ed è
-// la causa dietro lo sfarfallio riportato (presente ovunque su queste pagine,
-// non solo vicino all'header, perché .gradient-effect è ancorato a <html>
-// fixed e quindi sempre nella stessa posizione a schermo, indipendentemente
-// dallo scroll). "ellipse closest-side" replica esattamente l'estensione
-// dell'ellisse originale (border-radius:50% su un box 450x650/225x325 = la
-// stessa ellisse), con la sfumatura incorporata nei color-stop al posto del
-// post-blur — la rotazione di 45deg viene omessa: dopo un blur di questa
-// entità l'ellisse ruotata era comunque visivamente indistinguibile da una
-// non ruotata.
 .ellips-1 {
   position: absolute;
   left: -68px;
   bottom: -100px;
   z-index: -1;
+  background-color: #00ffe1;
+  opacity: 20%;
   width: 450px;
   height: 650px;
-  background: radial-gradient(
-    ellipse closest-side at center,
-    rgba(0, 255, 225, 0.2) 0%,
-    rgba(0, 255, 225, 0.14) 45%,
-    rgba(0, 255, 225, 0.05) 75%,
-    rgba(0, 255, 225, 0) 100%
-  );
+  border-radius: 50%;
+  transform: rotate(45deg);
+  filter: blur(60px);
 }
 
 .ellips-2 {
@@ -330,13 +293,11 @@
   left: 60px;
   bottom: -72px;
   z-index: -1;
+  background-color: #fff;
+  opacity: 5%;
   width: 225px;
   height: 325px;
-  background: radial-gradient(
-    ellipse closest-side at center,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.035) 45%,
-    rgba(255, 255, 255, 0.012) 75%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  border-radius: 50%;
+  transform: rotate(45deg);
+  filter: blur(60px);
 }

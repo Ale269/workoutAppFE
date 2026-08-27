@@ -1,0 +1,123 @@
+@use "@angular/material" as mat;
+
+:host {
+  display: contents;
+
+  @include mat.form-field-overrides(
+    (
+      outlined-outline-color: rgba(255, 255, 255, 0.3),
+      outlined-input-text-color: "#fff",
+      outlined-hover-outline-color: rgba(255, 255, 255, 0.3),
+      outlined-focus-outline-color: "#fff",
+      outlined-focus-label-text-color: "#fff",
+    )
+  );
+}
+
+.prompt-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: transparent;
+  // Centra il pannello con flexbox invece che con top/left/transform: la
+  // scala GSAP anima anche "transform", e comporre le due cose (centratura +
+  // scale) sullo stesso transform va evitato — qui il pannello resta un
+  // figlio centrato normalmente, GSAP anima solo il proprio.
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+// Stessa ricetta glass + bordo a gradiente di app-confirm-popup, ma centrato
+// invece che ancorato a un trigger (vedi PromptPopupService: qui c'è un
+// campo di testo che apre la tastiera, e ancorarsi al pulsante che lo ha
+// aperto rischierebbe di finire coperto dalla tastiera stessa).
+.prompt-popup-panel {
+  position: relative;
+  z-index: 1000;
+  width: 100%;
+  max-width: min(320px, calc(100vw - 32px));
+  padding: 0 16px;
+  border-radius: 24px;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  opacity: 0; // gsap la mostra animando
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    padding: 1px;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(255, 255, 255, 0.4) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+.prompt-popup-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: "poppins";
+  margin: 0;
+  padding: 24px 0 16px;
+}
+
+.prompt-popup-input-row {
+  padding-bottom: 16px;
+
+  mat-form-field {
+    margin-bottom: 16px;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+}
+
+.prompt-popup-hint {
+  color: #808080;
+  font-size: 12px;
+  font-family: "poppins";
+}
+
+.prompt-popup-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.prompt-popup-action {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:active {
+    opacity: 0.6;
+  }
+}
+
+.prompt-popup-cancel {
+  color: #fff;
+}

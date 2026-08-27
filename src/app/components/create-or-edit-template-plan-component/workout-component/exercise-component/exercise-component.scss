@@ -336,6 +336,15 @@ mat-form-field {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  // Un flex item con flex-shrink:0 può essere reso PIÙ LARGO del width
+  // dichiarato se il contenuto (es. una card serie coi numeri che non va a
+  // capo) supera quella larghezza: senza min-width:0 il browser usa come
+  // minimo il "content size" del contenuto invece di 0, e la slide sfora
+  // in quella successiva. Lo spec prevede che con overflow non-visible
+  // (già presente qui) il minimo automatico sia 0 — ma non tutti i motori
+  // (WebKit su iOS incluso) lo applicano in modo affidabile: va dichiarato
+  // esplicitamente.
+  min-width: 0;
 }
 
 .history-session-date {
@@ -431,6 +440,7 @@ mat-form-field {
   // il pannello intero.
   flex: 1;
   min-height: 0;
+  min-width: 0; // vedi commento su .history-session-slide
   // Scroll verticale NATIVO (momentum e rubber-band inclusi): ora è l'unico
   // scroller del popup, quindi non deve più contendersi il gesto con nessuno.
   overflow-y: auto;
@@ -450,16 +460,19 @@ mat-form-field {
   position: relative;
   padding: 16px;
   z-index: 1;
+  min-width: 0; // vedi commento su .history-session-slide
 }
 
 .history-serie-numerator-container {
   width: 40%;
+  min-width: 0;
 }
 
 .history-serie-data-container {
   display: flex;
   width: 60%;
   gap: 16px;
+  min-width: 0;
 }
 
 .history-serie-ripetizioni-container,
@@ -468,6 +481,7 @@ mat-form-field {
   flex: 1;
   gap: 8px;
   width: 50%;
+  min-width: 0;
 }
 
 // Indicatore slide attiva stile .visualizer-allenamento-container

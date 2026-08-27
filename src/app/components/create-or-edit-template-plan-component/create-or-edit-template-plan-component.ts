@@ -5,7 +5,6 @@ import {
   OnInit,
   ViewChild,
   OnDestroy,
-  TemplateRef,
   ChangeDetectorRef,
   ElementRef,
   ViewChildren,
@@ -16,11 +15,11 @@ import { CreateOrEditTemplatePlanService } from "./create-or-edit-template-plan-
 
 import { ExerciseIconColorPipe } from "../../core/pipes/exercise-icon-color";
 import { WorkoutComponent } from "./workout-component/workout-component";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatLabel, MatFormField, MatInput } from "@angular/material/input";
-import { ModalService } from "src/app/core/services/modal.service";
 import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
+import { PromptPopupService } from "src/app/core/services/prompt-popup.service";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -82,13 +81,6 @@ export class CreateOrEditTemplatePlanComponent
   @ViewChild("detailView") detailView!: ElementRef<HTMLElement>;
   @ViewChildren("workoutCard") allenamentoCards!: QueryList<ElementRef>;
 
-  @ViewChild("headerAddWorkout") headerAddWorkout!: TemplateRef<any>;
-  @ViewChild("bodyAddWorkout") bodyAddWorkout!: TemplateRef<any>;
-  @ViewChild("footerCloseAddWorkout")
-  footerCloseAddWorkout!: TemplateRef<any>;
-  @ViewChild("footerConfirmAddWorkout")
-  footerConfirmAddWorkout!: TemplateRef<any>;
-
   @ViewChild("deleteSchedaAnchor", { read: ElementRef })
   deleteSchedaAnchor!: ElementRef<HTMLElement>;
 
@@ -117,8 +109,6 @@ export class CreateOrEditTemplatePlanComponent
   private initSpinnerId: string | null = null;
   private saveSpinnerId: string | null = null;
 
-  public newWorkoutNameControl!: FormControl<string>;
-
   private currentSpinnerId: string | null = null;
 
   private autoSaveIntervalId: any = null;
@@ -144,8 +134,8 @@ export class CreateOrEditTemplatePlanComponent
   constructor(
     private errorHandlerService: ErrorHandlerService,
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
-    private modalService: ModalService,
     private confirmPopupService: ConfirmPopupService,
+    private promptPopupService: PromptPopupService,
     private spinnerService: SpinnerService,
     private cdr: ChangeDetectorRef,
     private router: Router,
@@ -695,15 +685,15 @@ export class CreateOrEditTemplatePlanComponent
 
   openAddWorkoutModal() {
     try {
-      this.initializeNewWorkoutControl();
+      const placeholder = `Giorno ${this.nextWorkoutPosition()}`;
 
-      this.modalService.open({
-        warning: false,
-        headerTemplate: this.headerAddWorkout,
-        bodyTemplate: this.bodyAddWorkout,
-        footerCloseTemplate: this.footerCloseAddWorkout,
-        footerConfirmTemplate: this.footerConfirmAddWorkout,
-        onConfirm: () => this.addWorkout(),
+      this.promptPopupService.open({
+        title: "Aggiungi allenamento",
+        inputLabel: "Nome allenamento",
+        placeholder,
+        hint: "Se lasci vuoto, verrà usato il nome predefinito",
+        confirmText: "Aggiungi",
+        onConfirm: (value) => this.addWorkout(value, placeholder),
       });
     } catch (error) {
       this.errorHandlerService.logError(
@@ -713,29 +703,17 @@ export class CreateOrEditTemplatePlanComponent
     }
   }
 
-  private initializeNewWorkoutControl(): void {
-    const nextPosition =
+  private nextWorkoutPosition(): number {
+    return (
       (this.createOrEditTemplatePlanService.formScheda?.listaAllenamentiForm
-        ?.length || 0) + 1;
-
-    this.newWorkoutNameControl = new FormControl<string>("", {
-      nonNullable: true,
-    });
+        ?.length || 0) + 1
+    );
   }
 
-  addWorkout() {
+  addWorkout(value: string, placeholder: string) {
     try {
       this.hapticService.trigger("medium");
-      let workoutName = this.newWorkoutNameControl.value?.trim();
-
-      const nextPosition =
-        (this.createOrEditTemplatePlanService.formScheda?.listaAllenamentiForm
-          ?.length || 0) + 1;
-      const placeholder = `Giorno ${nextPosition}`;
-
-      if (!workoutName || workoutName === placeholder) {
-        workoutName = placeholder;
-      }
+      const workoutName = value?.trim() || placeholder;
 
       this.createOrEditTemplatePlanService.AddWorkout(workoutName);
 

@@ -346,7 +346,13 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   private async maintainButtonPosition(callback: () => void): Promise<void> {
     try {
-      const scroller = this.elementRef.nativeElement.closest('.page-scroller') as HTMLElement | null;
+      // .page-scroller è ora DENTRO il template di questo componente (non più
+      // un antenato: prima viveva nella pagina genitore, l'ho spostato qui
+      // per tenere la barra di pulsanti floating fuori dal contenitore che
+      // scrolla, altrimenti su iOS ricadeva nella sua scroll view). closest()
+      // cerca solo tra host e antenati, quindi con la nuova struttura
+      // restituiva sempre null: querySelector cerca invece tra i discendenti.
+      const scroller = this.elementRef.nativeElement.querySelector('.page-scroller') as HTMLElement | null;
       if (!scroller) return;
 
       const heightBefore = scroller.scrollHeight;

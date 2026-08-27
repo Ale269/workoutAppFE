@@ -189,6 +189,11 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.carouselTouchCleanup?.();
+    // Se il componente viene distrutto col popup ancora aperto (es. cambio
+    // esercizio, navigazione via) il blocco scroll non deve restare appeso.
+    if (this.isHistoryPopupOpen) {
+      document.body.classList.remove("history-popup-lock");
+    }
   }
 
   /**
@@ -588,6 +593,13 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     if (this.isHistoryPopupOpen || this.isHistoryPopupAnimating) return;
     this.isHistoryPopupOpen = true;
     this.isHistoryPopupAnimating = true;
+    // Blocca lo scroll della pagina sottostante: senza, un tocco che parte
+    // su una zona non interattiva del popup (non l'overlay trasparente, non
+    // la lista scrollabile) risale come scroll nativo al .page-scroller
+    // sotto, e la pagina scrolla mentre il popup resta visivamente aperto.
+    // Il popup NON ha un service globale come confirm-popup, quindi il
+    // blocco è gestito qui invece che nell'effect di AppComponent.
+    document.body.classList.add("history-popup-lock");
     this.cdr.detectChanges();
     // Fuori dalla zona Angular: il ticker rAF di GSAP è intercettato da
     // Zone.js e, se resta dentro, ogni frame del tween innesca un ciclo di
@@ -792,6 +804,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     if (!panel) {
       this.isHistoryPopupOpen = false;
       this.isHistoryPopupAnimating = false;
+      document.body.classList.remove("history-popup-lock");
       return;
     }
 
@@ -807,6 +820,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
           this.ngZone.run(() => {
             this.isHistoryPopupOpen = false;
             this.isHistoryPopupAnimating = false;
+            document.body.classList.remove("history-popup-lock");
             this.cdr.detectChanges();
           });
         },
