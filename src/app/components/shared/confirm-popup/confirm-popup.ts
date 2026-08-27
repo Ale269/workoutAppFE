@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -38,6 +39,11 @@ import { positionPopupPanel } from "src/app/components/shared/popup-positioning"
   selector: "app-confirm-popup",
   templateUrl: "./confirm-popup.html",
   styleUrl: "./confirm-popup.scss",
+  // OnPush: il popup vive alla radice dell'app, quindi ogni tick applicativo
+  // (ce n'è uno per ogni tap in zona, ovunque nell'app) attraverserebbe
+  // anche questa view. Lo stato qui cambia solo da open()/animateOutAndThen(),
+  // che chiamano già detectChanges() esplicitamente.
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmPopup {
   @ViewChild("panel") panelRef?: ElementRef<HTMLElement>;
@@ -135,13 +141,34 @@ export class ConfirmPopup {
         ease: "back.in(1.4)",
         force3D: true,
         onComplete: () => {
-          this.zone.run(() => {
-            this.isAnimating = false;
-            // Azzerato PRIMA di avvisare il service: quando l'effect rivede
-            // active()===null non c'è più nulla da chiudere.
-            this.activeConfig = null;
-            afterClose();
-            this.cdr.detectChanges();
+          // Il teardown NON va eseguito qui. Questo callback gira dentro il
+          // rAF del ticker GSAP, cioè dentro il budget del frame in cui il
+          // browser deve ancora dipingere l'ULTIMO fotogramma dell'animazione.
+          // Il teardown costa parecchio più di un frame:
+          //   1. afterClose() scrive il signal del service, che ha come
+          //      consumer un effect su AppComponent (il componente ROOT):
+          //      Angular pianifica quindi una change detection sull'intero
+          //      albero, non solo su questa view;
+          //   2. quell'effect tocca la classe di scroll-lock sul body;
+          //   3. la CD successiva rilegge il layout appena invalidato.
+          // Risultato: il frame finale non viene mai dipinto, il pannello
+          // resta immobile a scale ~0.4 e poi sparisce di scatto quando il
+          // main thread si libera — esattamente il sintomo riportato.
+          // Due frame di respiro: il primo dipinge la fine dell'animazione,
+          // nel secondo si smonta tutto, quando non c'è più nulla di visibile.
+          // (Il pannello resta nel DOM ~33ms in più a opacity 0: innocuo,
+          // il guard isAnimating ignora già i tap in questa finestra.)
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              this.zone.run(() => {
+                this.isAnimating = false;
+                // Azzerato PRIMA di avvisare il service: quando l'effect rivede
+                // active()===null non c'è più nulla da chiudere.
+                this.activeConfig = null;
+                afterClose();
+                this.cdr.detectChanges();
+              });
+            });
           });
         },
       });

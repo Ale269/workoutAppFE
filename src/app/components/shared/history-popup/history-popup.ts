@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -33,6 +34,10 @@ import { positionPopupPanel } from "src/app/components/shared/popup-positioning"
   imports: [CommonModule, DatePipe],
   templateUrl: "./history-popup.html",
   styleUrl: "./history-popup.scss",
+  // OnPush: vedi il commento su ConfirmPopup. Lo stato cambia solo da
+  // open(), onOverlayClick() e dallo swipe del carosello, che chiamano già
+  // detectChanges() esplicitamente.
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistoryPopup {
   @ViewChild("panel") panelRef?: ElementRef<HTMLElement>;
@@ -285,13 +290,24 @@ export class HistoryPopup {
         ease: "back.in(1.4)",
         force3D: true,
         onComplete: () => {
-          this.zone.run(() => {
-            this.isAnimating = false;
-            // Azzerato PRIMA di avvisare il service: quando l'effect rivede
-            // active()===null non c'è più nulla da chiudere.
-            this.activeConfig = null;
-            this.historyPopupService.close();
-            this.cdr.detectChanges();
+          // Vedi il commento esteso in ConfirmPopup.animateOutAndThen(): il
+          // teardown (signal del service -> effect su AppComponent -> classe
+          // di scroll-lock -> change detection sull'intero albero) costa più
+          // di un frame, e questo callback gira dentro il rAF di GSAP, cioè
+          // dentro il frame in cui va ancora dipinto l'ultimo fotogramma.
+          // Due frame di respiro: il primo dipinge la fine dell'animazione,
+          // nel secondo si smonta, quando non c'è più nulla di visibile.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              this.zone.run(() => {
+                this.isAnimating = false;
+                // Azzerato PRIMA di avvisare il service: quando l'effect rivede
+                // active()===null non c'è più nulla da chiudere.
+                this.activeConfig = null;
+                this.historyPopupService.close();
+                this.cdr.detectChanges();
+              });
+            });
           });
         },
       });

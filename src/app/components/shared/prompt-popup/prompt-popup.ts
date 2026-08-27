@@ -115,13 +115,21 @@ export class PromptPopup {
         ease: "back.in(1.4)",
         force3D: true,
         onComplete: () => {
-          this.zone.run(() => {
-            this.isAnimating = false;
-            // Azzerato PRIMA di avvisare il service: quando l'effect rivede
-            // active()===null non c'è più nulla da chiudere.
-            this.activeConfig = null;
-            afterClose();
-            this.cdr.detectChanges();
+          // Vedi il commento esteso in ConfirmPopup.animateOutAndThen(): il
+          // teardown costa più di un frame e questo callback gira dentro il
+          // rAF di GSAP, cioè dentro il frame in cui va ancora dipinto
+          // l'ultimo fotogramma dell'animazione.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              this.zone.run(() => {
+                this.isAnimating = false;
+                // Azzerato PRIMA di avvisare il service: quando l'effect rivede
+                // active()===null non c'è più nulla da chiudere.
+                this.activeConfig = null;
+                afterClose();
+                this.cdr.detectChanges();
+              });
+            });
           });
         },
       });

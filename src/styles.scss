@@ -155,10 +155,22 @@ body {
 }
 
 /* Regola per bloccare lo scroll del body quando il modale è aperto */
+// NB: "padding-right: 15px" è stato RIMOSSO da qui. Era l'idioma desktop per
+// compensare la scomparsa della scrollbar del body, ma in questa app non ha
+// nulla da compensare: il body non scrolla mai (è position:fixed +
+// overflow:hidden già di suo, vedi sopra) e lo scroller vero è .page-scroller,
+// che nasconde la propria scrollbar. Costava però carissimo: body è
+// positioned, quindi è il containing block di .page-scroller
+// (position:absolute; width:100%); cambiarne il padding cambia la larghezza
+// dello scroller e forza il RILAYOUT DELL'INTERA PAGINA — centinaia di
+// mat-form-field e card da riposizionare — ogni volta che un overlay si apre
+// o si chiude. Su pagine di editing pesanti quel layout sincrono si mangiava
+// il frame finale dell'animazione di chiusura dei popup glass (il pannello si
+// bloccava a scale ~0.4 e poi spariva di scatto).
+// "overflow: hidden" resta solo come documentazione dell'intento: è
+// ridondante (body ce l'ha già incondizionatamente) e quindi gratuito.
 body.no-scroll {
   overflow: hidden;
-  padding-right: 15px;
-  /* Adatta al tuo sistema operativo */
 }
 
 /* Impedisce che il tocco su elementi fixed propaghi scroll al body (iOS rubber-band) */
