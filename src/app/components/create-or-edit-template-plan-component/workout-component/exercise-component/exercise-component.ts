@@ -11,7 +11,6 @@ import {
   OnDestroy,
   ChangeDetectorRef,
   ElementRef,
-  NgZone,
 } from "@angular/core";
 import { EsercizioForm } from "../../exercise-form";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
@@ -20,6 +19,7 @@ import { ErrorHandlerService } from "src/app/core/services/error-handler.service
 import { SetComponent } from "./set-component/set-component";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
+import { HistoryPopupService } from "src/app/core/services/history-popup.service";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { AllenamentoForm } from "../../workout-form";
@@ -42,8 +42,6 @@ import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { HapticService } from "src/app/core/services/haptic.service";
 import { HapticSwitchDirective } from "src/app/components/shared/directives/haptic-switch.directive";
 import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
-import gsap from "gsap";
-import { positionPopupPanel } from "src/app/components/shared/popup-positioning";
 
 @Component({
   selector: "app-exercise-component",
@@ -75,10 +73,6 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild("footerCloseHistoryTemplate")
   footerCloseHistoryTemplate!: TemplateRef<any>;
 
-  @ViewChild("sessionCarousel") sessionCarouselRef!: ElementRef<HTMLElement>;
-  @ViewChild("sessionTrack") sessionTrackRef?: ElementRef<HTMLElement>;
-  @ViewChild("historyPopupPanel") historyPopupPanelRef?: ElementRef<HTMLElement>;
-
   @Output() onDeleteExercise = new EventEmitter<number>();
 
   // Stato per la cronologia dell'ultimo allenamento
@@ -86,21 +80,9 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   public lastTrainingLoading: boolean = false;
   public lastTrainingError: boolean = false;
 
-  // Stato per la cronologia degli ultimi N allenamenti
-  public lastNTrainingsData: LastTrainingExerciseData[] = [];
-  public lastNTrainingsError: boolean = false;
   public readonly lastNLimit: number = 3;
-  public activeSessionIndex: number = 0;
-
-  // Popup cronologia "Ultimi N allenamenti": stesso stile/logica di
-  // posizionamento di app-confirm-popup / app-popup-option-button
-  public isHistoryPopupOpen: boolean = false;
-  private isHistoryPopupAnimating: boolean = false;
-  private carouselTouchCleanup?: () => void;
-  /** Chiamata in corso: il popup si apre solo quando i dati sono pronti */
+  /** Chiamata in corso: il popup (app-history-popup) si apre solo a dati pronti */
   private isHistoryPopupLoading: boolean = false;
-  private historyPopupTriggerElement: HTMLElement | null = null;
-  public historyPopupTransformOrigin: string = "bottom right";
 
   public idMetodologiaControl!: FormControl<number | null>;
   public idTipoEsercizioControl!: FormControl<number | null>;
@@ -114,6 +96,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     private errorHandlerService: ErrorHandlerService,
     private modalService: ModalService,
     private confirmPopupService: ConfirmPopupService,
+    private historyPopupService: HistoryPopupService,
     private cdr: ChangeDetectorRef,
     private bottomSheetService: BottomSheetService,
     private exerciseService: ExerciseService,
@@ -124,7 +107,6 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     private sanitizer: DomSanitizer,
     private hapticService: HapticService,
     private bottomMenuService: BottomMenuService,
-    private ngZone: NgZone,
   ) {
     iconRegistry.addSvgIcon(
       "google-arrow",
@@ -188,12 +170,6 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     this.serieSubscriptions$.complete();
     this.destroy$.next();
     this.destroy$.complete();
-    this.carouselTouchCleanup?.();
-    // Se il componente viene distrutto col popup ancora aperto (es. cambio
-    // esercizio, navigazione via) il blocco scroll non deve restare appeso.
-    if (this.isHistoryPopupOpen) {
-      document.body.classList.remove("history-popup-lock");
-    }
   }
 
   /**
@@ -532,28 +508,22 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
 
       // Una richiesta per volta: il popup si apre solo a dati pronti, quindi
       // senza questa guardia un doppio tap lancerebbe due chiamate.
-      if (this.isHistoryPopupOpen || this.isHistoryPopupLoading) {
+      if (this.isHistoryPopupLoading) {
         return;
       }
 
       this.hapticService.trigger('light');
-      this.historyPopupTriggerElement = ((event.currentTarget as HTMLElement).closest(
+      const triggerElement = ((event.currentTarget as HTMLElement).closest(
         '.delete-icon-element-container',
       ) || event.currentTarget) as HTMLElement;
 
-      // Reset dello stato
-      this.lastNTrainingsData = [];
-      this.lastNTrainingsError = false;
-      this.activeSessionIndex = 0;
       this.isHistoryPopupLoading = true;
 
-      // NB: il popup NON si apre qui. Prima si attende la risposta, così
-      // l'altezza e la larghezza misurate sono già quelle del contenuto
-      // definitivo: solo allora si decide lo spigolo di ancoraggio e la
-      // direzione dell'animazione. Aprire subito con lo stato "Caricamento"
-      // significava misurare un pannello alto pochi pixel, scegliere la
-      // direzione sbagliata e poi riposizionare a metà animazione — da cui
-      // il flash e l'espansione incoerente.
+      // Il popup (ora in HistoryPopupService/HistoryPopup, montato alla
+      // radice dell'app) si apre solo a dati pronti: aprirlo subito con uno
+      // stato "Caricamento" significherebbe misurare un pannello alto pochi
+      // pixel, scegliere la direzione sbagliata e poi riposizionare a metà
+      // animazione — da cui il flash e l'espansione incoerente.
       this.workoutService
         .getLastNTrainingsForExercise(
           user.userId,
@@ -564,17 +534,22 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         .subscribe({
           next: (response) => {
             this.isHistoryPopupLoading = false;
-            if (response.esercizi && response.esercizi.length > 0) {
-              this.lastNTrainingsData = response.esercizi;
-            } else {
-              this.lastNTrainingsError = true;
-            }
-            this.openHistoryPopup();
+            const data = response.esercizi ?? [];
+            this.historyPopupService.open({
+              triggerElement,
+              lastNLimit: this.lastNLimit,
+              data,
+              error: data.length === 0,
+            });
           },
           error: (error) => {
             this.isHistoryPopupLoading = false;
-            this.lastNTrainingsError = true;
-            this.openHistoryPopup();
+            this.historyPopupService.open({
+              triggerElement,
+              lastNLimit: this.lastNLimit,
+              data: [],
+              error: true,
+            });
             this.errorHandlerService.logError(
               error,
               "ExerciseComponent.openLastNTrainingHistory",
@@ -587,244 +562,5 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         "ExerciseComponent.openLastNTrainingHistory",
       );
     }
-  }
-
-  private openHistoryPopup(): void {
-    if (this.isHistoryPopupOpen || this.isHistoryPopupAnimating) return;
-    this.isHistoryPopupOpen = true;
-    this.isHistoryPopupAnimating = true;
-    // Blocca lo scroll della pagina sottostante: senza, un tocco che parte
-    // su una zona non interattiva del popup (non l'overlay trasparente, non
-    // la lista scrollabile) risale come scroll nativo al .page-scroller
-    // sotto, e la pagina scrolla mentre il popup resta visivamente aperto.
-    // Il popup NON ha un service globale come confirm-popup, quindi il
-    // blocco è gestito qui invece che nell'effect di AppComponent.
-    document.body.classList.add("history-popup-lock");
-    this.cdr.detectChanges();
-    // Fuori dalla zona Angular: il ticker rAF di GSAP è intercettato da
-    // Zone.js e, se resta dentro, ogni frame del tween innesca un ciclo di
-    // change detection sull'intera app — pagine di editing con centinaia di
-    // form control ne risentono, causando gli scatti visti sul confirm-popup.
-    this.ngZone.runOutsideAngular(() => {
-      requestAnimationFrame(() => {
-        this.positionAndAnimateHistoryPopupIn();
-      });
-    });
-  }
-
-  private positionAndAnimateHistoryPopupIn(): void {
-    const panel = this.historyPopupPanelRef?.nativeElement;
-    if (!panel || !this.historyPopupTriggerElement) {
-      this.isHistoryPopupAnimating = false;
-      return;
-    }
-
-    const { transformOrigin } = positionPopupPanel(panel, this.historyPopupTriggerElement);
-    this.historyPopupTransformOrigin = transformOrigin;
-
-    if (this.sessionCarouselRef?.nativeElement) {
-      this.setupCarouselTouchHandling(this.sessionCarouselRef.nativeElement);
-    }
-
-    gsap.fromTo(
-      panel,
-      {
-        opacity: 0,
-        scale: 0.4,
-        transformOrigin: this.historyPopupTransformOrigin,
-      },
-      {
-        opacity: 1,
-        scale: 1,
-        duration: 0.25,
-        ease: "back.out(1.4)",
-        force3D: true,
-        onComplete: () => {
-          this.ngZone.run(() => {
-            this.isHistoryPopupAnimating = false;
-          });
-        },
-      },
-    );
-  }
-
-  /**
-   * Swipe orizzontale per cambiare sessione nel popup cronologia.
-   *
-   * Il problema di partenza: il carosello scorreva in ORIZZONTALE e
-   * .history-serie-list, al suo interno, in VERTICALE — due scroller NATIVI
-   * annidati su assi diversi. Su iOS lo scroller nativo più interno tende a
-   * reclamare il gesto a prescindere dalla direzione reale, e touch-action
-   * non basta a governare l'handoff fra i due.
-   *
-   * La soluzione non è arbitrare meglio quel conflitto, ma eliminarlo: il
-   * carosello non è più uno scroller (è una viewport con overflow:hidden) e
-   * il cambio sessione avviene spostando .history-sessions-track con un
-   * transform. Resta così UN SOLO scroller nativo, quello verticale della
-   * lista, che continua a funzionare da solo con momentum e rubber-band —
-   * qui non lo tocchiamo affatto.
-   *
-   * Di conseguenza questo handler si limita a: capire al primo movimento se
-   * il gesto è orizzontale (altrimenti lascia fare al nativo), seguire il
-   * dito col transform del track, e allo stacco agganciare la sessione più
-   * vicina. Tutti i listener restano passive: non serve preventDefault,
-   * perché touch-action:pan-y sulla lista già impedisce che uno swipe
-   * orizzontale produca scroll nativo.
-   */
-  private setupCarouselTouchHandling(carousel: HTMLElement): void {
-    // Idempotente: se venisse richiamato due volte sullo stesso pannello,
-    // non accumula listener duplicati.
-    this.carouselTouchCleanup?.();
-
-    const track = this.sessionTrackRef?.nativeElement;
-    if (!track) return;
-
-    /** px di movimento prima di decidere la direzione del gesto */
-    const AXIS_LOCK_THRESHOLD = 10;
-    /** frazione di slide oltre la quale il rilascio cambia sessione */
-    const SWIPE_COMMIT_RATIO = 0.2;
-    /** quanto "frena" il trascinamento oltre la prima/ultima sessione */
-    const EDGE_RESISTANCE = 0.3;
-
-    let startX = 0;
-    let startY = 0;
-    let lockedAxis: "x" | "y" | null = null;
-    let isTracking = false;
-
-    gsap.set(track, { x: 0 });
-
-    const lastIndex = () => Math.max(0, this.lastNTrainingsData.length - 1);
-
-    const onTouchStart = (event: TouchEvent) => {
-      if (event.touches.length !== 1) return;
-      startX = event.touches[0].clientX;
-      startY = event.touches[0].clientY;
-      lockedAxis = null;
-      isTracking = true;
-      gsap.killTweensOf(track);
-    };
-
-    const onTouchMove = (event: TouchEvent) => {
-      if (!isTracking || event.touches.length !== 1) return;
-
-      const dx = event.touches[0].clientX - startX;
-      const dy = event.touches[0].clientY - startY;
-
-      if (!lockedAxis) {
-        if (
-          Math.abs(dx) < AXIS_LOCK_THRESHOLD &&
-          Math.abs(dy) < AXIS_LOCK_THRESHOLD
-        ) {
-          return; // troppo presto per capire la direzione
-        }
-        lockedAxis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-      }
-
-      // Verticale: non facciamo NULLA e non chiamiamo preventDefault — se ne
-      // occupa lo scroll nativo della lista (touch-action:pan-y). È il motivo
-      // per cui i listener possono restare tutti passive.
-      if (lockedAxis !== "x") return;
-
-      const width = carousel.clientWidth;
-      const min = -lastIndex() * width;
-      let offset = -this.activeSessionIndex * width + dx;
-
-      // Oltre i bordi il track segue il dito smorzato, invece di staccarsi
-      if (offset > 0) {
-        offset *= EDGE_RESISTANCE;
-      } else if (offset < min) {
-        offset = min + (offset - min) * EDGE_RESISTANCE;
-      }
-
-      gsap.set(track, { x: offset });
-    };
-
-    const onTouchEnd = (event: TouchEvent) => {
-      if (!isTracking) return;
-      isTracking = false;
-
-      if (lockedAxis !== "x") {
-        lockedAxis = null;
-        return;
-      }
-      lockedAxis = null;
-
-      const width = carousel.clientWidth;
-      if (width <= 0) return;
-
-      const dx = (event.changedTouches[0]?.clientX ?? startX) - startX;
-      let target = this.activeSessionIndex;
-      if (Math.abs(dx) > width * SWIPE_COMMIT_RATIO) {
-        target += dx < 0 ? 1 : -1;
-      }
-      target = Math.min(Math.max(target, 0), lastIndex());
-
-      gsap.to(track, {
-        x: -target * width,
-        duration: 0.3,
-        ease: "power2.out",
-        force3D: true,
-      });
-
-      if (target !== this.activeSessionIndex) {
-        // Rientro in zona solo qui: è l'unico punto in cui cambia uno stato
-        // legato al template (i pallini indicatore).
-        this.ngZone.run(() => {
-          this.activeSessionIndex = target;
-          this.cdr.detectChanges();
-        });
-      }
-    };
-
-    // Tutti passive: non serve preventDefault (vedi onTouchMove), e restare
-    // passive evita di interferire con lo scroll nativo della lista. Fuori
-    // dalla zona Angular perché touchmove spara a 60-120Hz e ogni evento in
-    // zona innescherebbe un ciclo di change detection sull'intera app.
-    this.ngZone.runOutsideAngular(() => {
-      carousel.addEventListener("touchstart", onTouchStart, { passive: true });
-      carousel.addEventListener("touchmove", onTouchMove, { passive: true });
-      carousel.addEventListener("touchend", onTouchEnd, { passive: true });
-      carousel.addEventListener("touchcancel", onTouchEnd, { passive: true });
-    });
-
-    this.carouselTouchCleanup = () => {
-      carousel.removeEventListener("touchstart", onTouchStart);
-      carousel.removeEventListener("touchmove", onTouchMove);
-      carousel.removeEventListener("touchend", onTouchEnd);
-      carousel.removeEventListener("touchcancel", onTouchEnd);
-    };
-  }
-
-  closeHistoryPopup(): void {
-    if (!this.isHistoryPopupOpen || this.isHistoryPopupAnimating) return;
-
-    this.isHistoryPopupAnimating = true;
-    const panel = this.historyPopupPanelRef?.nativeElement;
-
-    if (!panel) {
-      this.isHistoryPopupOpen = false;
-      this.isHistoryPopupAnimating = false;
-      document.body.classList.remove("history-popup-lock");
-      return;
-    }
-
-    this.ngZone.runOutsideAngular(() => {
-      gsap.to(panel, {
-        opacity: 0,
-        scale: 0.4,
-        transformOrigin: this.historyPopupTransformOrigin,
-        duration: 0.2,
-        ease: "back.in(1.4)",
-        force3D: true,
-        onComplete: () => {
-          this.ngZone.run(() => {
-            this.isHistoryPopupOpen = false;
-            this.isHistoryPopupAnimating = false;
-            document.body.classList.remove("history-popup-lock");
-            this.cdr.detectChanges();
-          });
-        },
-      });
-    });
   }
 }

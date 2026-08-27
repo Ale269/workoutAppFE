@@ -60,4 +60,13 @@
   <!-- Prompt Popup — stessa logica di app-confirm-popup, ma centrato invece
        di ancorato a un trigger (ha un campo di testo che apre la tastiera). -->
   <app-prompt-popup></app-prompt-popup>
+
+  <!-- History Popup ("Ultimi N allenamenti") — stessa logica di
+       app-confirm-popup. Prima viveva dentro app-exercise-component, un
+       discendente di .page-scroller: un tocco/scroll sul popup poteva
+       "cadere" nello scroller nativo sottostante nonostante position:fixed,
+       perché la ricerca dello scroller segue la catena di antenati nel DOM,
+       non lo stacking visivo. Qui, come gli altri due popup, non è più
+       discendente di alcun .page-scroller. -->
+  <app-history-popup></app-history-popup>
 </div>

@@ -36,6 +36,8 @@ import { ConfirmPopup } from "./components/shared/confirm-popup/confirm-popup";
 import { ConfirmPopupService } from "./core/services/confirm-popup.service";
 import { PromptPopup } from "./components/shared/prompt-popup/prompt-popup";
 import { PromptPopupService } from "./core/services/prompt-popup.service";
+import { HistoryPopup } from "./components/shared/history-popup/history-popup";
+import { HistoryPopupService } from "./core/services/history-popup.service";
 import { HapticTapService } from "./core/services/haptic-tap.service";
 
 @Component({
@@ -56,6 +58,7 @@ import { HapticTapService } from "./core/services/haptic-tap.service";
     BottomMenuComponent,
     ConfirmPopup,
     PromptPopup,
+    HistoryPopup,
   ],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -68,6 +71,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   public bottomSheetService = inject(BottomSheetService);
   public confirmPopupService = inject(ConfirmPopupService);
   public promptPopupService = inject(PromptPopupService);
+  public historyPopupService = inject(HistoryPopupService);
   private translate = inject(TranslateService);
   private animationService = inject(AnimationService);
   public bottomMenuService = inject(BottomMenuService);
@@ -100,13 +104,12 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.updateMenuVisibility(event.urlAfterRedirects || event.url);
       });
 
-    // Monitor modali, bottom sheets, focus overlays e confirm-popup per
+    // Monitor modali, bottom sheets, focus overlays e i popup glass per
     // bloccare lo scroll. Senza il blocco, un tocco/scroll che parte su una
     // parte non interattiva del popup (es. il padding del pannello, non
     // l'overlay trasparente attorno) risale come scroll nativo al
     // .page-scroller sottostante: la pagina scrolla mentre il popup resta
-    // visivamente aperto. Il popup cronologia usa lo stesso blocco, gestito
-    // localmente in ExerciseComponent (il suo stato non è un service globale).
+    // visivamente aperto.
     effect(() => {
       const hasActiveModal = this.modalService.modals().length > 0;
       const hasActiveBottomSheet =
@@ -115,13 +118,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.focusOverlayService.activeOverlays().length > 0;
       const hasActiveConfirmPopup = this.confirmPopupService.active() !== null;
       const hasActivePromptPopup = this.promptPopupService.active() !== null;
+      const hasActiveHistoryPopup = this.historyPopupService.active() !== null;
 
       this.toggleBodyScroll(
         hasActiveModal ||
           hasActiveBottomSheet ||
           hasActiveFocusOverlay ||
           hasActiveConfirmPopup ||
-          hasActivePromptPopup
+          hasActivePromptPopup ||
+          hasActiveHistoryPopup
       );
     });
   }
