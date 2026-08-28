@@ -94,6 +94,8 @@ export class HapticTapService {
   private observer?: MutationObserver;
   private scanScheduled = false;
   private started = false;
+  /** Diagnostica temporanea: vedi setDiagnosticDisabled(). */
+  private diagnosticDisabled = false;
 
   /**
    * Attiva il feedback aptico su tutti gli elementi tappabili dell'app.
@@ -123,13 +125,52 @@ export class HapticTapService {
     // innescare change detection.
     this.zone.runOutsideAngular(() => {
       this.scanAndAttach();
-
-      this.observer = new MutationObserver(() => this.scheduleScan());
-      this.observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-      });
+      this.observe();
     });
+  }
+
+  private observe(): void {
+    this.observer = new MutationObserver(() => this.scheduleScan());
+    this.observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  /**
+   * DIAGNOSTICA TEMPORANEA — comandata dal pannello perf.
+   *
+   * Spegne del tutto il feedback aptico e RIMUOVE dal DOM gli overlay già
+   * iniettati. Serve a misurare non il costo della scansione (già noto, 1-2ms)
+   * ma quello di ciò che la scansione lascia dietro: fino a 128
+   * `<input type="checkbox" switch>`, che su Safari sono controlli NATIVI e
+   * vanno gestiti a ogni render. È un costo che si paga in pittura, invisibile
+   * a tutte le altre sonde.
+   */
+  setDiagnosticDisabled(disabled: boolean): void {
+    this.diagnosticDisabled = disabled;
+
+    if (disabled) {
+      this.observer?.disconnect();
+      this.observer = undefined;
+      document
+        .querySelectorAll('input[id^="haptic-switch-"]')
+        .forEach((el) => el.remove());
+      document
+        .querySelectorAll('label[for^="haptic-switch-"]')
+        .forEach((el) => el.remove());
+      document
+        .querySelectorAll("[" + ATTACHED_ATTR + "]")
+        .forEach((el) => el.removeAttribute(ATTACHED_ATTR));
+      return;
+    }
+
+    if (this.isIos()) {
+      this.zone.runOutsideAngular(() => {
+        this.scanAndAttach();
+        this.observe();
+      });
+    }
   }
 
   /** Coalescing: al massimo una scansione in coda, solo se il DOM è cambiato */
@@ -191,7 +232,7 @@ export class HapticTapService {
    */
   private scanAndAttach(): void {
     try {
-      if (!this.isIos()) {
+      if (!this.isIos() || this.diagnosticDisabled) {
         return;
       }
 

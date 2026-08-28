@@ -202,6 +202,18 @@ export class PerfProbeService {
   /** Battito su un thread separato: vedi il commento su `workerTicks`. */
   private startWorker(): void {
     try {
+      // FUORI dalla zona Angular, obbligatorio: ogni postMessage è un task
+      // che Zone.js intercetta e che fa scattare la change detection. Dentro
+      // la zona, il worker da solo generava decine di cicli di CD spuri —
+      // la sonda falsava la misura che doveva prendere.
+      this.zone.runOutsideAngular(() => this.spawnWorker());
+    } catch {
+      // Worker non disponibile: la sonda semplicemente non riporterà nulla.
+    }
+  }
+
+  private spawnWorker(): void {
+    try {
       const src = "setInterval(function(){postMessage(Date.now());},16);";
       const url = URL.createObjectURL(
         new Blob([src], { type: "text/javascript" }),

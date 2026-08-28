@@ -42,6 +42,7 @@ import { PromptPopupService } from "./core/services/prompt-popup.service";
 import { HistoryPopup } from "./components/shared/history-popup/history-popup";
 import { HistoryPopupService } from "./core/services/history-popup.service";
 import { HapticTapService } from "./core/services/haptic-tap.service";
+import { HAPTIC_DISABLED } from "./core/services/haptic.service";
 // Diagnostica temporanea del freeze alla chiusura degli overlay
 import { PerfProbeService } from "./core/services/perf-probe.service";
 import { PerfProbePanelComponent } from "./components/shared/perf-probe-panel/perf-probe-panel";
@@ -144,8 +145,13 @@ export class AppComponent
   ngOnInit(): void {
     console.log("✅ AppComponent inizializzato");
 
-    // Feedback aptico su tutti i pulsanti e le card cliccabili dell'app
-    this.hapticTapService.init();
+    // Feedback aptico su tutti i pulsanti e le card cliccabili dell'app.
+    // DISATTIVATO: vedi HAPTIC_DISABLED in haptic.service.ts. Senza init()
+    // non parte il MutationObserver globale e non viene iniettato alcun
+    // overlay switch nativo nel DOM.
+    if (!HAPTIC_DISABLED) {
+      this.hapticTapService.init();
+    }
 
     // CONTROLLO ERRORI CRITICI: Se ci sono errori critici dal bootstrap, naviga subito
     if (this.errorHandler.hasCriticalErrors()) {

@@ -1,5 +1,6 @@
 import { AfterViewInit, Directive, ElementRef, inject } from "@angular/core";
 import { HapticTapService } from "src/app/core/services/haptic-tap.service";
+import { HAPTIC_DISABLED } from "src/app/core/services/haptic.service";
 
 /**
  * Feedback aptico reale su iOS via overlay "switch" nativo.
@@ -21,6 +22,9 @@ export class HapticSwitchDirective implements AfterViewInit {
   private hapticTapService = inject(HapticTapService);
 
   ngAfterViewInit(): void {
+    if (HAPTIC_DISABLED) {
+      return;
+    }
     this.hapticTapService.attach(this.elementRef.nativeElement);
   }
 }

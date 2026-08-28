@@ -7,6 +7,20 @@ import { Injectable } from '@angular/core';
 export type HapticType = 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 'error';
 
 /**
+ * INTERRUTTORE DIAGNOSTICO — feedback aptico disattivato in tutta l'app.
+ *
+ * Spento alla sorgente in tre punti soli (qui, HapticSwitchDirective,
+ * AppComponent.ngOnInit) invece che nelle ~130 chiamate sparse nei
+ * componenti: il risultato è identico e si torna indietro rimettendo
+ * questa costante a `false`.
+ *
+ * Motivo: verificare se il blocco di ~650ms alla chiusura degli overlay
+ * su Safari iOS sparisce senza gli overlay switch nativi che
+ * HapticTapService inietta nel DOM (fino a 128 sulla pagina di edit).
+ */
+export const HAPTIC_DISABLED = true;
+
+/**
  * Servizio centralizzato per il feedback aptico.
  *
  * - Android: usa la Vibration API nativa (`navigator.vibrate`)
@@ -41,6 +55,9 @@ export class HapticService {
      * non supporta né Vibration API né il fallback iOS, non fa nulla.
      */
     trigger(type: HapticType = 'light'): void {
+        if (HAPTIC_DISABLED) {
+            return;
+        }
         this.explicitDuringGesture = true;
         try {
             if (this.supportsVibration()) {
@@ -64,6 +81,9 @@ export class HapticService {
      * ottengono due vibrazioni in fila per una sola interazione.
      */
     triggerTap(): void {
+        if (HAPTIC_DISABLED) {
+            return;
+        }
         this.explicitDuringGesture = false;
         setTimeout(() => {
             if (!this.explicitDuringGesture) {
