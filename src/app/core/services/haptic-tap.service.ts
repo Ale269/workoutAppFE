@@ -1,5 +1,6 @@
 import { Injectable, NgZone, inject } from "@angular/core";
 import { HapticService } from "./haptic.service";
+import { PerfProbeService } from "./perf-probe.service";
 
 /**
  * Elenco degli elementi "tappabili" dell'app a cui va applicato il feedback
@@ -87,6 +88,8 @@ const ATTACHED_ATTR = "data-haptic-tap";
 export class HapticTapService {
   private hapticService = inject(HapticService);
   private zone = inject(NgZone);
+  /** Diagnostica temporanea: no-op quando non si sta registrando. */
+  private probe = inject(PerfProbeService);
 
   private observer?: MutationObserver;
   private scanScheduled = false;
@@ -135,6 +138,7 @@ export class HapticTapService {
       return;
     }
     this.scanScheduled = true;
+    this.probe.mark("haptic:mutation");
     // requestIdleCallback e NON requestAnimationFrame: con rAF la scansione
     // finiva dentro il frame successivo alla mutazione, cioè esattamente nei
     // frame in cui l'app sta animando (chiusura di un popup, ritorno dal
@@ -142,6 +146,7 @@ export class HapticTapService {
     // esegue quando ha tempo libero; il timeout garantisce che non slitti
     // all'infinito su una pagina sempre occupata.
     this.scheduleIdle(() => {
+      this.probe.mark("haptic:idle-fire");
       this.scanScheduled = false;
       this.scanAndAttach();
     });
@@ -188,6 +193,8 @@ export class HapticTapService {
         return;
       }
 
+      this.probe.mark("haptic:scan-start");
+
       const candidates =
         document.querySelectorAll<HTMLElement>(TAPPABLE_SELECTORS);
 
@@ -209,6 +216,11 @@ export class HapticTapService {
       }
 
       if (toAttach.length === 0) {
+        this.probe.mark(
+          "haptic:reads-done",
+          "cand=" + candidates.length + " nuovi=0",
+        );
+        this.probe.mark("haptic:scan-end");
         return;
       }
 
@@ -217,11 +229,18 @@ export class HapticTapService {
         (host) => getComputedStyle(host).position === "static",
       );
 
+      this.probe.mark(
+        "haptic:reads-done",
+        "cand=" + candidates.length + " nuovi=" + toAttach.length,
+      );
+
       // ---- FASE 2: sole scritture ----
       toAttach.forEach((host, i) => {
         host.setAttribute(ATTACHED_ATTR, "");
         this.attachSwitchOverlay(host, needsRelative[i]);
       });
+
+      this.probe.mark("haptic:scan-end");
     } catch {
       // Il feedback aptico non è mai critico per il funzionamento dell'app
     }

@@ -39,6 +39,9 @@ import { PromptPopupService } from "./core/services/prompt-popup.service";
 import { HistoryPopup } from "./components/shared/history-popup/history-popup";
 import { HistoryPopupService } from "./core/services/history-popup.service";
 import { HapticTapService } from "./core/services/haptic-tap.service";
+// Diagnostica temporanea del freeze alla chiusura degli overlay
+import { PerfProbeService } from "./core/services/perf-probe.service";
+import { PerfProbePanelComponent } from "./components/shared/perf-probe-panel/perf-probe-panel";
 
 @Component({
   selector: "app-root",
@@ -59,6 +62,7 @@ import { HapticTapService } from "./core/services/haptic-tap.service";
     ConfirmPopup,
     PromptPopup,
     HistoryPopup,
+    PerfProbePanelComponent,
   ],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -76,6 +80,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private animationService = inject(AnimationService);
   public bottomMenuService = inject(BottomMenuService);
   private hapticTapService = inject(HapticTapService);
+  private perfProbe = inject(PerfProbeService);
 
   public MenuIsVisible: boolean = false;
 
@@ -185,11 +190,18 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private toggleBodyScroll(disable: boolean): void {
     if (typeof document !== "undefined") {
+      // Diagnostica temporanea: questo effect scatta per TUTTI gli overlay
+      // (modal, bottom sheet, focus overlay, confirm, prompt, history),
+      // quindi è il punto giusto per marcare il confine apri/chiudi.
+      this.perfProbe.mark(disable ? "overlay:open" : "overlay:close");
+
       if (disable) {
         document.body.classList.add("no-scroll");
       } else {
         document.body.classList.remove("no-scroll");
       }
+
+      this.perfProbe.mark(disable ? "no-scroll:added" : "no-scroll:removed");
     }
   }
 
