@@ -173,6 +173,16 @@ body.no-scroll {
   overflow: hidden;
 }
 
+/* DIAGNOSTICA TEMPORANEA — attivata dal pannello perf, da rimuovere insieme a
+   PerfProbeService. Azzera ogni backdrop-filter per misurare quanto pesa il
+   teardown dei layer sfocati alla chiusura degli overlay su Safari iOS. */
+html.perf-no-blur *,
+html.perf-no-blur *::before,
+html.perf-no-blur *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
 /* Impedisce che il tocco su elementi fixed propaghi scroll al body (iOS rubber-band) */
 .floating-static-button-container,
 .floating-double-buttons-container {

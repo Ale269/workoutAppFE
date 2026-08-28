@@ -42,9 +42,45 @@ export class PerfProbeService {
   /** Esposto come signal così il pannello reagisce senza polling. */
   readonly recording = signal(false);
 
+  /**
+   * Interruttori per esperimenti controllati a caldo: permettono di misurare
+   * la STESSA chiusura con e senza un sospetto, sullo stesso dispositivo e
+   * nello stesso stato, invece di confrontare due build diverse.
+   *
+   * A) no-scroll: non applica più `body.no-scroll` all'apertura/chiusura.
+   * B) blur: azzera tutti i backdrop-filter via classe su <html>.
+   */
+  readonly suppressNoScroll = signal(false);
+  readonly suppressBlur = signal(false);
+
+  toggleNoScroll(): void {
+    const next = !this.suppressNoScroll();
+    this.suppressNoScroll.set(next);
+    // Se lo si sopprime a overlay chiuso la classe non c'è già; se lo si
+    // sopprime a overlay aperto va tolta subito, altrimenti resta appesa.
+    if (next) {
+      document.body.classList.remove("no-scroll");
+    }
+  }
+
+  toggleBlur(): void {
+    const next = !this.suppressBlur();
+    this.suppressBlur.set(next);
+    document.documentElement.classList.toggle("perf-no-blur", next);
+  }
+
   private frames: number[] = [];
+  /**
+   * Secondo ticker, su setTimeout invece che su rAF. È il discriminante
+   * decisivo: rAF è servito dal ciclo di rendering, setTimeout dalla coda
+   * dei task. Se durante un buco nei frame i timer CONTINUANO a scattare,
+   * il main thread è libero e lo stallo è nel rendering/compositing; se si
+   * fermano entrambi, il main thread è occupato.
+   */
+  private timers: number[] = [];
   private marks: ProbeMark[] = [];
   private rafId = 0;
+  private timerId: ReturnType<typeof setTimeout> | undefined;
   private t0 = 0;
 
   /**
@@ -79,6 +115,7 @@ export class PerfProbeService {
       return;
     }
     this.frames = [];
+    this.timers = [];
     this.marks = [];
     this.t0 = performance.now();
     this.recording.set(true);
@@ -96,6 +133,20 @@ export class PerfProbeService {
         this.rafId = requestAnimationFrame(tick);
       };
       this.rafId = requestAnimationFrame(tick);
+
+      // Catena di setTimeout, non setInterval: se il thread si blocca i
+      // tick non si accumulano per poi scattare tutti insieme, falsando la
+      // ricostruzione.
+      const timerTick = () => {
+        if (!this.recording()) {
+          return;
+        }
+        if (this.timers.length < MAX_FRAMES) {
+          this.timers.push(performance.now());
+        }
+        this.timerId = setTimeout(timerTick, 16);
+      };
+      this.timerId = setTimeout(timerTick, 16);
     });
   }
 
@@ -105,6 +156,7 @@ export class PerfProbeService {
     }
     this.recording.set(false);
     cancelAnimationFrame(this.rafId);
+    clearTimeout(this.timerId);
   }
 
   /** Marca un istante. Costo: una push, nessun accesso al DOM. */
@@ -133,6 +185,24 @@ export class PerfProbeService {
 
   private marksBetween(start: number, end: number): ProbeMark[] {
     return this.marks.filter((m) => m.t >= start && m.t <= end);
+  }
+
+  /**
+   * Quanti tick del timer sono scattati durante un buco nei frame, rispetto
+   * a quanti sarebbero attesi. Vicino a 1 = main thread libero (stallo di
+   * rendering); vicino a 0 = main thread occupato.
+   */
+  private timerHealth(start: number, end: number): { ticks: number; expected: number; ratio: number } {
+    const ticks = this.timers.filter((t) => t > start && t < end).length;
+    const expected = Math.max(1, Math.floor((end - start) / 16));
+    return { ticks, expected, ratio: ticks / expected };
+  }
+
+  /** Millisecondi di scansione aptica effettivamente spesi dentro un blocco. */
+  private hapticCostIn(start: number, end: number): number {
+    return this.pairScans()
+      .filter((s) => s.start >= start && s.start <= end)
+      .reduce((a, s) => a + s.total, 0);
   }
 
   private fmt(t: number): string {
@@ -178,10 +248,34 @@ export class PerfProbeService {
         "ms) " +
         longs.length,
     );
+    // In testa alle condizioni dell'esperimento: senza questa riga è
+    // impossibile ricostruire a posteriori sotto quale configurazione è
+    // stata presa una registrazione.
+    lines.push(
+      "CONDIZIONI: no-scroll " +
+        (this.suppressNoScroll() ? "SOPPRESSO" : "attivo") +
+        " | backdrop-filter " +
+        (this.suppressBlur() ? "SOPPRESSO" : "attivo"),
+    );
     lines.push("");
 
     // ---- Sezione decisiva: cosa succede dopo ogni chiusura ----
-    const closes = this.marks.filter((m) => m.label === "overlay:close");
+    // Solo le chiusure VERE: l'effect() di AppComponent scatta una volta
+    // all'avvio senza alcun overlay aperto e produce un "overlay:close"
+    // fantasma, a cui verrebbero attribuiti blocchi che non c'entrano nulla.
+    let seenOpen = false;
+    const closes = this.marks.filter((m) => {
+      if (m.label === "overlay:open") {
+        seenOpen = true;
+        return false;
+      }
+      if (m.label !== "overlay:close") {
+        return false;
+      }
+      const real = seenOpen;
+      seenOpen = false;
+      return real;
+    });
     lines.push("=== CHIUSURE OVERLAY (" + closes.length + ") ===");
     if (closes.length === 0) {
       lines.push("  nessuna chiusura registrata");
@@ -224,19 +318,64 @@ export class PerfProbeService {
         }
       }
 
-      // Il verdetto NON può basarsi su `inside.length`: la mark di chiusura
-      // cade quasi sempre dentro il blocco e maschererebbe il caso in cui il
-      // tempo non è speso in JS nostro. Conta solo il lavoro marcato.
-      if (inside.some((m) => m.label.startsWith("haptic:"))) {
-        lines.push("  -> SOSPETTO PRINCIPALE: HapticTapService");
+      // ---- Main thread bloccato o rendering in stallo? ----
+      const health = this.timerHealth(worst.start, worst.end);
+      lines.push(
+        "  tick timer durante il blocco: " +
+          health.ticks +
+          "/" +
+          health.expected +
+          " attesi",
+      );
+      if (health.ratio > 0.5) {
+        lines.push(
+          "  -> MAIN THREAD LIBERO: i timer girano, i frame no. Lo stallo è nel",
+        );
+        lines.push(
+          "     rendering/compositing (sospetti: teardown dei layer backdrop-filter,",
+        );
+        lines.push("     body.no-scroll che rifà il layout della pagina sotto)");
+      } else if (health.ratio < 0.15) {
+        lines.push(
+          "  -> MAIN THREAD BLOCCATO: si fermano anche i timer, qualcosa occupa il thread",
+        );
       } else {
         lines.push(
-          "  -> nessun lavoro applicativo marcato dentro il blocco: il tempo se ne va",
+          "  -> MAIN THREAD PARZIALMENTE OCCUPATO: i timer rallentano ma non si fermano",
         );
-        lines.push(
-          "     in stile/layout/paint del browser (sospetti: body.no-scroll,",
-        );
-        lines.push("     teardown dei layer backdrop-filter)");
+      }
+
+      // ---- Attribuzione onesta del costo aptico ----
+      // NON basta trovare mark `haptic:` dentro il blocco: requestIdleCallback
+      // viene servito TARDI proprio perché il thread era occupato, quindi la
+      // scansione finisce dentro il blocco anche quando ne è la vittima e non
+      // la causa. Conta solo quanto tempo ha realmente consumato.
+      const hapticCost = this.hapticCostIn(worst.start, worst.end);
+      const firstHaptic = inside.find((m) => m.label === "haptic:scan-start");
+      if (firstHaptic) {
+        const share = hapticCost / worst.gap;
+        if (share < 0.2) {
+          lines.push(
+            "  -> HapticTapService SCAGIONATO: la scansione è costata " +
+              hapticCost.toFixed(0) +
+              "ms su " +
+              worst.gap.toFixed(0) +
+              "ms di blocco,",
+          );
+          lines.push(
+            "     ed è arrivata a +" +
+              (firstHaptic.t - worst.start).toFixed(0) +
+              "ms (starved da requestIdleCallback): è un testimone, non la causa",
+          );
+        } else {
+          lines.push(
+            "  -> HapticTapService RESPONSABILE: " +
+              hapticCost.toFixed(0) +
+              "ms su " +
+              worst.gap.toFixed(0) +
+              "ms di blocco",
+          );
+        }
       }
     }
 
@@ -272,13 +411,24 @@ export class PerfProbeService {
           writes.toFixed(0) +
           "ms",
       );
-      lines.push(
-        reads > writes * 2
-          ? "  -> dominano le LETTURE: layout thrashing (getBoundingClientRect / querySelector per candidato)"
-          : writes > reads * 2
-            ? "  -> dominano le SCRITTURE: costo di appendChild/style degli overlay switch"
-            : "  -> costo ripartito fra letture e scritture",
-      );
+      // La ripartizione letture/scritture ha senso solo se il costo TOTALE è
+      // rilevante: su pochi millisecondi è rumore, e presentarlo come
+      // verdetto porta fuori strada.
+      if (reads + writes < 50) {
+        lines.push(
+          "  -> costo totale trascurabile (" +
+            (reads + writes).toFixed(0) +
+            "ms sull'intera sessione): HapticTapService non è un problema",
+        );
+      } else {
+        lines.push(
+          reads > writes * 2
+            ? "  -> dominano le LETTURE: layout thrashing (getBoundingClientRect / querySelector per candidato)"
+            : writes > reads * 2
+              ? "  -> dominano le SCRITTURE: costo di appendChild/style degli overlay switch"
+              : "  -> costo ripartito fra letture e scritture",
+        );
+      }
     }
 
     // ---- Tutti i frame lunghi, per completezza ----
@@ -286,11 +436,16 @@ export class PerfProbeService {
     lines.push("=== TUTTI I FRAME LUNGHI ===");
     for (const l of longs.slice().sort((a, b) => b.gap - a.gap).slice(0, 20)) {
       const inside = this.marksBetween(l.start, l.end);
+      const h = this.timerHealth(l.start, l.end);
       lines.push(
         "  " +
           l.gap.toFixed(0).padStart(6) +
           "ms @" +
           this.fmt(l.start) +
+          "  timer " +
+          h.ticks +
+          "/" +
+          h.expected +
           "  " +
           (inside.map((m) => this.describe(m)).join(" , ") || "(nessuna mark)"),
       );

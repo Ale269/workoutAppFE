@@ -195,13 +195,18 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       // quindi è il punto giusto per marcare il confine apri/chiudi.
       this.perfProbe.mark(disable ? "overlay:open" : "overlay:close");
 
-      if (disable) {
-        document.body.classList.add("no-scroll");
+      // Esperimento controllato: con l'interruttore attivo il toggle non
+      // viene applicato, così si misura la stessa chiusura con e senza.
+      if (this.perfProbe.suppressNoScroll()) {
+        this.perfProbe.mark("no-scroll:SOPPRESSO");
       } else {
-        document.body.classList.remove("no-scroll");
+        if (disable) {
+          document.body.classList.add("no-scroll");
+        } else {
+          document.body.classList.remove("no-scroll");
+        }
+        this.perfProbe.mark(disable ? "no-scroll:added" : "no-scroll:removed");
       }
-
-      this.perfProbe.mark(disable ? "no-scroll:added" : "no-scroll:removed");
     }
   }
 

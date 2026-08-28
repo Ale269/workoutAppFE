@@ -38,6 +38,25 @@ import { PerfProbeService } from "src/app/core/services/perf-probe.service";
               <button class="perf-probe-btn" (click)="disable()">off</button>
             </div>
 
+            <!-- Esperimenti: si cambiano a caldo, così la stessa chiusura si
+                 misura nelle due condizioni senza rifare la build. -->
+            <div class="perf-probe-bar">
+              <button
+                class="perf-probe-btn"
+                [class.perf-probe-on]="probe.suppressNoScroll()"
+                (click)="probe.toggleNoScroll()"
+              >
+                no-scroll {{ probe.suppressNoScroll() ? "OFF" : "on" }}
+              </button>
+              <button
+                class="perf-probe-btn"
+                [class.perf-probe-on]="probe.suppressBlur()"
+                (click)="probe.toggleBlur()"
+              >
+                blur {{ probe.suppressBlur() ? "OFF" : "on" }}
+              </button>
+            </div>
+
             @if (probe.recording()) {
               <div class="perf-probe-hint">
                 Registrazione in corso. Apri e chiudi l'overlay, poi premi STOP.
@@ -86,6 +105,11 @@ import { PerfProbeService } from "src/app/core/services/perf-probe.service";
       .perf-probe-rec {
         color: #ff4d4d;
         border-color: #ff4d4d;
+      }
+      /* Esperimento attivo: il sospetto è stato disattivato. */
+      .perf-probe-on {
+        color: #ffd24d;
+        border-color: #ffd24d;
       }
       .perf-probe-panel {
         width: min(94vw, 560px);
