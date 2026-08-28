@@ -183,6 +183,13 @@ html.perf-no-blur *::after {
   -webkit-backdrop-filter: none !important;
 }
 
+/* Idem: toglie ogni immagine dal rendering, così non c'è nulla da decodificare
+   né da dipingere. Serve a misurare quanto del blocco alla chiusura è
+   ridecodifica di bitmap scartati da iOS sotto pressione di memoria. */
+html.perf-no-img img {
+  display: none !important;
+}
+
 /* Impedisce che il tocco su elementi fixed propaghi scroll al body (iOS rubber-band) */
 .floating-static-button-container,
 .floating-double-buttons-container {

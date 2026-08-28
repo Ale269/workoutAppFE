@@ -54,6 +54,7 @@ export class PerfProbeService {
    */
   readonly suppressNoScroll = signal(false);
   readonly suppressBlur = signal(false);
+  readonly suppressImages = signal(false);
 
   toggleNoScroll(): void {
     const next = !this.suppressNoScroll();
@@ -69,6 +70,18 @@ export class PerfProbeService {
     const next = !this.suppressBlur();
     this.suppressBlur.set(next);
     document.documentElement.classList.toggle("perf-no-blur", next);
+  }
+
+  /**
+   * Toglie ogni <img> dal rendering: niente immagini da decodificare né da
+   * dipingere. NB: `display:none` cambia anche il layout, quindi è un test
+   * con una variabile in più — ma visto che lo style+layout misurato è di
+   * 0ms, se il blocco crolla la causa è la decodifica/pittura, non il layout.
+   */
+  toggleImages(): void {
+    const next = !this.suppressImages();
+    this.suppressImages.set(next);
+    document.documentElement.classList.toggle("perf-no-img", next);
   }
 
   private frames: number[] = [];
@@ -277,12 +290,51 @@ export class PerfProbeService {
     const before = performance.now();
     void document.body.offsetHeight;
     const layoutMs = performance.now() - before;
+
+    // Statistiche immagini. Il peso del FILE non conta: una PNG 1024x1024
+    // occupa 4 MB di RAM una volta decodificata, qualunque sia il peso su
+    // disco. Se iOS scarta i bitmap sotto pressione di memoria, riaverli
+    // significa ridecodificarli sul main thread — costo invisibile a ogni
+    // altra sonda. `mpx` è la somma dei megapixel decodificati;
+    // `oversize` conta le immagini servite ad almeno il triplo della
+    // risoluzione a cui vengono disegnate.
+    // I bitmap decodificati sono per SORGENTE, non per elemento: dieci <img>
+    // con lo stesso src condividono un solo bitmap. Sommare per elemento
+    // gonfierebbe la stima, quindi si deduplica su currentSrc.
+    let pixels = 0;
+    let oversize = 0;
+    const seen = new Set<string>();
+    const images = document.images;
+    for (let i = 0; i < images.length; i++) {
+      const img = images[i];
+      const src = img.currentSrc || img.src;
+      if (src && !seen.has(src)) {
+        seen.add(src);
+        pixels += img.naturalWidth * img.naturalHeight;
+      }
+      // Il layout è appena stato calcolato: queste letture non lo invalidano.
+      const shown = img.getBoundingClientRect().width;
+      if (shown > 0 && img.naturalWidth > shown * 3) {
+        oversize++;
+      }
+    }
+
     this.mark(
       label,
       "layout=" +
         layoutMs.toFixed(0) +
         "ms nodi=" +
-        document.getElementsByTagName("*").length,
+        document.getElementsByTagName("*").length +
+        " img=" +
+        images.length +
+        " sorgenti=" +
+        seen.size +
+        " mpx=" +
+        (pixels / 1e6).toFixed(1) +
+        " ram=" +
+        ((pixels * 4) / 1048576).toFixed(0) +
+        "MB oversize=" +
+        oversize,
     );
   }
 
@@ -374,7 +426,9 @@ export class PerfProbeService {
       "CONDIZIONI: no-scroll " +
         (this.suppressNoScroll() ? "SOPPRESSO" : "attivo") +
         " | backdrop-filter " +
-        (this.suppressBlur() ? "SOPPRESSO" : "attivo"),
+        (this.suppressBlur() ? "SOPPRESSO" : "attivo") +
+        " | immagini " +
+        (this.suppressImages() ? "SOPPRESSE" : "attive"),
     );
     lines.push("");
 

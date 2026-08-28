@@ -55,6 +55,13 @@ import { PerfProbeService } from "src/app/core/services/perf-probe.service";
               >
                 blur {{ probe.suppressBlur() ? "OFF" : "on" }}
               </button>
+              <button
+                class="perf-probe-btn"
+                [class.perf-probe-on]="probe.suppressImages()"
+                (click)="probe.toggleImages()"
+              >
+                img {{ probe.suppressImages() ? "OFF" : "on" }}
+              </button>
             </div>
 
             @if (probe.recording()) {
