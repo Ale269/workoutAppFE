@@ -34,6 +34,8 @@ const CLOSE_WINDOW_MS = 2500;
 /** Tetti anti-crescita illimitata durante registrazioni lunghe. */
 const MAX_FRAMES = 40000;
 const MAX_MARKS = 5000;
+/** Sopra questa soglia una chiamata sincrona vale la pena di essere marcata. */
+const SYNC_SLOW_MS = 4;
 
 @Injectable({ providedIn: "root" })
 export class PerfProbeService {
@@ -78,6 +80,20 @@ export class PerfProbeService {
    * fermano entrambi, il main thread è occupato.
    */
   private timers: number[] = [];
+  /**
+   * Battito da un Web Worker, che ha un thread suo. Distingue due situazioni
+   * che dall'interno del main thread sono indistinguibili:
+   *  - il main thread è occupato ma la pagina vive  -> il worker continua
+   *  - l'intera pagina è sospesa dal browser/OS     -> si ferma anche lui
+   * I tick portano un wall-clock generato dal worker, quindi restano validi
+   * anche se i messaggi arrivano tutti insieme a blocco finito.
+   */
+  private workerTicks: number[] = [];
+  private worker: Worker | undefined;
+  private dateOrigin = 0;
+  private perfOrigin = 0;
+  /** Ripristino delle API sincrone strumentate. */
+  private restoreSync: (() => void)[] = [];
   private marks: ProbeMark[] = [];
   private rafId = 0;
   private timerId: ReturnType<typeof setTimeout> | undefined;
@@ -116,9 +132,14 @@ export class PerfProbeService {
     }
     this.frames = [];
     this.timers = [];
+    this.workerTicks = [];
     this.marks = [];
     this.t0 = performance.now();
+    this.perfOrigin = this.t0;
+    this.dateOrigin = Date.now();
     this.recording.set(true);
+    this.startWorker();
+    this.installSyncProbes();
 
     // Fuori da Angular: un rAF per frame dentro la zona farebbe scattare la
     // change detection a ogni frame, falsando proprio ciò che misuriamo.
@@ -157,6 +178,76 @@ export class PerfProbeService {
     this.recording.set(false);
     cancelAnimationFrame(this.rafId);
     clearTimeout(this.timerId);
+    this.worker?.terminate();
+    this.worker = undefined;
+    // Le API globali vanno rimesse a posto SEMPRE: restare strumentate a
+    // registrazione ferma falserebbe il resto della sessione.
+    this.restoreSync.forEach((fn) => fn());
+    this.restoreSync = [];
+  }
+
+  /** Battito su un thread separato: vedi il commento su `workerTicks`. */
+  private startWorker(): void {
+    try {
+      const src = "setInterval(function(){postMessage(Date.now());},16);";
+      const url = URL.createObjectURL(
+        new Blob([src], { type: "text/javascript" }),
+      );
+      this.worker = new Worker(url);
+      URL.revokeObjectURL(url);
+      this.worker.onmessage = (e: MessageEvent<number>) => {
+        if (this.workerTicks.length < MAX_FRAMES) {
+          // Wall-clock del worker riportato sulla linea temporale della pagina.
+          this.workerTicks.push(this.perfOrigin + (e.data - this.dateOrigin));
+        }
+      };
+    } catch {
+      // Worker non disponibile: la sonda semplicemente non riporterà nulla.
+    }
+  }
+
+  /**
+   * Strumenta le API SINCRONE che possono bloccare il main thread senza
+   * comparire come JS applicativo, layout o change detection. `localStorage`
+   * è il caso tipico: su iOS è appoggiato a SQLite e una lettura o scrittura
+   * grossa costa centinaia di millisecondi, invisibile a ogni altra sonda.
+   */
+  private installSyncProbes(): void {
+    // Serve un alias: dentro il wrapper `this` deve restare l'oggetto
+    // originale (es. localStorage), altrimenti la chiamata fallisce.
+    const probe = this;
+
+    const wrap = (
+      target: Record<string, unknown>,
+      name: string,
+      label: string,
+    ): void => {
+      const original = target[name];
+      if (typeof original !== "function") {
+        return;
+      }
+      const fn = original as (...args: unknown[]) => unknown;
+      target[name] = function (this: unknown, ...args: unknown[]): unknown {
+        const before = performance.now();
+        const result = fn.apply(this, args);
+        const cost = performance.now() - before;
+        if (cost >= SYNC_SLOW_MS) {
+          probe.mark("sync:" + label, cost.toFixed(0) + "ms");
+        }
+        return result;
+      };
+      this.restoreSync.push(() => {
+        target[name] = original;
+      });
+    };
+
+    const storage = Storage.prototype as unknown as Record<string, unknown>;
+    wrap(storage, "getItem", "storage.getItem");
+    wrap(storage, "setItem", "storage.setItem");
+    wrap(storage, "removeItem", "storage.removeItem");
+    const json = JSON as unknown as Record<string, unknown>;
+    wrap(json, "parse", "JSON.parse");
+    wrap(json, "stringify", "JSON.stringify");
   }
 
   /** Marca un istante. Costo: una push, nessun accesso al DOM. */
@@ -379,25 +470,78 @@ export class PerfProbeService {
           .filter((n) => n >= 0);
         const worstLayout = layoutCosts.length ? Math.max(...layoutCosts) : -1;
 
-        // Sonda 2: la change detection dell'albero cade dentro il blocco?
-        const cdInside = inside.some((m) => m.label === "cd:start");
+        // Sonda 2: quanto è DURATA la change detection dentro il blocco.
+        // Non basta che `cd:start` cada nel blocco: la CD viene eseguita
+        // tardi proprio perché il thread era occupato, quindi ci finisce
+        // dentro anche quando dura 1ms ed è una vittima, non la causa.
+        let cdCost = 0;
+        for (let i = 0; i < inside.length; i++) {
+          if (inside[i].label !== "cd:start") {
+            continue;
+          }
+          const end = inside.slice(i + 1).find((m) => m.label === "cd:end");
+          if (end) {
+            cdCost += end.t - inside[i].t;
+          }
+        }
 
         if (worstLayout >= 0) {
           lines.push(
             "     style+layout sincrono misurato: " + worstLayout + "ms",
           );
         }
+        lines.push("     change detection dentro il blocco: " + cdCost.toFixed(0) + "ms");
+
+        // Quanto del blocco resta senza alcuna spiegazione.
+        const explained = Math.max(worstLayout, 0) + cdCost;
+        const unexplained = worst.gap - explained;
+
         if (worstLayout > worst.gap * 0.3) {
           lines.push("  -> COLPEVOLE: STYLE + LAYOUT");
-        } else if (cdInside) {
+        } else if (cdCost > worst.gap * 0.3) {
+          lines.push("  -> COLPEVOLE: CHANGE DETECTION di Angular");
+        } else {
           lines.push(
-            "  -> COLPEVOLE: CHANGE DETECTION di Angular (cd:start dentro il blocco)",
+            "  -> NON SPIEGATO: " +
+              unexplained.toFixed(0) +
+              "ms su " +
+              worst.gap.toFixed(0) +
+              "ms senza JS, layout o CD.",
           );
-        } else if (worstLayout >= 0) {
           lines.push(
-            "  -> né layout sincrono né change detection dentro il blocco:",
+            "     Il thread è occupato da lavoro sincrono invisibile alle sonde:",
           );
-          lines.push("     resta PAINT / COMPOSITING");
+          lines.push(
+            "     paint/raster, decodifica immagini, GC, o API sincrone (storage).",
+          );
+        }
+
+        // Sonda 3: la pagina era viva durante il blocco, o sospesa?
+        const wTicks = this.workerTicks.filter(
+          (t) => t > worst.start && t < worst.end,
+        ).length;
+        const wExpected = Math.max(1, Math.floor(worst.gap / 16));
+        if (this.workerTicks.length === 0) {
+          lines.push("     worker: nessun dato (non disponibile)");
+        } else if (wTicks > wExpected * 0.5) {
+          lines.push(
+            "     worker: " +
+              wTicks +
+              "/" +
+              wExpected +
+              " tick -> la PAGINA VIVE, è bloccato solo il main thread",
+          );
+        } else {
+          lines.push(
+            "     worker: " +
+              wTicks +
+              "/" +
+              wExpected +
+              " tick -> si ferma anche un altro thread:",
+          );
+          lines.push(
+            "       l'INTERA PAGINA è sospesa dal browser (memoria/snapshot/OS)",
+          );
         }
       } else {
         lines.push(
@@ -437,6 +581,17 @@ export class PerfProbeService {
           );
         }
       }
+    }
+
+    // ---- Chiamate sincrone lente (storage, JSON) ----
+    const slowSync = this.marks.filter((m) => m.label.startsWith("sync:"));
+    lines.push("");
+    lines.push("=== CHIAMATE SINCRONE LENTE (>" + SYNC_SLOW_MS + "ms) ===");
+    if (slowSync.length === 0) {
+      lines.push("  nessuna -> storage e JSON non c'entrano");
+    }
+    for (const m of slowSync.slice(0, 25)) {
+      lines.push("  @" + this.fmt(m.t) + "  " + m.label + "  " + m.info);
     }
 
     // ---- Ripartizione del costo delle scansioni aptiche ----
