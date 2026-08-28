@@ -167,6 +167,34 @@ export class PerfProbeService {
     this.marks.push({ t: performance.now(), label, info });
   }
 
+  /**
+   * Marca misurando anche il costo di uno STYLE+LAYOUT sincrono.
+   *
+   * È la sonda che distingue le due cose che "occupano il main thread":
+   * leggere `offsetHeight` costringe il browser a ricalcolare stile e layout
+   * subito, e a cronometrarlo. Se qui vengono fuori centinaia di
+   * millisecondi, il blocco è stile/layout; se ne vengono fuori pochi, il
+   * tempo se ne va altrove (paint, compositing, o JS non marcato).
+   *
+   * NB: forzare il layout ha un costo suo, ma è un costo che verrebbe pagato
+   * comunque poche righe dopo — lo si sta solo anticipando per misurarlo.
+   */
+  markLayoutCost(label: string): void {
+    if (!this.recording()) {
+      return;
+    }
+    const before = performance.now();
+    void document.body.offsetHeight;
+    const layoutMs = performance.now() - before;
+    this.mark(
+      label,
+      "layout=" +
+        layoutMs.toFixed(0) +
+        "ms nodi=" +
+        document.getElementsByTagName("*").length,
+    );
+  }
+
   // =======================================================================
   // Analisi
   // =======================================================================
@@ -336,9 +364,41 @@ export class PerfProbeService {
         );
         lines.push("     body.no-scroll che rifà il layout della pagina sotto)");
       } else if (health.ratio < 0.15) {
+        // ATTENZIONE: "main thread occupato" NON vuol dire per forza
+        // JavaScript. Style recalc, layout e paint girano sullo stesso
+        // thread e fermano i timer allo stesso modo. Servono le due sonde
+        // qui sotto per separarli.
         lines.push(
-          "  -> MAIN THREAD BLOCCATO: si fermano anche i timer, qualcosa occupa il thread",
+          "  -> MAIN THREAD OCCUPATO: si fermano anche i timer. Può essere JS/change",
         );
+        lines.push("     detection OPPURE style/layout/paint del browser.");
+
+        // Sonda 1: quanto è costato uno style+layout sincrono forzato.
+        const layoutCosts = inside
+          .map((m) => Number(/layout=(\d+)/.exec(m.info)?.[1] ?? -1))
+          .filter((n) => n >= 0);
+        const worstLayout = layoutCosts.length ? Math.max(...layoutCosts) : -1;
+
+        // Sonda 2: la change detection dell'albero cade dentro il blocco?
+        const cdInside = inside.some((m) => m.label === "cd:start");
+
+        if (worstLayout >= 0) {
+          lines.push(
+            "     style+layout sincrono misurato: " + worstLayout + "ms",
+          );
+        }
+        if (worstLayout > worst.gap * 0.3) {
+          lines.push("  -> COLPEVOLE: STYLE + LAYOUT");
+        } else if (cdInside) {
+          lines.push(
+            "  -> COLPEVOLE: CHANGE DETECTION di Angular (cd:start dentro il blocco)",
+          );
+        } else if (worstLayout >= 0) {
+          lines.push(
+            "  -> né layout sincrono né change detection dentro il blocco:",
+          );
+          lines.push("     resta PAINT / COMPOSITING");
+        }
       } else {
         lines.push(
           "  -> MAIN THREAD PARZIALMENTE OCCUPATO: i timer rallentano ma non si fermano",

@@ -7,6 +7,9 @@ import {
   ViewChild,
   effect,
   inject,
+  // Diagnostica temporanea: delimitano la change detection dell'intero albero
+  DoCheck,
+  AfterViewChecked,
 } from "@angular/core";
 import {
   NavigationEnd,
@@ -65,7 +68,9 @@ import { PerfProbePanelComponent } from "./components/shared/perf-probe-panel/pe
     PerfProbePanelComponent,
   ],
 })
-export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AppComponent
+  implements OnInit, OnDestroy, AfterViewInit, DoCheck, AfterViewChecked
+{
   // Dependency injection tramite inject()
   private router = inject(Router);
   private errorHandler = inject(ErrorHandlerService);
@@ -180,6 +185,21 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       // Imposta visibilità iniziale
       gsap.set(this.mainContent, { autoAlpha: 1 });
     }
+  }
+
+  /**
+   * DIAGNOSTICA TEMPORANEA. Delimitano un ciclo di change detection sull'intero
+   * albero: ngDoCheck del componente radice apre, ngAfterViewChecked chiude
+   * dopo che tutta la vista (figli compresi) è stata controllata. Servono a
+   * stabilire se il blocco alla chiusura degli overlay cade DENTRO la change
+   * detection o dopo, nella fase di rendering del browser.
+   */
+  ngDoCheck(): void {
+    this.perfProbe.mark("cd:start");
+  }
+
+  ngAfterViewChecked(): void {
+    this.perfProbe.mark("cd:end");
   }
 
   ngOnDestroy(): void {

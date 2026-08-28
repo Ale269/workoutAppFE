@@ -138,7 +138,9 @@ export class HapticTapService {
       return;
     }
     this.scanScheduled = true;
-    this.probe.mark("haptic:mutation");
+    // Questo è l'istante in cui, nelle misure su Safari, comincia il blocco:
+    // il punto giusto per cronometrare uno style+layout sincrono.
+    this.probe.markLayoutCost("haptic:mutation");
     // requestIdleCallback e NON requestAnimationFrame: con rAF la scansione
     // finiva dentro il frame successivo alla mutazione, cioè esattamente nei
     // frame in cui l'app sta animando (chiusura di un popup, ritorno dal
