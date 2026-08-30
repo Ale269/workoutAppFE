@@ -17,6 +17,7 @@ import { ErrorHandlerService } from "./app/core/services/error-handler.service";
 import { initializeApp } from "./app-initializers-helper";
 import { registerLocaleData } from "@angular/common";
 import localeIt from "@angular/common/locales/it";
+import { provideCharts, withDefaultRegisterables } from "ng2-charts";
 
 // Registra il locale italiano per i pipe di Angular (date, currency, number, etc.)
 registerLocaleData(localeIt, 'it-IT');
@@ -73,5 +74,10 @@ bootstrapApplication(AppComponent, {
 
     // Locale italiano per i pipe di Angular (date, currency, number, etc.)
     { provide: LOCALE_ID, useValue: 'it-IT' },
+
+    // Chart.js: registra controller, scale ed elementi una volta sola per
+    // tutta l'app. Senza, i canvas di ng2-charts restano semplicemente vuoti,
+    // senza alcun errore in console.
+    provideCharts(withDefaultRegisterables()),
   ],
 }).catch((err) => console.error(err));

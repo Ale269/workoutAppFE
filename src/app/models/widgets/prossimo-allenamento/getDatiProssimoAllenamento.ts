@@ -9,4 +9,6 @@ export interface GetDatiProssimoAllenamentoResponseModel extends BaseResponseMod
   numeroGiornoAllenamentoCorrente: number;
   numeroGiornoAllenamentiTotali: number;
   descrizioneAllenamentoCorrente: string;
+  /** Id icona degli esercizi previsti, nell'ordine di esecuzione. */
+  idIcone: number[];
 }

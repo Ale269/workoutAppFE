@@ -1,0 +1,29 @@
+.stats-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background-color: #1a1a1a;
+  border-radius: 16px;
+  padding: 16px;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+
+  h3 {
+    line-height: 20px;
+  }
+}
+
+.card-titolo {
+  padding-bottom: 4px;
+}

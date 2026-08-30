@@ -1,5 +1,6 @@
 import { Injectable, inject } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
+import { delay } from "rxjs/operators";
 import { ApiCatalogService } from "./api-catalog.service";
 import {
   RiepilogoResponse,
@@ -15,12 +16,44 @@ import {
 } from "src/app/models/statistics/workout-progress-models";
 import { AllenamentoSvoltoListaDTO } from "src/app/models/lista-allenamenti-svolti/allenamentosvoltolistadto";
 import { LastTrainingExerciseData } from "src/app/models/history/last-training-exercise";
+import {
+  StatisticheOverviewResponse,
+  StatistichePeriodo,
+} from "src/app/models/statistics/statistiche-overview-models";
+import { getMockOverview } from "./mocks/statistiche-overview.mock";
 
 @Injectable({
   providedIn: "root",
 })
 export class StatisticsService {
   private apiCatalogService = inject(ApiCatalogService);
+
+  /**
+   * Panoramica del nuovo flusso Statistiche (L1): una sola chiamata per tutte
+   * le card del periodo selezionato.
+   *
+   * Finché il backend non espone stats/overview, restituisce dati finti.
+   * Per passare al reale: USE_MOCK_OVERVIEW = false ed eliminare
+   * ./mocks/statistiche-overview.mock. La firma non cambia.
+   */
+  private readonly USE_MOCK_OVERVIEW = true;
+
+  getStatisticheOverview(
+    userId: number,
+    periodo: StatistichePeriodo,
+  ): Observable<StatisticheOverviewResponse> {
+    if (this.USE_MOCK_OVERVIEW) {
+      return of(getMockOverview(periodo)).pipe(delay(150));
+    }
+
+    return this.apiCatalogService.executeApiCall(
+      "stats",
+      "overview",
+      { userId },
+      null,
+      { periodo },
+    );
+  }
 
   getRiepilogo(userId: number): Observable<RiepilogoResponse> {
     return this.apiCatalogService.executeApiCall(

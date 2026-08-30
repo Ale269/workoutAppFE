@@ -22,17 +22,14 @@ import {
   GetListaAllenamentiSvoltiRequestModel,
   GetListaAllenamentiSvoltiResponseModel,
 } from "src/app/models/lista-allenamenti-svolti/get-lista-templates-schede";
-import gsap from "gsap";
-import { Draggable } from "gsap/Draggable";
 import { DeleteDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
 import { GetDatiAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
 import { MatIcon, MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { SwipeToDeleteController } from "src/app/core/services/swipe-to-delete.controller";
 
-// Registra il plugin Draggable
-gsap.registerPlugin(Draggable);
 
 export interface allenamentoSvoltoListaView {
   allenamentoSvolto: AllenamentoSvoltoListaDTO;
@@ -56,7 +53,10 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
 
   public listaAllenamentiSvolti: AllenamentoSvoltoListaDTO[] = [];
   public listaAllenamentiSvoltiView: allenamentoSvoltoListaView[] = [];
-  private draggableInstances: any[] = [];
+  /** Swipe-to-delete condiviso: vedi SwipeToDeleteController. */
+  private swipe = new SwipeToDeleteController({
+    wrapperSelector: ".allenamento-wrapper",
+  });
   private currentSpinnerId: string | null = null;
 
   constructor(
@@ -82,7 +82,8 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-arrow.svg",
       ),
-    );iconRegistry.addSvgIcon(
+    );
+    iconRegistry.addSvgIcon(
       "google-delete",
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-delete.svg",
@@ -111,158 +112,19 @@ export class ListExecutedWorkouts implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  private closeAllSwipes(): void {
+    this.swipe.closeAll();
+  }
+
   ngAfterViewInit(): void {
     this.allenamentoCards.changes.subscribe(() => {
-      this.initializeSwipe();
+      this.swipe.attach(this.allenamentoCards);
     });
-    this.initializeSwipe();
+    this.swipe.attach(this.allenamentoCards);
   }
 
   ngOnDestroy(): void {
-    this.draggableInstances.forEach((instance) => instance.kill());
-  }
-
-  private initializeSwipe(): void {
-    try {
-      this.draggableInstances.forEach((instance) => instance.kill());
-      this.draggableInstances = [];
-
-      setTimeout(() => {
-        this.allenamentoCards.forEach((cardRef, index) => {
-          const card = cardRef.nativeElement;
-          const wrapper = card.closest(".allenamento-wrapper");
-          const deleteButton = wrapper?.querySelector(
-            ".delete-action",
-          ) as HTMLElement;
-
-          if (!deleteButton) return;
-
-          const SWIPE_THRESHOLD = -80;
-          const DELETE_WIDTH = 80;
-
-          gsap.set(deleteButton, {
-            autoAlpha: 0,
-            pointerEvents: "none",
-          });
-
-          const component = this;
-
-          const draggableArray = Draggable.create(card, {
-            type: "x",
-            bounds: { minX: SWIPE_THRESHOLD, maxX: 0 },
-            inertia: true,
-            dragClickables: false,
-            zIndexBoost: false,
-            onDragStart: function (this: any) {
-              component.closeOtherSwipes(index);
-            },
-            onDrag: function (this: any) {
-              const progress = Math.abs(this.x) / DELETE_WIDTH;
-              const alpha = Math.min(progress, 1);
-
-              gsap.to(deleteButton, {
-                autoAlpha: alpha,
-                duration: 0.1,
-                overwrite: true,
-              });
-
-              if (alpha > 0.5) {
-                gsap.set(deleteButton, { pointerEvents: "auto" });
-              } else {
-                gsap.set(deleteButton, { pointerEvents: "none" });
-              }
-            },
-            onDragEnd: function (this: any) {
-              if (this.x < SWIPE_THRESHOLD / 2) {
-                gsap.to(card, {
-                  x: SWIPE_THRESHOLD,
-                  duration: 0.3,
-                  ease: "power2.out",
-                });
-                gsap.to(deleteButton, {
-                  autoAlpha: 1,
-                  duration: 0.3,
-                  overwrite: true,
-                  onComplete: () => {
-                    gsap.set(deleteButton, { pointerEvents: "auto" });
-                  },
-                });
-                this.vars.isOpen = true;
-              } else {
-                gsap.to(card, {
-                  x: 0,
-                  duration: 0.3,
-                  ease: "power2.out",
-                });
-                gsap.to(deleteButton, {
-                  autoAlpha: 0,
-                  duration: 0.3,
-                  overwrite: true,
-                  onComplete: () => {
-                    gsap.set(deleteButton, { pointerEvents: "none" });
-                  },
-                });
-                this.vars.isOpen = false;
-              }
-            },
-            onClick: function (this: any, e: MouseEvent) {
-              if (this.vars.isOpen) {
-                e.stopPropagation();
-                component.closeSwipe(card, deleteButton, this);
-              }
-            },
-          });
-
-          const draggable = draggableArray[0];
-          draggable.vars["isOpen"] = false;
-          this.draggableInstances.push(draggable);
-        });
-      }, 0);
-    } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "ListExecutedWorkouts.initializeSwipe",
-      );
-    }
-  }
-
-  private closeSwipe(
-    card: HTMLElement,
-    deleteButton: Element,
-    draggable: any,
-  ): void {
-    gsap.to(card, {
-      x: 0,
-      duration: 0.3,
-      ease: "power2.out",
-    });
-    gsap.to(deleteButton, {
-      autoAlpha: 0,
-      duration: 0.3,
-      onComplete: () => {
-        gsap.set(deleteButton, { pointerEvents: "none" });
-      },
-    });
-    draggable.vars.isOpen = false;
-  }
-
-  private closeOtherSwipes(exceptIndex: number): void {
-    this.allenamentoCards.forEach((cardRef, index) => {
-      if (index === exceptIndex) return;
-      const card = cardRef.nativeElement;
-      const deleteButton = card
-        .closest(".allenamento-wrapper")
-        ?.querySelector(".delete-action");
-      const draggable = this.draggableInstances[index];
-
-      if (draggable?.vars.isOpen && deleteButton) {
-        this.closeSwipe(card, deleteButton, draggable);
-      }
-    });
-  }
-
-  private closeAllSwipes(): void {
-    this.closeOtherSwipes(-1);
+    this.swipe.destroy();
   }
 
   async getListaAllenamentiSvolti() {

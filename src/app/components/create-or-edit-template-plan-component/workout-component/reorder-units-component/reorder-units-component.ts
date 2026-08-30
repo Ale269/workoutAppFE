@@ -10,13 +10,11 @@ import {
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
-import {
-  AllenamentoUnit,
-  ReorderUnitRef,
-} from "../../workout-form";
+import { AllenamentoUnit, ReorderUnitRef } from "../../workout-form";
 import { EsercizioForm } from "../../exercise-form";
 import { GymExerciseSelectorComponent } from "../../../shared/app-gym-exercise-selector/app-gym-exercise-selector";
 import { ExerciseIconColorPipe } from "src/app/core/pipes/exercise-icon-color";
+import { ExerciseIconPipe } from "src/app/core/pipes/exercise-icon";
 import { ExerciseService } from "src/app/core/services/exercise.service";
 import { FocusOverlayController } from "../../../shared/focus-overlay/focus-overlay.controller";
 import { GroupCompactCard } from "../group-compact-card/group-compact-card";
@@ -55,6 +53,7 @@ interface Sortable {
     ReactiveFormsModule,
     GymExerciseSelectorComponent,
     ExerciseIconColorPipe,
+    ExerciseIconPipe,
     GroupCompactCard,
   ],
   templateUrl: "./reorder-units-component.html",
@@ -437,9 +436,5 @@ export class ReorderUnitsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getControl(esercizioForm: EsercizioForm, controlName: string): FormControl {
     return esercizioForm.form.controls[controlName] as FormControl;
-  }
-
-  getExerciseIconPath(exerciseId: number): string {
-    return this.exerciseService.getExerciseIconPathByExerciseId(exerciseId);
   }
 }

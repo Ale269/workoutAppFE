@@ -1,0 +1,50 @@
+<!-- Etichetta diretta al posto della legenda del grafico: due sole serie -->
+<div class="volume-legenda">
+  <span class="legenda-voce">
+    <span class="legenda-tratto legenda-tratto-corrente"></span>
+    settimana corrente
+  </span>
+  <span class="legenda-voce">
+    <span class="legenda-tratto legenda-tratto-media"></span>
+    media 4 settimane
+  </span>
+</div>
+
+<div class="volume-lista">
+  @for (item of distretti; track item.idMuscolo) {
+  <div class="stats-card" (click)="apri.emit(item.idMuscolo)">
+    <div class="volume-dati">
+      <div class="volume-intestazione">
+        <h3 class="text-white">{{ item.nomeMuscolo }}</h3>
+        <div class="volume-valori">
+          <h3 class="text-white volume-serie">{{ item.serie }}</h3>
+          <h3 class="delta">
+            {{ etichettaDelta(item) }}
+          </h3>
+        </div>
+      </div>
+
+      <div class="volume-barre">
+        <div class="volume-traccia">
+          <div
+            class="volume-barra volume-barra-corrente"
+            [style.width.%]="larghezza(item.serie)"
+          ></div>
+        </div>
+        @if (item.mediaQuattroSettimane !== null) {
+        <div class="volume-traccia">
+          <div
+            class="volume-barra volume-barra-media"
+            [style.width.%]="larghezza(item.mediaQuattroSettimane)"
+          ></div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="arrow-widget-container">
+      <mat-icon svgIcon="google-arrow"></mat-icon>
+    </div>
+  </div>
+  }
+</div>

@@ -1,0 +1,42 @@
+@if (dati) {
+<div class="stats-card" (click)="apri.emit()">
+  <!-- Blocco 1: la percentuale, col suo riferimento accanto -->
+  <div class="widget-data aderenza-testata">
+    <div class="aderenza-headline">
+      <span class="aderenza-numero">{{ dati.percentualeSerieCompletate }}%</span>
+      <span class="aderenza-unita">serie completate<br />sul prescritto</span>
+    </div>
+    <div class="arrow-widget-container">
+      <mat-icon svgIcon="google-arrow"></mat-icon>
+    </div>
+  </div>
+
+  <!-- Blocco 2: cosa dicono i numeri. Descrittivo, mai un giudizio. -->
+  @if (haDiagnostica) {
+  <div class="widget-data widget-data-last">
+    @if (dati.giornoMenoEseguito; as giorno) {
+    <div class="aderenza-voce">
+      <h3 class="text-white">
+        {{ giorno.nomeGiorno }} eseguito {{ giorno.esecuzioni }}
+        {{ giorno.esecuzioni === 1 ? "volta" : "volte" }} su
+        {{ giorno.occasioni }}
+      </h3>
+      <h3 class="text-grey">È il giorno che salti più spesso</h3>
+    </div>
+    } @if (dati.sostituzioneFrequente; as sostituzione) {
+    <div class="aderenza-voce">
+      <h3 class="text-white">
+        Hai sostituito {{ sostituzione.nomeEsercizioPrescritto }}
+        {{ sostituzione.occorrenze }}
+        {{ sostituzione.occorrenze === 1 ? "volta" : "volte" }} su
+        {{ sostituzione.occasioni }}
+      </h3>
+      <h3 class="text-grey">
+        Al suo posto scegli {{ sostituzione.nomeEsercizioSostituto }}
+      </h3>
+    </div>
+    }
+  </div>
+  }
+</div>
+}

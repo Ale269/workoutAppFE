@@ -26,7 +26,7 @@ export class CreateOrEditTemplatePlanService {
 
   constructor(
     private errorHandlerService: ErrorHandlerService,
-    private workoutService: WorkoutService
+    private workoutService: WorkoutService,
   ) {}
 
   initializeFormWithData(scheda: SchedaDTO): void {
@@ -61,7 +61,7 @@ export class CreateOrEditTemplatePlanService {
           listaGruppi: [],
           nomeAllenamento: allenamento.nomeAllenamento,
           ordinamento: allenamento.ordinamento,
-          description: allenamento.description
+          description: allenamento.description,
         };
         schedaFormDTO.listaAllenamenti.push(allenamentoFormDTO);
 
@@ -109,7 +109,7 @@ export class CreateOrEditTemplatePlanService {
     } catch (error) {
       throw new Error(
         "CreateOrEditTemplatePlanService.getSchedaFormDTOFromSchedaDTO: " +
-          error
+          error,
       );
     }
   }
@@ -136,7 +136,7 @@ export class CreateOrEditTemplatePlanService {
     try {
       if (!this.formScheda) {
         throw new Error(
-          "FormScheda non inizializzato. Chiamare prima InitializeScheda()"
+          "FormScheda non inizializzato. Chiamare prima InitializeScheda()",
         );
       }
 
@@ -151,7 +151,7 @@ export class CreateOrEditTemplatePlanService {
         nomeAllenamento: nomeAllenamento || `Giorno ${nextOrdinamento}`,
         ordinamento: nextOrdinamento,
         listaEsercizi: [],
-        description: ""
+        description: "",
       };
 
       // Usa il metodo esistente per aggiungere l'allenamento
@@ -166,13 +166,13 @@ export class CreateOrEditTemplatePlanService {
       this.formScheda.DeleteAllenamento(allenamentoIdentifier);
     } catch (error) {
       throw new Error(
-        "CreateOrEditTemplatePlanService.DeleteAllenamento: " + error
+        "CreateOrEditTemplatePlanService.DeleteAllenamento: " + error,
       );
     }
   }
 
   async savePlan(
-    request: SaveDatiTemplateSchedaRequestModel
+    request: SaveDatiTemplateSchedaRequestModel,
   ): Promise<SchedaDTO> {
     return new Promise<SchedaDTO>((resolve, reject) => {
       try {
@@ -226,7 +226,7 @@ export class CreateOrEditTemplatePlanService {
   }
 
   eliminaScheda(
-    request: DeleteDatiTemplateSchedaRequestModel
+    request: DeleteDatiTemplateSchedaRequestModel,
   ): Promise<DeleteDatiTemplateSchedaResponseModel> {
     return new Promise<DeleteDatiTemplateSchedaResponseModel>(
       (resolve, reject) => {
@@ -246,7 +246,7 @@ export class CreateOrEditTemplatePlanService {
         } catch (error) {
           reject(error);
         }
-      }
+      },
     );
   }
 }

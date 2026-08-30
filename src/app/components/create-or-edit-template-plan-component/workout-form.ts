@@ -53,17 +53,21 @@ export class AllenamentoForm {
     this.form = new FormGroup<AllenamentoFormModel>({
       identifier: new FormControl<number | null>(identifier),
       id: new FormControl<number | null>(allenamentoDTO?.id || null),
-      idTemplate: new FormControl<number | null>(allenamentoDTO?.idTemplate || null),
-      dataEsecuzione: new FormControl<Date | null>(allenamentoDTO?.dataEsecuzione || new Date()),
+      idTemplate: new FormControl<number | null>(
+        allenamentoDTO?.idTemplate || null,
+      ),
+      dataEsecuzione: new FormControl<Date | null>(
+        allenamentoDTO?.dataEsecuzione || new Date(),
+      ),
 
       nomeAllenamento: new FormControl<string | null>(
-        allenamentoDTO?.nomeAllenamento || null
+        allenamentoDTO?.nomeAllenamento || null,
       ),
       description: new FormControl<string | null>(
-        allenamentoDTO?.description || null
+        allenamentoDTO?.description || null,
       ),
       ordinamento: new FormControl<number | null>(
-        allenamentoDTO?.ordinamento || null
+        allenamentoDTO?.ordinamento || null,
       ),
       listaEsercizi: new FormArray<FormGroup<EsercizioFormModel>>([]),
       listaGruppi: new FormArray<FormGroup<GruppoFormModel>>([]),
@@ -91,7 +95,7 @@ export class AllenamentoForm {
             : undefined;
         this.addEsercizioForm(
           esercizioDTO,
-          gruppoForm ? gruppoForm.identifier : null
+          gruppoForm ? gruppoForm.identifier : null,
         );
       });
 
@@ -104,7 +108,7 @@ export class AllenamentoForm {
 
   addEsercizioForm(
     esercizioDTO?: EsercizioDTO,
-    groupIdentifier: number | null = null
+    groupIdentifier: number | null = null,
   ) {
     try {
       this.identifier = this.identifier + 1;
@@ -114,7 +118,7 @@ export class AllenamentoForm {
 
       const newEsercizioForm: EsercizioForm = new EsercizioForm(
         this.identifier,
-        esercizioDTO
+        esercizioDTO,
       );
 
       // Se non ha già un ordinamento (nuovo esercizio), assegna l'ultima posizione
@@ -151,7 +155,7 @@ export class AllenamentoForm {
     const totalExercises = this.listaEserciziForm.length;
     this.availableExercisePositions = Array.from(
       { length: totalExercises },
-      (_, i) => i + 1
+      (_, i) => i + 1,
     );
   }
 
@@ -159,7 +163,7 @@ export class AllenamentoForm {
     try {
       // Trova l'indice dell'esercizio da eliminare
       const esercizioIndex = this.listaEserciziForm.findIndex(
-        (esercizio) => esercizio.form.get("identifier")?.value === identifier
+        (esercizio) => esercizio.form.get("identifier")?.value === identifier,
       );
 
       if (esercizioIndex === -1) {
@@ -183,7 +187,7 @@ export class AllenamentoForm {
       // Se il gruppo è rimasto vuoto lo rimuovo automaticamente
       if (idGruppo !== null) {
         const gruppoHaMembri = this.listaEserciziForm.some(
-          (esercizio) => esercizio.form.get("idGruppo")?.value === idGruppo
+          (esercizio) => esercizio.form.get("idGruppo")?.value === idGruppo,
         );
         if (!gruppoHaMembri) {
           this.removeGruppoForm(idGruppo);
@@ -203,7 +207,7 @@ export class AllenamentoForm {
   findEsercizioByIdentifier(identifier: number): EsercizioForm | null {
     return (
       this.listaEserciziForm.find(
-        (esercizio) => esercizio.form.get("identifier")?.value === identifier
+        (esercizio) => esercizio.form.get("identifier")?.value === identifier,
       ) || null
     );
   }
@@ -234,7 +238,7 @@ export class AllenamentoForm {
     const totalExercises = this.listaEserciziForm.length;
     this.availableExercisePositions = Array.from(
       { length: totalExercises },
-      (_, i) => i + 1
+      (_, i) => i + 1,
     );
 
     // 4. Ricostruisci il FormArray nell'ordine corretto
@@ -280,7 +284,7 @@ export class AllenamentoForm {
   moveEsercizio(exerciseIdentifier: number, newPosition: number): boolean {
     try {
       const currentIndex = this.listaEserciziForm.findIndex(
-        (e) => e.form.get("identifier")?.value === exerciseIdentifier
+        (e) => e.form.get("identifier")?.value === exerciseIdentifier,
       );
 
       if (currentIndex === -1) {
@@ -318,7 +322,7 @@ export class AllenamentoForm {
     try {
       // Crea una mappa per un accesso rapido agli esercizi per identifier
       const exerciseMap = new Map<number, EsercizioForm>();
-      this.listaEserciziForm.forEach(exercise => {
+      this.listaEserciziForm.forEach((exercise) => {
         const identifier = exercise.form.get("identifier")?.value;
         if (identifier !== null && identifier !== undefined) {
           exerciseMap.set(identifier, exercise);
@@ -345,7 +349,9 @@ export class AllenamentoForm {
       // 1. Aggiorna i valori ordinamento PRIMA di sostituire l'array
       reorderedList.forEach((exercise, index) => {
         const newOrdinamento = index + 1;
-        exercise.form.get("ordinamento")?.setValue(newOrdinamento, { emitEvent: false });
+        exercise.form
+          .get("ordinamento")
+          ?.setValue(newOrdinamento, { emitEvent: false });
       });
 
       // 2. Sostituisci l'array
@@ -374,11 +380,21 @@ export class AllenamentoForm {
     try {
       let allenamentoDaSalvare: AllenamentoDTO = {
         id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
-        idTemplate: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
-        dataEsecuzione: this.form.controls["dataEsecuzione"].value ? this.form.controls["dataEsecuzione"].value : new Date(),
-        nomeAllenamento: this.form.controls["nomeAllenamento"].value ? this.form.controls["nomeAllenamento"].value : "",
-        description: this.form.controls["description"].value ? this.form.controls["description"].value : "",
-        ordinamento: this.form.controls["ordinamento"].value ? this.form.controls["ordinamento"].value : 0,
+        idTemplate: this.form.controls["idTemplate"].value
+          ? this.form.controls["idTemplate"].value
+          : 0,
+        dataEsecuzione: this.form.controls["dataEsecuzione"].value
+          ? this.form.controls["dataEsecuzione"].value
+          : new Date(),
+        nomeAllenamento: this.form.controls["nomeAllenamento"].value
+          ? this.form.controls["nomeAllenamento"].value
+          : "",
+        description: this.form.controls["description"].value
+          ? this.form.controls["description"].value
+          : "",
+        ordinamento: this.form.controls["ordinamento"].value
+          ? this.form.controls["ordinamento"].value
+          : 0,
         listaEsercizi: [],
         listaGruppi: [],
       };
@@ -395,7 +411,7 @@ export class AllenamentoForm {
             progressivo = progressivo + 1;
             progressivoByGroupIdentifier.set(idGruppo, progressivo);
             allenamentoDaSalvare.listaGruppi!.push(
-              gruppo.getDatiGruppoDaSalvare(progressivo)
+              gruppo.getDatiGruppoDaSalvare(progressivo),
             );
           }
         }
@@ -406,7 +422,7 @@ export class AllenamentoForm {
         const idGruppo = esercizio.idGruppo;
         esercizioDTO.idGruppo =
           idGruppo !== null
-            ? progressivoByGroupIdentifier.get(idGruppo) ?? null
+            ? (progressivoByGroupIdentifier.get(idGruppo) ?? null)
             : null;
         allenamentoDaSalvare.listaEsercizi.push(esercizioDTO);
       });
@@ -487,9 +503,8 @@ export class AllenamentoForm {
 
   findGruppoByIdentifier(identifier: number): GruppoForm | null {
     return (
-      this.listaGruppiForm.find(
-        (gruppo) => gruppo.identifier === identifier
-      ) || null
+      this.listaGruppiForm.find((gruppo) => gruppo.identifier === identifier) ||
+      null
     );
   }
 
@@ -517,7 +532,7 @@ export class AllenamentoForm {
       // (così il gruppo resta dov'è nella pagina)
       let insertIndex = Math.min(
         Math.max(gruppo.emptyAnchorIndex, 0),
-        this.listaEserciziForm.length
+        this.listaEserciziForm.length,
       );
       for (let i = this.listaEserciziForm.length - 1; i >= 0; i--) {
         if (this.listaEserciziForm[i].idGruppo === groupIdentifier) {
@@ -547,7 +562,7 @@ export class AllenamentoForm {
   deleteGruppo(groupIdentifier: number): boolean {
     try {
       const gruppoIndex = this.listaGruppiForm.findIndex(
-        (gruppo) => gruppo.identifier === groupIdentifier
+        (gruppo) => gruppo.identifier === groupIdentifier,
       );
       if (gruppoIndex === -1) {
         console.error(`Gruppo con identifier ${groupIdentifier} non trovato`);
@@ -577,7 +592,7 @@ export class AllenamentoForm {
   private reorderGruppiForms(orderedGroupIdentifiers: number[]): void {
     const byIdentifier = new Map<number, GruppoForm>();
     this.listaGruppiForm.forEach((gruppo) =>
-      byIdentifier.set(gruppo.identifier, gruppo)
+      byIdentifier.set(gruppo.identifier, gruppo),
     );
 
     const reordered: GruppoForm[] = [];
@@ -606,7 +621,7 @@ export class AllenamentoForm {
    */
   private removeGruppoForm(groupIdentifier: number): void {
     const gruppoIndex = this.listaGruppiForm.findIndex(
-      (gruppo) => gruppo.identifier === groupIdentifier
+      (gruppo) => gruppo.identifier === groupIdentifier,
     );
     if (gruppoIndex === -1) {
       return;
@@ -658,7 +673,7 @@ export class AllenamentoForm {
       }
       seenGroups.add(idGruppo);
       const esercizi = this.listaEserciziForm.filter(
-        (e) => e.idGruppo === idGruppo
+        (e) => e.idGruppo === idGruppo,
       );
       keyedUnits.push({
         unit: { kind: "gruppo", gruppo, esercizi, numero: 0 },
@@ -671,7 +686,7 @@ export class AllenamentoForm {
       if (!seenGroups.has(gruppo.identifier)) {
         const anchor = Math.min(
           Math.max(gruppo.emptyAnchorIndex, 0),
-          this.listaEserciziForm.length
+          this.listaEserciziForm.length,
         );
         keyedUnits.push({
           unit: { kind: "gruppo", gruppo, esercizi: [], numero: 0 },
@@ -713,7 +728,7 @@ export class AllenamentoForm {
         }
 
         const membri = this.listaEserciziForm.filter(
-          (esercizio) => esercizio.idGruppo === unit.identifier
+          (esercizio) => esercizio.idGruppo === unit.identifier,
         );
 
         if (membri.length === 0) {
@@ -726,7 +741,7 @@ export class AllenamentoForm {
         }
 
         membri.forEach((esercizio) =>
-          orderedIdentifiers.push(esercizio.exerciseIdentifier)
+          orderedIdentifiers.push(esercizio.exerciseIdentifier),
         );
         runningIndex = runningIndex + membri.length;
       }
@@ -736,7 +751,7 @@ export class AllenamentoForm {
       this.reorderGruppiForms(
         orderedUnits
           .filter((unit) => unit.kind === "gruppo")
-          .map((unit) => unit.identifier)
+          .map((unit) => unit.identifier),
       );
 
       return this.reorderExercisesByIdentifiers(orderedIdentifiers);
@@ -752,7 +767,7 @@ export class AllenamentoForm {
    */
   reorderGroupMembers(
     groupIdentifier: number,
-    orderedMemberIdentifiers: number[]
+    orderedMemberIdentifiers: number[],
   ): boolean {
     try {
       const memberIndexes: number[] = [];
@@ -774,7 +789,7 @@ export class AllenamentoForm {
         const member = memberByIdentifier.get(memberIdentifier);
         if (!member) {
           console.error(
-            `Membro con identifier ${memberIdentifier} non trovato nel gruppo`
+            `Membro con identifier ${memberIdentifier} non trovato nel gruppo`,
           );
           return false;
         }

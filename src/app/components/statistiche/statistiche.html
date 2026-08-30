@@ -1,68 +1,118 @@
 <div class="page-scroller">
-  <!-- Link progressione scheda -->
-  <section class="stats-section">
-    <button class="progressione-link" (click)="apriProgressioneScheda()">
-      <span class="progressione-link-text">Progressione scheda</span>
-      <span class="progressione-link-subtitle">Vista settimanale dettagliata</span>
-      <span class="progressione-link-arrow">›</span>
-    </button>
-  </section>
-
-  <!-- Riepilogo generale -->
-  <section class="stats-section">
-    <h1 class="text-title">Riepilogo</h1>
-    <app-riepilogo-generale [dati]="riepilogo"></app-riepilogo-generale>
-  </section>
-
-  <!-- Frequenza allenamenti -->
-  <section class="stats-section">
-    <div class="section-header">
-      <h1 class="text-title">Frequenza allenamenti</h1>
-      <button class="toggle-btn" (click)="toggleFrequenzaPeriodo()">
-        {{ frequenzaPeriodo === 'settimana' ? 'Mese' : 'Settimana' }}
+  <!-- Selettore di periodo: chip orizzontali, sticky sotto l'header.
+       Stile del bottom menu, dimensioni di .small-inline-button. -->
+  <div class="stats-tabs-sticky">
+    <div class="stats-tabs">
+      @for (tab of periodi; track tab.id) {
+      <button
+        type="button"
+        class="stats-tab"
+        [class.active]="periodoAttivo() === tab.id"
+        (click)="selezionaPeriodo(tab.id)"
+      >
+        {{ tab.label }}
       </button>
+      }
     </div>
-    <app-frequenza-allenamenti
-      [dati]="frequenzaDati"
-      [periodo]="frequenzaPeriodo">
-    </app-frequenza-allenamenti>
-  </section>
+  </div>
 
-  <!-- Volume nel tempo -->
-  <section class="stats-section">
-    <div class="section-header">
-      <h1 class="text-title">Volume nel tempo</h1>
-      <button class="toggle-btn" (click)="toggleVolumePeriodo()">
-        {{ volumePeriodo === 'settimana' ? 'Mese' : 'Settimana' }}
-      </button>
+  <div class="stats-content" [class.loading]="caricamento()">
+    <!-- ULTIMA SESSIONE -->
+    @if (overview()?.ultimaSessione; as ultimaSessione) {
+    <section class="stats-section">
+      <div class="widget-title">
+        <div class="section-widget-title-container">
+          <h1 class="text-title">Ultima sessione</h1>
+        </div>
+      </div>
+      <app-card-ultima-sessione
+        [dati]="ultimaSessione"
+        (apri)="apriDettaglioSessione($event)"
+      ></app-card-ultima-sessione>
+    </section>
+    }
+
+    <!-- COSTANZA -->
+    @if (overview()?.costanza; as costanza) {
+    <section class="stats-section">
+      <div class="widget-title">
+        <div class="section-widget-title-container">
+          <h1 class="text-title">Costanza</h1>
+        </div>
+      </div>
+      <app-card-costanza [dati]="costanza"></app-card-costanza>
+    </section>
+    }
+
+    <!-- FORZA -->
+    @if (overview()?.forza; as forza) {
+    <section class="stats-section">
+      <div class="mostra-tutti-widget">
+        <h1 class="text-title">Forza</h1>
+        <div class="small-inline-button" (click)="apriTuttiGliEsercizi()">
+          <button type="button">Tutti</button>
+          <mat-icon svgIcon="google-arrow"></mat-icon>
+        </div>
+      </div>
+      <app-card-forza
+        [esercizi]="forza.esercizi"
+        (apri)="apriDettaglioEsercizio($event)"
+      ></app-card-forza>
+    </section>
+    }
+
+    <!-- VOLUME PER MUSCOLO -->
+    @if (overview()?.volume; as volume) {
+    <section class="stats-section">
+      <div class="mostra-tutti-widget">
+        <h1 class="text-title">Volume per muscolo</h1>
+        <div class="small-inline-button" (click)="apriTuttiIDistretti()">
+          <button type="button">Tutti</button>
+          <mat-icon svgIcon="google-arrow"></mat-icon>
+        </div>
+      </div>
+      <app-card-volume-muscolo
+        [distretti]="volume.distretti"
+        (apri)="apriDettaglioMuscolo($event)"
+      ></app-card-volume-muscolo>
+    </section>
+    }
+
+    <!-- ADERENZA ALLA SCHEDA -->
+    @if (overview()?.aderenza; as aderenza) {
+    <section class="stats-section">
+      <div class="widget-title">
+        <div class="section-widget-title-container">
+          <h1 class="text-title">Aderenza alla scheda</h1>
+        </div>
+      </div>
+      <app-card-aderenza
+        [dati]="aderenza"
+        (apri)="apriDettaglioAderenza()"
+      ></app-card-aderenza>
+    </section>
+    }
+
+    <!-- Riga finale verso la schermata separata: non un accordion inline,
+         che espandendosi a meta' scroll farebbe perdere la posizione. -->
+    @if (overview()) {
+    <div class="stats-card stats-avanzate" (click)="apriStatisticheAvanzate()">
+      <h3 class="text-white">Statistiche avanzate</h3>
+      <div class="arrow-widget-container">
+        <mat-icon svgIcon="google-arrow"></mat-icon>
+      </div>
     </div>
-    <app-volume-nel-tempo [dati]="volumeDati"></app-volume-nel-tempo>
-  </section>
+    }
 
-  <!-- Progressione esercizio -->
-  <section class="stats-section">
-    <div class="section-header">
-      <h1 class="text-title">Progressione esercizio</h1>
-      <button class="toggle-btn" (click)="apriSelettoreEsercizio()">
-        {{ esercizioSelezionato ? esercizioSelezionato.label : 'Seleziona' }}
-      </button>
+    <!-- Stato vuoto assoluto: nessuna card calcolabile -->
+    @if (overview() && !overview()?.ultimaSessione && !overview()?.costanza &&
+    !overview()?.forza && !overview()?.volume && !overview()?.aderenza) {
+    <div class="stats-empty">
+      <h3 class="text-white">Non ci sono ancora dati sufficienti</h3>
+      <h3 class="text-grey">
+        Registra qualche allenamento e le statistiche compariranno qui.
+      </h3>
     </div>
-    <app-progressione-esercizio
-      [dati]="progressioneDati"
-      [nomeEsercizio]="esercizioSelezionato?.label || ''">
-    </app-progressione-esercizio>
-  </section>
-
-  <!-- Distribuzione gruppi muscolari -->
-  <section class="stats-section">
-    <h1 class="text-title">Distribuzione muscoli</h1>
-    <span class="section-subtitle">Ultimi 90 giorni</span>
-    <app-distribuzione-muscoli [dati]="distribuzioneDati"></app-distribuzione-muscoli>
-  </section>
-
-  <!-- Record personali -->
-  <section class="stats-section stats-section-last">
-    <h1 class="text-title">Record personali</h1>
-    <app-record-personali [records]="recordDati"></app-record-personali>
-  </section>
+    }
+  </div>
 </div>

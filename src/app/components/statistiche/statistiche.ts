@@ -1,51 +1,36 @@
-import { Component, OnInit, inject } from "@angular/core";
+import { Component, OnInit, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
-import { forkJoin } from "rxjs";
-import { Chart, registerables } from "chart.js";
+import { MatIcon, MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { AuthService } from "src/app/core/services/auth.service";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { StatisticsService } from "src/app/core/services/statistics.service";
-import { WorkoutService } from "src/app/core/services/workout.service";
+import { HapticService } from "src/app/core/services/haptic.service";
 import {
-  ExerciseService,
-  ExerciseViewModel,
-} from "src/app/core/services/exercise.service";
-import { BottomSheetService } from "../shared/bottom-sheet/bottom-sheet-service";
-import { WorkoutListSelector } from "../shared/workout-list-selector/workout-list-selector";
-import {
-  RiepilogoResponse,
-  FrequenzaData,
-  VolumeDataPoint,
-  DistribuzioneMuscoloItem,
-  RecordPersonaleItem,
-  ProgressioneData,
-} from "src/app/models/statistics/statistics-models";
-import { RiepilogoGenerale } from "./riepilogo-generale/riepilogo-generale";
-import { FrequenzaAllenamenti } from "./frequenza-allenamenti/frequenza-allenamenti";
-import { VolumeNelTempo } from "./volume-nel-tempo/volume-nel-tempo";
-import { ProgressioneEsercizio } from "./progressione-esercizio/progressione-esercizio";
-import { DistribuzioneMuscoli } from "./distribuzione-muscoli/distribuzione-muscoli";
-import { RecordPersonali } from "./record-personali/record-personali";
-
-// Registra tutti i componenti di Chart.js
-Chart.register(...registerables);
+  StatisticheOverviewResponse,
+  StatistichePeriodo,
+  STATISTICHE_PERIODI,
+} from "src/app/models/statistics/statistiche-overview-models";
+import { CardUltimaSessione } from "./card-ultima-sessione/card-ultima-sessione";
+import { CardCostanza } from "./card-costanza/card-costanza";
+import { CardForza } from "./card-forza/card-forza";
+import { CardVolumeMuscolo } from "./card-volume-muscolo/card-volume-muscolo";
+import { CardAderenza } from "./card-aderenza/card-aderenza";
 
 @Component({
   selector: "app-statistiche",
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    RiepilogoGenerale,
-    FrequenzaAllenamenti,
-    VolumeNelTempo,
-    ProgressioneEsercizio,
-    DistribuzioneMuscoli,
-    RecordPersonali,
+    MatIcon,
+    CardUltimaSessione,
+    CardCostanza,
+    CardForza,
+    CardVolumeMuscolo,
+    CardAderenza,
   ],
   templateUrl: "./statistiche.html",
   styleUrls: ["./statistiche.scss"],
@@ -56,191 +41,113 @@ export class StatisticheComponent implements OnInit {
   private authService = inject(AuthService);
   private errorHandlerService = inject(ErrorHandlerService);
   private statisticsService = inject(StatisticsService);
-  private workoutService = inject(WorkoutService);
-  private exerciseService = inject(ExerciseService);
-  private bottomSheetService = inject(BottomSheetService);
+  private hapticService = inject(HapticService);
   private router = inject(Router);
 
-  // Dati sezioni
-  riepilogo: RiepilogoResponse | null = null;
-  frequenzaDati: FrequenzaData[] = [];
-  volumeDati: VolumeDataPoint[] = [];
-  distribuzioneDati: DistribuzioneMuscoloItem[] = [];
-  recordDati: RecordPersonaleItem[] = [];
-  progressioneDati: ProgressioneData | null = null;
+  readonly periodi = STATISTICHE_PERIODI;
 
-  // Toggle e selezione
-  frequenzaPeriodo: "settimana" | "mese" = "settimana";
-  volumePeriodo: "settimana" | "mese" = "settimana";
-  esercizioSelezionato: ExerciseViewModel | null = null;
-  exerciseControl = new FormControl<number | null>(null);
+  periodoAttivo = signal<StatistichePeriodo>("scheda-attiva");
+  overview = signal<StatisticheOverviewResponse | null>(null);
+  caricamento = signal<boolean>(false);
+
+  constructor(
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+  ) {
+    iconRegistry.addSvgIcon(
+      "google-arrow",
+      sanitizer.bypassSecurityTrustResourceUrl(
+        "assets/recollect/svg/google-arrow.svg",
+      ),
+    );
+  }
 
   ngOnInit(): void {
-    this.menuConfigService.setConfig({ leftButton: "none" });
-    this.caricaDati();
-  }
-
-  async caricaDati(): Promise<void> {
-    const user = this.authService.getCurrentUser();
-    if (!user) return;
-
-    const userId = user.userId;
-    const spinnerId = this.spinnerService.showWithResult("Caricamento statistiche", {
-      successMessage: "Dati caricati",
-      errorMessage: "Errore nel caricamento",
-      resultDuration: 300,
-      minSpinnerDuration: 300,
+    this.menuConfigService.setConfig({
+      leftButton: "none",
+      centerText: "Statistiche",
     });
-
-    try {
-      const [riepilogo, volume, distribuzione, records, allenamenti] =
-        await Promise.allSettled([
-          this.statisticsService.getRiepilogo(userId).toPromise(),
-          this.statisticsService
-            .getVolume(userId, this.volumePeriodo)
-            .toPromise(),
-          this.statisticsService
-            .getDistribuzioneMuscoli(userId, 90)
-            .toPromise(),
-          this.statisticsService.getRecordPersonali(userId).toPromise(),
-          this.workoutService
-            .getListaAllenamentiSvolti({ userId })
-            .toPromise(),
-        ]);
-
-      if (riepilogo.status === "fulfilled" && riepilogo.value) {
-        this.riepilogo = riepilogo.value;
-      }
-
-      if (volume.status === "fulfilled" && volume.value) {
-        this.volumeDati = volume.value.datiVolume;
-      }
-
-      if (distribuzione.status === "fulfilled" && distribuzione.value) {
-        this.distribuzioneDati = distribuzione.value.distribuzione;
-      }
-
-      if (records.status === "fulfilled" && records.value) {
-        this.recordDati = records.value.records;
-      }
-
-      if (allenamenti.status === "fulfilled" && allenamenti.value) {
-        this.frequenzaDati = this.statisticsService.calcolaFrequenzaPerPeriodo(
-          allenamenti.value.listaAllenamentiDTO,
-          this.frequenzaPeriodo
-        );
-      }
-
-      this.spinnerService.setSuccess(spinnerId);
-    } catch (error) {
-      this.errorHandlerService.logError(error, "StatisticheComponent.caricaDati");
-      this.spinnerService.setError(spinnerId);
-    }
+    this.caricaOverview(true);
   }
 
-  toggleFrequenzaPeriodo(): void {
-    this.frequenzaPeriodo =
-      this.frequenzaPeriodo === "settimana" ? "mese" : "settimana";
-    this.ricalcolaFrequenza();
+  selezionaPeriodo(periodo: StatistichePeriodo): void {
+    if (periodo === this.periodoAttivo()) return;
+    this.hapticService.trigger("light");
+    this.periodoAttivo.set(periodo);
+    // Cambio tab: niente spinner a tutto schermo, solo il ricarico dei dati.
+    // Lo spinner serve al primo ingresso, quando la pagina è vuota.
+    this.caricaOverview(false);
   }
 
-  toggleVolumePeriodo(): void {
-    this.volumePeriodo =
-      this.volumePeriodo === "settimana" ? "mese" : "settimana";
-    this.ricaricaVolume();
+  // I drill-down di livello L2 (dettaglio esercizio, dettaglio distretto,
+  // liste complete) non esistono ancora: qui restano gli agganci, cablati
+  // quando arriveranno le rispettive schermate.
+  apriDettaglioSessione(idAllenamentoSvolto: number): void {
+    console.debug("TODO drill-down sessione", idAllenamentoSvolto);
   }
 
-  async apriSelettoreEsercizio(): Promise<void> {
-    try {
-      const exercises = this.exerciseService.getExercisesWithIcons();
-      const ref = await this.bottomSheetService.open<any, ExerciseViewModel>({
-        component: WorkoutListSelector,
-        data: {
-          items: exercises,
-          title: "Seleziona esercizio",
-        },
-      });
-
-      const result = await ref.onDidDismiss();
-      if (result.data) {
-        this.esercizioSelezionato = result.data;
-        this.caricaProgressione(result.data.id);
-      }
-    } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "StatisticheComponent.apriSelettoreEsercizio"
-      );
-    }
+  apriDettaglioEsercizio(idTipoEsercizio: number): void {
+    console.debug("TODO drill-down esercizio", idTipoEsercizio);
   }
 
-  private async caricaProgressione(exerciseId: number): Promise<void> {
+  apriDettaglioMuscolo(idMuscolo: number): void {
+    console.debug("TODO drill-down distretto", idMuscolo);
+  }
+
+  apriTuttiGliEsercizi(): void {
+    console.debug("TODO lista completa esercizi");
+  }
+
+  apriTuttiIDistretti(): void {
+    console.debug("TODO lista completa distretti");
+  }
+
+  apriDettaglioAderenza(): void {
+    console.debug("TODO drill-down aderenza");
+  }
+
+  apriStatisticheAvanzate(): void {
+    console.debug("TODO schermata statistiche avanzate");
+  }
+
+  private async caricaOverview(conSpinner: boolean): Promise<void> {
     const user = this.authService.getCurrentUser();
     if (!user) return;
 
+    const spinnerId = conSpinner
+      ? this.spinnerService.showWithResult("Recupero dati statistiche", {
+          // forceShow: false => se i dati arrivano prima dei 250ms di
+          // INITIAL_DELAY dello SpinnerComponent, il popup non compare
+          // affatto. Stessi valori delle altre liste dell'app.
+          forceShow: false,
+          successMessage: "Dati recuperati con successo",
+          errorMessage: "Errore nel recupero dei dati",
+          resultDuration: 250,
+          minSpinnerDuration: 250,
+        })
+      : null;
+
+    this.caricamento.set(true);
+
     try {
-      const response = await this.workoutService
-        .getLastNTrainingsForExercise(user.userId, exerciseId, 20)
+      const risposta = await this.statisticsService
+        .getStatisticheOverview(user.userId, this.periodoAttivo())
         .toPromise();
 
-      if (response?.esercizi) {
-        this.progressioneDati =
-          this.statisticsService.calcolaProgressioneEsercizio(
-            response.esercizi
-          );
+      // Una tab cambiata durante il volo non deve sovrascrivere quella nuova.
+      if (risposta && risposta.periodo === this.periodoAttivo()) {
+        this.overview.set(risposta);
       }
+
+      if (spinnerId) this.spinnerService.setSuccess(spinnerId);
     } catch (error) {
       this.errorHandlerService.logError(
         error,
-        "StatisticheComponent.caricaProgressione"
+        "StatisticheComponent.caricaOverview",
       );
-    }
-  }
-
-  private async ricalcolaFrequenza(): Promise<void> {
-    const user = this.authService.getCurrentUser();
-    if (!user) return;
-
-    try {
-      const response = await this.workoutService
-        .getListaAllenamentiSvolti({ userId: user.userId })
-        .toPromise();
-
-      if (response?.listaAllenamentiDTO) {
-        this.frequenzaDati = this.statisticsService.calcolaFrequenzaPerPeriodo(
-          response.listaAllenamentiDTO,
-          this.frequenzaPeriodo
-        );
-      }
-    } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "StatisticheComponent.ricalcolaFrequenza"
-      );
-    }
-  }
-
-  apriProgressioneScheda(): void {
-    this.router.navigate(["/progressione-scheda"]);
-  }
-
-  private async ricaricaVolume(): Promise<void> {
-    const user = this.authService.getCurrentUser();
-    if (!user) return;
-
-    try {
-      const response = await this.statisticsService
-        .getVolume(user.userId, this.volumePeriodo)
-        .toPromise();
-
-      if (response?.datiVolume) {
-        this.volumeDati = response.datiVolume;
-      }
-    } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "StatisticheComponent.ricaricaVolume"
-      );
+      if (spinnerId) this.spinnerService.setError(spinnerId);
+    } finally {
+      this.caricamento.set(false);
     }
   }
 }

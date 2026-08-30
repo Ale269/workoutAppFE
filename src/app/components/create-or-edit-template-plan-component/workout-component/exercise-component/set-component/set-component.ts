@@ -69,7 +69,7 @@ export class SetComponent implements OnInit {
 
   openDeleteModal() {
     try {
-      this.hapticService.trigger('error');
+      this.hapticService.trigger("error");
       this.modalService.open({
         warning: true,
         headerTemplate: this.headerDeleteSerie,

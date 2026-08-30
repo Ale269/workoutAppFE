@@ -2,6 +2,7 @@ import { Component, Input } from "@angular/core";
 import { EsercizioForm } from "../../exercise-form";
 import { GruppoForm } from "../../group-form";
 import { ExerciseIconColorPipe } from "src/app/core/pipes/exercise-icon-color";
+import { ExerciseIconPipe } from "src/app/core/pipes/exercise-icon";
 import { ExerciseService } from "src/app/core/services/exercise.service";
 
 /**
@@ -13,7 +14,7 @@ import { ExerciseService } from "src/app/core/services/exercise.service";
  */
 @Component({
   selector: "app-group-compact-card",
-  imports: [ExerciseIconColorPipe],
+  imports: [ExerciseIconColorPipe, ExerciseIconPipe],
   templateUrl: "./group-compact-card.html",
   styleUrl: "./group-compact-card.scss",
 })
@@ -29,7 +30,9 @@ export class GroupCompactCard {
   }
 
   get titolo(): string {
-    return this.isCircuit ? `Circuito ${this.numero}` : `Superset ${this.numero}`;
+    return this.isCircuit
+      ? `Circuito ${this.numero}`
+      : `Superset ${this.numero}`;
   }
 
   get tempoRecupero(): number | null {
@@ -38,12 +41,6 @@ export class GroupCompactCard {
 
   get numeroGiri(): number | null {
     return this.gruppo.form.get("numeroGiri")?.value ?? null;
-  }
-
-  getExerciseIconPath(esercizioForm: EsercizioForm): string {
-    return this.exerciseService.getExerciseIconPathByExerciseId(
-      esercizioForm.form.controls["idTipoEsercizio"].value,
-    );
   }
 
   getExerciseName(esercizioForm: EsercizioForm): string {

@@ -6,7 +6,7 @@
         [style.border-color]="this.formEsercizio.form.controls['idIconaEsercizio'].value | exerciseIconColor"
       >
         <img
-          [src]="exerciseIconPath"
+          [src]="this.formEsercizio.form.controls['idIconaEsercizio'].value | exerciseIcon"
           [alt]="'Icona esercizio ' + this.formEsercizio.form.controls['idIconaEsercizio'].value"
           class="exercise-icon"
         />

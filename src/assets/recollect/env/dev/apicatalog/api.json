@@ -147,8 +147,7 @@
         "method": "get",
         "description": "Download scheda di un utente",
         "isMocked": false
-      }
-      ,
+      },
       {
         "name": "getSchedeSvolte",
         "endpoint": "/workout/templates/:userId",
@@ -315,6 +314,13 @@
       }
     ],
     "stats": [
+      {
+        "name": "overview",
+        "endpoint": "/stats/overview/:userId",
+        "method": "get",
+        "description": "Panoramica statistiche (ultima sessione, costanza, forza, volume, aderenza) per il periodo selezionato.",
+        "isMocked": false
+      },
       {
         "name": "summary",
         "endpoint": "/stats/summary/:userId",

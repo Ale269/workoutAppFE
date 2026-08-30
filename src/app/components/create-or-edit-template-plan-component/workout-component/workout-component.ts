@@ -65,7 +65,7 @@ import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
     MultiOptionButton,
     PopupOptionButton,
     MatIcon,
-    HapticSwitchDirective
+    HapticSwitchDirective,
   ],
   templateUrl: "./workout-component.html",
   styleUrl: "./workout-component.scss",
@@ -154,7 +154,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   toggleCompactMode(): void {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       this.isCompactMode = !this.isCompactMode;
       this.cdr.detectChanges();
 
@@ -296,7 +296,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   async addNuovoEsercizio() {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       await this.maintainButtonPosition(() => {
         this.formAllenamento.addEsercizioForm(undefined);
       });
@@ -313,7 +313,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
    */
   async onAddOptionSelected(optionId: number) {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       await this.maintainButtonPosition(() => {
         switch (optionId) {
           case 1:
@@ -365,7 +365,9 @@ export class WorkoutComponent implements OnInit, OnDestroy {
       // scrolla, altrimenti su iOS ricadeva nella sua scroll view). closest()
       // cerca solo tra host e antenati, quindi con la nuova struttura
       // restituiva sempre null: querySelector cerca invece tra i discendenti.
-      const scroller = this.elementRef.nativeElement.querySelector('.page-scroller') as HTMLElement | null;
+      const scroller = this.elementRef.nativeElement.querySelector(
+        ".page-scroller",
+      ) as HTMLElement | null;
       if (!scroller) return;
 
       const heightBefore = scroller.scrollHeight;
@@ -396,12 +398,12 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   openDeleteWorkout() {
     try {
-      this.hapticService.trigger('error');
+      this.hapticService.trigger("error");
       this.confirmPopupService.open({
         triggerElement: this.deleteWorkoutAnchor.nativeElement,
-        title: 'Eliminare questo allenamento?',
-        message: 'Questa azione non può essere annullata.',
-        confirmText: 'Elimina',
+        title: "Eliminare questo allenamento?",
+        message: "Questa azione non può essere annullata.",
+        confirmText: "Elimina",
         onConfirm: () => this.deleteWorkout(),
       });
     } catch (error) {
@@ -427,7 +429,7 @@ export class WorkoutComponent implements OnInit, OnDestroy {
 
   backToList() {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       this.onBackToList.emit();
     } catch (error) {
       this.errorHandlerService.logError(error, "WorkoutComponent.backToList");

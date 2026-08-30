@@ -1,23 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ReorderExerciseComponent } from './reorder-exercise-component';
+import { ReorderExerciseComponent } from "./reorder-exercise-component";
 
-describe('ReorderExerciseComponent', () => {
+describe("ReorderExerciseComponent", () => {
   let component: ReorderExerciseComponent;
   let fixture: ComponentFixture<ReorderExerciseComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReorderExerciseComponent]
-    })
-    .compileComponents();
+      imports: [ReorderExerciseComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ReorderExerciseComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

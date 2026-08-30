@@ -35,10 +35,10 @@ export class GruppoForm {
       id: new FormControl<number | null>(gruppoDTO?.id || null),
       idTemplate: new FormControl<number | null>(gruppoDTO?.idTemplate || null),
       tipoGruppo: new FormControl<TipoGruppo | null>(
-        gruppoDTO?.tipoGruppo || null
+        gruppoDTO?.tipoGruppo || null,
       ),
       tempoRecupero: new FormControl<number | null>(
-        gruppoDTO?.tempoRecupero ?? null
+        gruppoDTO?.tempoRecupero ?? null,
       ),
       numeroGiri: new FormControl<number | null>(gruppoDTO?.numeroGiri ?? null),
     });

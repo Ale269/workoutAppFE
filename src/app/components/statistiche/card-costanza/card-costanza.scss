@@ -1,0 +1,66 @@
+// La card è composta da blocchi impilati, ognuno col suo padding e il suo
+// border-bottom — stessa costruzione di .widget-data in scheda-corrente. È
+// quello che fa correre le linee da bordo a bordo: un border-top applicato
+// dentro un contenitore già in padding resterebbe rientrato di 16px.
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.widget-data {
+  display: flex;
+  flex-direction: column;
+  background-color: #1a1a1a;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  h3 {
+    line-height: 18px;
+  }
+}
+
+.widget-data-last {
+  gap: 4px;
+  border-bottom: none;
+}
+
+// ============================================
+// NUMERO GRANDE
+// ============================================
+.costanza-headline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.costanza-numero {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 48px;
+  color: #fff;
+}
+
+.costanza-unita {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  color: #808080;
+}
+
+// ============================================
+// ISTOGRAMMA SETTIMANALE (Chart.js / ng2-charts)
+// ============================================
+.costanza-grafico {
+  position: relative;
+  height: 140px;
+  margin-top: 16px;
+}
+
+.costanza-caption {
+  padding-top: 8px;
+}

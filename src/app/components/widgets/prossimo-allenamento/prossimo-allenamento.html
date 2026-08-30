@@ -31,17 +31,14 @@
         </h3>
       </div>
       <div class="icona-numero-esercizio-container">
-        @for (ex of [0,1,2,3,4]; track ex) {
+        @for (idIcona of idIcone; track $index) {
         <div class="icon-container-accumulator">
           <div
             class="circle-icon"
-            [title]="'Esercizio'"
-            [style.border-color]=""
+            [title]="'Esercizio ' + ($index + 1)"
+            [style.border-color]="idIcona | exerciseIconColor"
           >
-            <img
-              [src]="'assets/recollect/images/bicipite-icon.png'"
-              [alt]="'Icona esercizio'"
-            />
+            <img [src]="idIcona | exerciseIcon" [alt]="'Icona esercizio'" />
           </div>
         </div>
         }

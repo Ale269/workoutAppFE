@@ -40,11 +40,11 @@ export class SerieForm {
       id: new FormControl<number | null>(serieDTO?.id || null),
       idTemplate: new FormControl<number | null>(serieDTO?.idTemplate || null),
       ordinamento: new FormControl<number | null>(
-        serieDTO?.ordinamento || null
+        serieDTO?.ordinamento || null,
       ), // NUOVO CAMPO
       ripetizioni: new FormControl<number | null>(
         serieDTO?.ripetizioni || null,
-        [positiveIntegerValidator()]
+        [positiveIntegerValidator()],
       ),
       carico: new FormControl<number | null>(serieDTO?.carico || null, [
         positiveIntegerValidator(),
@@ -57,7 +57,9 @@ export class SerieForm {
     try {
       return {
         id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
-        idTemplate: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
+        idTemplate: this.form.controls["idTemplate"].value
+          ? this.form.controls["idTemplate"].value
+          : 0,
         carico: this.form.controls["carico"].value
           ? this.form.controls["carico"].value
           : 0,

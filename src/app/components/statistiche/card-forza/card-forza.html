@@ -1,0 +1,31 @@
+<div class="forza-lista">
+  @for (item of esercizi; track item.idTipoEsercizio) {
+  <div class="stats-card" (click)="apri.emit(item.idTipoEsercizio)">
+    <div class="icon-container">
+      <div class="circle-icon" [style.border-color]="item.idIcona | exerciseIconColor">
+        <img [src]="item.idIcona | exerciseIcon" [alt]="'Icona ' + item.nomeEsercizio" />
+      </div>
+    </div>
+
+    <div class="forza-dati">
+      <h3 class="text-white">{{ item.nomeEsercizio }}</h3>
+      @if (item.unaRipetizioneMassimaStimata !== null) {
+      <h3 class="text-grey">
+        1RM stimato {{ item.unaRipetizioneMassimaStimata }} kg
+      </h3>
+      }
+    </div>
+
+    <div class="forza-valori">
+      <h3 class="text-white forza-carico">{{ item.caricoMigliorSerie }} kg</h3>
+      <h3 class="delta">
+        {{ etichettaDelta(item) }}
+      </h3>
+    </div>
+
+    <div class="arrow-widget-container">
+      <mat-icon svgIcon="google-arrow"></mat-icon>
+    </div>
+  </div>
+  }
+</div>

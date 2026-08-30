@@ -1,0 +1,66 @@
+// Blocchi impilati, come in .widget-data di scheda-corrente: è quello che fa
+// correre le linee da bordo a bordo della card.
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.widget-data {
+  display: flex;
+  flex-direction: column;
+  background-color: #1a1a1a;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  h3 {
+    line-height: 18px;
+  }
+}
+
+.widget-data-last {
+  gap: 16px;
+  border-bottom: none;
+}
+
+.aderenza-testata {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.aderenza-headline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.aderenza-numero {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 48px;
+  color: #fff;
+}
+
+.aderenza-unita {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+  color: #808080;
+}
+
+.aderenza-voce {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

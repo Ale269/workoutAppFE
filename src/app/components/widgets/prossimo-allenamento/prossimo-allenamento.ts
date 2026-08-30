@@ -10,10 +10,12 @@ import { createOrEdit } from "../../create-or-edit-workout-execution/create-or-e
 import { MatIconRegistry, MatIcon } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 import { HapticService } from "src/app/core/services/haptic.service";
+import { ExerciseIconPipe } from "src/app/core/pipes/exercise-icon";
+import { ExerciseIconColorPipe } from "src/app/core/pipes/exercise-icon-color";
 
 @Component({
   selector: "app-prossimo-allenamento",
-  imports: [MatIcon],
+  imports: [MatIcon, ExerciseIconPipe, ExerciseIconColorPipe],
   templateUrl: "./prossimo-allenamento.html",
   styleUrl: "./prossimo-allenamento.scss",
 })
@@ -23,6 +25,8 @@ export class ProssimoAllenamento implements OnInit {
   public descrizioneAllenamentoCorrente: string | null = null;
   public numeroGiornoAllenamentoCorrente: number | null = null;
   public numeroGiornoAllenamentiTotali: number | null = null;
+  /** Id icona degli esercizi, nell'ordine mandato dal server. */
+  public idIcone: number[] = [];
 
   public giorniArray: number[] = [];
 
@@ -62,6 +66,7 @@ export class ProssimoAllenamento implements OnInit {
                 response.numeroGiornoAllenamentoCorrente;
               this.numeroGiornoAllenamentiTotali =
                 response.numeroGiornoAllenamentiTotali;
+              this.idIcone = response.idIcone ?? [];
               this.datiRecuperati = true;
 
               for (let i = 1; i <= this.numeroGiornoAllenamentiTotali; i++) {

@@ -26,6 +26,7 @@ import { AllenamentoForm } from "../../workout-form";
 import { Subject, takeUntil } from "rxjs";
 import { TrainingMethodologySelectorComponent } from "src/app/components/shared/training-methodology-selector/training-methodology-selector";
 import { ExerciseIconColorPipe } from "../../../../core/pipes/exercise-icon-color";
+import { ExerciseIconPipe } from "../../../../core/pipes/exercise-icon";
 import { BottomSheetService } from "src/app/components/shared/bottom-sheet/bottom-sheet-service";
 import { ExerciseService } from "src/app/core/services/exercise.service";
 import { MatInputModule } from "@angular/material/input";
@@ -53,11 +54,12 @@ import { BottomMenuService } from "src/app/core/services/bottom-menu.service";
     MatFormFieldModule,
     MatSelectModule,
     ExerciseIconColorPipe,
+    ExerciseIconPipe,
     MatFormFieldModule,
     MatInputModule,
     DatePipe,
     MatIcon,
-    HapticSwitchDirective
+    HapticSwitchDirective,
   ],
   templateUrl: "./exercise-component.html",
   styleUrl: "./exercise-component.scss",
@@ -87,7 +89,6 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
   public idMetodologiaControl!: FormControl<number | null>;
   public idTipoEsercizioControl!: FormControl<number | null>;
   public ordinamentoControl!: FormControl<number | null>;
-  public exerciseIconPath!: string;
 
   private destroy$ = new Subject<void>();
   private serieSubscriptions$ = new Subject<void>();
@@ -113,22 +114,26 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-arrow.svg",
       ),
-    ); iconRegistry.addSvgIcon(
+    );
+    iconRegistry.addSvgIcon(
       "google-add",
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-add.svg",
       ),
-    ); iconRegistry.addSvgIcon(
+    );
+    iconRegistry.addSvgIcon(
       "google-copy",
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-copy.svg",
       ),
-    ); iconRegistry.addSvgIcon(
+    );
+    iconRegistry.addSvgIcon(
       "google-close-icon",
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-close-icon.svg",
       ),
-    ); iconRegistry.addSvgIcon(
+    );
+    iconRegistry.addSvgIcon(
       "google-history",
       sanitizer.bypassSecurityTrustResourceUrl(
         "assets/recollect/svg/google-history.svg",
@@ -150,7 +155,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
    * ngOnInit non viene richiamato, ma ngOnChanges sì → ri-sottoscriviamo.
    */
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['formEsercizio'] && !changes['formEsercizio'].firstChange) {
+    if (changes["formEsercizio"] && !changes["formEsercizio"].firstChange) {
       try {
         // Annulla le subscription precedenti
         this.serieSubscriptions$.next();
@@ -160,7 +165,10 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         this.serieSubscriptions$ = new Subject<void>();
         this.initFormBindings();
       } catch (error) {
-        this.errorHandlerService.logError(error, "ExerciseComponent.ngOnChanges");
+        this.errorHandlerService.logError(
+          error,
+          "ExerciseComponent.ngOnChanges",
+        );
       }
     }
   }
@@ -176,6 +184,41 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
    * Inizializza i binding ai controlli del form e le subscription.
    * Chiamato sia da ngOnInit che da ngOnChanges quando il form viene sostituito.
    */
+  /**
+   * "idIconaEsercizio" e' un dato DERIVATO da "idTipoEsercizio", ma nessuno lo
+   * teneva allineato: la bottom sheet di selezione scrive solo
+   * "idTipoEsercizio" (vedi GymExerciseSelectorComponent.handleExerciseSelected),
+   * quindi cambiando esercizio il nome si aggiornava e l'icona restava quella
+   * di prima.
+   *
+   * Lo riallineo qui e non dentro il selettore perche' cosi' vale per
+   * QUALUNQUE strada cambi l'esercizio, non solo per la bottom sheet.
+   *
+   * Sul caricamento iniziale valueChanges non emette, quindi le sessioni gia'
+   * salvate conservano l'icona storicizzata nello snapshot: si tocca solo
+   * quando l'utente cambia davvero esercizio.
+   */
+  private sincronizzaIconaEsercizio(idTipoEsercizio: number | null): void {
+    try {
+      const iconaControl = this.formEsercizio.form.controls[
+        "idIconaEsercizio"
+      ] as FormControl<number | null> | undefined;
+      if (!iconaControl) return;
+
+      const idIcona =
+        this.exerciseService.getExerciseIconIdByExerciseId(idTipoEsercizio);
+
+      if (idIcona !== null && idIcona !== iconaControl.value) {
+        iconaControl.setValue(idIcona);
+      }
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "ExerciseComponent.sincronizzaIconaEsercizio",
+      );
+    }
+  }
+
   private initFormBindings(): void {
     this.idTipoEsercizioControl = this.formEsercizio.form.controls[
       "idTipoEsercizio"
@@ -189,7 +232,11 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
       "ordinamento"
     ] as FormControl<number | null>;
 
-    this.updateExerciseIcon();
+    this.idTipoEsercizioControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((idTipoEsercizio) => {
+        this.sincronizzaIconaEsercizio(idTipoEsercizio);
+      });
 
     this.ordinamentoControl.valueChanges
       .pipe(takeUntil(this.destroy$))
@@ -197,12 +244,6 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         if (newPosition !== null && newPosition !== undefined) {
           this.changePosition(newPosition);
         }
-      });
-
-    this.idTipoEsercizioControl.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.updateExerciseIcon();
       });
 
     // Sottoscrivi ai cambiamenti delle serie esistenti
@@ -222,8 +263,8 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     const serieList = this.formEsercizio.listaSerieForm;
 
     serieList.forEach((serieForm, index) => {
-      const ripetizioniCtrl = serieForm.form.controls['ripetizioni'];
-      const caricoCtrl = serieForm.form.controls['carico'];
+      const ripetizioniCtrl = serieForm.form.controls["ripetizioni"];
+      const caricoCtrl = serieForm.form.controls["carico"];
 
       // valueChanges si attiva solo per input utente diretto,
       // perché propagateToNextSeries usa { emitEvent: false }
@@ -231,14 +272,14 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         .pipe(takeUntil(this.serieSubscriptions$), takeUntil(this.destroy$))
         .subscribe((value) => {
           serieForm.autoFilledRipetizioni = false;
-          this.propagateToNextSeries(index, 'ripetizioni', value);
+          this.propagateToNextSeries(index, "ripetizioni", value);
         });
 
       caricoCtrl.valueChanges
         .pipe(takeUntil(this.serieSubscriptions$), takeUntil(this.destroy$))
         .subscribe((value) => {
           serieForm.autoFilledCarico = false;
-          this.propagateToNextSeries(index, 'carico', value);
+          this.propagateToNextSeries(index, "carico", value);
         });
     });
   }
@@ -250,9 +291,14 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
    *
    * Non sovrascrive campi editati manualmente dall'utente o caricati dal server.
    */
-  private propagateToNextSeries(fromIndex: number, field: 'ripetizioni' | 'carico', value: number | null): void {
+  private propagateToNextSeries(
+    fromIndex: number,
+    field: "ripetizioni" | "carico",
+    value: number | null,
+  ): void {
     const serieList = this.formEsercizio.listaSerieForm;
-    const autoFilledKey = field === 'ripetizioni' ? 'autoFilledRipetizioni' : 'autoFilledCarico';
+    const autoFilledKey =
+      field === "ripetizioni" ? "autoFilledRipetizioni" : "autoFilledCarico";
 
     for (let i = fromIndex + 1; i < serieList.length; i++) {
       const targetSerie = serieList[i];
@@ -267,31 +313,17 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private updateExerciseIcon(): void {
-    try {
-      this.exerciseIconPath =
-        this.exerciseService.getExerciseIconPathByExerciseId(
-          this.idTipoEsercizioControl.value,
-        );
-    } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "ExerciseComponent.updateExerciseIcon",
-      );
-    }
-  }
-
   openDeleteModal(event: Event) {
     try {
-      this.hapticService.trigger('error');
+      this.hapticService.trigger("error");
       const trigger = ((event.currentTarget as HTMLElement).closest(
-        '.delete-icon-element-container',
+        ".delete-icon-element-container",
       ) || event.currentTarget) as HTMLElement;
       this.confirmPopupService.open({
         triggerElement: trigger,
-        title: 'Eliminare questo esercizio?',
-        message: 'Questa azione non può essere annullata.',
-        confirmText: 'Elimina',
+        title: "Eliminare questo esercizio?",
+        message: "Questa azione non può essere annullata.",
+        confirmText: "Elimina",
         onConfirm: () => this.deleteExercise(),
       });
     } catch (error) {
@@ -337,7 +369,9 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
    */
   private async maintainButtonPosition(callback: () => void): Promise<void> {
     try {
-      const scroller = this.elementRef.nativeElement.closest('.page-scroller') as HTMLElement | null;
+      const scroller = this.elementRef.nativeElement.closest(
+        ".page-scroller",
+      ) as HTMLElement | null;
       if (!scroller) return;
 
       // Salva l'altezza corrente del page-scroller
@@ -374,7 +408,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
 
   async addSerie() {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       await this.maintainButtonPosition(() => {
         this.formEsercizio.addSerieForm();
       });
@@ -386,7 +420,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
 
   async duplicateLastSerie() {
     try {
-      this.hapticService.trigger('medium');
+      this.hapticService.trigger("medium");
       await this.maintainButtonPosition(() => {
         const seriesList = this.formEsercizio.listaSerieForm;
 
@@ -417,7 +451,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
 
   deleteSerie(identifier: number) {
     try {
-      this.hapticService.trigger('error');
+      this.hapticService.trigger("error");
       this.formEsercizio.deleteSerie(identifier);
       this.subscribeToSerieChanges();
       this.cdr.detectChanges();
@@ -428,7 +462,7 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
 
   deleteExercise() {
     try {
-      this.hapticService.trigger('error');
+      this.hapticService.trigger("error");
       this.onDeleteExercise.emit(
         this.formEsercizio.form.controls["identifier"].value,
       );
@@ -512,9 +546,9 @@ export class ExerciseComponent implements OnInit, OnChanges, OnDestroy {
         return;
       }
 
-      this.hapticService.trigger('light');
+      this.hapticService.trigger("light");
       const triggerElement = ((event.currentTarget as HTMLElement).closest(
-        '.delete-icon-element-container',
+        ".delete-icon-element-container",
       ) || event.currentTarget) as HTMLElement;
 
       this.isHistoryPopupLoading = true;

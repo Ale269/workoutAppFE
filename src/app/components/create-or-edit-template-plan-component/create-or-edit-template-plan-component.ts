@@ -14,6 +14,7 @@ import { ErrorHandlerService } from "src/app/core/services/error-handler.service
 import { CreateOrEditTemplatePlanService } from "./create-or-edit-template-plan-service";
 
 import { ExerciseIconColorPipe } from "../../core/pipes/exercise-icon-color";
+import { ExerciseIconPipe } from "../../core/pipes/exercise-icon";
 import { WorkoutComponent } from "./workout-component/workout-component";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -32,7 +33,6 @@ import { LoadingProgression } from "src/app/models/enums/loading-progression";
 import { Switch } from "../shared/switch/switch";
 import { AllenamentoForm } from "./workout-form";
 import { gsap } from "gsap";
-import { Draggable } from "gsap/Draggable";
 import { EsercizioForm } from "./exercise-form";
 import { ExerciseService } from "src/app/core/services/exercise.service";
 import {
@@ -52,9 +52,7 @@ import {
   TemplateStorageData,
 } from "src/app/core/services/workout-storage.service";
 import { SchedaDTO as SchedaFormDTO } from "src/app/models/create-or-edit-template-or-entity-form-dto/schedadto";
-
-// Registra il plugin Draggable
-gsap.registerPlugin(Draggable);
+import { SwipeToDeleteController } from "src/app/core/services/swipe-to-delete.controller";
 
 @Component({
   selector: "app-create-or-edit-template-plan-component",
@@ -68,6 +66,7 @@ gsap.registerPlugin(Draggable);
     Switch,
     HapticSwitchDirective,
     ExerciseIconColorPipe,
+    ExerciseIconPipe,
     MultiOptionButton,
     MatIcon,
   ],
@@ -115,7 +114,10 @@ export class CreateOrEditTemplatePlanComponent
   private lastSavedSnapshot: string = "";
 
   // Gestione swipe
-  private draggableInstances: any[] = [];
+  /** Swipe-to-delete condiviso: vedi SwipeToDeleteController. */
+  private swipe = new SwipeToDeleteController({
+    wrapperSelector: ".allenamento-wrapper",
+  });
 
   public leftButtonOptionsGroup: multiOptionGroup[] = [
     {
@@ -169,7 +171,8 @@ export class CreateOrEditTemplatePlanComponent
         sanitizer.bypassSecurityTrustResourceUrl(
           "assets/recollect/svg/google-reorder.svg",
         ),
-      );iconRegistry.addSvgIcon(
+      );
+      iconRegistry.addSvgIcon(
         "google-delete",
         sanitizer.bypassSecurityTrustResourceUrl(
           "assets/recollect/svg/google-delete.svg",
@@ -348,182 +351,23 @@ export class CreateOrEditTemplatePlanComponent
     }
   }
 
+  private closeAllSwipes(): void {
+    this.swipe.closeAll();
+  }
+
   ngAfterViewInit(): void {
-    try {
-      // Inizializza lo swipe quando le card cambiano
-      this.allenamentoCards.changes.subscribe(() => {
-        this.initializeSwipe();
-      });
-      this.initializeSwipe();
-    } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "CreateOrEditTemplatePlanComponent.ngAfterViewInit",
-      );
-    }
+    this.allenamentoCards.changes.subscribe(() => {
+      this.swipe.attach(this.allenamentoCards);
+    });
+    this.swipe.attach(this.allenamentoCards);
   }
 
   ngOnDestroy(): void {
-    this.bottomMenuService.setEnabled(true);
-    this.stopAutoSave();
-    if (this.initSpinnerId) {
-      this.spinnerService.hide(this.initSpinnerId);
-    }
-    if (this.saveSpinnerId) {
-      this.spinnerService.hide(this.saveSpinnerId);
-    }
-    // Pulisci le istanze draggable
-    this.draggableInstances.forEach((instance) => instance.kill());
-  }
-
-  private initializeSwipe(): void {
-    try {
-      // Pulisci istanze precedenti
-      this.draggableInstances.forEach((instance) => instance.kill());
-      this.draggableInstances = [];
-
-      setTimeout(() => {
-        this.allenamentoCards.forEach((cardRef, index) => {
-          const card = cardRef.nativeElement;
-          const wrapper = card.closest(".allenamento-wrapper");
-          const deleteButton = wrapper?.querySelector(
-            ".delete-action",
-          ) as HTMLElement;
-
-          if (!deleteButton) return;
-
-          const SWIPE_THRESHOLD = -80;
-          const DELETE_WIDTH = 80;
-
-          gsap.set(deleteButton, {
-            autoAlpha: 0,
-            pointerEvents: "none",
-          });
-
-          const component = this;
-
-          const draggableArray = Draggable.create(card, {
-            type: "x",
-            bounds: { minX: SWIPE_THRESHOLD, maxX: 0 },
-            inertia: true,
-            dragClickables: false,
-            zIndexBoost: false,
-            onDragStart: function (this: any) {
-              component.closeOtherSwipes(index);
-            },
-            onDrag: function (this: any) {
-              const progress = Math.abs(this.x) / DELETE_WIDTH;
-              const alpha = Math.min(progress, 1);
-
-              gsap.to(deleteButton, {
-                autoAlpha: alpha,
-                duration: 0.1,
-                overwrite: true,
-              });
-
-              if (alpha > 0.5) {
-                gsap.set(deleteButton, { pointerEvents: "auto" });
-              } else {
-                gsap.set(deleteButton, { pointerEvents: "none" });
-              }
-            },
-            onDragEnd: function (this: any) {
-              if (this.x < SWIPE_THRESHOLD / 2) {
-                gsap.to(card, {
-                  x: SWIPE_THRESHOLD,
-                  duration: 0.3,
-                  ease: "power2.out",
-                });
-                gsap.to(deleteButton, {
-                  autoAlpha: 1,
-                  duration: 0.3,
-                  overwrite: true,
-                  onComplete: () => {
-                    gsap.set(deleteButton, { pointerEvents: "auto" });
-                  },
-                });
-                this.vars.isOpen = true;
-                component.hapticService.trigger("warning");
-              } else {
-                gsap.to(card, {
-                  x: 0,
-                  duration: 0.3,
-                  ease: "power2.out",
-                });
-                gsap.to(deleteButton, {
-                  autoAlpha: 0,
-                  duration: 0.3,
-                  overwrite: true,
-                  onComplete: () => {
-                    gsap.set(deleteButton, { pointerEvents: "none" });
-                  },
-                });
-                this.vars.isOpen = false;
-              }
-            },
-            onClick: function (this: any, e: MouseEvent) {
-              if (this.vars.isOpen) {
-                e.stopPropagation();
-                component.closeSwipe(card, deleteButton, this);
-              }
-            },
-          });
-
-          const draggable = draggableArray[0];
-          draggable.vars["isOpen"] = false;
-          this.draggableInstances.push(draggable);
-        });
-      }, 0);
-    } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "CreateOrEditTemplatePlanComponent.initializeSwipe",
-      );
-    }
-  }
-
-  private closeSwipe(
-    card: HTMLElement,
-    deleteButton: Element,
-    draggable: any,
-  ): void {
-    gsap.to(card, {
-      x: 0,
-      duration: 0.3,
-      ease: "power2.out",
-    });
-    gsap.to(deleteButton, {
-      autoAlpha: 0,
-      duration: 0.3,
-      onComplete: () => {
-        gsap.set(deleteButton, { pointerEvents: "none" });
-      },
-    });
-    draggable.vars.isOpen = false;
-  }
-
-  private closeOtherSwipes(exceptIndex: number): void {
-    this.allenamentoCards.forEach((cardRef, index) => {
-      if (index === exceptIndex) return;
-      const card = cardRef.nativeElement;
-      const deleteButton = card
-        .closest(".allenamento-wrapper")
-        ?.querySelector(".delete-action");
-      const draggable = this.draggableInstances[index];
-
-      if (draggable?.vars.isOpen && deleteButton) {
-        this.closeSwipe(card, deleteButton, draggable);
-      }
-    });
-  }
-
-  private closeAllSwipes(): void {
-    this.closeOtherSwipes(-1);
+    this.swipe.destroy();
   }
 
   // Metodi per la navigazione animata tra viste
   public async openWorkoutDetail(workout: AllenamentoForm): Promise<void> {
-
     if (this.isAnimating) return;
 
     try {
@@ -544,7 +388,7 @@ export class CreateOrEditTemplatePlanComponent
       }
 
       // Reset scroll del page-scroller
-      const scroller = document.querySelector('.page-scroller');
+      const scroller = document.querySelector(".page-scroller");
       if (scroller) scroller.scrollTop = 0;
 
       // Cambia la vista
@@ -589,7 +433,7 @@ export class CreateOrEditTemplatePlanComponent
       }
 
       // Reset scroll del page-scroller
-      const scroller = document.querySelector('.page-scroller');
+      const scroller = document.querySelector(".page-scroller");
       if (scroller) scroller.scrollTop = 0;
 
       // Cambia la vista
@@ -875,7 +719,9 @@ export class CreateOrEditTemplatePlanComponent
     // (il cerchio 48x48 dell'icona) per allineare il popup esattamente su
     // di essa, non sull'area di tap più ampia che la contiene.
     return (
-      (document.querySelector(".left-button .menu-btn-container") as HTMLElement) ||
+      (document.querySelector(
+        ".left-button .menu-btn-container",
+      ) as HTMLElement) ||
       (document.querySelector(".left-button") as HTMLElement) ||
       document.body
     );
@@ -954,22 +800,6 @@ export class CreateOrEditTemplatePlanComponent
         error,
         "CreateOrEditTemplatePlanComponent.eliminaScheda",
       );
-    }
-  }
-
-  getExerciseIconPath(esercizioForm: EsercizioForm): string {
-    try {
-      const idTipoEsercizio =
-        esercizioForm.form.controls["idTipoEsercizio"].value;
-      return this.exerciseService.getExerciseIconPathByExerciseId(
-        idTipoEsercizio,
-      );
-    } catch (error) {
-      this.errorHandlerService.logError(
-        error,
-        "TemplatePlanComponent.getExerciseIconPath",
-      );
-      return "assets/recollect/svg/default-exercise-icon.svg";
     }
   }
 

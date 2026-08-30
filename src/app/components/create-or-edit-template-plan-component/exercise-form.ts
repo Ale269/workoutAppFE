@@ -33,26 +33,24 @@ export class EsercizioForm {
   constructor(identifier: number, esercizioDTO?: EsercizioDTO) {
     this.form = new FormGroup<EsercizioFormModel>({
       identifier: new FormControl<number | null>(identifier),
-      id: new FormControl<number | null>(
-        esercizioDTO?.id || null
-      ), 
+      id: new FormControl<number | null>(esercizioDTO?.id || null),
       description: new FormControl<string | null>(
-        esercizioDTO?.description || null
+        esercizioDTO?.description || null,
       ),
       idTemplate: new FormControl<number | null>(
-        esercizioDTO?.idTemplate || null
+        esercizioDTO?.idTemplate || null,
       ),
       idTipoEsercizio: new FormControl<number | null>(
-        esercizioDTO?.idTipoEsercizio || null
+        esercizioDTO?.idTipoEsercizio || null,
       ),
       idIconaEsercizio: new FormControl<number | null>(
-        esercizioDTO?.idIconaEsercizio || null
+        esercizioDTO?.idIconaEsercizio || null,
       ),
       idMetodologia: new FormControl<number | null>(
-        esercizioDTO?.idMetodologia || null
+        esercizioDTO?.idMetodologia || null,
       ),
       ordinamento: new FormControl<number | null>(
-        esercizioDTO?.ordinamento || null
+        esercizioDTO?.ordinamento || null,
       ),
       listaSerie: new FormArray<FormGroup<SerieFormModel>>([]),
       ListaSpecifiche: new FormArray<FormGroup<SpecificaFormModel>>([]),
@@ -93,7 +91,6 @@ export class EsercizioForm {
       // Dopo l'aggiunta, riordina le serie per essere sicuri
       this.sanitizeSeriesOrdering();
       this.form.markAsDirty();
-    
     } catch (error) {
       throw new Error("EsercizioForm.addSerieForm: " + error);
     }
@@ -103,7 +100,7 @@ export class EsercizioForm {
     try {
       // Trova l'indice della serie da eliminare
       const serieIndex = this.listaSerieForm.findIndex(
-        (serie) => serie.form.get("identifier")?.value === identifier
+        (serie) => serie.form.get("identifier")?.value === identifier,
       );
 
       if (serieIndex === -1) {
@@ -130,7 +127,7 @@ export class EsercizioForm {
   findSerieByIdentifier(identifier: number): SerieForm | null {
     return (
       this.listaSerieForm.find(
-        (serie) => serie.form.get("identifier")?.value === identifier
+        (serie) => serie.form.get("identifier")?.value === identifier,
       ) || null
     );
   }
@@ -183,8 +180,12 @@ export class EsercizioForm {
     try {
       let esercizioDaSalvare: EsercizioDTO = {
         id: this.form.controls["id"].value ? this.form.controls["id"].value : 0,
-        idTemplate: this.form.controls["idTemplate"].value ? this.form.controls["idTemplate"].value : 0,
-        description: this.form.controls["description"].value ? this.form.controls["description"].value : "",
+        idTemplate: this.form.controls["idTemplate"].value
+          ? this.form.controls["idTemplate"].value
+          : 0,
+        description: this.form.controls["description"].value
+          ? this.form.controls["description"].value
+          : "",
         idIconaEsercizio: this.form.controls["idIconaEsercizio"].value
           ? this.form.controls["idIconaEsercizio"].value
           : 0,
@@ -201,9 +202,7 @@ export class EsercizioForm {
       };
 
       this.listaSerieForm.forEach((serie) => {
-       esercizioDaSalvare.listaSerie.push(
-         serie.getDatiSerieDaSalvare()
-       )
+        esercizioDaSalvare.listaSerie.push(serie.getDatiSerieDaSalvare());
       });
 
       return esercizioDaSalvare;

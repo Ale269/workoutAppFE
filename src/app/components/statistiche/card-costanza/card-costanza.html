@@ -1,0 +1,48 @@
+@if (dati) {
+<div class="stats-card">
+  <!-- Blocco 1: numero grande + istogramma -->
+  <div class="widget-data">
+    <!-- Il numero non sta mai solo: accanto c'è sempre il riferimento -->
+    <div class="costanza-headline">
+      <span class="costanza-numero">
+        {{ dati.allenamentiPerSettimana | number: "1.1-1" }}
+      </span>
+      <span class="costanza-unita">allenamenti a settimana</span>
+    </div>
+
+    @if (mostraIstogramma) {
+    <div class="costanza-grafico">
+      <canvas
+        baseChart
+        [data]="barChartData"
+        [options]="barChartOptions"
+        type="bar"
+      ></canvas>
+    </div>
+    <h3 class="text-grey costanza-caption">
+      Ultime {{ dati.settimane.length }} settimane
+    </h3>
+    }
+  </div>
+
+  <!-- Blocco 2: confronto con se stessi + durata del ciclo -->
+  @if (dati.mediaQuattroSettimane !== null || dati.durataCiclo) {
+  <div class="widget-data widget-data-last">
+    @if (dati.mediaQuattroSettimane !== null) {
+    <h3 class="text-grey">
+      La tua media a 4 settimane:
+      {{ dati.mediaQuattroSettimane | number: "1.1-1" }}
+    </h3>
+    } @if (dati.durataCiclo) {
+    <h3 class="text-white">
+      Un ciclo completo in {{ dati.durataCiclo.giorniUltimoCiclo }} giorni
+    </h3>
+    @if (dati.durataCiclo.giorniCicloPrecedente !== null) {
+    <h3 class="text-grey">
+      Prima ne servivano {{ dati.durataCiclo.giorniCicloPrecedente }}
+    </h3>
+    } }
+  </div>
+  }
+</div>
+}

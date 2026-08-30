@@ -205,6 +205,21 @@ export class ExerciseService {
   }
 
   /**
+   * Id icona dell'esercizio a catalogo. E' il dato da cui derivano sia il path
+   * dell'icona sia il colore del cerchio: tenerlo come primitivo evita che i
+   * due si risolvano per strade diverse e finiscano per non combaciare.
+   */
+  getExerciseIconIdByExerciseId(
+    exerciseId: number | null | undefined
+  ): number | null {
+    if (exerciseId == null) return null;
+    const exercise = this.exercises.find(
+      (ex) => ex.idTipoEsercizio === exerciseId
+    );
+    return exercise ? exercise.idIcona : null;
+  }
+
+  /**
    * Ottiene il colore dell'icona partendo dall'ID dell'esercizio.
    * Utile per applicare stili CSS dinamici.
    */

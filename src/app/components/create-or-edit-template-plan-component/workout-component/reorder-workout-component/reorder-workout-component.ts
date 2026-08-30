@@ -18,6 +18,7 @@ import { EsercizioForm } from "../../exercise-form";
 import { FocusOverlayController } from "../../../shared/focus-overlay/focus-overlay.controller";
 import { ExerciseService } from "src/app/core/services/exercise.service";
 import { ExerciseIconColorPipe } from "src/app/core/pipes/exercise-icon-color";
+import { ExerciseIconPipe } from "src/app/core/pipes/exercise-icon";
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { HapticService } from "src/app/core/services/haptic.service";
@@ -42,7 +43,12 @@ interface Sortable {
 @Component({
   selector: "app-reorder-workout",
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ExerciseIconColorPipe],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ExerciseIconColorPipe,
+    ExerciseIconPipe,
+  ],
   templateUrl: "./reorder-workout-component.html",
   styleUrls: ["./reorder-workout-component.scss"],
   encapsulation: ViewEncapsulation.None,
@@ -443,13 +449,5 @@ export class ReorderWorkoutComponent
 
   getExerciseCount(workout: AllenamentoForm): number {
     return workout.listaEserciziForm.length;
-  }
-
-  getExerciseIconPath(esercizioForm: EsercizioForm): string {
-    const idTipoEsercizio =
-      esercizioForm.form.controls["idTipoEsercizio"].value;
-    return this.exerciseService.getExerciseIconPathByExerciseId(
-      idTipoEsercizio,
-    );
   }
 }

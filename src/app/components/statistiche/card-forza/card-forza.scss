@@ -1,0 +1,80 @@
+.forza-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stats-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #1a1a1a;
+  border-radius: 16px;
+  padding: 16px;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// Cerchio icona: stesso trattamento del selettore esercizi (bordo colorato
+// dal catalogo icone, icona dentro su fondo scuro), in scala ridotta.
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle-icon {
+  border: 1px solid #fff;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 24px;
+  }
+}
+
+.forza-dati {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  h3 {
+    line-height: 18px;
+  }
+}
+
+.forza-valori {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+
+  h3 {
+    line-height: 18px;
+    white-space: nowrap;
+  }
+}
+
+.forza-carico {
+  font-size: 16px;
+}
+
+// Nessun codice colore sui delta: bianco sempre, tanto in salita quanto in
+// discesa. Un calo puo' essere uno scarico voluto o una settimana storta —
+// colorarlo di rosso trasformerebbe una descrizione in un giudizio.
+.delta {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 12px;
+  color: #fff;
+}

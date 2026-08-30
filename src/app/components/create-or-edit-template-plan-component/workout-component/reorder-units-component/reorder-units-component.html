@@ -13,7 +13,7 @@
                 [style.border-color]="unit.esercizio.form.controls['idIconaEsercizio'].value | exerciseIconColor"
               >
                 <img
-                  [src]="getExerciseIconPath(unit.esercizio.form.controls['idTipoEsercizio'].value)"
+                  [src]="unit.esercizio.form.controls['idIconaEsercizio'].value | exerciseIcon"
                   [alt]="'Icona esercizio ' + unit.esercizio.form.controls['idIconaEsercizio'].value"
                   class="exercise-icon"
                 />

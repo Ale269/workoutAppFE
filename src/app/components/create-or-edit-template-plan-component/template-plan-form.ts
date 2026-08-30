@@ -316,7 +316,7 @@ export class SchedaForm {
   }
 
   reorderWorkoutsByIdentifiers(orderedIdentifiers: number[]): void {
-    try {     
+    try {
       // Crea una mappa per accesso rapido agli allenamenti
       const workoutMap = new Map<number, AllenamentoForm>();
       this.listaAllenamentiForm.forEach((workout) => {

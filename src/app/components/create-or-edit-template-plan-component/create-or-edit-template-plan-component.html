@@ -141,7 +141,7 @@
                               [style.border-color]="esercizioForm.form.controls['idIconaEsercizio'].value | exerciseIconColor"
                             >
                               <img
-                                [src]="getExerciseIconPath(esercizioForm)"
+                                [src]="esercizioForm.form.controls['idIconaEsercizio'].value | exerciseIcon"
                                 [alt]="'Icona esercizio ' + esercizioForm.form.controls['idTipoEsercizio'].value"
                               />
                             </div>
