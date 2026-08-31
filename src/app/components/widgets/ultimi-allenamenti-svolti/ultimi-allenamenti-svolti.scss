@@ -44,6 +44,22 @@
     justify-content: space-between;
     align-items: center;
     gap: 8px;
+    min-width: 0;
+  }
+
+  // Una descrizione lunga andava a comprimere icone e freccia fino a
+  // schiacciarle. Ora il testo si ferma al 40% della card e va a capo,
+  // facendo crescere la riga in altezza invece che rubare spazio agli altri.
+  .descrizione-allenamento-container {
+    max-width: 40%;
+    min-width: 0;
+    // "anywhere" e non "break-word": conta anche nel calcolo della larghezza
+    // minima, quindi una parola lunghissima non sfonda comunque il 40%.
+    overflow-wrap: anywhere;
+
+    h3 {
+      line-height: 18px;
+    }
   }
 
   .play-button {

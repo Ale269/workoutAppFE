@@ -318,6 +318,27 @@
         "method": "get",
         "description": "Recupera la progressione settimanale di una scheda.",
         "isMocked": false
+      },
+      {
+        "name": "sessionDetail",
+        "endpoint": "/stats/session/:idAllenamentoSvolto",
+        "method": "get",
+        "description": "Dettaglio di una sessione svolta: confronto, esercizi svolto/previsto, scostamenti.",
+        "isMocked": false
+      },
+      {
+        "name": "exerciseDetail",
+        "endpoint": "/stats/exercise/:idTipoEsercizio",
+        "method": "get",
+        "description": "Dettaglio statistico di un esercizio: storico, grafici, record.",
+        "isMocked": false
+      },
+      {
+        "name": "strengthAll",
+        "endpoint": "/stats/strength/:userId",
+        "method": "get",
+        "description": "Elenco completo degli esercizi con trend di forza.",
+        "isMocked": false
       }
     ]
   }

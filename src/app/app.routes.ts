@@ -20,6 +20,9 @@ import { AdminExerciseListComponent } from "./components/admin/admin-exercise-li
 import { AdminExerciseFormComponent } from "./components/admin/admin-exercise-form/admin-exercise-form";
 import { PendingChangesGuard } from "./core/guards/pending-changes.guard";
 import { StatisticheComponent } from "./components/statistiche/statistiche";
+import { DettaglioSessione } from "./components/statistiche/dettaglio-sessione/dettaglio-sessione";
+import { DettaglioEsercizio } from "./components/statistiche/dettaglio-esercizio/dettaglio-esercizio";
+import { ForzaCompleta } from "./components/statistiche/forza-completa/forza-completa";
 import { ProgressioneSchedaComponent } from "./components/progressione-scheda/progressione-scheda";
 import { Impostazioni } from "./components/impostazioni/impostazioni";
 
@@ -152,6 +155,24 @@ export const routes: Routes = [
   {
     path: "statistiche",
     component: StatisticheComponent,
+    canActivate: [AuthGuard],
+    canDeactivate: [],
+  },
+  {
+    path: "statistiche/sessione/:id",
+    component: DettaglioSessione,
+    canActivate: [AuthGuard],
+    canDeactivate: [],
+  },
+  {
+    path: "statistiche/forza",
+    component: ForzaCompleta,
+    canActivate: [AuthGuard],
+    canDeactivate: [],
+  },
+  {
+    path: "statistiche/esercizio/:id",
+    component: DettaglioEsercizio,
     canActivate: [AuthGuard],
     canDeactivate: [],
   },

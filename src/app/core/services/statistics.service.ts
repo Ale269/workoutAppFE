@@ -21,6 +21,12 @@ import {
   StatistichePeriodo,
 } from "src/app/models/statistics/statistiche-overview-models";
 import { getMockOverview } from "./mocks/statistiche-overview.mock";
+import { DettaglioSessioneResponse } from "src/app/models/statistics/statistiche-sessione-models";
+import { getMockDettaglioSessione } from "./mocks/statistiche-sessione.mock";
+import { DettaglioEsercizioResponse } from "src/app/models/statistics/statistiche-esercizio-models";
+import { getMockDettaglioEsercizio } from "./mocks/statistiche-esercizio.mock";
+import { ForzaCompletaResponse } from "src/app/models/statistics/statistiche-overview-models";
+import { getMockForzaCompleta } from "./mocks/statistiche-forza.mock";
 
 @Injectable({
   providedIn: "root",
@@ -49,6 +55,62 @@ export class StatisticsService {
     return this.apiCatalogService.executeApiCall(
       "stats",
       "overview",
+      { userId },
+      null,
+      { periodo },
+    );
+  }
+
+  /**
+   * Dettaglio di una sessione svolta (drill-down dalla card "Ultima sessione").
+   * Stesso flag del resto delle statistiche: finche' e' acceso, dati finti.
+   */
+  getDettaglioSessione(
+    idAllenamentoSvolto: number,
+  ): Observable<DettaglioSessioneResponse> {
+    if (this.USE_MOCK_OVERVIEW) {
+      return of(getMockDettaglioSessione(idAllenamentoSvolto)).pipe(delay(150));
+    }
+
+    return this.apiCatalogService.executeApiCall(
+      "stats",
+      "sessionDetail",
+      { idAllenamentoSvolto },
+      null,
+    );
+  }
+
+  /**
+   * Dettaglio statistico di un esercizio. Stesso flag del resto: finche' e'
+   * acceso, dati finti.
+   */
+  getDettaglioEsercizio(
+    idTipoEsercizio: number,
+  ): Observable<DettaglioEsercizioResponse> {
+    if (this.USE_MOCK_OVERVIEW) {
+      return of(getMockDettaglioEsercizio(idTipoEsercizio)).pipe(delay(150));
+    }
+
+    return this.apiCatalogService.executeApiCall(
+      "stats",
+      "exerciseDetail",
+      { idTipoEsercizio },
+      null,
+    );
+  }
+
+  /** Lista completa degli esercizi con trend ("Vedi tutti" della card Forza). */
+  getForzaCompleta(
+    userId: number,
+    periodo: StatistichePeriodo,
+  ): Observable<ForzaCompletaResponse> {
+    if (this.USE_MOCK_OVERVIEW) {
+      return of(getMockForzaCompleta()).pipe(delay(150));
+    }
+
+    return this.apiCatalogService.executeApiCall(
+      "stats",
+      "strengthAll",
       { userId },
       null,
       { periodo },

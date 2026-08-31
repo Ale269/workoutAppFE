@@ -1,9 +1,8 @@
 @if (dati) {
 <div class="stats-card" (click)="onClick()">
   <div class="card-body">
-    <h3 class="text-white card-titolo">
-      {{ dati.nomeGiorno }} — {{ dati.nomeScheda }}
-    </h3>
+    <h3 class="text-white card-titolo">{{ dati.nomeGiorno }}</h3>
+    <h3 class="text-grey">{{ dati.nomeScheda }}</h3>
     <h3 class="text-grey">
       Svolto il {{ dati.dataEsecuzione | date: "dd/MM/yyyy" }}
     </h3>

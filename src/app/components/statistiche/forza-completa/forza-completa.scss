@@ -1,0 +1,10 @@
+.page-scroller {
+  padding-bottom: calc(32px + var(--bottom-menu-padding, 0px));
+}
+
+.forza-intestazione {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 16px;
+}

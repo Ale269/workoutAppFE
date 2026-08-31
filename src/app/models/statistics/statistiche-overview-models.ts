@@ -115,6 +115,19 @@ export interface ForzaEsercizioItem {
   trend: TrendDirezione;
 }
 
+/**
+ * Lista completa degli esercizi con trend, dietro "Tutti" nella card Forza.
+ * Stessa forma delle voci in anteprima: la pagina riusa lo stesso componente.
+ */
+export interface ForzaCompletaResponse {
+  esercizi: ForzaEsercizioItem[];
+  /**
+   * Sotto questa soglia di esecuzioni un trend e' rumore, quindi l'esercizio
+   * non entra in lista: il numero serve a dirlo in chiaro all'utente.
+   */
+  esecuzioniMinime: number;
+}
+
 export interface ForzaCard {
   esercizi: ForzaEsercizioItem[];
   /** Totale esercizi disponibili nel drill-down ("Vedi tutti (12)"). */

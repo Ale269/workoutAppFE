@@ -82,11 +82,16 @@ export class StatisticheComponent implements OnInit {
   // liste complete) non esistono ancora: qui restano gli agganci, cablati
   // quando arriveranno le rispettive schermate.
   apriDettaglioSessione(idAllenamentoSvolto: number): void {
-    console.debug("TODO drill-down sessione", idAllenamentoSvolto);
+    this.router.navigate(["/statistiche/sessione", idAllenamentoSvolto]);
   }
 
   apriDettaglioEsercizio(idTipoEsercizio: number): void {
-    console.debug("TODO drill-down esercizio", idTipoEsercizio);
+    // La provenienza serve alla pagina di destinazione per sapere dove
+    // riportare la freccia indietro: la stessa pagina si raggiunge anche dal
+    // dettaglio sessione.
+    this.router.navigate(["/statistiche/esercizio", idTipoEsercizio], {
+      state: { provenienza: "/statistiche" },
+    });
   }
 
   apriDettaglioMuscolo(idMuscolo: number): void {
@@ -94,7 +99,7 @@ export class StatisticheComponent implements OnInit {
   }
 
   apriTuttiGliEsercizi(): void {
-    console.debug("TODO lista completa esercizi");
+    this.router.navigate(["/statistiche/forza"]);
   }
 
   apriTuttiIDistretti(): void {

@@ -1,0 +1,197 @@
+.page-scroller {
+  padding-bottom: calc(32px + var(--bottom-menu-padding, 0px));
+}
+
+// ============================================
+// INTESTAZIONE
+// ============================================
+.sessione-intestazione {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 16px;
+}
+
+.sessione-titolo {
+  font-size: 24px;
+  line-height: 28px;
+}
+
+// Data e scheda separate da spazio vero, non da un carattere puntino.
+.sessione-sottoriga {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+// ============================================
+// CARD
+// Blocchi impilati col proprio padding e border-bottom, come .widget-data di
+// scheda-corrente: e' quello che fa correre le linee da bordo a bordo.
+// ============================================
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #1a1a1a;
+}
+
+.widget-data {
+  background-color: #1a1a1a;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.widget-data-last {
+  border-bottom: none;
+}
+
+// ============================================
+// CONFRONTO (migliorati / stabili / calato)
+// ============================================
+.confronto {
+  display: flex;
+  align-items: stretch;
+  // Il padding sta sulle colonne, non sul blocco: cosi' i separatori
+  // verticali corrono per tutta l'altezza e toccano il bordo superiore della
+  // card e la linea orizzontale sotto, invece di restare rientrati di 16px.
+  padding: 0;
+}
+
+.confronto-voce {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 8px;
+
+  // Separatori verticali fra le tre colonne, non dopo l'ultima.
+  & + .confronto-voce {
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.confronto-numero {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 20px;
+  color: #fff;
+}
+
+.confronto-nota {
+  text-align: center;
+
+  h3 {
+    line-height: 18px;
+  }
+}
+
+// ============================================
+// ESERCIZI
+// ============================================
+.stats-section {
+  margin-top: 32px;
+}
+
+.esercizi-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.esercizio-card {
+  padding: 16px;
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.esercizio-intestazione {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 8px;
+}
+
+// Stesso cerchio dell'editor allenamento, in scala ridotta.
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle-icon {
+  border: 1px solid #fff;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 20px;
+  }
+}
+
+.esercizio-nome {
+  flex: 1;
+  min-width: 0;
+  line-height: 18px;
+}
+
+.esercizio-delta {
+  white-space: nowrap;
+}
+
+// ============================================
+// SERIE: etichetta grigia + valori in linea
+// Niente chip: solo testi bianchi (svolto) e grigi (previsto).
+// ============================================
+.serie-riga {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.serie-etichetta {
+  // Larghezza fissa per allineare i valori di "Svolto" e "Previsto" fra loro.
+  width: 64px;
+  min-width: 64px;
+}
+
+.serie-valori {
+  display: flex;
+  // Spaziatura vera fra i valori, uguale su "Svolto" e "Previsto": affidarla
+  // agli spazi dentro la stringa la rendeva dipendente dal font.
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.serie-valore {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+// ============================================
+// SCOSTAMENTI
+// ============================================
+.scostamenti {
+  padding: 16px;
+  gap: 8px;
+
+  h3 {
+    line-height: 18px;
+  }
+}

@@ -1,0 +1,164 @@
+<div class="page-scroller">
+  @if (dettaglio(); as esercizio) {
+  <!-- Identita' dell'esercizio -->
+  <div class="widget-title">
+    <div class="esercizio-intestazione">
+      <div class="icon-container">
+        <div
+          class="circle-icon"
+          [style.border-color]="esercizio.idIcona | exerciseIconColor"
+        >
+          <img
+            [src]="esercizio.idIcona | exerciseIcon"
+            [alt]="'Icona ' + esercizio.nomeEsercizio"
+          />
+        </div>
+      </div>
+
+      <div class="esercizio-testi">
+        <h1 class="text-title esercizio-nome">{{ esercizio.nomeEsercizio }}</h1>
+        <div class="esercizio-muscoli">
+          @for (muscolo of esercizio.muscoli; track muscolo) {
+          <h3 class="text-grey">{{ muscolo }}</h3>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Riepilogo: miglior serie e stima 1RM -->
+  <div class="stats-card riepilogo">
+    @if (esercizio.migliorSerie; as serie) {
+    <div class="riepilogo-voce">
+      <h3 class="text-grey">Miglior serie</h3>
+      <span class="riepilogo-numero">
+        {{ serie.carico }} kg × {{ serie.ripetizioni }}
+      </span>
+    </div>
+    }
+    <!-- La stima manca per il corpo libero e sopra le 10 ripetizioni: in quel
+         caso il riquadro non si mostra, invece di dare un numero inventato. -->
+    @if (esercizio.unaRipetizioneMassimaStimata !== null) {
+    <div class="riepilogo-voce">
+      <h3 class="text-grey">1RM stimato</h3>
+      <span class="riepilogo-numero">
+        {{ esercizio.unaRipetizioneMassimaStimata }} kg
+      </span>
+    </div>
+    }
+  </div>
+
+  <!-- Tab -->
+  <div class="esercizio-tabs">
+    <div class="stats-tabs">
+      @for (tab of tabs; track tab.id) {
+      <button
+        type="button"
+        class="stats-tab"
+        [class.active]="tabAttiva() === tab.id"
+        (click)="selezionaTab(tab.id)"
+      >
+        {{ tab.label }}
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- ============================== STORICO ============================== -->
+  @if (tabAttiva() === "storico") {
+  <div class="sezione-lista">
+    @for (sessione of esercizio.storico; track sessione.idAllenamentoSvolto) {
+    <div class="stats-card sessione-card">
+      <div class="sessione-intestazione">
+        <div class="sessione-testi">
+          <h3 class="text-white">{{ sessione.nomeGiorno }}</h3>
+          <h3 class="text-grey">
+            {{ sessione.dataEsecuzione | date: "dd/MM/yyyy" }}
+          </h3>
+        </div>
+        @if (sessione.nota) {
+        <h3 class="text-grey sessione-nota">{{ sessione.nota }}</h3>
+        }
+      </div>
+
+      <div class="serie-valori">
+        @for (serie of sessione.serie; track $index) {
+        <h3 class="text-white serie-valore">
+          {{ serie.ripetizioni }}×{{ serie.carico }}
+        </h3>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- ============================== GRAFICO ============================== -->
+  @if (tabAttiva() === "grafico") {
+  <div class="sezione-lista">
+    @for (g of grafici; track g.modello.titolo) {
+    <section class="grafico-sezione">
+      <div class="widget-title">
+        <div class="section-widget-title-container">
+          <h1 class="text-title">{{ g.modello.titolo }}</h1>
+        </div>
+      </div>
+
+      <div class="stats-card">
+        <div class="widget-data grafico-corpo">
+          <div class="grafico-testata">
+            <span class="grafico-numero">
+              {{ g.modello.valoreCorrente }} {{ g.modello.unita }}
+            </span>
+            @if (etichettaDeltaGrafico(g.modello)) {
+            <h3 class="text-grey">{{ etichettaDeltaGrafico(g.modello) }}</h3>
+            }
+          </div>
+
+          <div class="grafico-area">
+            <canvas
+              baseChart
+              [data]="g.data"
+              [options]="g.options"
+              [plugins]="g.plugins"
+              type="line"
+            ></canvas>
+          </div>
+
+          <!-- Solo i due estremi: un asse completo su 340dp sarebbe illeggibile -->
+          <div class="grafico-estremi">
+            <h3 class="text-grey">{{ primoGiorno(g.modello) }}</h3>
+            <h3 class="text-grey">{{ ultimoGiorno(g.modello) }}</h3>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    }
+  </div>
+  }
+
+  <!-- ============================== RECORD =============================== -->
+  @if (tabAttiva() === "record") {
+  <div class="sezione-lista">
+    @for (record of esercizio.record; track record.titolo) {
+    <section class="record-sezione">
+      <div class="widget-title">
+        <div class="section-widget-title-container">
+          <h1 class="text-title">{{ record.titolo }}</h1>
+        </div>
+      </div>
+
+      <div class="stats-card record-card">
+        <div class="record-riga">
+          <span class="record-numero">{{ record.valore }} {{ record.unita }}</span>
+          <h3 class="text-grey">{{ record.data | date: "dd/MM/yyyy" }}</h3>
+        </div>
+        <h3 class="text-grey">{{ record.dettaglio }}</h3>
+      </div>
+    </section>
+    }
+  </div>
+  }
+  }
+</div>

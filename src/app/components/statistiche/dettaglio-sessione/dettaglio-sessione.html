@@ -1,0 +1,128 @@
+<div class="page-scroller">
+  @if (dettaglio(); as sessione) {
+  <!-- Titolo della sessione: il tempo non lo mostriamo, non lo raccogliamo -->
+  <div class="widget-title">
+    <div class="sessione-intestazione">
+      <h1 class="text-title sessione-titolo">{{ sessione.nomeGiorno }}</h1>
+      <div class="sessione-sottoriga">
+        <h3 class="text-grey">
+          {{ sessione.dataEsecuzione | date: "dd/MM/yyyy" }}
+        </h3>
+        @if (sessione.nomeScheda) {
+        <h3 class="text-grey">{{ sessione.nomeScheda }}</h3>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Come è andata rispetto a se stessi -->
+  <div class="stats-card">
+    <div class="widget-data confronto">
+      <div class="confronto-voce">
+        <span class="confronto-numero">{{ sessione.confronto.migliorati }}</span>
+        <h3 class="text-grey">migliorati</h3>
+      </div>
+      <div class="confronto-voce">
+        <span class="confronto-numero">{{ sessione.confronto.stabili }}</span>
+        <h3 class="text-grey">stabili</h3>
+      </div>
+      <div class="confronto-voce">
+        <span class="confronto-numero">{{ sessione.confronto.calati }}</span>
+        <h3 class="text-grey">calato</h3>
+      </div>
+    </div>
+    <div class="widget-data widget-data-last confronto-nota">
+      <h3 class="text-grey">
+        Rispetto alla tua media delle ultime 4 settimane sugli stessi esercizi
+      </h3>
+    </div>
+  </div>
+
+  <!-- ESERCIZI -->
+  <section class="stats-section">
+    <div class="widget-title">
+      <div class="section-widget-title-container">
+        <h1 class="text-title">Esercizi</h1>
+      </div>
+    </div>
+
+    <div class="esercizi-lista">
+      @for (esercizio of sessione.esercizi; track esercizio.idTipoEsercizio) {
+      <div
+        class="stats-card esercizio-card"
+        (click)="apriDettaglioEsercizio(esercizio.idTipoEsercizio)"
+      >
+        <div class="esercizio-intestazione">
+          <div class="icon-container">
+            <div
+              class="circle-icon"
+              [style.border-color]="esercizio.idIcona | exerciseIconColor"
+            >
+              <img
+                [src]="esercizio.idIcona | exerciseIcon"
+                [alt]="'Icona ' + esercizio.nomeEsercizio"
+              />
+            </div>
+          </div>
+
+          <h3 class="text-white esercizio-nome">
+            {{ esercizio.nomeEsercizio }}
+          </h3>
+
+          @if (etichettaDelta(esercizio)) {
+          <h3 class="text-grey esercizio-delta">
+            {{ etichettaDelta(esercizio) }}
+          </h3>
+          }
+
+          <div class="arrow-widget-container">
+            <mat-icon svgIcon="google-arrow"></mat-icon>
+          </div>
+        </div>
+
+        <!-- Svolto e previsto uno sotto l'altro, mai in due colonne -->
+        <div class="serie-riga">
+          <h3 class="text-grey serie-etichetta">Svolto</h3>
+          <div class="serie-valori">
+            @for (serie of esercizio.svolto; track $index) {
+            <h3 class="text-white serie-valore">
+              {{ serie.ripetizioni }}×{{ serie.carico }}
+            </h3>
+            }
+          </div>
+        </div>
+        @if (esercizio.previsto.length > 0) {
+        <div class="serie-riga">
+          <h3 class="text-grey serie-etichetta">Previsto</h3>
+          <div class="serie-valori">
+            @for (serie of esercizio.previsto; track $index) {
+            <h3 class="text-grey serie-valore">
+              {{ serie.ripetizioni }}×{{ serie.carico }}
+            </h3>
+            }
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- SCOSTAMENTI DAL PIANO -->
+  @if (sessione.scostamenti.length > 0) {
+  <section class="stats-section">
+    <div class="widget-title">
+      <div class="section-widget-title-container">
+        <h1 class="text-title">Scostamenti dal piano</h1>
+      </div>
+    </div>
+
+    <div class="stats-card scostamenti">
+      @for (scostamento of sessione.scostamenti; track $index) {
+      <h3 class="text-grey">{{ scostamento.descrizione }}</h3>
+      }
+    </div>
+  </section>
+  }
+  }
+</div>

@@ -90,7 +90,7 @@
     <app-multi-option-button [leftButtonLabel]="''" [leftGroups]="leftButtonOptionsGroup"
       (optionSelected)="onOptionSelected($event)">
       <!-- Il pulsante statico viene proiettato qui -->
-      <button class="floating-static-button" (touchstart)="backToList()">
+      <button class="floating-static-button" (click)="backToList()">
         <span>Torna alla scheda</span>
       </button>
     </app-multi-option-button>

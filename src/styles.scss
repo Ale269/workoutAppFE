@@ -1036,3 +1036,72 @@ mat-tab-header {
   justify-content: center;
   padding: 24px 0;
 }
+
+/* Pillole di selezione (periodo in Statistiche, tab del dettaglio esercizio).
+   Aspetto del bottom menu — glass, bordo a gradiente, attivo bianco pieno —
+   con le dimensioni di .small-inline-button. */
+.stats-tab {
+  position: relative;
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  // Dimensioni: .small-inline-button
+  font-family: "poppins";
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 32px;
+  padding: 8px 16px;
+
+  // Aspetto: .bottom-menu-item
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 32px;
+    padding: 1px;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(255, 255, 255, 0.4) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  transition: transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.active {
+    color: rgb(12, 12, 12);
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(255, 255, 255, 0.9) 100%
+    );
+  }
+}
+
+.stats-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

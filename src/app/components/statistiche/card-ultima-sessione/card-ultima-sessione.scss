@@ -16,7 +16,6 @@
 .card-body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
   min-width: 0;
 
   h3 {
@@ -24,6 +23,3 @@
   }
 }
 
-.card-titolo {
-  padding-bottom: 4px;
-}

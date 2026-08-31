@@ -1,0 +1,221 @@
+.page-scroller {
+  padding-bottom: calc(32px + var(--bottom-menu-padding, 0px));
+}
+
+// ============================================
+// IDENTITA' ESERCIZIO
+// ============================================
+.esercizio-intestazione {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Stesso cerchio dell'editor allenamento, in scala.
+.circle-icon {
+  border: 1px solid #fff;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 28px;
+  }
+}
+
+.esercizio-testi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.esercizio-nome {
+  line-height: 24px;
+}
+
+// Muscoli separati da spazio vero, non da un carattere puntino.
+.esercizio-muscoli {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+// ============================================
+// CARD (blocchi impilati: linee da bordo a bordo)
+// ============================================
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #1a1a1a;
+}
+
+.widget-data {
+  background-color: #1a1a1a;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.widget-data-last {
+  border-bottom: none;
+}
+
+// ============================================
+// RIEPILOGO (miglior serie / 1RM)
+// ============================================
+.riepilogo {
+  flex-direction: row;
+}
+
+.riepilogo-voce {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+
+  & + .riepilogo-voce {
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.riepilogo-numero {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 20px;
+  color: #fff;
+}
+
+// ============================================
+// TAB
+// Le pillole sono globali (.stats-tab in styles.scss): qui solo lo stacco.
+// ============================================
+.esercizio-tabs {
+  padding: 24px 0;
+}
+
+.sezione-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// ============================================
+// STORICO
+// ============================================
+.sessione-card {
+  padding: 16px;
+}
+
+.sessione-intestazione {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sessione-testi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  h3 {
+    line-height: 18px;
+  }
+}
+
+.sessione-nota {
+  text-align: right;
+  white-space: nowrap;
+}
+
+// Stessa spaziatura dei valori nel dettaglio sessione.
+.serie-valori {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.serie-valore {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+// ============================================
+// GRAFICI
+// ============================================
+.grafico-sezione + .grafico-sezione,
+.record-sezione + .record-sezione {
+  margin-top: 24px;
+}
+
+.grafico-corpo {
+  display: flex;
+  flex-direction: column;
+}
+
+.grafico-testata {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.grafico-numero {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+}
+
+.grafico-area {
+  position: relative;
+  height: 140px;
+  margin-top: 12px;
+}
+
+.grafico-estremi {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 8px;
+}
+
+// ============================================
+// RECORD
+// ============================================
+.record-card {
+  padding: 16px;
+  gap: 4px;
+}
+
+.record-riga {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.record-numero {
+  font-family: "poppins";
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+}

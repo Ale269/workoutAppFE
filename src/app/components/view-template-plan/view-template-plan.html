@@ -3,7 +3,7 @@
   <div class="content">
     <!-- <div class="section-title-container back-icon-title-container">
       <div class="back-icon-section-container">
-        <div class="back-icon-trigger" (touchstart)="goBack()"></div>
+        <div class="back-icon-trigger" (click)="goBack()"></div>
         <img src="assets/recollect/svg/google-arrow.svg" />
       </div>
       <h1 class="text-title">{{scheda.nomeScheda}}</h1>
@@ -69,7 +69,7 @@
   <app-multi-option-button [leftButtonLabel]="''" [leftGroups]="leftButtonOptionsGroup"
     (optionSelected)="onOptionSelected($event)">
     <!-- Il pulsante statico viene proiettato qui -->
-    <button class="floating-static-button" (touchstart)="modificaScheda($event)">
+    <button class="floating-static-button" (click)="modificaScheda($event)">
       <span>Modifica scheda</span>
     </button>
   </app-multi-option-button>

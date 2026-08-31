@@ -95,7 +95,7 @@ export class ViewTemplatePlan {
         {
           optionId: 3,
           color: "#ff6b6b",
-          description: "Elimina allenamento",
+          description: "Elimina scheda",
         },
       ],
     },

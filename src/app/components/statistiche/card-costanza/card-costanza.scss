@@ -22,7 +22,6 @@
 }
 
 .widget-data-last {
-  gap: 4px;
   border-bottom: none;
 }
 
@@ -41,8 +40,7 @@
   font-weight: 700;
   // Stessa scala della ".mega-title" della home ("Pronto per il prossimo
   // allenamento?"): i numeri grandi delle card non devono superarla.
-  font-size: 32px;
-  line-height: 40px;
+  font-size: 20px;
   color: #fff;
 }
 

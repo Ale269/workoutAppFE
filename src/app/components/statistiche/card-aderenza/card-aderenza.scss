@@ -38,7 +38,7 @@
 
 .aderenza-headline {
   display: flex;
-  align-items: center;
+  align-items: bottom;
   gap: 8px;
   min-width: 0;
 }
@@ -48,8 +48,7 @@
   font-weight: 700;
   // Stessa scala della ".mega-title" della home ("Pronto per il prossimo
   // allenamento?"): i numeri grandi delle card non devono superarla.
-  font-size: 32px;
-  line-height: 40px;
+  font-size: 20px;
   color: #fff;
 }
 
@@ -64,5 +63,4 @@
 .aderenza-voce {
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }

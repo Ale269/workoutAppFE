@@ -1,0 +1,19 @@
+<div class="page-scroller">
+  @if (dati(); as forza) {
+  <div class="widget-title">
+    <div class="forza-intestazione">
+      <h1 class="text-title">Forza</h1>
+      <h3 class="text-grey">
+        {{ forza.esercizi.length }} esercizi con almeno
+        {{ forza.esecuzioniMinime }} esecuzioni
+      </h3>
+    </div>
+  </div>
+
+  <!-- Stesse card dell'anteprima in Statistiche: componente condiviso -->
+  <app-card-forza
+    [esercizi]="forza.esercizi"
+    (apri)="apriDettaglioEsercizio($event)"
+  ></app-card-forza>
+  }
+</div>
