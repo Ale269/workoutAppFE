@@ -4,8 +4,9 @@
     {
       "name": "workoutAppFE",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["start"],
-      "port": 4202
+      "runtimeArgs": ["run", "start"],
+      "port": 4202,
+      "autoPort": false
     }
   ]
 }

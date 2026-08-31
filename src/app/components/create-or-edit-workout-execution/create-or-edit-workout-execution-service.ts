@@ -94,6 +94,35 @@ export class CreateOrEditWorkoutExecutionService {
    * Inizializza un nuovo allenamento partendo da un template
    * @param idTemplateAllenamento ID del template da cui creare il nuovo allenamento
    */
+  /**
+   * Form di un allenamento libero: vuoto e non collegato ad alcun template.
+   *
+   * "idTemplate" resta a 0 ed e' cio' che dice al backend di non cercare ne'
+   * il Training di partenza ne' lo SnapshotWorkout della scheda attiva.
+   */
+  InizializzaAllenamentoLibero() {
+    try {
+      const allenamentoFormDTO: AllenamentoFormDTO = {
+        id: 0,
+        dataEsecuzione: new Date(),
+        idTemplate: 0,
+        listaEsercizi: [],
+        listaGruppi: [],
+        nomeAllenamento: "Allenamento libero",
+        description: "",
+        ordinamento: 0,
+      };
+
+      this.AllenamentoForm = new AllenamentoForm(0, allenamentoFormDTO as any);
+      this.AllenamentoForm.form.markAsPristine();
+    } catch (error) {
+      throw new Error(
+        "CreateOrEditWorkoutExecutionService.InizializzaAllenamentoLibero: " +
+          error
+      );
+    }
+  }
+
   InitializeAllenamento(allenamento: AllenamentoDTO) {
     try {
       const allenamentoFormDTO: AllenamentoFormDTO =

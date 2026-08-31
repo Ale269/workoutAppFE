@@ -37,6 +37,7 @@ export class PopupOptionButton {
   @Input() iconName: string = "google-add";
   @Input() options: popupOption[] = [];
 
+
   @Output() optionSelected = new EventEmitter<number>();
 
   @ViewChild("popupPanel") popupPanel?: ElementRef<HTMLElement>;

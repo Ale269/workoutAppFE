@@ -46,7 +46,7 @@
   transition: transform 0.2s ease;
 
   &:active {
-    transform: scale(0.98);
+    transform: scale(0.95);
   }
 }
 
@@ -73,6 +73,12 @@
 
 .volume-serie {
   font-size: 16px;
+}
+
+.volume-unita {
+  font-size: 12px;
+  font-weight: 700;
+  color: #808080;
 }
 
 .volume-barre {

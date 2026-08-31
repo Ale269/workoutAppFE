@@ -41,11 +41,14 @@ import { HapticService } from "src/app/core/services/haptic.service";
 export class PromptPopup {
   @ViewChild("panel") panelRef?: ElementRef<HTMLElement>;
   @ViewChild("inputEl") inputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild("overlay") overlayRef?: ElementRef<HTMLElement>;
 
   public activeConfig: PromptPopupConfig | null = null;
   public inputControl = new FormControl<string>("", { nonNullable: true });
 
   private isAnimating = false;
+  /** Rimuove il listener sul visual viewport, vedi seguiTastiera(). */
+  private stopSegueTastiera: (() => void) | null = null;
   private zone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
   private hapticService = inject(HapticService);
@@ -74,6 +77,7 @@ export class PromptPopup {
     // un solo frame in più rischia di perdere quel contesto.
     this.cdr.detectChanges();
     this.inputRef?.nativeElement?.focus();
+    this.seguiTastiera();
 
     this.zone.runOutsideAngular(() => {
       requestAnimationFrame(() => {
@@ -95,8 +99,54 @@ export class PromptPopup {
     });
   }
 
+  /**
+   * Tiene l'overlay agganciato al VISUAL viewport invece che a quello di
+   * layout.
+   *
+   * L'overlay e' "position: fixed; inset: 0" e centra il pannello con
+   * flexbox: si dimensiona quindi sul viewport di LAYOUT, che all'apertura
+   * della tastiera non si accorcia (su iOS non si accorcia mai; su Android
+   * dipende dalla modalita' di resize). Risultato: il pannello resta centrato
+   * sullo schermo intero e la tastiera, che ne occupa la meta' inferiore, lo
+   * copre — proprio mentre l'input e' gia' a fuoco e serve vederlo.
+   *
+   * visualViewport descrive invece l'area davvero visibile: legandoci altezza
+   * e offset, il pannello si ricentra nello spazio che resta sopra la
+   * tastiera. Dove l'API non c'e', si ricade sul comportamento di prima.
+   */
+  private seguiTastiera(): void {
+    this.stopSegueTastiera?.();
+
+    const vv = window.visualViewport;
+    const overlay = this.overlayRef?.nativeElement;
+    if (!vv || !overlay) return;
+
+    const applica = () => {
+      overlay.style.height = `${vv.height}px`;
+      overlay.style.top = `${vv.offsetTop}px`;
+      overlay.style.bottom = "auto";
+    };
+
+    this.zone.runOutsideAngular(() => {
+      applica();
+      vv.addEventListener("resize", applica);
+      vv.addEventListener("scroll", applica);
+    });
+
+    this.stopSegueTastiera = () => {
+      vv.removeEventListener("resize", applica);
+      vv.removeEventListener("scroll", applica);
+      overlay.style.height = "";
+      overlay.style.top = "";
+      overlay.style.bottom = "";
+      this.stopSegueTastiera = null;
+    };
+  }
+
   private animateOutAndThen(afterClose: () => void): void {
     if (this.isAnimating) return;
+
+    this.stopSegueTastiera?.();
 
     const panel = this.panelRef?.nativeElement;
     if (!panel) {

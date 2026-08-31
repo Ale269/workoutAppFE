@@ -17,10 +17,12 @@
       <div class="volume-intestazione">
         <h3 class="text-white">{{ item.nomeMuscolo }}</h3>
         <div class="volume-valori">
-          <h3 class="text-white volume-serie">{{ item.serie }}</h3>
-          <h3 class="delta">
-            {{ etichettaDelta(item) }}
+          <h3 class="text-white volume-serie">
+            {{ item.serie }} <span class="volume-unita">serie</span>
           </h3>
+          @if (etichettaDelta(item)) {
+          <h3 class="delta">{{ etichettaDelta(item) }}</h3>
+          }
         </div>
       </div>
 

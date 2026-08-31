@@ -2,6 +2,7 @@ import { Component, TemplateRef, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { ModalService } from "src/app/core/services/modal.service";
+import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { WorkoutService } from "src/app/core/services/workout.service";
 import {
@@ -89,6 +90,7 @@ export class ViewDataExecutedWorkout {
     private router: Router,
     private workoutService: WorkoutService,
     private modalService: ModalService,
+    private confirmPopupService: ConfirmPopupService,
     private menuConfigService: MenuConfigService,
     private hapticService: HapticService,
   ) {
@@ -287,12 +289,10 @@ export class ViewDataExecutedWorkout {
 
   openDeleteAllenamento() {
     try {
-      this.modalService.open({
-        warning: true,
-        headerTemplate: this.headerDeleteWorkout,
-        bodyTemplate: this.bodyDeleteWorkout,
-        footerCloseTemplate: this.footerCloseDeleteWorkout,
-        footerConfirmTemplate: this.footerConfirmDeleteWorkout,
+      this.confirmPopupService.open({
+        title: "Eliminare questo allenamento?",
+        message: "Questa azione non può essere annullata.",
+        confirmText: "Elimina",
         onConfirm: () => this.eliminaAllenamento(),
       });
     } catch (error) {

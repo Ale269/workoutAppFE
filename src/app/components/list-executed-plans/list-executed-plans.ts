@@ -11,6 +11,7 @@ import { Router } from "@angular/router";
 import { AuthService } from "src/app/core/services/auth.service";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { ModalService } from "src/app/core/services/modal.service";
+import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
 import { HapticService } from "src/app/core/services/haptic.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { WorkoutService } from "src/app/core/services/workout.service";
@@ -82,6 +83,7 @@ export class ListExecutedPlans {
     private authService: AuthService,
     private router: Router,
     private modalService: ModalService,
+    private confirmPopupService: ConfirmPopupService,
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
   ) {
@@ -229,12 +231,10 @@ export class ListExecutedPlans {
 
   openDeleteScheda(idScheda: number) {
     try {
-      this.modalService.open({
-        warning: true,
-        headerTemplate: this.headerDeleteTemplate,
-        bodyTemplate: this.bodyDeleteTemplate,
-        footerCloseTemplate: this.footerCloseDeleteTemplate,
-        footerConfirmTemplate: this.footerConfirmDeleteTemplate,
+      this.confirmPopupService.open({
+        title: "Eliminare questa scheda?",
+        message: "Questa azione non può essere annullata.",
+        confirmText: "Elimina",
         onConfirm: () => this.eliminaScheda(idScheda),
       });
     } catch (error) {

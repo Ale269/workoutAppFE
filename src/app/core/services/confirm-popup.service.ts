@@ -2,8 +2,14 @@ import { Injectable, inject, signal } from "@angular/core";
 import { HapticService } from "./haptic.service";
 
 export interface ConfirmPopupConfig {
-  /** Elemento (icona/bottone) che ha aperto il popup: ne determina l'ancoraggio */
-  triggerElement: HTMLElement;
+  /**
+   * Elemento (icona/bottone) che ha aperto il popup: ne determina l'ancoraggio.
+   *
+   * Omettilo quando chi apre il popup sparisce nel frattempo — e' il caso del
+   * menu multi-opzione, che si richiude scegliendo la voce: non resterebbe
+   * nulla a cui ancorarsi. Senza trigger il pannello si centra sullo schermo.
+   */
+  triggerElement?: HTMLElement;
   title: string;
   message?: string;
   cancelText?: string;

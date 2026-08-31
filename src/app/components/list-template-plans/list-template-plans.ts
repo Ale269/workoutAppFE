@@ -7,8 +7,7 @@ import {
   ViewChildren,
   ElementRef,
   TemplateRef,
-  ViewChild,
-} from "@angular/core";
+  ViewChild } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SchedaListaDTO } from "src/app/models/lista-template-schede/schedalistadto";
 import { CommonModule } from "@angular/common";
@@ -24,6 +23,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { ModalService } from "src/app/core/services/modal.service";
+import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
 import {
   DeleteDatiTemplateSchedaRequestModel,
   DeleteDatiTemplateSchedaResponseModel,
@@ -38,6 +38,8 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { MenuConfigService } from "src/app/core/services/menu-config.service";
 import { HapticService } from "src/app/core/services/haptic.service";
 import { SwipeToDeleteController } from "src/app/core/services/swipe-to-delete.controller";
+import { InfiniteScrollController } from "src/app/core/services/infinite-scroll.controller";
+import { DIMENSIONE_PAGINA_LISTE } from "src/app/models/paginazione/paginazione";
 
 
 @Component({
@@ -70,6 +72,14 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
   });
   private currentSpinnerId: string | null = null;
 
+  /** Pagina successiva da chiedere; le pagine gia' scaricate restano in lista. */
+  private pagina = 0;
+  public caricandoAltro = false;
+
+  private infiniteScroll = new InfiniteScrollController({
+    onCaricaProssimaPagina: () => this.caricaProssimaPagina(),
+  });
+
   public leftButtonOptionsGroup: multiOptionGroup[] = [
     {
       id: 1,
@@ -96,6 +106,7 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
     private authService: AuthService,
     private router: Router,
     private modalService: ModalService,
+    private confirmPopupService: ConfirmPopupService,
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
     private menuConfigService: MenuConfigService,
@@ -145,85 +156,106 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.schedaCards.changes.subscribe(() => {
       this.swipe.attach(this.schedaCards);
+      // Il page-scroller puo' essere stato ricreato da un @if del template.
+      this.infiniteScroll.attach();
     });
     this.swipe.attach(this.schedaCards);
+    this.infiniteScroll.attach();
   }
 
   ngOnDestroy(): void {
     this.swipe.destroy();
+    this.infiniteScroll.detach();
   }
 
+  /**
+   * Prima pagina: azzera la lista e mostra lo spinner. Le pagine successive
+   * arrivano da caricaProssimaPagina() senza spinner a tutto schermo, che
+   * coprirebbe la lista che l'utente sta gia' leggendo.
+   */
   getListaTemplateSchede() {
+    this.pagina = 0;
+    this.listaSchede = [];
+    this.infiniteScroll.reset();
+
+    this.currentSpinnerId = this.spinnerService.showWithResult(
+      "Recupero dati schede",
+      {
+        forceShow: false,
+        successMessage: "Dati recuperati con successo",
+        errorMessage: "Errore nel recupero dei dati",
+        resultDuration: 250,
+        minSpinnerDuration: 250,
+      },
+    );
+
+    this.caricaPagina(0, this.currentSpinnerId);
+  }
+
+  private caricaProssimaPagina(): void {
+    this.caricaPagina(this.pagina, null);
+  }
+
+  private caricaPagina(pagina: number, spinnerId: string | null): void {
     try {
-      this.currentSpinnerId = this.spinnerService.showWithResult(
-        "Recupero dati schede",
-        {
-          successMessage: "Dati recuperati con successo",
-          errorMessage: "Errore nel recupero dei dati",
-          resultDuration: 250,
-          minSpinnerDuration: 250,
-        },
-      );
-
       const user = this.authService.getCurrentUser();
+      if (!user) {
+        throw new Error("ListTemplatePlans.caricaPagina: nessun user trovato");
+      }
 
-      if (user) {
-        const request: GetListaTemplatesSchedaRequestModel = {
+      this.infiniteScroll.segnalaCaricamentoIniziato();
+      this.caricandoAltro = spinnerId === null;
+
+      this.workoutService
+        .getListaTemplatesSchedaPaginata({
           userId: user.userId,
-        };
-
-        this.workoutService.getListaTemplatesScheda(request).subscribe({
+          page: pagina,
+          size: DIMENSIONE_PAGINA_LISTE,
+        })
+        .subscribe({
           next: (response: GetListaTemplatesSchedaResponseModel) => {
-            if (!response.errore?.error) {
-              if (response.listaSchedeDTO) {
-                this.listaSchede = response.listaSchedeDTO;
-                if (this.currentSpinnerId) {
-                  this.spinnerService.setSuccess(this.currentSpinnerId);
-                }
-              } else {
-                if (this.currentSpinnerId) {
-                  this.spinnerService.setError(this.currentSpinnerId);
-                }
-                this.errorHandlerService.logError(
-                  response.errore.error,
-                  "ListTemplatePlans.getListaTemplateSchede",
-                );
-              }
-            } else {
-              if (this.currentSpinnerId) {
-                this.spinnerService.setError(this.currentSpinnerId);
-              }
+            this.caricandoAltro = false;
+
+            if (response.errore?.error) {
+              // Il flag va rilasciato anche sul ramo di errore, altrimenti
+              // l'infinite scroll resta bloccato per il resto della sessione.
+              this.infiniteScroll.segnalaCaricamentoFinito(true);
+              if (spinnerId) this.spinnerService.setError(spinnerId);
               this.errorHandlerService.logError(
                 response.errore.error,
-                "ListTemplatePlans.getListaTemplateSchede",
+                "ListTemplatePlans.caricaPagina",
               );
+              return;
             }
+
+            const nuovi = response.listaSchedeDTO ?? [];
+            this.listaSchede = [...this.listaSchede, ...nuovi];
+
+            this.pagina = pagina + 1;
+            this.infiniteScroll.segnalaCaricamentoFinito(
+              response.paginazione?.ultimaPagina ?? true,
+            );
+
+            if (spinnerId) this.spinnerService.setSuccess(spinnerId);
           },
           error: (error) => {
-            if (this.currentSpinnerId) {
-              this.spinnerService.setError(this.currentSpinnerId);
-            }
+            this.caricandoAltro = false;
+            this.infiniteScroll.segnalaCaricamentoFinito(true);
+            if (spinnerId) this.spinnerService.setError(spinnerId);
             this.errorHandlerService.logError(
               error,
-              "ListTemplatePlans.getListaTemplateSchede",
+              "ListTemplatePlans.caricaPagina",
             );
           },
         });
-      } else {
-        throw new Error(
-          "ListTemplatePlans.addEsercizioForm: " + "nessun user trovato",
-        );
-      }
     } catch (error) {
-      if (this.currentSpinnerId) {
-        this.spinnerService.setError(this.currentSpinnerId);
-      }
-      this.errorHandlerService.logError(
-        error,
-        "ListTemplatePlans.getListaTemplateSchede",
-      );
+      this.caricandoAltro = false;
+      this.infiniteScroll.segnalaCaricamentoFinito(true);
+      if (spinnerId) this.spinnerService.setError(spinnerId);
+      this.errorHandlerService.logError(error, "ListTemplatePlans.caricaPagina");
     }
   }
+
 
   visualizzaDatiScheda(idScheda: number) {
     try {
@@ -280,12 +312,10 @@ export class ListTemplatePlans implements OnInit, AfterViewInit {
 
   openDeleteScheda(idScheda: number) {
     try {
-      this.modalService.open({
-        warning: true,
-        headerTemplate: this.headerDeleteTemplate,
-        bodyTemplate: this.bodyDeleteTemplate,
-        footerCloseTemplate: this.footerCloseDeleteTemplate,
-        footerConfirmTemplate: this.footerConfirmDeleteTemplate,
+      this.confirmPopupService.open({
+        title: "Eliminare questa scheda?",
+        message: "Questa azione non può essere annullata.",
+        confirmText: "Elimina",
         onConfirm: () => this.eliminaScheda(idScheda),
       });
     } catch (error) {

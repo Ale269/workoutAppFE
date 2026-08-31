@@ -8,7 +8,7 @@
   transition: transform 0.2s ease;
 
   &:active {
-    transform: scale(0.98);
+    transform: scale(0.95);
   }
 }
 
@@ -46,8 +46,10 @@
 .aderenza-numero {
   font-family: "poppins";
   font-weight: 700;
-  font-size: 48px;
-  line-height: 48px;
+  // Stessa scala della ".mega-title" della home ("Pronto per il prossimo
+  // allenamento?"): i numeri grandi delle card non devono superarla.
+  font-size: 32px;
+  line-height: 40px;
   color: #fff;
 }
 

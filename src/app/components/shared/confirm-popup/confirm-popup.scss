@@ -98,3 +98,12 @@
 .confirm-popup-cancel {
   color: #fff;
 }
+
+// Variante centrata: usata quando il popup non ha un trigger a cui
+// ancorarsi (menu multi-opzione, che si richiude scegliendo la voce).
+.confirm-popup-panel.centrato {
+  right: auto;
+  bottom: auto;
+  // top/left e i margini di centratura li imposta il componente, misurando il
+  // pannello: vedi positionAndAnimateIn().
+}

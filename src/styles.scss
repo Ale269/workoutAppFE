@@ -132,6 +132,8 @@ body {
   background-color: #333333;
   padding: 8px 8px 8px 12px;
 
+  transition: transform 0.2s ease;
+
   &:active {
     transform: scale(0.95);
   }
@@ -260,6 +262,8 @@ html.perf-no-img img {
   min-width: 120px;
   cursor: pointer;
 
+  transition: transform 0.2s ease;
+
   &:active {
     transform: scale(0.95);
   }
@@ -328,6 +332,8 @@ html.perf-no-img img {
   min-width: 120px;
   cursor: pointer;
 
+  transition: transform 0.2s ease;
+
   &:active {
     transform: scale(0.95);
   }
@@ -390,6 +396,8 @@ html.perf-no-img img {
   border-radius: 32px;
   min-width: 120px;
   cursor: pointer;
+
+  transition: transform 0.2s ease;
 
   &:active {
     transform: scale(0.95);
@@ -457,6 +465,8 @@ html.perf-no-img img {
   justify-content: center;
   color: #fff;
   background-color: rgba(255, 0, 0, 0.2);
+
+  transition: transform 0.2s ease;
 
   &:active {
     transform: scale(0.95);
@@ -562,6 +572,8 @@ html.perf-no-img img {
   border-radius: 32px;
   min-width: 120px;
   cursor: pointer;
+
+  transition: transform 0.2s ease;
 
   &:active {
     transform: scale(0.95);
@@ -1014,4 +1026,13 @@ mat-tab-header {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+
+/* Coda delle liste con infinite scroll: indicatore discreto della pagina
+   in arrivo, in fondo ai record gia' visibili. */
+.infinite-scroll-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
 }

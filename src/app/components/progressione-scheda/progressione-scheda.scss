@@ -76,6 +76,8 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 
+  transition: transform 0.2s ease;
+
   &:active {
     transform: scale(0.95);
     background-color: rgba(0, 255, 225, 0.15);

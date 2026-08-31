@@ -90,13 +90,43 @@ export class ConfirmPopup {
 
   private positionAndAnimateIn(): void {
     const panel = this.panelRef?.nativeElement;
-    if (!panel || !this.activeConfig?.triggerElement) {
+    if (!panel) {
       this.isAnimating = false;
       return;
     }
 
-    const { transformOrigin } = positionPopupPanel(panel, this.activeConfig.triggerElement);
-    this.transformOrigin = transformOrigin;
+    const trigger = this.activeConfig?.triggerElement;
+    if (trigger) {
+      const { transformOrigin } = positionPopupPanel(panel, trigger);
+      this.transformOrigin = transformOrigin;
+      panel.classList.remove("centrato");
+    } else {
+      // Nessun trigger: si centra sullo schermo. I margini si calcolano
+      // dalle dimensioni REALI del pannello invece di usare valori fissi:
+      // titolo e messaggio cambiano da un popup all'altro, e con misure
+      // cablate il centraggio sarebbe giusto solo per un testo.
+      // Si usano i margini e non una translate perche' il transform e' gia'
+      // impegnato dalla scala animata da GSAP.
+      panel.classList.add("centrato");
+      panel.style.right = "";
+      panel.style.bottom = "";
+      panel.style.marginLeft = "0px";
+      panel.style.marginTop = "0px";
+
+      // Si misura con il pannello ancora a (0,0): messo a left:50% avrebbe
+      // solo meta' viewport a disposizione e, avendo max-width in percentuale,
+      // si restringerebbe — misurarlo li' darebbe una larghezza sbagliata e un
+      // centraggio fuori asse.
+      panel.style.top = "0px";
+      panel.style.left = "0px";
+      const rect = panel.getBoundingClientRect();
+
+      panel.style.top = "50%";
+      panel.style.left = "50%";
+      panel.style.marginLeft = `${-rect.width / 2}px`;
+      panel.style.marginTop = `${-rect.height / 2}px`;
+      this.transformOrigin = "center center";
+    }
 
     gsap.fromTo(
       panel,

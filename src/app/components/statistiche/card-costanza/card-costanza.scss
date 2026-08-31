@@ -39,8 +39,10 @@
 .costanza-numero {
   font-family: "poppins";
   font-weight: 700;
-  font-size: 48px;
-  line-height: 48px;
+  // Stessa scala della ".mega-title" della home ("Pronto per il prossimo
+  // allenamento?"): i numeri grandi delle card non devono superarla.
+  font-size: 32px;
+  line-height: 40px;
   color: #fff;
 }
 

@@ -63,10 +63,9 @@ export class StatisticheComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.menuConfigService.setConfig({
-      leftButton: "none",
-      centerText: "Statistiche",
-    });
+    // Stessa configurazione di "Allenamenti svolti": anche le pagine
+    // raggiungibili dal bottom menu mostrano la freccia di ritorno alla home.
+    this.menuConfigService.setBackToRoute("/home", "back", "Statistiche");
     this.caricaOverview(true);
   }
 

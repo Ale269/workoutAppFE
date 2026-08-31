@@ -4,8 +4,10 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from "@angular/core";
 import { gsap } from "gsap";
@@ -40,12 +42,21 @@ export type MenuSide = "left" | "right";
   templateUrl: "./multi-option-button.html",
   styleUrl: "./multi-option-button.scss",
 })
-export class MultiOptionButton implements OnInit, AfterViewInit {
+export class MultiOptionButton implements OnInit, OnChanges, AfterViewInit {
   @Input() leftGroups: multiOptionGroup[] = [];
   @Input() rightGroups: multiOptionGroup[] = [];
 
   @Input() leftButtonLabel: string = "Left Option";
   @Input() rightButtonLabel: string = "Right Option";
+
+  /**
+   * Tinta del pulsante e del pannello espanso, in esadecimale (es. "#00ffe1").
+   * Lasciato null resta il bianco traslucido di default.
+   *
+   * Passa per variabili CSS invece che per classi: cosi' il chiamante sceglie
+   * un colore qualsiasi senza che il componente debba conoscerlo in anticipo.
+   */
+  @Input() accentColor: string | null = null;
 
   @Output() optionSelected = new EventEmitter<OptionSelectedEvent>();
 
@@ -64,8 +75,17 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
   private originalWidths = new Map<HTMLElement, number>();
   private naturalHeights = { left: 0, right: 0 };
 
+  /**
+   * Timeline in corso e che tipo di animazione e'. Servono per poter
+   * interrompere un'apertura a meta' quando l'utente tocca fuori, senza
+   * lasciare due timeline che animano le stesse proprieta'.
+   */
+  private activeTimeline: gsap.core.Timeline | null = null;
+  private animationKind: "open" | "close" | null = null;
+
   constructor(
     private hapticService: HapticService,
+    private hostRef: ElementRef<HTMLElement>,
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
   ) {
@@ -77,7 +97,47 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     );
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.applicaAccento();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["accentColor"]) {
+      this.applicaAccento();
+    }
+  }
+
+  private applicaAccento(): void {
+    const host = this.hostRef.nativeElement;
+    if (!this.accentColor) {
+      host.style.removeProperty("--mob-sfondo");
+      host.style.removeProperty("--mob-bordo");
+      host.style.removeProperty("--mob-sfondo-espanso");
+      return;
+    }
+
+    const rgb = this.hexToRgb(this.accentColor);
+    if (!rgb) return;
+
+    host.style.setProperty("--mob-sfondo", `rgba(${rgb}, 0.2)`);
+    host.style.setProperty("--mob-bordo", `rgba(${rgb}, 0.4)`);
+    host.style.setProperty("--mob-sfondo-espanso", `rgba(${rgb}, 0.16)`);
+  }
+
+  private hexToRgb(hex: string): string | null {
+    const pulito = hex.trim().replace("#", "");
+    const esteso =
+      pulito.length === 3
+        ? pulito
+            .split("")
+            .map((c) => c + c)
+            .join("")
+        : pulito;
+    if (esteso.length !== 6) return null;
+    const n = parseInt(esteso, 16);
+    if (Number.isNaN(n)) return null;
+    return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -86,8 +146,25 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     }, 100);
   }
 
-  onOverlayClick(): void {
-    if (this.expandedSide && !this.isAnimating) {
+  /**
+   * Tap fuori dal pannello.
+   *
+   * Prima era condizionato a `!isAnimating`, e siccome `expandedSide` veniva
+   * valorizzato solo alla FINE dell'animazione di apertura, il tap esterno
+   * cadeva quasi sempre in una finestra morta: o l'overlay non esisteva
+   * ancora, o esisteva ma il gestore usciva subito. Da qui il pannello che
+   * "non si chiude cliccando fuori".
+   *
+   * Ora la chiusura puo' interrompere l'apertura: se l'utente tocca fuori
+   * mentre si sta ancora aprendo, l'intenzione e' chiara.
+   */
+  onOverlayClick(event?: Event): void {
+    // Impedisce che il click sintetico generato dal tocco finisca
+    // sull'elemento che si trova sotto l'overlay una volta rimosso.
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    if (this.expandedSide) {
       this.collapseButton(this.expandedSide);
     }
   }
@@ -143,7 +220,32 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     }
   }
 
-  onOptionClick(groupId: number, optionId: number, side: MenuSide) {
+  /**
+   * Selezione di una voce.
+   *
+   * Sta su "pointerdown" e non su "click" perche' il click su touch e' un
+   * evento SINTETIZZATO dopo il rilascio: basta un preventDefault a monte
+   * (l'overlay, o il browser durante la disambiguazione del gesto) e non
+   * viene mai generato. Il risultato e' il primo tap che sembra andare a
+   * vuoto e il secondo che funziona. Il resto del componente e' gia' guidato
+   * da pointerdown, quindi qui si allinea.
+   *
+   * stopPropagation: senza, l'evento risalirebbe a ".transformation-button",
+   * che sullo stesso pointerdown chiama expandButton().
+   */
+  onOptionClick(
+    groupId: number,
+    optionId: number,
+    side: MenuSide,
+    event?: Event,
+  ) {
+    event?.stopPropagation();
+    // Evita che il browser sintetizzi anche il click, che rifarebbe partire
+    // tutto una seconda volta.
+    event?.preventDefault();
+
+    if (this.animationKind === "close") return;
+
     this.hapticService.trigger("light");
     this.optionSelected.emit({
       groupId: groupId,
@@ -154,10 +256,17 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
   }
 
   expandButton(side: MenuSide) {
-    this.hapticService.trigger("light");
+    if (this.expandedSide || this.animationKind) return;
 
-    if (this.expandedSide || this.isAnimating) return;
+    this.hapticService.trigger("light");
+    this.animationKind = "open";
     this.isAnimating = true;
+
+    // Subito, non alla fine dell'animazione: l'overlay che cattura i tap
+    // esterni e' reso da "@if (expandedSide)", quindi finche' questa riga
+    // stava dentro onComplete il pannello si apriva senza nulla che
+    // intercettasse il tocco fuori.
+    this.expandedSide = side;
 
     const wrapper = this.allButtonsWrapper.nativeElement;
 
@@ -196,10 +305,12 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     const tl = gsap.timeline({
       onComplete: () => {
         gsap.set(activeContent, { height: "auto" });
-        this.expandedSide = side;
+        this.activeTimeline = null;
+        this.animationKind = null;
         this.isAnimating = false;
       },
     });
+    this.activeTimeline = tl;
 
     // FASE 1: Nascondi completamente gli altri elementi PRIMA di tutto
     tl.to(toHide, {
@@ -272,9 +383,20 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
   }
 
   collapseButton(side: MenuSide) {
-    this.hapticService.trigger("light");
+    if (!this.expandedSide) return;
+    // Gia' in chiusura: un secondo tap non deve avviare una seconda timeline.
+    if (this.animationKind === "close") return;
 
-    if (!this.expandedSide || this.isAnimating) return;
+    // Chiusura richiesta mentre si sta ancora aprendo: interrompo l'apertura
+    // invece di ignorare il tap. Le due timeline animano le stesse proprieta',
+    // quindi lasciarle convivere lascerebbe il pannello a mezz'aria.
+    if (this.animationKind === "open") {
+      this.activeTimeline?.kill();
+      this.activeTimeline = null;
+    }
+
+    this.hapticService.trigger("light");
+    this.animationKind = "close";
     this.isAnimating = true;
 
     const wrapper = this.allButtonsWrapper.nativeElement;
@@ -326,6 +448,8 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
     const tl = gsap.timeline({
       onComplete: () => {
         this.expandedSide = null;
+        this.activeTimeline = null;
+        this.animationKind = null;
         this.isAnimating = false;
 
         // Reset completo
@@ -342,6 +466,7 @@ export class MultiOptionButton implements OnInit, AfterViewInit {
         this.originalWidths.clear();
       },
     });
+    this.activeTimeline = tl;
 
     // FASE 1: Nascondi il contenuto trasformato mantenendo il pulsante largo con bounce
     tl.to(activeContent, {

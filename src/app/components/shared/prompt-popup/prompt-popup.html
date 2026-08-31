@@ -1,5 +1,5 @@
 @if (activeConfig; as activeConfig) {
-<div class="prompt-popup-overlay" (click)="onOverlayClick()">
+<div #overlay class="prompt-popup-overlay" (click)="onOverlayClick()">
   <div #panel class="prompt-popup-panel" (click)="$event.stopPropagation()">
     <h3 class="prompt-popup-title">{{ activeConfig.title }}</h3>
 

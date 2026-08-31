@@ -79,6 +79,10 @@ app-ultime-schede-svolte {
 // PAGE SCROLLER
 // ============================================
 .page-scroller {
+  // Stesso respiro in fondo della pagina statistiche: i 16px globali non
+  // tengono conto del bottom menu, quindi l'ultimo widget gli finiva sotto.
+  padding-bottom: calc(32px + var(--bottom-menu-padding, 0px));
+
   // Ottimizza scroll su mobile
   -webkit-overflow-scrolling: touch;
 

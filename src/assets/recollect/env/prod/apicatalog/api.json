@@ -147,6 +147,13 @@
         "method": "get",
         "description": "Download scheda di un utente",
         "isMocked": false
+      },
+      {
+        "name": "getSchedeSvoltePaged",
+        "endpoint": "/workout/templatesPaged/:userId",
+        "method": "get",
+        "description": "Pagina di template scheda per infinite scroll.",
+        "isMocked": false
       }
     ],
     "training": [
@@ -204,6 +211,13 @@
         "endpoint": "/history/workout/user/:userId/exercise/:exerciseId/last-n",
         "method": "get",
         "description": "Recupera i dati degli ultimi N allenamenti svolti per un esercizio specifico.",
+        "isMocked": false
+      },
+      {
+        "name": "getAllenamentiSvoltiPaged",
+        "endpoint": "/training/allHistoryPaged/:userId",
+        "method": "get",
+        "description": "Pagina di allenamenti svolti per infinite scroll.",
         "isMocked": false
       }
     ],

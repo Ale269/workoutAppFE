@@ -96,11 +96,17 @@ export class GymExerciseSelectorComponent implements OnInit {
   }
 
   private handleExerciseSelected(exercise: ExerciseViewModel): void {
-    console.log(`Hai selezionato: ${exercise.label} (ID: ${exercise.id})`);
-
     // Aggiorna il FormControl con l'ID dell'esercizio selezionato
     this.control.patchValue(exercise.id);
     this.control.markAsTouched();
+
+    // markAsDirty e' obbligatorio: patchValue() non sporca il form da solo
+    // (Angular marca dirty solo l'input digitato dall'utente). Senza,
+    // cambiare esercizio lasciava il form "pristine" e chi controlla
+    // form.dirty per chiedere conferma all'uscita — goBack() in
+    // create-or-edit-workout-execution — lasciava uscire senza avvisare,
+    // perdendo la modifica in silenzio.
+    this.control.markAsDirty();
   }
 
   getErrorMessage(): string {

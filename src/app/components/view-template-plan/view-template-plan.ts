@@ -2,8 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   TemplateRef,
-  ViewChild,
-} from "@angular/core";
+  ViewChild } from "@angular/core";
 import { ErrorHandlerService } from "src/app/core/services/error-handler.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SchedaDTO } from "src/app/models/view-modifica-scheda/schedadto";
@@ -23,6 +22,7 @@ import {
   DeleteDatiTemplateSchedaResponseModel,
 } from "../../models/view-modifica-scheda/deleteDatiTemplateScheda";
 import { ModalService } from "src/app/core/services/modal.service";
+import { ConfirmPopupService } from "src/app/core/services/confirm-popup.service";
 import { LoadingProgression } from "src/app/models/enums/loading-progression";
 import { Switch } from "../shared/switch/switch";
 import {
@@ -108,6 +108,7 @@ export class ViewTemplatePlan {
     private router: Router,
     private workoutService: WorkoutService,
     private modalService: ModalService,
+    private confirmPopupService: ConfirmPopupService,
 
     public createOrEditTemplatePlanService: CreateOrEditTemplatePlanService,
     private cdr: ChangeDetectorRef,
@@ -308,12 +309,10 @@ export class ViewTemplatePlan {
 
   openDeleteScheda() {
     try {
-      this.modalService.open({
-        warning: true,
-        headerTemplate: this.headerDeleteTemplate,
-        bodyTemplate: this.bodyDeleteTemplate,
-        footerCloseTemplate: this.footerCloseDeleteTemplate,
-        footerConfirmTemplate: this.footerConfirmDeleteTemplate,
+      this.confirmPopupService.open({
+        title: "Eliminare questa scheda?",
+        message: "Questa azione non può essere annullata.",
+        confirmText: "Elimina",
         onConfirm: () => this.eliminaScheda(),
       });
     } catch (error) {

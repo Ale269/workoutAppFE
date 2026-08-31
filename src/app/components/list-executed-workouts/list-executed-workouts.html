@@ -12,6 +12,9 @@
           (click)="visualizzaDatiAllenamento(allenamentoView.allenamentoSvolto.id)"
         >
           <div class="data-allenamento-svolto-container">
+            <!-- L'allenamento libero non appartiene a nessuna scheda: non ha
+                 un "giorno N su M" da mostrare, e il contatore direbbe 0/0. -->
+            @if (allenamentoView.allenamentoSvolto.numeroTotaleAllenamentiScheda > 0) {
             <div class="graphic-data">
               <div class="giorni-counter-container">
                 <h3 class="text-white small-text">
@@ -34,6 +37,7 @@
                 </div>
               </div>
             </div>
+            }
             <div class="nome-data-allenamento">
               <h3 class="text-white">
                 {{ allenamentoView.allenamentoSvolto.nomeAllenamento }}
@@ -69,10 +73,32 @@
       <h3 class="text-white">Nessun allenamento svolto</h3>
       }
     </div>
+    <!-- Coda della lista: compare solo mentre arriva la pagina successiva.
+         Non e' lo spinner a tutto schermo, che coprirebbe i record gia'
+         visibili proprio mentre l'utente li sta leggendo. -->
+    @if (caricandoAltro) {
+    <div class="infinite-scroll-loader">
+      <h3 class="text-grey">Caricamento…</h3>
+    </div>
+    }
+
   </div>
 </div>
 
 <!-- Templates per la modale di conferma eliminazione -->
+<div class="floating-static-button-container">
+  <!-- Stessa animazione di trasformazione del menu multi-opzione, tinta
+       dell'accento primario. Nessun pulsante statico proiettato: qui l'unica
+       azione della pagina e' proprio questa. -->
+  <app-multi-option-button
+    [rightGroups]="gruppiNuovoAllenamento"
+    [rightButtonLabel]="'Nuovo allenamento'"
+    [accentColor]="'#00ffe1'"
+    (optionSelected)="onNuovoAllenamentoSelezionato($event)"
+  >
+  </app-multi-option-button>
+</div>
+
 <ng-template #headerDeleteTemplate>
   <img
     src="assets/recollect/images/icona-stop-modifica.png"

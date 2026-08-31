@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import {
   GetListaTemplatesSchedaRequestModel,
+  GetListaTemplatesSchedaPaginataRequestModel,
   GetListaTemplatesSchedaResponseModel,
 } from "src/app/models/lista-template-schede/get-lista-templates-schede";
 import {
@@ -18,7 +19,7 @@ import {
   DeleteDatiTemplateSchedaRequestModel,
   DeleteDatiTemplateSchedaResponseModel
 } from "../../models/view-modifica-scheda/deleteDatiTemplateScheda";
-import { GetListaAllenamentiSvoltiRequestModel, GetListaAllenamentiSvoltiResponseModel } from "src/app/models/lista-allenamenti-svolti/get-lista-templates-schede";
+import { GetListaAllenamentiSvoltiRequestModel, GetListaAllenamentiSvoltiPaginataRequestModel, GetListaAllenamentiSvoltiResponseModel } from "src/app/models/lista-allenamenti-svolti/get-lista-templates-schede";
 import { GetDatiAllenamentoRequestModel, GetDatiAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-allenamento";
 import { GetDatiTemplateNuovoAllenamentoRequestModel, GetDatiTemplateNuovoAllenamentoResponseModel } from "src/app/models/view-modifica-allenamento-svolto/get-dati-template-nuovo-allenamento";
 import { DeleteDatiAllenamentoRequestModel } from "src/app/models/view-modifica-allenamento-svolto/deleteDatiAllenamentoSvolto";
@@ -59,6 +60,22 @@ export class WorkoutService {
       "getTemplatesSchede",
       request,
       null
+    );
+  }
+
+  /**
+   * Variante paginata per l'infinite scroll: page e size viaggiano come query
+   * string, userId resta nel path.
+   */
+  getListaTemplatesSchedaPaginata(
+    request: GetListaTemplatesSchedaPaginataRequestModel
+  ): Observable<GetListaTemplatesSchedaResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "workout",
+      "getSchedeSvoltePaged",
+      { userId: request.userId },
+      null,
+      { page: request.page, size: request.size }
     );
   }
 
@@ -129,6 +146,22 @@ export class WorkoutService {
       "getAllenamentiSvolti",
       request,
       null
+    );
+  }
+
+  /**
+   * Variante paginata per l'infinite scroll. L'endpoint non paginato resta:
+   * lo usano ancora le statistiche, che hanno bisogno dello storico intero.
+   */
+  getListaAllenamentiSvoltiPaginata(
+    request: GetListaAllenamentiSvoltiPaginataRequestModel
+  ): Observable<GetListaAllenamentiSvoltiResponseModel> {
+    return this.apiCatalogService.executeApiCall(
+      "training",
+      "getAllenamentiSvoltiPaged",
+      { userId: request.userId },
+      null,
+      { page: request.page, size: request.size }
     );
   }
    deleteDatiAllenamentoSvolto(

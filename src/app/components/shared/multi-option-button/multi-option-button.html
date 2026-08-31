@@ -1,11 +1,15 @@
 @if (expandedSide) {
-  <div class="multi-option-overlay" (click)="onOverlayClick()" (touchstart)="onOverlayClick()"></div>
+  <!-- Un solo evento: "click" e "touchstart" insieme facevano scattare il
+       gestore due volte per ogni tap sul touch, e il "click" fantasma che
+       segue il touch finiva sull'elemento sotto l'overlay appena rimosso.
+       "pointerdown" arriva una volta sola sia da mouse sia da dito. -->
+  <div class="multi-option-overlay" (pointerdown)="onOverlayClick($event)"></div>
 }
 <div class="buttons-container" #container>
   <div class="all-buttons-wrapper" #allButtonsWrapper>
     <!-- Left transformation button (now positioned before static) -->
     @if(leftGroups.length > 0) {
-    <div class="transformation-button left" #leftTransformButton (touchstart)="expandButton('left')">
+    <div class="transformation-button left" #leftTransformButton (pointerdown)="expandButton('left')">
       <!-- BASIC STATE -->
       <div class="basic-setting" #leftBasicContent>
         <button [class.has-label-and-icon]="leftButtonLabel">
@@ -32,8 +36,14 @@
           @if(group.label) {
           <div class="group-label">{{ group.label }}</div>
           } @for(option of group.options; track option.optionId) {
-          <div class="transformed-setting-option-container">
-            <button (click)="onOptionClick(group.id, option.optionId, 'left')" [style.color]="option.color">
+          <!-- Il gestore sta sulla RIGA, non sul testo: il contenitore ha
+               24px di padding sopra e sotto, e legandolo al button si
+               perdeva tutta quell'area di tocco. -->
+          <div
+            class="transformed-setting-option-container"
+            (pointerdown)="onOptionClick(group.id, option.optionId, 'left', $event)"
+          >
+            <button [style.color]="option.color" tabindex="-1">
               <div class="option-content">
                 @if(option.iconPath) {
                 <img [src]="option.iconPath" class="option-icon" />
@@ -51,7 +61,7 @@
 
     <!-- Right transformation button -->
     @if(rightGroups.length > 0) {
-    <div class="transformation-button right" #rightTransformButton (touchstart)="expandButton('right')">
+    <div class="transformation-button right" #rightTransformButton (pointerdown)="expandButton('right')">
       <div class="basic-setting" #rightBasicContent>
         <button [class.has-label-and-icon]="rightButtonLabel">
           <span class="button-label">{{ rightButtonLabel }}</span>
@@ -64,8 +74,14 @@
           @if(group.label) {
           <div class="group-label">{{ group.label }}</div>
           } @for(option of group.options; track option.optionId) {
-          <div class="transformed-setting-option-container">
-            <button (click)="onOptionClick(group.id, option.optionId, 'right')" [style.color]="option.color">
+          <!-- Il gestore sta sulla RIGA, non sul testo: il contenitore ha
+               24px di padding sopra e sotto, e legandolo al button si
+               perdeva tutta quell'area di tocco. -->
+          <div
+            class="transformed-setting-option-container"
+            (pointerdown)="onOptionClick(group.id, option.optionId, 'right', $event)"
+          >
+            <button [style.color]="option.color" tabindex="-1">
               <div class="option-content">
                 @if(option.iconPath) {
                 <img [src]="option.iconPath" class="option-icon" />

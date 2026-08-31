@@ -34,6 +34,15 @@
       <h3 class="text-white">Nessuna scheda aggiunta</h3>
       }
     </div>
+    <!-- Coda della lista: compare solo mentre arriva la pagina successiva.
+         Non e' lo spinner a tutto schermo, che coprirebbe i record gia'
+         visibili proprio mentre l'utente li sta leggendo. -->
+    @if (caricandoAltro) {
+    <div class="infinite-scroll-loader">
+      <h3 class="text-grey">Caricamento…</h3>
+    </div>
+    }
+
   </div>
 </div>
 

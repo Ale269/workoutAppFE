@@ -48,10 +48,16 @@ export class CardVolumeMuscolo {
     return Math.round((valore / this.massimo) * 100);
   }
 
+  /**
+   * "+2" da solo non diceva rispetto a cosa. Il riferimento e' la media a 4
+   * settimane dell'utente — la stessa che disegna la seconda barra — quindi
+   * va detto nell'etichetta, non lasciato indovinare dalla legenda.
+   */
   etichettaDelta(item: VolumeMuscoloItem): string {
-    if (item.trend === "stabile" || !item.deltaSerie) return "stabile";
+    if (item.mediaQuattroSettimane === null) return "";
+    if (item.trend === "stabile" || !item.deltaSerie) return "come la media";
     const segno = item.deltaSerie > 0 ? "+" : "−";
-    return `${segno}${Math.abs(item.deltaSerie)}`;
+    return `${segno}${Math.abs(item.deltaSerie)} sulla media`;
   }
 
   private calcolaMassimo(distretti: VolumeMuscoloItem[]): number {

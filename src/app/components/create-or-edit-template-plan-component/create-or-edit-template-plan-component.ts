@@ -363,6 +363,23 @@ export class CreateOrEditTemplatePlanComponent
   }
 
   ngOnDestroy(): void {
+    // Il menu va RIABILITATO uscendo: ngOnInit lo disattiva, e senza questa
+    // riga resta spento per tutto il resto della sessione.
+    this.bottomMenuService.setEnabled(true);
+
+    // Fermare l'autosave e' altrettanto obbligatorio: se il timer sopravvive
+    // al componente continua a riscrivere la bozza "template_in_progress_*"
+    // in localStorage, e al riavvio l'app rientra da sola nella creazione
+    // scheda che l'utente aveva abbandonato.
+    this.stopAutoSave();
+
+    if (this.initSpinnerId) {
+      this.spinnerService.hide(this.initSpinnerId);
+    }
+    if (this.saveSpinnerId) {
+      this.spinnerService.hide(this.saveSpinnerId);
+    }
+
     this.swipe.destroy();
   }
 

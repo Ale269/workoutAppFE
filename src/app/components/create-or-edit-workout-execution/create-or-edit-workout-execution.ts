@@ -91,6 +91,12 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
   public accordionOpenKeys: string[] = [];
 
   public idTemplateAllenamento: number = 0;
+  /**
+   * Rotta a cui tornare chiudendo la pagina. Serve perche' la registrazione
+   * si raggiunge da piu' punti: dalla home (e li' si torna alla home) e dalla
+   * lista allenamenti svolti (e li' si torna alla lista).
+   */
+  private provenienza: string | null = null;
   public idAllenamento: number = 0;
   public allenamentoDTO: AllenamentoDTO | null = null;
   public createOrEdit: createOrEdit | null = null;
@@ -168,10 +174,15 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       const navigation = this.router.getCurrentNavigation();
       const state = navigation?.extras.state as {
         idTemplateAllenamento: number;
+        provenienza?: string;
         idAllenamento: number;
         createOrEdit: createOrEdit;
         allenamentoDTO: AllenamentoDTO;
       };
+
+      if (state?.provenienza) {
+        this.provenienza = state.provenienza;
+      }
 
       if (state?.idTemplateAllenamento) {
         this.idTemplateAllenamento = state.idTemplateAllenamento;
@@ -355,7 +366,11 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
 
       switch (this.createOrEdit) {
         case createOrEdit.create:
-          this.getDatiTemplateNuovoAllenamento();
+          if (this.isAllenamentoLibero()) {
+            this.inizializzaAllenamentoLibero();
+          } else {
+            this.getDatiTemplateNuovoAllenamento();
+          }
           break;
         case createOrEdit.edit:
           if (this.allenamentoDTO) {
@@ -403,6 +418,39 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
       this.errorHandlerService.logError(
         error,
         "CreateOrEditWorkoutExecution.initializeWorkout",
+      );
+      this.loadingProgression = LoadingProgression.failed;
+    }
+  }
+
+  /**
+   * Allenamento libero: si riconosce dall'assenza di un template di partenza.
+   * La rotta dedicata non porta :id, quindi idTemplateAllenamento resta null.
+   */
+  public isAllenamentoLibero(): boolean {
+    return (
+      this.createOrEdit === createOrEdit.create &&
+      !this.idTemplateAllenamento
+    );
+  }
+
+  /**
+   * Parte da un allenamento vuoto: nessun esercizio, nessuna scheda.
+   * Non c'e' niente da chiedere al server, quindi niente spinner — gli
+   * esercizi li aggiunge l'utente con il pulsante "Aggiungi".
+   */
+  private inizializzaAllenamentoLibero(): void {
+    try {
+      this.createOrEditWorkoutExecutionService.InizializzaAllenamentoLibero();
+      // Nessuna opzione "cambia giorno": non appartenendo a una scheda, non
+      // esistono altri giorni fra cui scegliere.
+      this.rightButtonOptionsGroup = [];
+      this.loadingProgression = LoadingProgression.complete;
+      this.startAutoSave();
+    } catch (error) {
+      this.errorHandlerService.logError(
+        error,
+        "CreateOrEditWorkoutExecution.inizializzaAllenamentoLibero",
       );
       this.loadingProgression = LoadingProgression.failed;
     }
@@ -1109,7 +1157,7 @@ export class CreateOrEditWorkoutExecution implements OnInit, OnDestroy {
     try {
       switch (this.createOrEdit) {
         case createOrEdit.create:
-          this.router.navigate(["/home"]);
+          this.router.navigate([this.provenienza ?? "/home"]);
           break;
         case createOrEdit.edit:
           if (this.allenamentoDTO) {
