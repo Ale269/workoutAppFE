@@ -11,8 +11,9 @@ export interface ApiEndpoint {
 
 export interface DefaultModule {
     baseUrl: string;
-    host: string;
-    protocol: "http" | "https";
+    // host/protocol vuoti o assenti => URL relativo same-origin (baseUrl da solo)
+    host?: string;
+    protocol?: "http" | "https" | "";
     security: string
     mocked?: boolean;
     // Aggiungi altre proprietà specifiche per i tuoi endpoint (es. headers, auth)

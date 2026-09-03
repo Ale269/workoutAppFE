@@ -17,6 +17,9 @@ export class ApiCatalogService {
   private apiCatalogSubject = new BehaviorSubject<ApiCatalog | null>(null);
   public apiCatalog$ = this.apiCatalogSubject.asObservable();
   public baseUrl: string = "";
+  // baseUrl puo' essere legittimamente "" (same-origin su root): serve un flag
+  // separato per distinguere "non inizializzato" da "relativo".
+  private baseUrlInitialized = false;
 
   constructor(
     private http: HttpClient,
@@ -110,13 +113,26 @@ export class ApiCatalogService {
 
   private initializeBaseUrl(catalog: ApiCatalog) {
     try {
-      if (!catalog?.defaults?.protocol || !catalog?.defaults?.host) {
-        throw new Error('Configurazione defaults incompleta nel catalogo API');
+      const defaults = catalog?.defaults;
+      if (!defaults) {
+        throw new Error('Configurazione defaults mancante nel catalogo API');
       }
 
-      this.baseUrl = catalog.defaults.protocol + "://" + catalog.defaults.host + (catalog.defaults.baseUrl || '');
-      console.log("✅ Base URL inizializzato:", this.baseUrl);
-      
+      const protocol = (defaults.protocol || '').trim();
+      const host = (defaults.host || '').trim();
+      const path = (defaults.baseUrl || '').trim();
+
+      if (host) {
+        // Origin esplicito (cross-origin o ambiente con host dedicato)
+        this.baseUrl = `${protocol || 'https'}://${host}${path}`;
+      } else {
+        // host assente => same-origin: il browser risolve il path sull'origin corrente
+        this.baseUrl = path;
+      }
+
+      this.baseUrlInitialized = true;
+      console.log("✅ Base URL inizializzato:", this.baseUrl || '(same-origin)');
+
     } catch (error) {
       // CRITICO: senza base URL non possiamo fare chiamate
       this.errorHandler.pushCriticalError(
@@ -124,8 +140,9 @@ export class ApiCatalogService {
         'BaseURL Initialization Failed',
         { catalog: !!catalog, defaults: catalog?.defaults }
       );
-      
+
       this.baseUrl = "";
+      this.baseUrlInitialized = false;
       throw error;
     }
   }
@@ -151,9 +168,9 @@ export class ApiCatalogService {
       return throwError(() => new Error('API Catalog non disponibile'));
     }
 
-    if (!this.baseUrl) {
+    if (!this.baseUrlInitialized) {
       this.errorHandler.pushCriticalError(
-        new Error('Base URL non valorizzato'),
+        new Error('Base URL non inizializzato'),
         'executeApiCall'
       );
       return throwError(() => new Error('Base URL non disponibile'));

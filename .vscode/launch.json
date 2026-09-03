@@ -2,6 +2,20 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "ng serve (svil)",
+      "command": "npx ng serve --configuration svil --port 4202",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "ng serve (dev)",
+      "command": "npx ng serve --port 4202",
+      "cwd": "${workspaceFolder}"
+    },
+    {
       "type": "chrome",
       "request": "launch",
       "name": "Debug Angular su Chrome",
@@ -9,7 +23,6 @@
       "webRoot": "${workspaceFolder}",
       "preLaunchTask": "Serve Angular App",
       "sourceMaps": true,
-      "userDataDir": "${tmpdir}/chrome-debug",
       "runtimeArgs": [
         "--disable-features=VizDisplayCompositor"
       ]
